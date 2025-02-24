@@ -15,8 +15,22 @@ const myPreset = definePreset(Aura, {
             800: '{orange.800}',
             900: '{orange.900}',
             950: '{orange.950}'
+        },
+        surface: {
+            0: '#ffffff',
+            50: '{zinc.50}',
+            100: '{zinc.100}',
+            200: '{zinc.200}',
+            300: '{zinc.300}',
+            400: '{zinc.400}',
+            500: '{zinc.500}',
+            600: '{zinc.600}',
+            700: '{zinc.700}',
+            800: '{zinc.800}',
+            900: '{zinc.900}',
+            950: '{zinc.950}'
         }
-    }
+    },
 })
 
 

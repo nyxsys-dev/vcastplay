@@ -1,1 +1,19 @@
-<p>drawer works!</p>
+<div class="fixed drawer-container hidden md:block w-25 h-full bg-gray-800 z-40">
+    <div class="flex flex-col gap-3">
+        @for (item of items(); track $index) {
+            <li 
+                (click)="onToggleMenu(item, $event)"
+                class="relative px-4 py-3 list-none hover:bg-orange-600 flex flex-col items-center justify-center w-full hover:rounded-md cursor-pointer"
+            >
+                <i style="font-size: 1.5rem;" class="mb-2 text-white" [class]="item.icon"></i>
+                <p class="text-white">{{ item.label }}</p>
+
+                @if (item.menus && item.expanded) {
+                    <div class="absolute left-full top-0 bg-white rounded-md shadow-md p-2">
+                        <p-menu #menu [model]="item.menus" appendTo="button"></p-menu>
+                    </div>
+                }
+            </li>
+        }
+    </div>
+</div>  

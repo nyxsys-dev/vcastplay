@@ -1,2 +1,26 @@
 @use "tailwindcss";
 @use "primeicons/primeicons.css";
+
+html {    
+    font-size: 14px;
+}
+
+.toolbar-container {
+    padding: 0 2rem 0 1rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    background-color: var(--p-primary-500);
+
+    .app-logo {
+        width: 8rem;
+    }
+}
+
+.p-breadcrumb {
+    --p-breadcrumb-background: var(--p-primary-0);
+}

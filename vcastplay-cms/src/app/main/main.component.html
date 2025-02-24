@@ -1,2 +1,9 @@
-<app-toolbar></app-toolbar>
-<router-outlet></router-outlet>
+<div class="min-h-screen md:ms-25">
+    <app-toolbar></app-toolbar>
+    <app-drawer></app-drawer>
+    <div class="main-wrapper">
+        <div class="main-content">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>
