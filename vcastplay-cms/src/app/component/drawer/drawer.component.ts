@@ -44,6 +44,11 @@ export class DrawerComponent {
         expanded: false,
         menus: [
           {
+            label: 'Profile',
+            icon: 'pi pi-user',
+            routerLink: ['/profile'],
+          },
+          {
             label: 'Users',
             icon: 'pi pi-users',
             routerLink: ['/user-management'],

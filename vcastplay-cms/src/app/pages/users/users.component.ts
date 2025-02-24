@@ -1,9 +1,10 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../core/modules/components/components.module';
 import { MenuItem } from 'primeng/api';
 import { User } from '../../core/interfaces/account-settings';
 import { UtilityService } from '../../core/services/utility.service';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-users',
@@ -13,10 +14,22 @@ import { UtilityService } from '../../core/services/utility.service';
 })
 export class UsersComponent {
 
+  showDialog = signal<boolean>(false);
   utils = inject(UtilityService)
   pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Users'} ];
 
   users: User[] = [];
+
+  userForm: FormGroup = new FormGroup({
+    id: new FormControl(''),
+    code: new FormControl(''),
+    firstName: new FormControl(''),
+    lastName: new FormControl(''),
+    email: new FormControl(''),
+    mobile: new FormControl(''),
+    role: new FormControl(''),
+    status: new FormControl('')
+  })
 
   ngOnInit() {
     this.users =  [
@@ -81,5 +94,25 @@ export class UsersComponent {
           updatedOn: new Date('2024-02-20'),
       },
   ];
+  }
+
+  onClickAddNew() {
+    this.showDialog.set(true);
+    this.userForm.reset();
+  }
+
+  onClickEdit(user: User) {
+    this.userForm.patchValue(user);
+    this.showDialog.set(true);
+  }
+
+  onClickSave() {
+    // Save user data
+    this.showDialog.set(false);
+    this.userForm.reset();
+  }
+
+  onClickDelete(user: User) {
+    // Confirmation dialog
   }
 }

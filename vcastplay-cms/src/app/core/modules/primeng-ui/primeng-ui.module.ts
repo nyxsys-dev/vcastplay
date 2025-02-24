@@ -14,8 +14,17 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { PopoverModule } from 'primeng/popover';
+import { SelectModule } from 'primeng/select';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 import { StyleClassModule } from 'primeng/styleclass';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [],
@@ -37,6 +46,16 @@ import { StyleClassModule } from 'primeng/styleclass';
     CardModule,
     TagModule,
     InputTextModule,
+    ReactiveFormsModule,
+    FormsModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    PopoverModule,
+    SelectModule,
+    RadioButtonModule,
+    TooltipModule,
+    DialogModule,
+    FloatLabelModule,
   ]
 })
 export class PrimengUiModule { }

@@ -15,4 +15,14 @@ export class FiltersComponent {
     sortBy: new FormControl(''),
     sort: new FormControl('asc')
   })
+
+  sortBy: any[] = [
+    { label: 'Name', value: 'name' },
+    { label: 'Description', value: 'description' },
+    { label: 'Created At', value: 'createdAt' }
+  ]
+
+  get keywords() { 
+    return this.filters.get('keywords');
+  }
 }
