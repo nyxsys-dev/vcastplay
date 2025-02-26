@@ -22,6 +22,10 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { IftaLabelModule } from 'primeng/iftalabel';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { TextareaModule } from 'primeng/textarea';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -56,6 +60,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     TooltipModule,
     DialogModule,
     FloatLabelModule,
+    IftaLabelModule,
+    ConfirmDialogModule,
+    ToastModule,
+    TextareaModule,
   ]
 })
 export class PrimengUiModule { }

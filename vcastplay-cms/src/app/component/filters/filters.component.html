@@ -3,7 +3,7 @@
         <p-button icon="pi pi-filter" pTooltip="More Filter" tooltipPosition="bottom" [text]="true" (onClick)="filter.toggle($event)"></p-button>
         <p-popover #filter>
             <div class="flex flex-col gap-5 w[25rem]">
-                <div class="flex flex-row mb-1 items-center">
+                <div class="flex flex-row justify-between items-center">
                     <p-button (onClick)="filters.reset()" label="Apply" size="small" [text]="true" icon="pi pi-check"></p-button>
                     <p-button severity="secondary" (onClick)="filters.reset()" label="Clear" size="small" [text]="true" icon="pi pi-times"></p-button>
                 </div>

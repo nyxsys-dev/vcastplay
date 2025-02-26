@@ -5,6 +5,12 @@ import { Injectable } from '@angular/core';
 })
 export class UtilityService {
 
+  roles: any[] = [
+    { label: 'Administrator', value: 'admin' },
+    { label: 'User', value: 'user' },
+    { label: 'Guest', value: 'guest' },
+  ]
+
   constructor() { }
 
   getStatus(status: string) {
@@ -16,7 +22,7 @@ export class UtilityService {
       case 'Suspended':
         return 'danger';
       default:
-        return 'info';
+        return 'secondary';
     }
 }
 }

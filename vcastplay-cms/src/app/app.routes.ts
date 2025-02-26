@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+const appTitle: string = 'VCastplay';
 export const routes: Routes = [
     {
         path: '',
@@ -10,14 +11,8 @@ export const routes: Routes = [
         path: '',
         loadComponent: () => import('./main/main.component').then(m => m.MainComponent),
         children: [
-            { 
-                path: 'dashboard', 
-                loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent) 
-            },
-            {
-                path: 'user-management', 
-                loadComponent: () => import('./pages/users/users.component').then(m => m.UsersComponent)
-            }
+            { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent), title: `Dashboard • ${appTitle}`, },
+            { path: 'settings', loadChildren: () => import('./pages/settings/settings.routes') }
         ]
     },
     { 

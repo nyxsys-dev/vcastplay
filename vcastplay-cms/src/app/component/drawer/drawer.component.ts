@@ -46,17 +46,17 @@ export class DrawerComponent {
           {
             label: 'Profile',
             icon: 'pi pi-user',
-            routerLink: ['/profile'],
+            routerLink: ['/settings/profile'],
           },
           {
             label: 'Users',
             icon: 'pi pi-users',
-            routerLink: ['/user-management'],
+            routerLink: ['/settings/user-management'],
           },
           {
             label: 'Roles',
             icon: 'pi pi-lock',
-            routerLink: ['/role-management'],
+            routerLink: ['/settings/role-management'],
           }
         ]
       }
