@@ -1,0 +1,32 @@
+<div class="flex flex-col items-center justify-center w-screen h-screen relative bg-gray-200 p-3 sm:p-10 md:p-20">
+    <p-card class="w-full md:w-[30rem]">
+        <ng-template #header>
+            <div class="relative flex items-center justify-center">
+                <img class="absolute" src="assets/vcast-white.png" width="150" alt="logo">
+                <img src="assets/background.jpg" class="h-[8rem] w-full object-cover rounded-t-xl" alt="banner">
+            </div>
+        </ng-template>
+        <ng-template #title>
+            Login to your account
+        </ng-template>
+        <form class="grid grid-cols-1 gap-4 my-5" [formGroup]="auth.loginForm">
+            <p-floatlabel variant="in">
+                <input id="username" pInputText formControlName="username" [fluid]="true" />
+                <label for="username">Username*</label>
+            </p-floatlabel>
+            <p-floatlabel variant="in">
+                <p-password formControlName="password" inputId="password" [toggleMask]="true" [fluid]="true" [feedback]="false" />
+                <label for="password">Password*</label>
+            </p-floatlabel>
+            <div class="flex items-center">
+                <p-checkbox inputId="rememberMe" formControlName="rememberMe" [binary]="true" />
+                <label for="rememberMe" class="ml-2">Remember Me</label>
+            </div>
+        </form>
+        <ng-template #footer>
+            <p-button (onClick)="auth.onLogin()" styleClass="w-full" label="Login" />
+        </ng-template>
+    </p-card>
+</div>
+
+<p-toast />

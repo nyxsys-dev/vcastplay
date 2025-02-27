@@ -20,7 +20,7 @@
                 <i style="font-size: 1.5rem;" class="mb-2" class="pi pi-info-circle"></i>
                 <p class="!select-none">About</p>
             </li>
-            <li class="px-4 py-3 list-none hover:bg-orange-600 flex flex-col items-center justify-center w-full hover:rounded-md cursor-pointer text-white">
+            <li (click)="onClickLogout($event)" class="px-4 py-3 list-none hover:bg-orange-600 flex flex-col items-center justify-center w-full hover:rounded-md cursor-pointer text-white">
                 <i style="font-size: 1.5rem;" class="mb-2" class="pi pi-sign-out"></i>
                 <p class="!select-none">Logout</p>
             </li>
@@ -55,5 +55,15 @@
                 </ul>
             }
         }
+        <li class="px-4 py-3 list-none hover:bg-gray-100 flex flex-row gap-2 w-full hover:rounded-md cursor-pointer">
+            <i style="font-size: 1.5rem;" class="mb-2" class="pi pi-info-circle"></i>
+            <p class="!select-none">About</p>
+        </li>
+        <li (click)="onClickLogout($event)" class="px-4 py-3 list-none hover:bg-gray-100 flex flex-row gap-2 w-full hover:rounded-md cursor-pointer">
+            <i style="font-size: 1.5rem;" class="mb-2" class="pi pi-sign-out"></i>
+            <p class="!select-none">Logout</p>
+        </li>
     </ul>
 </p-drawer>
+
+<p-confirmdialog />

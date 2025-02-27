@@ -33,6 +33,8 @@ import { TieredMenuModule } from 'primeng/tieredmenu';
 import { AccordionModule } from 'primeng/accordion';
 import { RippleModule } from 'primeng/ripple';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { PasswordModule } from 'primeng/password';
+import { CheckboxModule } from 'primeng/checkbox';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -74,6 +76,8 @@ const PRIMEUI_MODULES = [
   TieredMenuModule,
   RippleModule,
   ConfirmPopupModule,
+  PasswordModule,
+  CheckboxModule,
 ]
 
 @NgModule({

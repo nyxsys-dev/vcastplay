@@ -3,17 +3,22 @@ import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module
 import { DrawerMenu } from '../../core/interfaces/drawer-menu';
 import { Router, RouterModule } from '@angular/router';
 import { UtilityService } from '../../core/services/utility.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-drawer',
   imports: [ PrimengUiModule, RouterModule ],
   templateUrl: './drawer.component.html',
-  styleUrl: './drawer.component.scss'
+  styleUrl: './drawer.component.scss',
+  providers: [ MessageService, AuthService, ConfirmationService ]
 })
 export class DrawerComponent {
 
   router = inject(Router);
   utils = inject(UtilityService);
+  auth = inject(AuthService);
+  confirmation = inject(ConfirmationService);
   menuItems = signal<DrawerMenu[]>([]);
   
   ngOnInit() {    
@@ -71,6 +76,26 @@ export class DrawerComponent {
     this.menuItems.set(updatedItems);
     
     if (menuItem.routerLink && !menuItem.items) this.onClickGotoPage(menuItem)
+  }
+
+  onClickLogout(event: Event) {
+    this.utils.drawerVisible.set(false);
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure you want to log out?',
+      closable: true,
+      closeOnEscape: true,
+      header: 'Logout Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      accept: () => {
+        this.auth.onLogout();
+      },
+    })
   }
 
   onClickGotoPage(subMenu: any) {
