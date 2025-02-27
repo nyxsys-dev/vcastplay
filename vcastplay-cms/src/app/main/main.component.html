@@ -2,12 +2,15 @@
     <app-toolbar></app-toolbar>
     <app-drawer></app-drawer>
     <div class="main-wrapper relative">
-        <div class="main-content p-3 md:p-[2rem]">
+        <div class="main-content p-3 md:p-[2rem] bg-gray-200">
             <router-outlet></router-outlet>
         </div>
 
-        <div class="block md:hidden absolute bottom-0 end-0 m-[0.75rem]">
-            <p-button (onClick)="utils.drawerVisible.set(!utils.drawerVisible())" [rounded]="true" icon="pi pi-bars" size="large" />
+        <div class="block md:hidden absolute bottom-0 end-0">
+            <div class="bg-orange-500 py-[1rem] px-[1.125rem] text-white rounded-tl-xl cursor-pointer" (click)="utils.drawerVisible.set(!utils.drawerVisible())">
+                <i class="pi pi-bars"></i>
+            </div>
+            <!-- <p-button (onClick)="utils.drawerVisible.set(!utils.drawerVisible())" [rounded]="true" icon="pi pi-bars" size="large" /> -->
         </div>
     </div>
 </div>

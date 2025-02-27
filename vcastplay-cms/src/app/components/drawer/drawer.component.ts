@@ -23,23 +23,23 @@ export class DrawerComponent {
         icon: 'pi pi-home',
         routerLink: '/dashboard'
       },
-      {
-        label: 'Screen',
-        icon: 'pi pi-desktop',
-        expanded: false,
-        items: [
-          {
-            label: 'Register',
-            icon: 'pi pi-plus',
-            routerLink: ['/screen-register'],
-          },
-          {
-            label: 'List',
-            icon: 'pi pi-list',
-            routerLink: ['/screen-list'],
-          }
-        ]
-      },
+      // {
+      //   label: 'Screen',
+      //   icon: 'pi pi-desktop',
+      //   expanded: false,
+      //   items: [
+      //     {
+      //       label: 'Register',
+      //       icon: 'pi pi-plus',
+      //       routerLink: ['/screen-register'],
+      //     },
+      //     {
+      //       label: 'List',
+      //       icon: 'pi pi-list',
+      //       routerLink: ['/screen-list'],
+      //     }
+      //   ]
+      // },
       {
         label: 'Settings',
         icon: 'pi pi-cog',

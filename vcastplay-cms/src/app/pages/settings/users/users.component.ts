@@ -5,6 +5,7 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { User } from '../../../core/interfaces/account-settings';
 import { UtilityService } from '../../../core/services/utility.service';
 import { FormControl, FormGroup } from '@angular/forms';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-users',
@@ -19,22 +20,13 @@ export class UsersComponent {
 
   isEdit = signal<boolean>(false);
   showDialog = signal<boolean>(false);
+
+  userService = inject(UserService)
   utils = inject(UtilityService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
 
   users: User[] = [];
-
-  userForm: FormGroup = new FormGroup({
-    id: new FormControl(''),
-    code: new FormControl(''),
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
-    email: new FormControl(''),
-    mobile: new FormControl(''),
-    role: new FormControl(''),
-    status: new FormControl('')
-  })
 
   ngOnInit() { 
     this.onInitializeData();
@@ -112,12 +104,12 @@ export class UsersComponent {
   onClickAddNew() {
     this.isEdit.set(false);
     this.showDialog.set(true);
-    this.userForm.reset();
+    this.userService.userForm.reset();
   }
 
   onClickEdit(user: User) {
     this.isEdit.set(true);
-    this.userForm.patchValue(user);
+    this.userService.onEditUser(user);
     this.showDialog.set(true);
   }
 
@@ -138,7 +130,7 @@ export class UsersComponent {
         label: 'Save',
       },
       accept: () => {
-        const { code, status, ...info } = this.userForm.value;
+        const { code, status, ...info } = this.userService.userForm.value;
         this.message.add({ severity:'success', summary: 'Success', detail: 'User saved successfully!' });
         
         if (!this.isEdit()) {
@@ -149,12 +141,8 @@ export class UsersComponent {
         }
 
         this.showDialog.set(false);
-        this.userForm.reset();
+        this.userService.userForm.reset();
       },
-      reject: () => { 
-        this.showDialog.set(false);
-        this.userForm.reset();
-      }
     })
   }
 
@@ -185,6 +173,6 @@ export class UsersComponent {
 
   onClickCancel() {
     this.showDialog.set(false);
-    this.userForm.reset();
+    this.userService.userForm.reset();
   }
 }

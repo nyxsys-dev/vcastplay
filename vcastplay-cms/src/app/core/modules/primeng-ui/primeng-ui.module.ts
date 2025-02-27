@@ -31,6 +31,8 @@ import { PanelMenuModule } from 'primeng/panelmenu';
 import { MegaMenuModule } from 'primeng/megamenu';
 import { TieredMenuModule } from 'primeng/tieredmenu';
 import { AccordionModule } from 'primeng/accordion';
+import { RippleModule } from 'primeng/ripple';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -70,6 +72,8 @@ const PRIMEUI_MODULES = [
   PanelMenuModule,
   MegaMenuModule,
   TieredMenuModule,
+  RippleModule,
+  ConfirmPopupModule,
 ]
 
 @NgModule({
