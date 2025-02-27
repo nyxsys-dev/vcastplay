@@ -38,6 +38,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 const PRIMEUI_MODULES = [
   CommonModule,
@@ -78,6 +79,7 @@ const PRIMEUI_MODULES = [
   ConfirmPopupModule,
   PasswordModule,
   CheckboxModule,
+  NgxEchartsModule,
 ]
 
 @NgModule({
