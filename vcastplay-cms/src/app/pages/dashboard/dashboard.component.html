@@ -1,6 +1,6 @@
 <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
 
-<div class="m-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     @for (widget of widgets; track $index) {
         <p-card><ng-container [ngComponentOutlet]="widget.content"></ng-container></p-card>
     }

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { MenuItem } from 'primeng/api';
+import { UtilityService } from '../../core/services/utility.service';
 
 @Component({
   selector: 'app-toolbar',

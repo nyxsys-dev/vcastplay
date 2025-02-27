@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToolbarComponent } from '../../../component/toolbar/toolbar.component';
-import { DrawerComponent } from '../../../component/drawer/drawer.component';
-import { BreadcrumbsComponent } from '../../../component/breadcrumbs/breadcrumbs.component';
-import { FiltersComponent } from '../../../component/filters/filters.component';
+import { ToolbarComponent } from '../../../components/toolbar/toolbar.component';
+import { DrawerComponent } from '../../../components/drawer/drawer.component';
+import { BreadcrumbsComponent } from '../../../components/breadcrumbs/breadcrumbs.component';
+import { FiltersComponent } from '../../../components/filters/filters.component';
 
 
 const COMPONENT_MODULES = [

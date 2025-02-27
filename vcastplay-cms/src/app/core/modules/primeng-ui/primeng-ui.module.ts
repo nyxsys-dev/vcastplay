@@ -26,44 +26,55 @@ import { IftaLabelModule } from 'primeng/iftalabel';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { TextareaModule } from 'primeng/textarea';
+import { DrawerModule } from 'primeng/drawer';
+import { PanelMenuModule } from 'primeng/panelmenu';
+import { MegaMenuModule } from 'primeng/megamenu';
+import { TieredMenuModule } from 'primeng/tieredmenu';
+import { AccordionModule } from 'primeng/accordion';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+const PRIMEUI_MODULES = [
+  CommonModule,
+  AccordionModule,
+  ButtonModule,
+  ToolbarModule,
+  AvatarModule,
+  AvatarGroupModule,
+  StyleClassModule,
+  MenuModule,
+  ListboxModule,
+  BadgeModule,
+  OverlayBadgeModule,
+  TableModule,
+  BreadcrumbModule,
+  CardModule,
+  TagModule,
+  InputTextModule,
+  ReactiveFormsModule,
+  FormsModule,
+  InputGroupModule,
+  InputGroupAddonModule,
+  PopoverModule,
+  SelectModule,
+  RadioButtonModule,
+  TooltipModule,
+  DialogModule,
+  FloatLabelModule,
+  IftaLabelModule,
+  ConfirmDialogModule,
+  ToastModule,
+  TextareaModule,
+  DrawerModule,
+  PanelMenuModule,
+  MegaMenuModule,
+  TieredMenuModule,
+]
+
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-  ],
-  exports: [
-    ButtonModule,
-    ToolbarModule,
-    AvatarModule,
-    AvatarGroupModule,
-    StyleClassModule,
-    MenuModule,
-    ListboxModule,
-    BadgeModule,
-    OverlayBadgeModule,
-    TableModule,
-    BreadcrumbModule,
-    CardModule,
-    TagModule,
-    InputTextModule,
-    ReactiveFormsModule,
-    FormsModule,
-    InputGroupModule,
-    InputGroupAddonModule,
-    PopoverModule,
-    SelectModule,
-    RadioButtonModule,
-    TooltipModule,
-    DialogModule,
-    FloatLabelModule,
-    IftaLabelModule,
-    ConfirmDialogModule,
-    ToastModule,
-    TextareaModule,
-  ]
+  imports: [ CommonModule, ],
+  exports: [ ...PRIMEUI_MODULES ]
 })
 export class PrimengUiModule { }

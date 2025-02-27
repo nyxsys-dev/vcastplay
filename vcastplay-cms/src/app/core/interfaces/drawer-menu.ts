@@ -5,5 +5,5 @@ export interface DrawerMenu {
     icon: string;
     routerLink?: string;
     expanded?: boolean;
-    menus?: MenuItem[];
+    items?: MenuItem[];
 }

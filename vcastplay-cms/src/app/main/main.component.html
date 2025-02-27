@@ -1,9 +1,13 @@
 <div class="min-h-screen md:ms-[7rem]">
     <app-toolbar></app-toolbar>
     <app-drawer></app-drawer>
-    <div class="main-wrapper">
-        <div class="main-content">
+    <div class="main-wrapper relative">
+        <div class="main-content p-3 md:p-[2rem]">
             <router-outlet></router-outlet>
+        </div>
+
+        <div class="block md:hidden absolute bottom-0 end-0 m-[0.75rem]">
+            <p-button (onClick)="utils.drawerVisible.set(!utils.drawerVisible())" [rounded]="true" icon="pi pi-bars" size="large" />
         </div>
     </div>
 </div>
