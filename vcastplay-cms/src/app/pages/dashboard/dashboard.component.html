@@ -4,5 +4,6 @@
     @for (widget of widgets; track $index) {
         <p-card><ng-container [ngComponentOutlet]="widget.content"></ng-container></p-card>
     }
-    <app-screen-lists class="col-span-2"></app-screen-lists>
+    <app-sample-chart class="md:col-span-2" />
+    <app-screen-lists class="md:col-span-2" />
 </div>

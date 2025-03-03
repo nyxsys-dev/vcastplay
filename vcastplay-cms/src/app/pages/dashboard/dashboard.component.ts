@@ -7,10 +7,11 @@ import { OfflineScreensComponent } from '../../components/dashboard-components/o
 import { StorageUsageComponent } from '../../components/dashboard-components/storage-usage/storage-usage.component';
 import { SubscriptionPlanComponent } from '../../components/dashboard-components/subscription-plan/subscription-plan.component';
 import { ScreenListsComponent } from '../../components/dashboard-components/screen-lists/screen-lists.component';
+import { SampleChartComponent } from '../../components/dashboard-components/sample-chart/sample-chart.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ PrimengUiModule, ComponentsModule, ScreenListsComponent ],
+  imports: [ PrimengUiModule, ComponentsModule, ScreenListsComponent, SampleChartComponent ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

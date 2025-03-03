@@ -1,4 +1,4 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, signal, viewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -12,8 +12,16 @@ import { Screen } from '../../../core/interfaces/screen';
   styleUrl: './screen-lists.component.scss'
 })
 export class ScreenListsComponent {
-  
+
+  filterStatus = signal<string>('online');
+  screenStatus: any[] = [
+    { label: 'Online', value: 'online' },
+    { label: 'Offline', value: 'offline' }
+  ]
   screenMap = viewChild.required<ElementRef>('screenMap');
+  filteredScreen = computed(() => {
+    return this.screens.filter(screen => screen.status == this.filterStatus());
+  })
 
   private map!: L.Map;
   private markerClusterGroup!: L.MarkerClusterGroup; 
@@ -61,25 +69,33 @@ export class ScreenListsComponent {
       geolocation: { latitude: 48.8566, longitude: 2.3522 } // Paris, France
     }
   ]
+  
 
   ngOnInit() {
     this.initializeMap();
-    this.addMarkers();
   }
 
-  private initializeMap() {
-    this.map = L.map(this.screenMap().nativeElement, {
-      center: [37.7749, -122.4194],
-      zoom: 13
-    });
+  initializeMap() {
+    if (this.map) this.map.remove();
+    this.map = L.map(this.screenMap().nativeElement, { center: [37.7749, -122.4194], zoom: 13 });    
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
 
-    this.markerClusterGroup = L.markerClusterGroup();
+    this.markerClusterGroup = L.markerClusterGroup({
+      showCoverageOnHover: true,
+      iconCreateFunction: function (cluster: any) {
+        return L.divIcon({
+          html: `<div class="circle blue">${cluster.getChildCount()}</div>`,
+          className: 'custom-cluster-icon',
+          iconSize: [32, 32]
+        });
+      }
+    });
     this.map.addLayer(this.markerClusterGroup);
+    this.addMarkers();
   }
   private addMarkers(): void {
-    this.screens.forEach(screen => {
+    this.filteredScreen().forEach(screen => {
       const marker = L.marker([screen.geolocation.latitude, screen.geolocation.longitude], {
         icon: L.divIcon({
           className: `custom-marker ${screen.status}`,

@@ -1,6 +1,32 @@
 <p-card>
-    <ng-template #title>Screen Locations</ng-template>
-    <div class="relative">
-        <div #screenMap></div>
+    <ng-template #title>
+        <div class="flex justify-between">
+            <p>Screen Locations</p>
+            
+            <p-selectbutton 
+                [options]="screenStatus" 
+                [(ngModel)]="filterStatus" 
+                optionLabel="label" 
+                optionValue="value" 
+                aria-labelledby="basic" 
+                (onChange)="initializeMap()"
+            />
+
+        </div>
+    </ng-template>
+    <div class="relative h-full">
+        <div id="screenMap" #screenMap></div>
     </div>
+    <ul class="flex flex-col gap-4 mt-12">
+        @for (item of filteredScreen(); track $index) {
+            <li class="flex justify-between">
+                <div class="flex flex-col">
+                    <h6 class="font-bold">{{ item.name }}</h6>
+                    <p>{{ item.resolution }}</p>
+                </div>
+                <p-tag [value]="item.status" class="w-[4rem]" [severity]="item.status == 'online' ? 'success' : 'danger'" /> 
+            </li>
+            <p-divider />
+        }
+    </ul>
 </p-card>

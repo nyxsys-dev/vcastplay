@@ -35,6 +35,8 @@ import { RippleModule } from 'primeng/ripple';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { PasswordModule } from 'primeng/password';
 import { CheckboxModule } from 'primeng/checkbox';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { DividerModule } from 'primeng/divider';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -80,7 +82,9 @@ const PRIMEUI_MODULES = [
   PasswordModule,
   CheckboxModule,
   NgxEchartsModule,
-]
+  SelectButtonModule,
+  DividerModule,
+];
 
 @NgModule({
   declarations: [],
