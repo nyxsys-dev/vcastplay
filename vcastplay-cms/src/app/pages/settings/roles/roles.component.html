@@ -4,7 +4,11 @@
     <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
         <app-filters class="w-full md:w-[25rem]"></app-filters>
         <div class="flex gap-4">
-            <p-button (onClick)="onClickAddNew()" label="Add New" variant="outlined" icon="pi pi-plus"></p-button>
+            <p-button (onClick)="onClickAddNew()" label="Add New" variant="outlined" icon="pi pi-plus" />
+            <!-- <button (click)="onClickAddNew()" pButton pRipple class="flex items-center gap-2 px-4 py-2 p-button-outlined rounded-md">
+                <i class="pi pi-plus"></i>
+                <span class="hidden md:block p-button-label">Add New</span>
+            </button> -->
             <p-button (onClick)="onClickRefresh()" label="Refresh" icon="pi pi-refresh"></p-button>
         </div>
     </div>

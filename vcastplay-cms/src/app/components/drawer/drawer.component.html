@@ -35,14 +35,14 @@
         @for (menu of menuItems(); track $index) {
             <li 
                 (click)="onToggleMenu(menu, $event)"
-                class="relative px-4 py-3 list-none hover:bg-gray-100 flex flex-row justify-between w-full hover:rounded-md cursor-pointer"
+                class="relative px-4 py-3 list-none hover:bg-gray-100 flex flex-row justify-between items-center w-full hover:rounded-md cursor-pointer"
             >
                 <div class="flex flex-row gap-2">
                     <i style="font-size: 1.5rem;" class="mb-2" [class]="menu.icon"></i>
                     <p>{{ menu.label }}</p>
                 </div>
 
-                @if (menu.items) { <i class="pi pi-chevron-up"></i> }
+                @if (menu.items) { <i class="pi" [ngClass]="{ 'pi-chevron-up': menu.expanded, 'pi-chevron-down': !menu.expanded }"></i> }
             </li>
 
             @if (menu.items && menu.expanded) {
