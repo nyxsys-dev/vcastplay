@@ -10,7 +10,7 @@ import myPreset from '../../public/assets/myPreset';
 import { provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart, LineChart } from 'echarts/charts';
-import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
+import { GridComponent, LegendComponent, TitleComponent, ToolboxComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 
 echarts.use([
@@ -18,6 +18,7 @@ echarts.use([
   BarChart, 
   TitleComponent, 
   TooltipComponent,
+  ToolboxComponent,
   GridComponent, 
   LegendComponent,
   CanvasRenderer

@@ -17,6 +17,15 @@ export class SampleChartComponent {
 
   ngOnInit() {
     this.options = {
+      toolbox: {
+        feature: {
+          saveAsImage: {
+            title: 'Chart Name',
+            name: 'Filenames',
+            show: true
+          }
+        }
+      },
       // title: {text: 'Sample Chart Title' },
       tooltip: { trigger: 'axis' },
       legend: { 
