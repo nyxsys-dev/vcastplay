@@ -1,0 +1,22 @@
+<div class="md:absolute top-0 left-0 md:w-[30%] lg:w-[25%] z-50 md:m-5 my-3">
+    <div class="flex gap-2 justify-between items-center">
+        <div class="w-full" [ngClass]="{ 'hidden': showFilter() }">
+            <p-inputgroup>
+                <input type="text" pInputText [(ngModel)]="keywords" placeholder="Search Screen" />
+                <p-inputgroup-addon>
+                    <p-button (onClick)="keywords.set('')" [icon]="'pi ' + (keywords() != '' ? 'pi-times' : 'pi-search')" />
+                </p-inputgroup-addon>
+            </p-inputgroup>
+        </div>
+        <p-button [ngClass]="{ 'hidden': showFilter() }" (onClick)="initializeMap()" [text]="false" pTooltip="Refresh Map" tooltipPosition="bottom" icon="pi pi-refresh" />
+        <p-button 
+            (onClick)="showFilter.set(!showFilter())" 
+            [text]="false" 
+            [pTooltip]="!showFilter() ? 'Hide Filter' : 'Show Filter'" 
+            tooltipPosition="bottom" 
+            [icon]="!showFilter() ? 'pi pi-times' : 'pi pi-filter'" 
+        />
+    </div>
+</div>
+
+<div id="screenMap" class="z-10" #screenMap></div>

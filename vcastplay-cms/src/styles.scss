@@ -5,8 +5,12 @@ html {
     font-size: 14px;
 }
 
+.vcastplay-bg-primary {
+    background-color: #F97316 !important;
+}
+
 .toolbar-container {
-    padding: 0 2rem 0 1rem;
+    padding: 0 1rem 0 1rem;
     position: fixed;
     left: 0;
     top: 0;
@@ -27,20 +31,40 @@ html {
     display: inline-block;
 }
 
-.custom-marker.online .marker-dot {
-    background-color: var(--color-green-500);
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-}
-  
-.custom-marker.offline .marker-dot {
-    background-color: var(--color-red-500);
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
 
+.marker-dot {
+    position: relative;
+    background: var(--p-surface-500);
+    max-width: 150px;
+    width: 200px;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -9px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-top-color: var(--p-surface-500);
+        border-bottom: 0;
+    }
+
+    .online {
+        background-color: var(--color-green-500);
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+    }
+    
+    .offline {
+        background-color: var(--color-red-500);
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+}
 
 .circle {
     width: 50px;
@@ -92,4 +116,12 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
     background-color: #a8bbbf;
+}
+
+@media screen and (max-width: 768px) {
+    
+    ::-webkit-scrollbar {
+        width: 0;
+    }
+    
 }

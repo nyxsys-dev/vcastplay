@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
+import { environment } from "../../../environments/environment.development";
 
-const appTitle: string = 'VCastplay';
+const appTitle: string = environment.appTitle;
 export default [
     {
         path: 'user-management', 

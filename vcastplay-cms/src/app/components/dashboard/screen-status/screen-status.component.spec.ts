@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StorageUsageComponent } from './storage-usage.component';
+import { ScreenStatusComponent } from './screen-status.component';
 
-describe('StorageUsageComponent', () => {
-  let component: StorageUsageComponent;
-  let fixture: ComponentFixture<StorageUsageComponent>;
+describe('ScreenStatusComponent', () => {
+  let component: ScreenStatusComponent;
+  let fixture: ComponentFixture<ScreenStatusComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StorageUsageComponent]
+      imports: [ScreenStatusComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(StorageUsageComponent);
+    fixture = TestBed.createComponent(ScreenStatusComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

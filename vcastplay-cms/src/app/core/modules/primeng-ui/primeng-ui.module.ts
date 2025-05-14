@@ -37,6 +37,11 @@ import { PasswordModule } from 'primeng/password';
 import { CheckboxModule } from 'primeng/checkbox';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DividerModule } from 'primeng/divider';
+import { KnobModule } from 'primeng/knob';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { MeterGroupModule } from 'primeng/metergroup';
+import { PanelModule } from 'primeng/panel';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -84,6 +89,11 @@ const PRIMEUI_MODULES = [
   NgxEchartsModule,
   SelectButtonModule,
   DividerModule,
+  KnobModule,
+  ProgressBarModule,
+  MeterGroupModule,
+  PanelModule,
+  ScrollPanelModule,
 ];
 
 @NgModule({

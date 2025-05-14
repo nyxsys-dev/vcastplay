@@ -1,31 +1,22 @@
-import { Component, computed, ElementRef, signal, viewChild } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import { Screen } from '../../../core/interfaces/screen';
 
-
 @Component({
-  selector: 'app-screen-lists',
+  selector: 'app-screen-map',
   imports: [ PrimengUiModule ],
-  templateUrl: './screen-lists.component.html',
-  styleUrl: './screen-lists.component.scss'
+  templateUrl: './screen-map.component.html',
+  styleUrl: './screen-map.component.scss'
 })
-export class ScreenListsComponent {
+export class ScreenMapComponent {
 
-  filterStatus = signal<string>('online');
-  screenStatus: any[] = [
-    { label: 'Online', value: 'online' },
-    { label: 'Offline', value: 'offline' }
-  ]
-  screenMap = viewChild.required<ElementRef>('screenMap');
-  filteredScreen = computed(() => {
-    return this.screens.filter(screen => screen.status == this.filterStatus());
-  })
-
+  keywords = signal<string>('');
+  showFilter = signal<boolean>(false);
+  
   private map!: L.Map;
   private markerClusterGroup!: L.MarkerClusterGroup; 
-
 
   screens: Screen[] = [
     { 
@@ -34,7 +25,7 @@ export class ScreenListsComponent {
       resolution: "1920x1080", 
       layout: "Full Screen", 
       status: "online", 
-      geolocation: { latitude: 37.7749, longitude: -122.4194 } // San Francisco, CA
+      geolocation: { latitude: 14.6091, longitude: 121.0223 } // Makati
     },
     { 
       id: 2, 
@@ -42,7 +33,7 @@ export class ScreenListsComponent {
       resolution: "1920x1080", 
       layout: "2 Zones", 
       status: "offline", 
-      geolocation: { latitude: 40.7128, longitude: -74.0060 } // New York, NY
+      geolocation: { latitude: 14.6760, longitude: 121.0437 } // Quezon City
     },
     { 
       id: 3, 
@@ -50,7 +41,7 @@ export class ScreenListsComponent {
       resolution: "1080x1920", 
       layout: "Single Zone", 
       status: "online", 
-      geolocation: { latitude: 34.0522, longitude: -118.2437 } // Los Angeles, CA
+      geolocation: { latitude: 14.5515, longitude: 121.0207 } // Pasay
     },
     { 
       id: 4, 
@@ -58,7 +49,7 @@ export class ScreenListsComponent {
       resolution: "3840x2160", 
       layout: "4 Zones", 
       status: "offline", 
-      geolocation: { latitude: 51.5074, longitude: -0.1278 } // London, UK
+      geolocation: { latitude: 14.5896, longitude: 121.0647 } // Mandaluyong
     },
     { 
       id: 5, 
@@ -66,9 +57,9 @@ export class ScreenListsComponent {
       resolution: "1280x720", 
       layout: "Custom Grid", 
       status: "online", 
-      geolocation: { latitude: 48.8566, longitude: 2.3522 } // Paris, France
+      geolocation: { latitude: 14.6096, longitude: 120.9870 } // Manila City
     }
-  ]
+  ];
   
 
   ngOnInit() {
@@ -77,7 +68,7 @@ export class ScreenListsComponent {
 
   initializeMap() {
     if (this.map) this.map.remove();
-    this.map = L.map(this.screenMap().nativeElement, { center: [37.7749, -122.4194], zoom: 13 });    
+    this.map = L.map('screenMap', { center: [14.6090, 121.0223], zoom: 12, minZoom: 3, maxZoom: 18, zoomControl: false });    
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
 
@@ -95,23 +86,25 @@ export class ScreenListsComponent {
     this.addMarkers();
   }
   private addMarkers(): void {
-    this.filteredScreen().forEach(screen => {
+    this.screens.forEach(screen => {
       const marker = L.marker([screen.geolocation.latitude, screen.geolocation.longitude], {
         icon: L.divIcon({
-          className: `custom-marker ${screen.status}`,
-          html: `<div class="marker-dot"></div>`,
+          className: `custom-marker`,
+          html: `<div class="marker-dot flex justify-between items-center rounded-sm text-white p-3">
+            <div class="text-center text-sm">${screen.name}</div> <span class=" ${screen.status}"></span>
+          </div>`,
           iconSize: [12, 12],
           iconAnchor: [6, 6]
         })
-      }).bindPopup(`
-        <strong>${screen.name}</strong><br>
-        Resolution: ${screen.resolution}<br>
-        Layout: ${screen.layout}<br>
-        Status: <span style="color: ${screen.status === 'online' ? 'green' : 'red'}">${screen.status}</span>
-      `);
+      });
+      // .bindPopup(`
+      //   <strong>${screen.name}</strong><br>
+      //   Resolution: ${screen.resolution}<br>
+      //   Layout: ${screen.layout}<br>
+      //   Status: <span style="color: ${screen.status === 'online' ? 'green' : 'red'}">${screen.status}</span>
+      // `);
 
       this.markerClusterGroup.addLayer(marker);
     });
   }
-
 }

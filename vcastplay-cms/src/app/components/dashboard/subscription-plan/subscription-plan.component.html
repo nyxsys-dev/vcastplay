@@ -1,0 +1,19 @@
+<div class="pt-4">
+    <p-panel>
+        <ng-template #header>
+            <div class="flex gap-2 items-center">
+                <h5 class="font-medium">Free Plan</h5>
+                <li class="pi pi-verified text-green-500"></li>
+            </div>
+        </ng-template>
+        <div class="flex justify-center">
+            <p-metergroup class="w-full" [value]="meterValues" />
+        </div>
+        <ng-template #footer>
+            <div class="flex justify-between items-center">
+                <p-tag value="Trial ends in 3 days" severity="danger" icon="pi pi-clock" />
+                <p-button [text]="false" size="small" label="Upgrade Plan" icon="pi pi-angle-double-up" />
+            </div>
+        </ng-template>
+    </p-panel>
+</div>

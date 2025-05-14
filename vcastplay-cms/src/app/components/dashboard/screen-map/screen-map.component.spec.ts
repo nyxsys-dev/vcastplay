@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SampleChartComponent } from './sample-chart.component';
+import { ScreenMapComponent } from './screen-map.component';
 
-describe('SampleChartComponent', () => {
-  let component: SampleChartComponent;
-  let fixture: ComponentFixture<SampleChartComponent>;
+describe('ScreenMapComponent', () => {
+  let component: ScreenMapComponent;
+  let fixture: ComponentFixture<ScreenMapComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SampleChartComponent]
+      imports: [ScreenMapComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SampleChartComponent);
+    fixture = TestBed.createComponent(ScreenMapComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
