@@ -14,6 +14,9 @@ export class DashboardComponent {
 
   showSubscription = signal<boolean>(false);
   pageInfo: MenuItem = [ {label: 'Dashboard'} ];
+  meterValues = [
+    { label: 'Storage used', value: 25, color: '#4BC0C0' }
+  ];
   // widgets: any[] = [
   //   { content: OnlineScreensComponent },
   //   { content: OfflineScreensComponent },

@@ -68,9 +68,9 @@ export class ScreenMapComponent {
 
   initializeMap() {
     if (this.map) this.map.remove();
-    this.map = L.map('screenMap', { center: [14.6090, 121.0223], zoom: 12, minZoom: 3, maxZoom: 18, zoomControl: false });    
+    this.map = L.map('screenMap', { center: [14.6090, 121.0223], zoom: 12, minZoom: 3, zoomControl: false, attributionControl: false });    
     
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+    L.tileLayer('https://tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token=sWmX5SwjXmDHtQNDFmI7CyUgBqUvRzxpT6CM5sSbBLqxd3bpJxNNAZ2O4Rivf1Eo', { maxZoom: 22 }).addTo(this.map);
 
     this.markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: true,
@@ -105,6 +105,9 @@ export class ScreenMapComponent {
       // `);
 
       this.markerClusterGroup.addLayer(marker);
+      marker.on('click', ({ latlng }: any) => {
+        this.map.flyTo({ lat: latlng.lat, lng: latlng.lng }, 22);
+      })
     });
   }
 }

@@ -1,10 +1,10 @@
-<div class="flex flex-col items-center gap-5">
-    <p-inputgroup>
+<div class="flex flex-col items-start gap-5">
+    <!-- <p-inputgroup>
         <input type="text" pInputText [(ngModel)]="keywords" placeholder="Search" />
         <p-inputgroup-addon>
             <p-button (onClick)="keywords.set('')" [icon]="'pi ' + (keywords() != '' ? 'pi-times' : 'pi-search')" />
         </p-inputgroup-addon>
-    </p-inputgroup>
+    </p-inputgroup> -->
     
     <p-selectbutton [options]="statusOptions" [(ngModel)]="status" optionLabel="label" optionValue="value" aria-labelledby="basic" />
 </div>

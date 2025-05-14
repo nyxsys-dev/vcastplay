@@ -4,13 +4,15 @@ import { ScreenStatusComponent } from '../../../components/dashboard/screen-stat
 import { SubscriptionPlanComponent } from '../../../components/dashboard/subscription-plan/subscription-plan.component';
 import { ScreenListsComponent } from '../../../components/dashboard/screen-lists/screen-lists.component';
 import { ScreenMapComponent } from '../../../components/dashboard/screen-map/screen-map.component';
+import { StorageUsedComponent } from '../../../components/dashboard/storage-used/storage-used.component';
 
 const DASHBOARD_MODULES = [
   CommonModule,
   ScreenStatusComponent,
   ScreenListsComponent,
   ScreenMapComponent,
-  SubscriptionPlanComponent
+  SubscriptionPlanComponent,
+  StorageUsedComponent,
 ];
 
 @NgModule({
