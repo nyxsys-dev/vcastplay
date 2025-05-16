@@ -12,6 +12,7 @@ import { DashboardModule } from '../../core/modules/dashboard/dashboard.module';
 })
 export class DashboardComponent {
 
+  value: number = 25;
   showSubscription = signal<boolean>(false);
   pageInfo: MenuItem = [ {label: 'Dashboard'} ];
   meterValues = [
