@@ -1,8 +1,9 @@
 import { Component, computed, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
-import * as L from 'leaflet';
-import 'leaflet.markercluster';
 import { Screen } from '../../../core/interfaces/screen';
+import * as L from 'leaflet';
+import 'leaflet';
+import 'leaflet.markercluster';
 
 @Component({
   selector: 'app-screen-map',
@@ -16,7 +17,7 @@ export class ScreenMapComponent {
   showFilter = signal<boolean>(false);
   
   private map!: L.Map;
-  private markerClusterGroup!: L.MarkerClusterGroup; 
+  private markerClusterGroup: any; 
 
   screens: Screen[] = [
     { 
