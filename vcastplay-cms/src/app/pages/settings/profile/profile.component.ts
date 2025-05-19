@@ -25,6 +25,10 @@ export class ProfileComponent {
 
   ngOnInit() { }
 
+  get userForm() {
+    return this.userService.userForm;
+  }
+
   get securityForm() {
     return this.userService.securityForm;
   }
