@@ -44,6 +44,7 @@ import { PanelModule } from 'primeng/panel';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputMaskModule } from 'primeng/inputmask';
+import { FileUploadModule } from 'primeng/fileupload';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -98,6 +99,7 @@ const PRIMEUI_MODULES = [
   ScrollPanelModule,
   InputNumberModule,
   InputMaskModule,
+  FileUploadModule,
 ];
 
 @NgModule({
