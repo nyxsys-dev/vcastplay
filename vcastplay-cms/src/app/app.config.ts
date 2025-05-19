@@ -14,6 +14,8 @@ import { GridComponent, LegendComponent, TitleComponent, ToolboxComponent, Toolt
 import { CanvasRenderer } from 'echarts/renderers';
 import { provideHttpClient } from '@angular/common/http';
 
+import 'leaflet.markercluster';
+
 echarts.use([
   PieChart,
   LineChart,
