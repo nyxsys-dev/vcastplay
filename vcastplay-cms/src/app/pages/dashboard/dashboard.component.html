@@ -28,7 +28,11 @@
 </div> -->
 
 <div class="flex flex-col gap-5 h-full">
-    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+    <div class="flex justify-between items-center">
+        <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+        <p-button class="hidden md:block" severity="secondary" label="Upgrade Subscription" severity="primary" pTooltip="Purchase More Licenses" tooltipPosition="bottom" icon="pi pi-angle-double-up" />
+        <p-button class="md:hidden" severity="secondary" label="Upgrade" severity="primary" pTooltip="Purchase More Licenses" tooltipPosition="bottom" icon="pi pi-angle-double-up" />
+    </div>
     <div class="grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <p-card styleClass="h-full">
             <ng-template #title>
@@ -58,32 +62,43 @@
         </p-card>
         <p-card styleClass="h-full">
             <ng-template #title>
-                <div class="flex justify-between items-start gap-5">
-                    <p-knob [(ngModel)]="value" [size]="80" />
+                <div class="flex justify-between items-center gap-5">
+                    <p class="text-3xl font-bold">50% <span class="text-sm font-normal">storage</span></p>
                     <div class="bg-orange-500 p-3 rounded-lg text-white">
                         <i class="pi pi-database" style="font-size: 1.5rem;"></i>
                     </div>
                 </div>
             </ng-template>
+            <div class="mt-4">
+                <p-progressbar [value]="50" [showValue]="false" [style]="{ height: '8px'}" />
+            </div>
             <ng-template #footer>
-                Storage Used
+                <div class="flex justify-between">
+                    <p>Used: 50 GB</p>
+                    <p>Limit: 100 GB</p>
+                </div>
             </ng-template>
         </p-card>
         <p-card styleClass="h-full">
             <ng-template #title>
                 <div class="flex justify-between items-center gap-5">
                     <div class="flex items-center gap-2">
-                        <p class="text-xl font-bold">Free Plan</p>
-                        <i class="pi pi-verified text-green-500"></i>
+                        <p class="text-xl font-bold">Premium Plan</p>
+                        <i class="pi pi-verified text-green-500" pTooltip="You’re on the Premium Plan – all features unlocked." tooltipPosition="bottom"></i>
                     </div>
                     <div class="bg-blue-500 p-3 rounded-lg text-white">
                         <i class="pi pi-credit-card" style="font-size: 1.5rem;"></i>
                     </div>
                 </div>
             </ng-template>
-            <ng-template #subtitle>asd</ng-template>
+            <div class="mt-4">
+                <p-progressbar [value]="60" [showValue]="false" [style]="{ height: '8px'}" color="blue" />
+            </div>
             <ng-template #footer>
-                Subscriptions
+                <div class="flex justify-between">
+                    <p>Used: 5</p>
+                    <p>Total: 10</p>
+                </div>
             </ng-template>
         </p-card>
     </div>

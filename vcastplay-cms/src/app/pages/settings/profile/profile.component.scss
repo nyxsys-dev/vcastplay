@@ -1,0 +1,24 @@
+.avatar-wrapper {
+    position: relative;
+    display: inline-block;
+
+    .avatar-edit-btn {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        border-radius: 50%;
+        // bottom: 0;
+        // right: 0;
+        // width: 26px;
+        // height: 26px;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    &:hover .avatar-edit-btn {
+        display: flex;
+    }
+}

@@ -1,25 +1,131 @@
 <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
 
 <p-card>
-    <div class="flex flex-col gap-8">
+    <div class="flex flex-col gap-4">
         <span class="text-xl font-bold text-surface-900 dark:text-surface-0">My Profile</span>
         
-        <div class="grid grid-cols-12 gap-4 border-b-1 border-gray-200 p-3">
+        <div class="flex items-center p-3">
+            <div class="flex flex-row gap-5 items-center">
+                <div class="flex justify-center items-center avatar-wrapper">
+                    <p-avatar icon="pi pi-user" size="xlarge" shape="circle" />
+                    <div class="avatar-edit-btn bg-gray-100/50">
+                        <p-button icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" rounded text  />
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <p class="font-bold">Profile Photo</p>
+                    <p class="text-xs md:text-sm">This will be display on your profile</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4 p-3">
             <p class="col-span-3">Personal Information</p>
-            <div class="grid grid-col-12 md:grid-col-2 col-span-7">
-                All Personal info inputs
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" [formGroup]="userService.userForm">
+                <p-floatlabel variant="in">
+                    <input id="firstName" pInputText formControlName="firstName" fluid />
+                    <label for="firstName">First Name</label>
+                </p-floatlabel>
+                <p-floatlabel variant="in">
+                    <input id="lastName" pInputText formControlName="lastName" fluid />
+                    <label for="lastName">Last Name</label>
+                </p-floatlabel>
+                <p-floatlabel variant="in" class="col-span-1 md:col-span-2">
+                    <input id="email" pInputText formControlName="email" fluid type="email" />
+                    <label for="email">Email</label>
+                </p-floatlabel>
+                <p-floatlabel variant="in">
+                    <input id="mobile" pInputText formControlName="mobile"fluid />
+                    <label for="mobile">Mobile Number</label>
+                </p-floatlabel>
+                <p-floatlabel variant="in">
+                    <p-select formControlName="role" inputId="role" [options]="utils.roles" appendTo="body" optionLabel="label" optionValue="value" fluid />
+                    <label for="role">Roles</label>
+                </p-floatlabel>
+                <div class="col-span-1 md:col-span-2 mt-5">
+                    <div class="flex gap-3 float-right">
+                        <p-button label="Cancel" severity="secondary" />
+                        <p-button label="Update" severity="success" />
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="grid grid-cols-12 gap-4 border-b-1 border-gray-200 p-3">
-            <p class="col-span-3">Avatar</p>
-            <div class="col-span-7">
-                All Personal info inputs
-            </div>
-        </div>
-        <div class="grid grid-cols-12 gap-4 p-3">
-            <p class="col-span-3">Security</p>
-            <div class="col-span-7">
-                All Personal info inputs
+
+        <div class="flex flex-col gap-4 p-3">
+            <p class="col-span-3">Password & Security</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" [formGroup]="userService.securityForm">
+                <div class="col-span-1">
+                    <p-floatlabel variant="in">
+                        <p-password formControlName="password" [feedback]="false" toggleMask fluid />
+                        <label for="password">Current Password</label>
+                    </p-floatlabel>
+                    @if (currentPass?.touched && (currentPass?.dirty || currentPass?.invalid)) {
+                        @if (currentPass?.invalid) {
+                            <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                                <i class="pi pi-exclamation-circle"></i>
+                                @if (currentPass?.errors?.['required']) { Current Password is required }
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="col-span-1">
+                    <p-floatlabel variant="in">
+                        <p-password formControlName="newPassword" toggleMask fluid>
+                            <ng-template #footer>
+                                <p-divider />
+                                <ul class="pl-2 my-0 leading-normal">
+                                    <li>At least one lowercase</li>
+                                    <li>At least one uppercase</li>
+                                    <li>At least one numeric</li>
+                                    <li>Minimum 8 characters</li>
+                                </ul>
+                            </ng-template>
+                        </p-password> 
+                        <label for="newPassword">New Password</label>
+                    </p-floatlabel>
+                    
+                    @if (newPass?.touched && (newPass?.dirty || newPass?.invalid)) {
+                        @if (newPass?.invalid) {
+                            <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                                <i class="pi pi-exclamation-circle"></i>
+                                @if (newPass?.errors?.['required']) { New Password is required }
+                                @else if (newPass?.errors?.['pattern']) { Password must contain at least one lowercase, one uppercase, one numeric }
+                                @else if (newPass?.errors?.['minlength']) { Password must be at least 8 characters }
+                                @else if (newPass?.errors?.['forbiddenStart']) { Password cannot start with a number or special character. }
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="col-span-1">
+                    <p-floatlabel variant="in">
+                        <p-password 
+                            formControlName="confirmNewPassword" 
+                            [feedback]="false"
+                            toggleMask 
+                            fluid 
+                        />
+                        <label for="confirmNewPassword">Confirm Password</label>
+                    </p-floatlabel>
+                    @if (confirmNewPass?.touched && (confirmNewPass?.dirty || confirmNewPass?.invalid || securityForm.hasError('mismatch'))) {
+                        @if (confirmNewPass?.invalid || securityForm.hasError('mismatch')) {
+                            <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                                <i class="pi pi-exclamation-circle"></i>
+                                @if (confirmNewPass?.errors?.['required']) {
+                                    Confirm Password is required
+                                } @else if (securityForm.hasError('mismatch')) {
+                                    Passwords do not match
+                                }
+                            </div>
+                        }
+                    }
+
+                </div>
+                <div class="col-span-1 md:col-span-2 mt-5">
+                    <div class="flex gap-3 float-right">
+                        <p-button label="Cancel" severity="secondary" (onClick)="securityForm.reset()" />
+                        <p-button label="Update" severity="success" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>

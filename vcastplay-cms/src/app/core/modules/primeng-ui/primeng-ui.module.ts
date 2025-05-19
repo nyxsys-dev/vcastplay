@@ -42,6 +42,8 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { MeterGroupModule } from 'primeng/metergroup';
 import { PanelModule } from 'primeng/panel';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputMaskModule } from 'primeng/inputmask';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -94,6 +96,8 @@ const PRIMEUI_MODULES = [
   MeterGroupModule,
   PanelModule,
   ScrollPanelModule,
+  InputNumberModule,
+  InputMaskModule,
 ];
 
 @NgModule({
