@@ -21,27 +21,37 @@
 
         <div class="flex flex-col gap-4 p-3">
             <p class="col-span-3">Personal Information</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" [formGroup]="userForm">
-                <p-floatlabel variant="in">
-                    <input id="firstName" pInputText formControlName="firstName" fluid />
-                    <label for="firstName">First Name</label>
-                </p-floatlabel>
-                <p-floatlabel variant="in">
-                    <input id="lastName" pInputText formControlName="lastName" fluid />
-                    <label for="lastName">Last Name</label>
-                </p-floatlabel>
-                <p-floatlabel variant="in" class="col-span-1 md:col-span-2">
-                    <input id="email" pInputText formControlName="email" fluid type="email" />
-                    <label for="email">Email</label>
-                </p-floatlabel>
-                <p-floatlabel variant="in">
-                    <p-inputmask mask="999-999-9999" formControlName="mobile" styleClass="w-full" />
-                    <label for="mobile">Mobile Number</label>
-                </p-floatlabel>
-                <p-floatlabel variant="in">
-                    <p-select formControlName="role" inputId="role" [options]="utils.roles" appendTo="body" optionLabel="label" optionValue="value" fluid />
-                    <label for="role">Roles</label>
-                </p-floatlabel>
+            <div class="grid grid-flow-row grid-cols-1 md:grid-cols-2 gap-4 mb-8" [formGroup]="userForm">
+                <div class="col-span-2 md:col-span-1">
+                    <p-floatlabel variant="in">
+                        <input id="firstName" pInputText formControlName="firstName" fluid />
+                        <label for="firstName">First Name</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <p-floatlabel variant="in">
+                        <input id="lastName" pInputText formControlName="lastName" fluid />
+                        <label for="lastName">Last Name</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-2">
+                    <p-floatlabel variant="in">
+                        <input id="email" pInputText formControlName="email" fluid type="email" />
+                        <label for="email">Email</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <p-floatlabel variant="in">
+                        <p-inputmask mask="999-999-9999" formControlName="mobile" styleClass="w-full" />
+                        <label for="mobile">Mobile Number</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-2 md:col-span-1">
+                    <p-floatlabel variant="in">
+                        <p-select formControlName="role" inputId="role" [options]="utils.roles" appendTo="body" optionLabel="label" optionValue="value" fluid />
+                        <label for="role">Roles</label>
+                    </p-floatlabel>
+                </div>
                 <div class="col-span-2 pt-5">
                     <div class="flex gap-3 float-right">
                         <p-button label="Cancel" severity="secondary" (onClick)="userForm.reset()" />
@@ -54,7 +64,7 @@
         <div class="flex flex-col gap-4 p-3">
             <p class="col-span-3">Password & Security</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" [formGroup]="userService.securityForm">
-                <div class="col-span-1">
+                <div class="col-span-2 md:col-span-1">
                     <p-floatlabel variant="in">
                         <p-password formControlName="password" [feedback]="false" toggleMask fluid />
                         <label for="password">Current Password</label>
@@ -68,7 +78,7 @@
                         }
                     }
                 </div>
-                <div class="col-span-1">
+                <div class="col-span-2 md:col-span-1">
                     <p-floatlabel variant="in">
                         <p-password formControlName="newPassword" toggleMask fluid>
                             <ng-template #footer>
@@ -96,7 +106,7 @@
                         }
                     }
                 </div>
-                <div class="col-span-1">
+                <div class="col-span-2 md:col-span-1">
                     <p-floatlabel variant="in">
                         <p-password 
                             formControlName="confirmNewPassword" 
