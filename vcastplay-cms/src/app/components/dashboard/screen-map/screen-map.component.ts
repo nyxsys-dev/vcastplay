@@ -4,6 +4,7 @@ import { Screen } from '../../../core/interfaces/screen';
 import * as L from 'leaflet';
 import 'leaflet';
 import 'leaflet.markercluster';
+import { UtilityService } from '../../../core/services/utility.service';
 
 @Component({
   selector: 'app-screen-map',
@@ -14,12 +15,21 @@ import 'leaflet.markercluster';
 export class ScreenMapComponent {
 
   keywords = signal<string>('');
+  status = signal<string>('All');
+  selectedScreen = signal<Screen | null>(null);
+  statusOptions: any[] =[
+    { label: 'All', value: 'All' },
+    { label: 'Online', value: 'Online' },
+    { label: 'Offline', value: 'Offline' }
+  ]
   showFilter = signal<boolean>(false);
   
   private map!: L.Map;
   private markerClusterGroup: any; 
 
-  screens: Screen[] = [
+  tileLink: string = 'https://tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token=sWmX5SwjXmDHtQNDFmI7CyUgBqUvRzxpT6CM5sSbBLqxd3bpJxNNAZ2O4Rivf1Eo';
+
+  screens = signal<Screen[]>([
     { 
       id: 1, 
       name: "Main Screen", 
@@ -60,18 +70,39 @@ export class ScreenMapComponent {
       status: "online", 
       geolocation: { latitude: 14.6096, longitude: 120.9870 } // Manila City
     }
-  ];
+  ]);
   
+  filterScreens = computed(() => {
+    return this.screens().filter(screen =>
+      screen.name.toLowerCase().includes(this.keywords().toLowerCase() || '') && (this.status() === 'All' || screen.status?.toLowerCase() === this.status().toLowerCase())
+    );
+  });
+
+  onCreateDivIcon(screen: Screen) {
+    return L.divIcon({
+      className: `custom-marker`,
+      html: `<div class="marker-dot flex flex-col justify-center items-center rounded-sm text-white p-3">
+              <div class="flex justify-center items-center gap-3 text-center text-sm w-full">
+                <i class="pi pi-desktop"></i>
+              </div> 
+            </div>`,
+      iconSize: [12, 12],
+      iconAnchor: [6, 6]
+    });
+  }
+
+  constructor(public utils: UtilityService) { }  
 
   ngOnInit() {
     this.initializeMap();
   }
 
   initializeMap() {
+    this.selectedScreen.set(null);
     if (this.map) this.map.remove();
     this.map = L.map('screenMap', { center: [14.6090, 121.0223], zoom: 12, minZoom: 3, zoomControl: false, attributionControl: false });    
     
-    L.tileLayer('https://tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token=sWmX5SwjXmDHtQNDFmI7CyUgBqUvRzxpT6CM5sSbBLqxd3bpJxNNAZ2O4Rivf1Eo', { maxZoom: 22 }).addTo(this.map);
+    L.tileLayer(this.tileLink, { maxZoom: 22 }).addTo(this.map);
 
     this.markerClusterGroup = L.markerClusterGroup({
       showCoverageOnHover: true,
@@ -83,32 +114,40 @@ export class ScreenMapComponent {
         });
       }
     });
+
     this.map.addLayer(this.markerClusterGroup);
-    this.addMarkers();
+    this.onAddMarkers();
+
+    // this.map.on('zoomend', () => {     
+
+    //   if (this.map.getZoom() < 22 && this.selectedScreen()) {
+    //     const screen: any = this.selectedScreen();
+    //     this.selectedScreen.set(null);
+    //     const marker = L.marker([screen.geolocation.latitude, screen.geolocation.longitude], {
+    //       icon: L.divIcon(this.onCreateMarker(screen))
+    //     });
+    //     marker.setIcon(L.divIcon(this.onCreateMarker(screen)));
+    //   }
+    // })
   }
-  private addMarkers(): void {
-    this.screens.forEach(screen => {
+  onAddMarkers(): void {
+    this.screens().forEach(screen => {
       const marker = L.marker([screen.geolocation.latitude, screen.geolocation.longitude], {
-        icon: L.divIcon({
-          className: `custom-marker`,
-          html: `<div class="marker-dot flex justify-between items-center rounded-sm text-white p-3">
-            <div class="text-center text-sm">${screen.name}</div> <span class=" ${screen.status}"></span>
-          </div>`,
-          iconSize: [12, 12],
-          iconAnchor: [6, 6]
-        })
+        icon: this.onCreateDivIcon(screen)
       });
-      // .bindPopup(`
-      //   <strong>${screen.name}</strong><br>
-      //   Resolution: ${screen.resolution}<br>
-      //   Layout: ${screen.layout}<br>
-      //   Status: <span style="color: ${screen.status === 'online' ? 'green' : 'red'}">${screen.status}</span>
-      // `);
 
       this.markerClusterGroup.addLayer(marker);
+      
       marker.on('click', ({ latlng }: any) => {
-        this.map.flyTo({ lat: latlng.lat, lng: latlng.lng }, 22);
+        const { lat, lng } = latlng;
+        const screen: any = this.filterScreens().find(screen => screen.geolocation.latitude === lat && screen.geolocation.longitude === lng);
+        this.selectedScreen.set(screen);
+        this.map.flyTo({ lat: lat - 0.00005, lng }, 22);
       })
     });
+  }
+  onClickScreen(screen: any) {
+    this.selectedScreen.set(screen);
+    this.map.flyTo({ lat: screen.geolocation.latitude, lng: screen.geolocation.longitude }, 22);
   }
 }

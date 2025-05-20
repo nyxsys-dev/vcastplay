@@ -1,26 +1,5 @@
-<!-- <div class="md:absolute top-0 left-0 md:w-[30%] lg:w-[25%] z-50 md:m-5 my-5">
-    <div class="flex items-center gap-2 w-full h-full p-2 rounded-sm" [ngClass]="{ 'bg-white justify-between shadow-lg': showFilter() }">
-        <div class="flex w-full gap-2" [ngClass]="{ 'hidden': !showFilter() }">
-            <p-inputgroup>
-                <input type="text" pInputText [(ngModel)]="keywords" placeholder="Search Screen" />
-                <p-inputgroup-addon>
-                    <p-button (onClick)="keywords.set('')" [icon]="'pi ' + (keywords() != '' ? 'pi-times' : 'pi-search')" />
-                </p-inputgroup-addon>
-            </p-inputgroup>
-        </div>
-        <p-button (onClick)="initializeMap()" [text]="false" pTooltip="Refresh Map" tooltipPosition="bottom" icon="pi pi-refresh" />
-        <p-button 
-            (onClick)="showFilter.set(!showFilter())" 
-            [text]="false" 
-            [pTooltip]="showFilter() ? 'Hide Filter' : 'Show Filter'" 
-            tooltipPosition="bottom" 
-            [icon]="showFilter() ? 'pi pi-times' : 'pi pi-filter'" 
-        />
-    </div>
-</div> -->
-
 <div class="md:absolute top-0 left-0 md:w-[50%] lg:w-[30%] z-50 md:m-5 my-5">
-    <div class="flex items-center gap-2 w-full h-full p-2 rounded-sm bg-white justify-between shadow-lg">
+    <div class="flex flex-col items-center gap-2 w-full h-full p-2 mb-3 rounded-sm bg-white justify-between shadow-lg" [ngClass]="{ 'hidden': selectedScreen() }">
         <div class="flex w-full gap-2">
             <p-inputgroup>
                 <input type="text" pInputText [(ngModel)]="keywords" placeholder="Search Screen" />
@@ -29,8 +8,57 @@
                 </p-inputgroup-addon>
             </p-inputgroup>
         </div>
-        <p-button (onClick)="initializeMap()" [text]="false" pTooltip="Refresh Map" tooltipPosition="bottom" icon="pi pi-refresh" />
+        <div class="flex justify-betweenitems-center gap-2">
+            <p-selectbutton [options]="statusOptions" [(ngModel)]="status" optionLabel="label" optionValue="value" aria-labelledby="basic" />
+            <p-button (onClick)="initializeMap()" label="Refresh" tooltipPosition="bottom" icon="pi pi-refresh" />
+        </div>
     </div>
+    @if (selectedScreen()) {
+        <p-panel class="w-full">
+            <ng-template #header>
+                <div class="flex justify-between items-center gap-3 w-full">
+                    <div class="flex items-center gap-3">
+                        <p-button (onClick)="selectedScreen.set(null); initializeMap()" [text]="true" icon="pi pi-arrow-left" />
+                        <h5 class="font-semibold">{{ selectedScreen()?.name }}</h5>
+                    </div>
+                    <p-tag [value]="selectedScreen()?.status?.toUpperCase()" [severity]="utils.getStatus(selectedScreen()?.status ?? 'offline')" />
+                </div>
+            </ng-template>
+            <div class="flex flex-col gap-4 p-3">
+                <div class="flex flex-col gap-1">
+                    <div class="font-semibold">Resolution</div>
+                    <p class="text-sm italic">{{ selectedScreen()?.resolution }}</p>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <div class="font-semibold">Layout</div>
+                    <p class="text-sm italic">{{ selectedScreen()?.layout }}</p>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <div class="font-semibold">More Details</div>
+                    <p class="text-sm italic">...</p>
+                </div>
+            </div>
+        </p-panel>
+    } @else {
+        <p-accordion value="0">
+            <p-accordion-panel value="0">
+                <p-accordion-header>Screens</p-accordion-header>
+                <p-accordion-content>
+                    <p-scroll-panel styleClass="h-[200px] xl:h-[300px]">
+                        @for (item of filterScreens(); track $index) {
+                            <div class="flex justify-between items-center border-b-1 p-2 border-gray-200 hover:bg-gray-100" (click)="onClickScreen(item)">
+                                <div class="flex flex-col gap-1">
+                                    <div class="font-semibold">{{ item.name }}</div>
+                                    <p class="text-sm italic">{{ item.resolution }}</p>
+                                </div>
+                                <p-tag [value]="item.status.toUpperCase()" [severity]="utils.getStatus(item.status)" />
+                            </div>
+                        }
+                    </p-scroll-panel>
+                </p-accordion-content>
+            </p-accordion-panel>
+        </p-accordion>
+    }
 </div>
 
 <div id="screenMap" class="z-10 rounded-lg" #screenMap></div>

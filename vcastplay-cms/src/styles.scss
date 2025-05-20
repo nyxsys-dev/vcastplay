@@ -60,23 +60,36 @@ html {
 }
 
 
+
 .marker-dot {
     position: relative;
-    background: var(--p-surface-500);
-    max-width: 150px;
-    width: 200px;
+    background: var(--color-red-500);
+    // max-width: 150px;
+    // width: 40px;
+    // border-radius: 50%;
+    
+    width: 35px;
+    height: 35px;
+    position: relative;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
 
-    &::after {
-        content: '';
-        position: absolute;
-        bottom: -9px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 0;
-        border: 10px solid transparent;
-        border-top-color: var(--p-surface-500);
-        border-bottom: 0;
+    // &::after {
+        // content: '';
+        // position: absolute;
+        // bottom: -px;
+        // left: 50%;
+        // transform: translateX(-50%);
+        // width: 0;
+        // height: 0;
+        // border: 10px solid transparent;
+        // border-top-color: var(--color-slate-500);
+        // border-bottom: 0;
+    // }
+
+    i {
+        transform: rotate(45deg);
     }
 
     .online {
