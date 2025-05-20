@@ -25,6 +25,33 @@ export class ProfileComponent {
 
   ngOnInit() { }
 
+  onClickUpdate(event: Event, type: string) {
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to save changes?',
+      closable: true,
+      closeOnEscape: true,
+      header: 'Confirm Save',
+      icon: 'pi pi-info-circle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Save',
+      },
+      accept: () => {
+        this.message.add({ severity:'success', summary: 'Success', detail: 'User saved successfully!' });
+
+        this.userForm.reset();
+      },
+      reject: () => { 
+        this.userForm.reset();
+      }
+    })
+  }
+
   get userForm() {
     return this.userService.userForm;
   }
@@ -34,15 +61,15 @@ export class ProfileComponent {
   }
 
   get currentPass() {
-    return this.userService.securityForm.get('password');
+    return this.securityForm.get('password');
   }
 
   get newPass() {
-    return this.userService.securityForm.get('newPassword');
+    return this.securityForm.get('newPassword');
   }
 
   get confirmNewPass() {
-    return this.userService.securityForm.get('confirmNewPassword');
+    return this.securityForm.get('confirmNewPassword');
   }
 
 }

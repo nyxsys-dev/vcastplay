@@ -4,7 +4,7 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Roles } from '../../../core/interfaces/account-settings';
 import { UtilityService } from '../../../core/services/utility.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-roles',
@@ -27,8 +27,8 @@ export class RolesComponent {
 
   roleForm: FormGroup = new FormGroup({
     id: new FormControl(''),
-    name: new FormControl(''),
-    description: new FormControl(''),
+    name: new FormControl('', [ Validators.required ]),
+    description: new FormControl('', [ Validators.required ]),
     modules: new FormControl([]),
     status: new FormControl(''),
   })
@@ -104,6 +104,12 @@ export class RolesComponent {
   }
 
   onClickSave(event: Event) {
+    if (this.roleForm.invalid) {
+      this.roleForm.markAllAsTouched();
+      this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
+      return;
+    }
+
     this.confirmation.confirm({
       target: event.target as EventTarget,
       message: 'Do you want to save changes?',
@@ -168,5 +174,9 @@ export class RolesComponent {
   onClickCancel() {
     this.showDialog.set(false);
     this.roleForm.reset();
+  }
+  
+  formControl(fieldName: string) {
+    return this.roleForm.get(fieldName);
   }
 }

@@ -5,10 +5,6 @@ html {
     font-size: 14px;
 }
 
-.vcastplay-bg-primary {
-    background-color: #F97316 !important;
-}
-
 .toolbar-container {
     padding: 0 1rem 0 1rem;
     position: fixed;
@@ -21,9 +17,41 @@ html {
     background-color: var(--p-primary-500);
 }
 
+.drawer-container {
+    top: 5rem;
+    left: 0;
+    height: calc(100% - 5rem);
+    background-color: var(--p-primary-500);
+    background-color: #213448;
+}
+
+.main-wrapper {
+    padding-top: 5rem;
+    background-color: var(--p-primary-500);
+
+    .main-content {
+        overflow: auto;
+        height: calc(100vh - 5rem);
+        border-top-left-radius: 26px;
+    }
+}
+
 .p-breadcrumb {
     --p-breadcrumb-background: var(--p-primary-0);
 }
+
+.p-progressbar {
+    --p-progressbar-height: 8px !important;
+}
+
+.subscription-progressbar .p-progressbar-value {
+    background: var(--color-blue-900);
+}
+
+.storage-progressbar .p-progressbar-value {
+    background: var(--color-orange-700);
+}
+
 
 // Leaflet CSS styles
 .custom-cluster-icon {

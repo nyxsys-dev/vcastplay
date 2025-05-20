@@ -54,14 +54,36 @@
 
 <p-dialog header="Role Information" [(visible)]="showDialog" styleClass="w-[30rem] md:w-[50rem] h-auto" [modal]="true" [draggable]="false">
     <div class="grid grid-cols-1 gap-4 mb-8" [formGroup]="roleForm">
-        <p-floatlabel variant="in">
-            <input id="name" pInputText formControlName="name" class="w-full" />
-            <label for="name">Name</label>
-        </p-floatlabel>
-        <p-floatlabel variant="in">
-            <textarea pTextarea id="description" formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full"></textarea>
-            <label for="description">Description</label>
-        </p-floatlabel>
+        <div class="cols-span-1">
+            <p-floatlabel variant="in">
+                <input id="name" pInputText formControlName="name" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
+                <label for="name">Name</label>
+            </p-floatlabel>
+            @if (formControl('name')?.touched && (formControl('name')?.dirty || formControl('name')?.invalid)) {
+                @if (formControl('name')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('name')?.errors?.['required']) { This field is required }
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-span-1">
+            <p-floatlabel variant="in">
+                <textarea pTextarea id="description" formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full"
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('description')?.invalid && formControl('description')?.touched }"></textarea>
+                <label for="description">Description</label>
+            </p-floatlabel>
+            @if (formControl('description')?.touched && (formControl('description')?.dirty || formControl('description')?.invalid)) {
+                @if (formControl('description')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('description')?.errors?.['required']) { This field is required }
+                    </div>
+                }
+            }
+        </div>
     </div>
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (onClick)="onClickCancel()" />

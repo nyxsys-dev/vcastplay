@@ -114,6 +114,12 @@ export class UsersComponent {
   }
 
   onClickSave(event: Event) {
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
+      this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
+      return;
+    }
+
     this.confirmation.confirm({
       target: event.target as EventTarget,
       message: 'Do you want to save changes?',
@@ -141,7 +147,7 @@ export class UsersComponent {
         }
 
         this.showDialog.set(false);
-        this.userService.userForm.reset();
+        this.userForm.reset();
       },
     })
   }
@@ -173,6 +179,14 @@ export class UsersComponent {
 
   onClickCancel() {
     this.showDialog.set(false);
-    this.userService.userForm.reset();
+    this.userForm.reset();
+  }
+
+  formControl(fieldName: string) {
+    return this.userForm.get(fieldName);
+  }
+
+  get userForm() {
+    return this.userService.userForm;
   }
 }

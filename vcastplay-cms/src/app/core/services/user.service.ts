@@ -10,11 +10,11 @@ export class UserService {
   userForm: FormGroup = new FormGroup({
     id: new FormControl(''),
     code: new FormControl(''),
-    firstName: new FormControl(''),
-    lastName: new FormControl(''),
-    email: new FormControl(''),
-    mobile: new FormControl(''),
-    role: new FormControl(''),
+    firstName: new FormControl('', [ Validators.required ]),
+    lastName: new FormControl('', [ Validators.required ]),
+    email: new FormControl('', [ Validators.required, Validators.email ]),
+    mobile: new FormControl('', [ Validators.required ]),
+    role: new FormControl('', [ Validators.required ]),
     status: new FormControl(''),
     // expiredAt: new FormControl(''),
   })  

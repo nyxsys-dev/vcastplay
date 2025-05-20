@@ -50,28 +50,85 @@
     <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
 </ng-template>
 
-<p-dialog header="User Information" [(visible)]="showDialog" styleClass="w-[30rem] md:w-[50rem] h-auto" [modal]="true" [draggable]="false">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" [formGroup]="userService.userForm">
-        <p-floatlabel variant="in">
-            <input id="firstName" pInputText formControlName="firstName" class="w-full" />
-            <label for="firstName">First Name</label>
-        </p-floatlabel>
-        <p-floatlabel variant="in">
-            <input id="lastName" pInputText formControlName="lastName" class="w-full" />
-            <label for="lastName">Last Name</label>
-        </p-floatlabel>
-        <p-floatlabel variant="in" class="md:col-span-2">
-            <input id="email" pInputText formControlName="email" class="w-full" type="email" />
-            <label for="email">Email</label>
-        </p-floatlabel>
-        <p-floatlabel variant="in">
-            <p-inputmask mask="999-999-9999" formControlName="mobile" styleClass="w-full" />
-            <label for="mobile">Mobile Number</label>
-        </p-floatlabel>
-        <p-floatlabel variant="in">
-            <p-select formControlName="role" inputId="role" [options]="utils.roles" appendTo="body" optionLabel="label" optionValue="value" styleClass="w-full" />
-            <label for="role">Roles</label>
-        </p-floatlabel>
+<p-dialog header="User Information" [(visible)]="showDialog" styleClass="w-[30rem] md:w-[50rem] h-auto" [modal]="true" [draggable]="false" [focusOnShow]="false">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" [formGroup]="userForm">
+        <div class="col-span-2 md:col-span-1">
+            <p-floatlabel variant="in">
+                <input id="firstName" pInputText formControlName="firstName" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('firstName')?.invalid && formControl('firstName')?.touched }" fluid />
+                <label for="firstName">First Name</label>
+            </p-floatlabel>
+            @if (formControl('firstName')?.touched && (formControl('firstName')?.dirty || formControl('firstName')?.invalid)) {
+                @if (formControl('firstName')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('firstName')?.errors?.['required']) { This field is required }
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-span-2 md:col-span-1">
+            <p-floatlabel variant="in">
+                <input id="lastName" pInputText formControlName="lastName" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('lastName')?.invalid && formControl('lastName')?.touched }" fluid />
+                <label for="lastName">Last Name</label>
+            </p-floatlabel>
+            @if (formControl('lastName')?.touched && (formControl('lastName')?.dirty || formControl('lastName')?.invalid)) {
+                @if (formControl('lastName')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('lastName')?.errors?.['required']) { This field is required }
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-span-2">
+            <p-floatlabel variant="in" class="md:col-span-2">
+                <input id="email" pInputText formControlName="email" type="email" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('email')?.invalid && formControl('email')?.touched }" fluid />
+                <label for="email">Email</label>
+            </p-floatlabel>
+            @if (formControl('email')?.touched && (formControl('email')?.dirty || formControl('email')?.invalid)) {
+                @if (formControl('email')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('email')?.errors?.['required']) { This field is required }
+                        @if (formControl('email')?.errors?.['email']) { Invalid email }
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-span-2 md:col-span-1">
+            <p-floatlabel variant="in">
+                <p-inputnumber inputId="integeronly" formControlName="mobile" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('mobile')?.invalid && formControl('mobile')?.touched }" fluid />
+                <!-- <p-inputmask mask="999-999-9999" formControlName="mobile" styleClass="w-full" /> -->
+                <label for="mobile">Mobile Number</label>
+            </p-floatlabel>
+            @if (formControl('mobile')?.touched && (formControl('mobile')?.dirty || formControl('mobile')?.invalid)) {
+                @if (formControl('mobile')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('mobile')?.errors?.['required']) { This field is required }
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-span-2 md:col-span-1">
+            <p-floatlabel variant="in">
+                <p-select formControlName="role" inputId="role" [options]="utils.roles" appendTo="body" optionLabel="label" optionValue="value" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('role')?.invalid && formControl('role')?.touched }" fluid />
+                <label for="role">Roles</label>
+            </p-floatlabel>
+            @if (formControl('role')?.touched && (formControl('role')?.dirty || formControl('role')?.invalid)) {
+                @if (formControl('role')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('role')?.errors?.['required']) { This field is required }
+                    </div>
+                }
+            }
+        </div>
     </div>
     <div class="flex justify-end gap-2">
         <p-button label="Cancel" severity="secondary" (onClick)="onClickCancel()" />
