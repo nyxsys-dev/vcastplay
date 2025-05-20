@@ -1,11 +1,35 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+import { map } from 'rxjs';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilityService {
+  drawerVisible = signal<boolean>(false);
 
-  drawerVisible = signal<boolean>(false)
+  private breakPointObserver = inject(BreakpointObserver);
+  readonly isMobile = toSignal(
+    this.breakPointObserver.observe([ Breakpoints.Handset ]).pipe(
+      map(result => Object.values(result.breakpoints).some(match => match))
+    ),
+    { initialValue: false }
+  );
+  
+  readonly isTablet = toSignal(
+    this.breakPointObserver.observe([ Breakpoints.Tablet ]).pipe(
+      map(result => Object.values(result.breakpoints).some(match => match))
+    ),
+    { initialValue: false }
+  );
+
+  readonly isDesktop = toSignal(
+    this.breakPointObserver.observe([ Breakpoints.Web ]).pipe(
+      map(result => Object.values(result.breakpoints).some(match => match))
+    ),
+    { initialValue: false }
+  );
 
   roles: any[] = [
     { label: 'Administrator', value: 'admin' },
@@ -43,5 +67,5 @@ export class UtilityService {
       default:
         return 'secondary';
     }
-}
+  }
 }

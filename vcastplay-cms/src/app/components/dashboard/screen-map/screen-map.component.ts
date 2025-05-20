@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, effect, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { Screen } from '../../../core/interfaces/screen';
 import * as L from 'leaflet';
@@ -16,7 +16,9 @@ export class ScreenMapComponent {
 
   keywords = signal<string>('');
   status = signal<string>('All');
+  drawerVisible = signal<boolean>(false);
   selectedScreen = signal<Screen | null>(null);
+
   statusOptions: any[] =[
     { label: 'All', value: 'All' },
     { label: 'Online', value: 'Online' },
@@ -91,7 +93,11 @@ export class ScreenMapComponent {
     });
   }
 
-  constructor(public utils: UtilityService) { }  
+  constructor(public utils: UtilityService) {
+    effect(() => {
+      this.initializeMap();
+    })
+  }
 
   ngOnInit() {
     this.initializeMap();
@@ -117,23 +123,15 @@ export class ScreenMapComponent {
 
     this.map.addLayer(this.markerClusterGroup);
     this.onAddMarkers();
-
-    // this.map.on('zoomend', () => {     
-
-    //   if (this.map.getZoom() < 22 && this.selectedScreen()) {
-    //     const screen: any = this.selectedScreen();
-    //     this.selectedScreen.set(null);
-    //     const marker = L.marker([screen.geolocation.latitude, screen.geolocation.longitude], {
-    //       icon: L.divIcon(this.onCreateMarker(screen))
-    //     });
-    //     marker.setIcon(L.divIcon(this.onCreateMarker(screen)));
-    //   }
-    // })
   }
   onAddMarkers(): void {
-    this.screens().forEach(screen => {
+    this.filterScreens().forEach(screen => {
       const marker = L.marker([screen.geolocation.latitude, screen.geolocation.longitude], {
         icon: this.onCreateDivIcon(screen)
+      }).bindTooltip(screen.name, {
+        permanent: false,
+        direction: 'top',
+        opacity: 0.9
       });
 
       this.markerClusterGroup.addLayer(marker);
@@ -143,11 +141,17 @@ export class ScreenMapComponent {
         const screen: any = this.filterScreens().find(screen => screen.geolocation.latitude === lat && screen.geolocation.longitude === lng);
         this.selectedScreen.set(screen);
         this.map.flyTo({ lat: lat - 0.00005, lng }, 22);
+        this.drawerVisible.set(true);
       })
     });
   }
   onClickScreen(screen: any) {
     this.selectedScreen.set(screen);
     this.map.flyTo({ lat: screen.geolocation.latitude, lng: screen.geolocation.longitude }, 22);
+    this.drawerVisible.set(true);
+  }
+
+  get isMobile() {
+    return this.utils.isMobile();
   }
 }
