@@ -1,7 +1,8 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { map } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { DrawerMenu } from '../interfaces/drawer-menu';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,107 @@ export class UtilityService {
   filterValues = signal<any>({});
   drawerVisible = signal<boolean>(false);
   tableSkeletonRows = Array(7).fill({});
+
+  modules = signal<DrawerMenu[]>([
+    { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
+    {
+      label: 'Screen',
+      icon: 'pi pi-desktop',
+      expanded: false,
+      items: [
+        {
+          label: 'Register',
+          icon: 'pi pi-plus',
+          routerLink: ['/screen-register'],
+        },
+        {
+          label: 'List',
+          icon: 'pi pi-list',
+          routerLink: ['/screen-list'],
+        }
+      ]
+    },
+    {
+      label: 'Assets',
+      icon: 'pi pi-image',
+      expanded: false,
+      items: [
+        {
+          label: 'Upload',
+          icon: 'pi pi-upload',
+          routerLink: ['/asset-register'],
+        },
+        {
+          label: 'List',
+          icon: 'pi pi-list',
+          routerLink: ['/asset-list'],
+        }
+      ]
+    },
+    {
+      label: 'Playlist',
+      icon: 'pi pi-list',
+      expanded: false,
+      items: [
+        {
+          label: 'Add Playlist',
+          icon: 'pi pi-plus',
+          routerLink: ['/playlist-register'],
+        },
+        {
+          label: 'List',
+          icon: 'pi pi-list',
+          routerLink: ['/playlist-list'],
+        }
+      ]
+    },
+    { label: 'Layout', icon: 'pi pi-th-large', routerLink: '/dashboard' },
+    {
+      label: 'Schedules',
+      icon: 'pi pi-calendar',
+      expanded: false,
+      items: [
+        {
+          label: 'Add Schedule',
+          icon: 'pi pi-plus',
+          routerLink: ['/schedule-register'],
+        },
+        {
+          label: 'List',
+          icon: 'pi pi-list',
+          routerLink: ['/schedule-list'],
+        }
+      ]
+    },
+    { label: 'Reports', icon: 'pi pi-chart-bar', routerLink: '/dashboard' },
+    {
+      label: 'Settings',
+      icon: 'pi pi-cog',
+      expanded: false,
+      items: [
+        {
+          label: 'Profile',
+          icon: 'pi pi-user',
+          routerLink: ['/settings/profile'],
+        },
+        {
+          label: 'Users',
+          icon: 'pi pi-users',
+          routerLink: ['/settings/user-management'],
+        },
+        {
+          label: 'Roles',
+          icon: 'pi pi-lock',
+          routerLink: ['/settings/role-management'],
+        },
+        {
+          label: 'Modules',
+          icon: 'pi pi-globe',
+          routerLink: ['/settings/module-management'],
+        },
+      ]
+    }
+  ]);
 
   private breakPointObserver = inject(BreakpointObserver);
   readonly isMobile = toSignal(

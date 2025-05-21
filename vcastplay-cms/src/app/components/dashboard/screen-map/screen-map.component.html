@@ -70,10 +70,7 @@
             <p-panel class="w-full">
                 <ng-template #header>
                     <div class="flex justify-between items-center gap-3 w-full">
-                        <div class="flex items-center gap-3">
-                            <p-button (onClick)="selectedScreen.set(null); initializeMap()" [text]="true" icon="pi pi-arrow-left" />
-                            <h3 class="font-bold text-xl">{{ selectedScreen()?.name }}</h3>
-                        </div>
+                        <h3 class="font-bold text-xl">{{ selectedScreen()?.name }}</h3>
                         <p-tag [value]="selectedScreen()?.status?.toUpperCase()" [severity]="utils.getStatus(selectedScreen()?.status ?? 'offline')" />
                     </div>
                 </ng-template>

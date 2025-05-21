@@ -48,6 +48,11 @@ export class RolesComponent {
 
   rows: number = 8;
   totalRecords: number = 0;
+  
+  stateOptions: any[] = [
+    { label: 'Active', value: 'Active' },
+    { label: 'Inactive', value: 'Inactive' }
+  ];
 
   constructor() { }
 
@@ -65,7 +70,7 @@ export class RolesComponent {
         id: 1,
         name: "Admin",
         description: "Has full access to all modules and settings.",
-        modules: ["Dashboard", "Users", "Settings", "Reports"],
+        modules: [],
         status: "Active",
         createdOn: new Date("2024-01-01"),
         updatedOn: new Date("2024-02-01"),
@@ -74,7 +79,7 @@ export class RolesComponent {
         id: 2,
         name: "Editor",
         description: "Can manage content but has limited access to settings.",
-        modules: ["Dashboard", "Content Management", "Reports"],
+        modules: [],
         status: "Active",
         createdOn: new Date("2024-01-05"),
         updatedOn: new Date("2024-02-05"),
@@ -83,7 +88,7 @@ export class RolesComponent {
         id: 3,
         name: "Viewer",
         description: "Can only view reports and dashboards.",
-        modules: ["Dashboard", "Reports"],
+        modules: [],
         status: "Active",
         createdOn: new Date("2024-01-10"),
         updatedOn: new Date("2024-02-10"),
@@ -92,7 +97,7 @@ export class RolesComponent {
         id: 4,
         name: "Moderator",
         description: "Manages user-generated content and enforces policies.",
-        modules: ["Content Management", "User Feedback"],
+        modules: [],
         status: "Inactive",
         createdOn: new Date("2024-01-15"),
         updatedOn: new Date("2024-02-15"),
@@ -101,7 +106,7 @@ export class RolesComponent {
         id: 5,
         name: "Support",
         description: "Handles user issues and provides assistance.",
-        modules: ["Support Center", "User Feedback"],
+        modules: [],
         status: "Active",
         createdOn: new Date("2024-01-20"),
         updatedOn: new Date("2024-02-20"),
@@ -207,11 +212,31 @@ export class RolesComponent {
     this.roleForm.reset();
   }
 
-  onPageChange(event: any) {
-    
-  }
+  onPageChange(event: any) { }
   
   formControl(fieldName: string) {
     return this.roleForm.get(fieldName);
+  }
+
+  isModuleSelected(module: any) {
+    return this.moduleCtrl?.value.some((m: any) => m.label === module.label);
+  }
+
+  onAddModule(module: any) {
+    const moduleCtrl = this.moduleCtrl?.value;
+    const index = moduleCtrl.findIndex((m: any) => m.label === module.label);
+    if (index !== -1) {
+      moduleCtrl.splice(index, 1);
+    } else {
+      moduleCtrl.push(module);
+    } 
+  }
+
+  get modules() {
+    return this.utils.modules();
+  }
+
+  get moduleCtrl() {
+    return this.roleForm.get('modules');
   }
 }

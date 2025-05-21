@@ -48,6 +48,8 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { SkeletonModule } from 'primeng/skeleton';
 import { CarouselModule } from 'primeng/carousel';
 import { PaginatorModule } from 'primeng/paginator';
+import { TabsModule } from 'primeng/tabs';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -106,6 +108,8 @@ const PRIMEUI_MODULES = [
   SkeletonModule,
   CarouselModule,
   PaginatorModule,
+  TabsModule,
+  ToggleSwitchModule,
 ];
 
 @NgModule({

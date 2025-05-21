@@ -1,6 +1,6 @@
 <div class="fixed drawer-container hidden md:block w-[7rem] h-full bg-gray-800 z-50">
     <div class="relative flex flex-col gap-3 h-full">
-        @for (menu of menuItems(); track $index) {
+        @for (menu of menuItems; track $index) {
             <li 
                 (click)="onToggleMenu(menu, $event)"
                 class="relative px-4 py-3 list-none hover:bg-[var(--p-primary-600)] flex flex-col items-center justify-center w-full hover:rounded-md cursor-pointer"
@@ -9,7 +9,7 @@
                 <p class="text-white !select-none">{{ menu.label }}</p>
 
                 @if (menu.items && menu.expanded) {
-                    <p-menu #subMenu [model]="menu.items" appendTo="body" styleClass="absolute left-full top-0 bg-white rounded-md shadow-md"></p-menu>
+                    <p-menu #subMenu [model]="menu.items" appendTo="body" styleClass="absolute left-full top-0 bg-white rounded-md shadow-md" />
                 }
             </li>
         }
@@ -30,7 +30,7 @@
 <p-drawer [(visible)]="utils.drawerVisible" styleClass="!h-auto max-h-100" position="bottom">
     <ng-template #header>Side Menus</ng-template>
     <ul class="flex flex-col gap-3">
-        @for (menu of menuItems(); track $index) {
+        @for (menu of menuItems; track $index) {
             <li 
                 (click)="onToggleMenu(menu, $event)"
                 class="relative px-4 py-3 list-none hover:bg-[var(--p-primary-600)] hover:text-white flex flex-row justify-between items-center w-full hover:rounded-md cursor-pointer"

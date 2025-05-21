@@ -140,7 +140,7 @@ export class ScreenMapComponent {
         const { lat, lng } = latlng;
         const screen: any = this.filterScreens().find(screen => screen.geolocation.latitude === lat && screen.geolocation.longitude === lng);
         this.selectedScreen.set(screen);
-        this.map.flyTo({ lat: lat - 0.00005, lng }, 22);
+        if (!this.isMobile) this.map.flyTo({ lat: lat - 0.00005, lng }, 22);
         this.drawerVisible.set(true);
       })
     });
