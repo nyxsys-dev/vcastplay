@@ -7,7 +7,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
   providedIn: 'root'
 })
 export class UtilityService {
+  filterValues = signal<any>({});
   drawerVisible = signal<boolean>(false);
+  tableSkeletonRows = Array(7).fill({});
 
   private breakPointObserver = inject(BreakpointObserver);
   readonly isMobile = toSignal(
@@ -51,6 +53,10 @@ export class UtilityService {
     { text: 'orchid', hex: '#DA70D6', rgb: '218, 112, 214' },
     { text: 'taupe', hex: '#483D3C', rgb: '72, 61, 60' },
   ]
+
+  isEmpty(value: any) {
+    return value === null || value === undefined || value === '' || Object.keys(value).length === 0 || !value;
+  }
 
   constructor() { }
 

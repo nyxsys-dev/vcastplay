@@ -32,7 +32,6 @@ html {
     .main-content {
         overflow: auto;
         height: calc(100vh - 5rem);
-        border-top-left-radius: 26px;
     }
 }
 
@@ -42,6 +41,18 @@ html {
 
 .p-progressbar {
     --p-progressbar-height: 8px !important;
+}
+
+.p-card-body {
+    height: 100%;
+}
+
+.p-card-title {
+    height: 100%;
+}
+
+.p-card-footer {
+    flex: 1;
 }
 
 .subscription-progressbar .p-progressbar-value {
@@ -105,18 +116,6 @@ html {
         height: 12px;
         border-radius: 50%;
     }
-}
-
-.p-card-body {
-    height: 100%;
-}
-
-.p-card-title {
-    height: 100%;
-}
-
-.p-card-footer {
-    flex: 1;
 }
 
 .circle {

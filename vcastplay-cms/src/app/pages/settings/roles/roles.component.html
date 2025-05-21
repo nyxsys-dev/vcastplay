@@ -1,58 +1,85 @@
-<app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+<div class="flex flex-col gap-4 h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
 
-<p-card>
-    <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
-        <app-filters class="w-full md:w-[25rem]"></app-filters>
-        <div class="flex gap-4">
-            <p-button (onClick)="onClickAddNew()" label="Add New" icon="pi pi-plus" />
-            <!-- <button (click)="onClickAddNew()" pButton pRipple class="flex items-center gap-2 px-4 py-2 p-button-outlined rounded-md">
-                <i class="pi pi-plus"></i>
-                <span class="hidden md:block p-button-label">Add New</span>
-            </button> -->
-            <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
-        </div>
-    </div>
-    <p-table class="hidden lg:block" [value]="roles" [scrollable]="true">
-        <ng-template #header>
-            <tr>
-                <th pFrozenColumn>Name</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th alignFrozen="right" pFrozenColumn [frozen]="true">Actions</th>
-            </tr>
-        </ng-template>
-        <ng-template #body let-item>
-            <tr>
-                <td pFrozenColumn>{{ item.name }}</td>
-                <td>{{ item.description }}</td>
-                <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" /></td>
-                <td class="flex flex-row" alignFrozen="right" pFrozenColumn [frozen]="true">
-                    <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
-    <div class="block lg:hidden grid grid-cols-1 gap-5">
-        @for (item of roles; track $index) {
-            <div class="flex flex-row gap-2 justify-between items-center p-[1rem] border border-gray-200 rounded-lg">
-                <div class="flex flex-col">
-                    <h6 class="font-semibold">{{ item.name }}</h6>
-                    <p>{{ item.description }}</p>
-                </div>
-                <div class="flex flex-row">
-                    <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+    <div class="flex-1">
+        <p-card styleClass="h-full">
+            <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
+                <app-filters class="w-full md:w-[25rem]"></app-filters>
+                <div class="flex gap-3">
+                    <p-button (onClick)="onClickAddNew()" label="Add New" icon="pi pi-plus" />
+                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
                 </div>
             </div>
-        }
+            <p-table
+                class="hidden lg:block" 
+                [value]="isLoading() ? utils.tableSkeletonRows : filteredRoles()" 
+                selectionMode="single"
+                [scrollable]="true" 
+                size="small"  
+                stripedRows
+                [rows]="8"
+            >
+                <ng-template #header>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Last Update</th>
+                        <th>Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                    @if (isLoading()) {
+                        <tr>
+                            <td><p-skeleton height="2rem" /></td>
+                            <td><p-skeleton height="2rem" /></td>
+                            <td><p-skeleton height="2rem" /></td>
+                            <td><p-skeleton height="2rem" /></td>
+                            <td><p-skeleton height="2rem" /></td>
+                        </tr>
+                    } @else {
+                        <tr [pSelectableRow]="item">
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.description }}</td>
+                            <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" /></td>
+                            <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
+                            <td class="flex flex-row" alignFrozen="right">
+                                <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                            </td>
+                        </tr>
+                    }
+                </ng-template>
+            </p-table>
+            <div class="block lg:hidden grid grid-cols-1 gap-5">
+                @for (item of filteredRoles(); track $index) {
+                    <div class="flex flex-row gap-2 justify-between items-center p-[1rem] border border-gray-200 rounded-lg">
+                        <div class="flex flex-col">
+                            <h6 class="font-semibold">{{ item.name }}</h6>
+                            <p>{{ item.description }}</p>
+                        </div>
+                        <div class="flex flex-row">
+                            <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                        </div>
+                    </div>
+                } @empty {
+                    @for (item of utils.tableSkeletonRows; track $index) {
+                        <p-skeleton height="5rem" />
+                    }
+                }
+            </div>
+            <ng-template #footer>
+                <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
+            </ng-template>
+        </p-card>
     </div>
-</p-card>
+</div>
 
 <ng-template #actionBtn let-item>
     <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" [rounded]="true" severity="success" />
     <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
 </ng-template>
 
-<p-dialog header="Role Information" [(visible)]="showDialog" styleClass="w-[30rem] md:w-[50rem] h-auto" [modal]="true" [draggable]="false">
+<p-dialog header="Role Information" [(visible)]="showDialog" styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false">
     <div class="grid grid-cols-1 gap-4 mb-8" [formGroup]="roleForm">
         <div class="cols-span-1">
             <p-floatlabel variant="in">

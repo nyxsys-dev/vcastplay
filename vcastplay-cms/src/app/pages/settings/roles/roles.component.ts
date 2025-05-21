@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
@@ -12,33 +12,55 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss',
   providers: [ ConfirmationService, MessageService ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RolesComponent {
-
-  pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Role Management'} ];
   
-  isEdit = signal<boolean>(false);
-  showDialog = signal<boolean>(false);
   utils = inject(UtilityService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
 
-  roles: Roles[] = [];
+  pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Role Management'} ];
+  
+  roles = signal<Roles[]>([]);
+  isEdit = signal<boolean>(false);
+  showDialog = signal<boolean>(false);
+  isLoading = signal<boolean>(false);
+
+  filteredRoles = computed(() => {
+    const { status, keywords }: any = this.utils.filterValues();
+    const statusFilter = (status ?? '').toLowerCase().trim();
+    const keywordFilter = (keywords ?? '').toLowerCase().trim();
+    return this.roles().filter(role => {
+      const matchesStatus = statusFilter ? role.status?.toLowerCase().trim() === statusFilter : true;
+      const matchesKeyword = keywordFilter ? role.name?.toLowerCase().includes(keywordFilter) : true;
+      return matchesStatus && matchesKeyword;
+    })
+  })
 
   roleForm: FormGroup = new FormGroup({
     id: new FormControl(''),
     name: new FormControl('', [ Validators.required ]),
     description: new FormControl('', [ Validators.required ]),
-    modules: new FormControl([]),
+    modules: new FormControl([], { nonNullable: true }),
     status: new FormControl(''),
   })
 
+  rows: number = 8;
+  totalRecords: number = 0;
+
+  constructor() { }
+
   ngOnInit() {
-    this.onInitializeData();
+    this.isLoading.set(true);
+    setTimeout(() => {
+      this.onInitializeData();
+      this.isLoading.set(false);
+    }, 2000)
   }
 
   onInitializeData() {
-    this.roles = [
+    this.roles.set([
       {
         id: 1,
         name: "Admin",
@@ -84,11 +106,18 @@ export class RolesComponent {
         createdOn: new Date("2024-01-20"),
         updatedOn: new Date("2024-02-20"),
       }
-    ];    
+    ]);
+    
+    this.totalRecords = this.roles().length;
   }
 
   onClickRefresh() {
-    this.onInitializeData();
+    this.isLoading.set(true);
+    this.roles.set([]);
+    setTimeout(() => {
+      this.onInitializeData();
+      this.isLoading.set(false);
+    }, 2000)
   }
 
   onClickAddNew() {
@@ -126,16 +155,18 @@ export class RolesComponent {
         label: 'Save',
       },
       accept: () => {
-        const { status, ...info } = this.roleForm.value;
-        this.message.add({ severity:'success', summary: 'Success', detail: 'User saved successfully!' });
+        const tempRoles: any[] = this.roles();
+        const { id, status, ...info } = this.roleForm.value;
         
-        if (!this.isEdit()) {
-          this.roles.push({ status: 'Pending', ...info });
+        if (!this.isEdit()) {          
+          tempRoles.push({ id: tempRoles.length + 1, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+          this.roles.set([...tempRoles]);
         }
-        else {
-          this.roles = this.roles.map(r => r.id === info.id? {...r,...info } : r);
-        }
+        else {;
+          this.roles.set(this.roles().map(r => r.id == id ? {...r,...info } : r));
+        }        
 
+        this.message.add({ severity:'success', summary: 'Success', detail: 'User saved successfully!' });
         this.showDialog.set(false);
         this.roleForm.reset();
       },
@@ -165,7 +196,7 @@ export class RolesComponent {
       },
       accept: () => {
         this.message.add({ severity:'success', summary: 'Success', detail: 'User deleted successfully!' });
-        this.roles = this.roles.filter(r => r.id !== role.id);
+        this.roles.set(this.roles().filter(r => r.id !== role.id));
       },
       reject: () => { }
     })
@@ -174,6 +205,10 @@ export class RolesComponent {
   onClickCancel() {
     this.showDialog.set(false);
     this.roleForm.reset();
+  }
+
+  onPageChange(event: any) {
+    
   }
   
   formControl(fieldName: string) {

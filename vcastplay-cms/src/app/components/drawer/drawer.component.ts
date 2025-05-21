@@ -28,23 +28,84 @@ export class DrawerComponent {
         icon: 'pi pi-home',
         routerLink: '/dashboard'
       },
-      // {
-      //   label: 'Screen',
-      //   icon: 'pi pi-desktop',
-      //   expanded: false,
-      //   items: [
-      //     {
-      //       label: 'Register',
-      //       icon: 'pi pi-plus',
-      //       routerLink: ['/screen-register'],
-      //     },
-      //     {
-      //       label: 'List',
-      //       icon: 'pi pi-list',
-      //       routerLink: ['/screen-list'],
-      //     }
-      //   ]
-      // },
+      {
+        label: 'Screen',
+        icon: 'pi pi-desktop',
+        expanded: false,
+        items: [
+          {
+            label: 'Register',
+            icon: 'pi pi-plus',
+            routerLink: ['/screen-register'],
+          },
+          {
+            label: 'List',
+            icon: 'pi pi-list',
+            routerLink: ['/screen-list'],
+          }
+        ]
+      },
+      {
+        label: 'Assets',
+        icon: 'pi pi-image',
+        expanded: false,
+        items: [
+          {
+            label: 'Upload',
+            icon: 'pi pi-upload',
+            routerLink: ['/asset-register'],
+          },
+          {
+            label: 'List',
+            icon: 'pi pi-list',
+            routerLink: ['/asset-list'],
+          }
+        ]
+      },
+      {
+        label: 'Playlist',
+        icon: 'pi pi-list',
+        expanded: false,
+        items: [
+          {
+            label: 'Add Playlist',
+            icon: 'pi pi-plus',
+            routerLink: ['/playlist-register'],
+          },
+          {
+            label: 'List',
+            icon: 'pi pi-list',
+            routerLink: ['/playlist-list'],
+          }
+        ]
+      },
+      {
+        label: 'Layout',
+        icon: 'pi pi-th-large',
+        routerLink: '/dashboard'
+      },
+      {
+        label: 'Schedules',
+        icon: 'pi pi-calendar',
+        expanded: false,
+        items: [
+          {
+            label: 'Add Schedule',
+            icon: 'pi pi-plus',
+            routerLink: ['/schedule-register'],
+          },
+          {
+            label: 'List',
+            icon: 'pi pi-list',
+            routerLink: ['/schedule-list'],
+          }
+        ]
+      },
+      {
+        label: 'Reports',
+        icon: 'pi pi-chart-bar',
+        routerLink: '/dashboard'
+      },
       {
         label: 'Settings',
         icon: 'pi pi-cog',
@@ -64,7 +125,7 @@ export class DrawerComponent {
             label: 'Roles',
             icon: 'pi pi-lock',
             routerLink: ['/settings/role-management'],
-          }
+          },
         ]
       }
     ])
@@ -78,10 +139,11 @@ export class DrawerComponent {
     if (menuItem.routerLink && !menuItem.items) this.onClickGotoPage(menuItem)
   }
 
-  onClickLogout(event: Event) {
+  onClickLogout(event: Event | { originalEvent: Event }) {
     this.utils.drawerVisible.set(false);
+    const actualEvent = (event as any).originalEvent || event;
     this.confirmation.confirm({
-      target: event.target as EventTarget,
+      target: actualEvent.currentTarget as EventTarget,
       message: 'Are you sure you want to log out?',
       closable: true,
       closeOnEscape: true,

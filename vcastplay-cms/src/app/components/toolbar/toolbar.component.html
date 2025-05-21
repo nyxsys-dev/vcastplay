@@ -1,12 +1,15 @@
-<div class="toolbar-container justify-between h-20">
+<div id="toolbar" class="toolbar-container justify-between h-20">
     <a class="w-[10rem]" href="/">
         <img src="assets/vcast-logo.png" alt="app logo">
     </a>
-    <div class="flex flex-row items-center cursor-pointer text-white">
+    <div class="flex flex-row items-center cursor-pointer text-white md:mx-2">
         <p-avatar label="N" shape="circle" size="large" [routerLink]="['/settings/profile']"></p-avatar>
-        <div class="flex flex-col ms-1 md:ms-3 ps-1 hidden md:block">
+        <div class="flex flex-col ms-1 md:ms-3 ps-1 hidden md:block me-6">
             <h6 class="font-bold !select-none">Nyxsys PH</h6>
             <p class="text-sm !select-none">Administrator</p>
+        </div>
+        <div class="hidden md:block">
+            <i class="pi pi-sign-out" (click)="auth.onLogout()" pTooltip="Logout"></i>
         </div>
     </div>
 </div>

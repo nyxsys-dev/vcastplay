@@ -45,6 +45,9 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputMaskModule } from 'primeng/inputmask';
 import { FileUploadModule } from 'primeng/fileupload';
+import { SkeletonModule } from 'primeng/skeleton';
+import { CarouselModule } from 'primeng/carousel';
+import { PaginatorModule } from 'primeng/paginator';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -100,6 +103,9 @@ const PRIMEUI_MODULES = [
   InputNumberModule,
   InputMaskModule,
   FileUploadModule,
+  SkeletonModule,
+  CarouselModule,
+  PaginatorModule,
 ];
 
 @NgModule({

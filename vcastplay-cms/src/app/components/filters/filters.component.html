@@ -2,13 +2,14 @@
     <p-input-group>
         <input pInputText placeholder="Search" formControlName="keywords" />
         <p-inputgroup-addon>
-            <p-button (onClick)="filters.reset()" [icon]="'pi ' + (keywords?.dirty ? 'pi-times' : 'pi-search')"></p-button>
+            <p-button (onClick)="keywords?.reset()" [icon]="'pi ' + (keywords?.dirty ? 'pi-times' : 'pi-search')"></p-button>
         </p-inputgroup-addon>
     </p-input-group>
     <div>
         <p-button icon="pi pi-filter" pTooltip="More Filter" tooltipPosition="bottom" [text]="true" (onClick)="filter.toggle($event)"></p-button>
         <p-popover #filter>
             <div class="flex flex-col gap-5 w[25rem]">
+                <p-select [options]="status" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
                 <p-select [options]="sortBy" formControlName="sortBy" optionLabel="label" optionValue="value" placeholder="Sort By" class="w-50" />
                 <div class="flex flex-row gap-4">
                     @for (item of [ 'asc', 'desc' ]; track $index) {
@@ -19,7 +20,7 @@
                     }
                 </div>
                 <div class="flex flex-row justify-end items-center">
-                    <p-button severity="secondary" (onClick)="onClickApply()" label="Clear" size="small" [text]="true" icon="pi pi-times"></p-button>
+                    <p-button severity="secondary" (onClick)="onClickClear()" label="Clear" size="small" [text]="true" icon="pi pi-times"></p-button>
                     <p-button (onClick)="onClickApply()" label="Apply" size="small" [text]="true" icon="pi pi-check"></p-button>
                 </div>
             </div>

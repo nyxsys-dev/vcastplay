@@ -9,13 +9,11 @@
                 <p class="text-white !select-none">{{ menu.label }}</p>
 
                 @if (menu.items && menu.expanded) {
-                    <div class="absolute left-full top-0 bg-white rounded-md shadow-md">
-                        <p-menu #subMenu [model]="menu.items" appendTo="button"></p-menu>
-                    </div>
+                    <p-menu #subMenu [model]="menu.items" appendTo="body" styleClass="absolute left-full top-0 bg-white rounded-md shadow-md"></p-menu>
                 }
             </li>
         }
-        <div class="absolute bottom-0 start-0 w-full flex flex-col gap-3">
+        <!-- <div class="absolute bottom-0 start-0 w-full flex flex-col gap-3">
             <li class="px-4 py-3 list-none hover:bg-[var(--p-primary-600)] flex flex-col items-center justify-center w-full hover:rounded-md cursor-pointer text-white">
                 <i style="font-size: 1.5rem;" class="mb-2" class="pi pi-info-circle"></i>
                 <p class="!select-none">About</p>
@@ -24,12 +22,12 @@
                 <i style="font-size: 1.5rem;" class="mb-2" class="pi pi-sign-out"></i>
                 <p class="!select-none">Logout</p>
             </li>
-        </div>
+        </div> -->
     </div>
 </div>  
 
 
-<p-drawer [(visible)]="utils.drawerVisible" styleClass="!h-auto" position="bottom">
+<p-drawer [(visible)]="utils.drawerVisible" styleClass="!h-auto max-h-100" position="bottom">
     <ng-template #header>Side Menus</ng-template>
     <ul class="flex flex-col gap-3">
         @for (menu of menuItems(); track $index) {

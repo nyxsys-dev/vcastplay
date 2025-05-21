@@ -1,7 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Popover } from 'primeng/popover';
+import { UtilityService } from '../../core/services/utility.service';
 
 @Component({
   selector: 'app-filters',
@@ -13,11 +14,19 @@ export class FiltersComponent {
 
   @ViewChild('filter') filterTemplate!: Popover;
 
+  utils = inject(UtilityService);
+
   filters: FormGroup = new FormGroup({
-    keywords: new FormControl(''),
+    keywords: new FormControl('', { nonNullable: true }),
+    status: new FormControl(''),
     sortBy: new FormControl(''),
-    sort: new FormControl('asc')
+    sort: new FormControl('asc', { nonNullable: true })
   })
+
+  status: any[] = [
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' }
+  ]
 
   sortBy: any[] = [
     { label: 'Name', value: 'name' },
@@ -25,7 +34,20 @@ export class FiltersComponent {
     { label: 'Created At', value: 'createdAt' }
   ]
 
+  constructor() {
+    this.keywords?.valueChanges.subscribe(value => {
+      this.utils.filterValues.set({ keywords: value });
+    })
+  }
+
   onClickApply() {
+    this.utils.filterValues.set(this.filters.value);
+    // this.filters.reset();
+    this.filterTemplate.hide();
+  }
+
+  onClickClear() {
+    this.utils.filterValues.set({});
     this.filters.reset();
     this.filterTemplate.hide();
   }
