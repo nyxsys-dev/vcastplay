@@ -1,0 +1,49 @@
+<div class="flex flex-col gap-4 h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+
+    <div class="flex-1">
+        <p-card styleClass="h-full">
+            <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
+                <app-filters class="w-full md:w-[25rem]"></app-filters>
+                <div class="flex gap-4">
+                    <p-button (onClick)="onClickAddNew()" label="Register" icon="pi pi-plus"></p-button>
+                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
+                </div>
+            </div>
+            <div class="flex-1 md:h-full">
+                <p-table
+                    class="hidden lg:block" 
+                    [value]="screenService.loadingSignal() ? utils.tableSkeletonRows : filteredScreen()" 
+                    selectionMode="single"
+                    [scrollable]="true" 
+                    size="small"  
+                    stripedRows
+                >
+                    <ng-template #header>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Orientation & Resolution</th>
+                            <th>Group</th>
+                            <th>Sub-Group</th>
+                            <th>Last Group</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #emptymessage>
+                        <tr>
+                            <td colspan="9" [height]="20">
+                                <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <ng-template #footer>
+                <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
+            </ng-template>
+        </p-card>
+    </div>
+</div>

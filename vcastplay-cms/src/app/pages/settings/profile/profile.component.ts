@@ -4,6 +4,7 @@ import { ComponentsModule } from '../../../core/modules/components/components.mo
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { UserService } from '../../../core/services/user.service';
 import { UtilityService } from '../../../core/services/utility.service';
+import { RoleService } from '../../../core/services/role.service';
 
 @Component({
   selector: 'app-profile',
@@ -17,11 +18,10 @@ export class ProfileComponent {
   pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Profile'} ];
 
   userService = inject(UserService);
+  roleService = inject(RoleService);
   utils = inject(UtilityService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
-
-  isEdit = signal<boolean>(false);
 
   ngOnInit() { }
 
@@ -43,7 +43,6 @@ export class ProfileComponent {
       },
       accept: () => {
         this.message.add({ severity:'success', summary: 'Success', detail: 'User saved successfully!' });
-
         this.userForm.reset();
       },
       reject: () => { 

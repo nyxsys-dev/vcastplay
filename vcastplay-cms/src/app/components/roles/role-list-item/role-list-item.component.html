@@ -1,0 +1,9 @@
+<div class="flex flex-row gap-2 justify-between items-center p-[1rem] border border-gray-200 rounded-lg">
+    <div class="flex flex-col">
+        <h6 class="font-semibold">{{ item.name }}</h6>
+        <p>{{ item.description }}</p>
+    </div>
+    <div class="flex flex-row">
+        <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+    </div>
+</div>

@@ -10,7 +10,7 @@ import { DrawerMenu } from '../interfaces/drawer-menu';
 export class UtilityService {
   filterValues = signal<any>({});
   drawerVisible = signal<boolean>(false);
-  tableSkeletonRows = Array(7).fill({});
+  tableSkeletonRows = Array(5).fill({});
 
   modules = signal<DrawerMenu[]>([
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
@@ -20,15 +20,15 @@ export class UtilityService {
       expanded: false,
       items: [
         {
-          label: 'Register',
+          label: 'Registration',
           icon: 'pi pi-plus',
-          routerLink: ['/screen-register'],
+          routerLink: ['/screens/screen-registration'],
         },
         {
-          label: 'List',
-          icon: 'pi pi-list',
-          routerLink: ['/screen-list'],
-        }
+          label: 'Monitoring',
+          icon: 'pi pi-desktop',
+          routerLink: ['/screens/screen-management'],
+        },
       ]
     },
     {
@@ -166,6 +166,16 @@ export class UtilityService {
 
   isEmpty(value: any) {
     return value === null || value === undefined || value === '' || Object.keys(value).length === 0 || !value;
+  }
+
+  genereteScreenCode(length: number): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      code += characters.charAt(randomIndex);
+    }
+    return code;
   }
 
   constructor() { }

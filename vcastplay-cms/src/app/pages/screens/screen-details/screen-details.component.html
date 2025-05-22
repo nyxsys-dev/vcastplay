@@ -1,0 +1,34 @@
+<app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+<p-card>
+    <ng-template #title>
+        <div class="flex items-center gap-4">
+            <p-button [routerLink]="['/screens/screen-registration']" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+            <p class="text-xl font-semibold">Screen Details</p>
+        </div>
+    </ng-template>
+    <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4 mt-3" [formGroup]="screenForm">
+        <div class="col-span-1 md:col-span-2">
+            <p-floatlabel variant="in">
+                <input id="code" pInputText formControlName="code" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('code')?.invalid && formControl('code')?.touched }" readonly fluid />
+                <label for="code">Code</label>
+            </p-floatlabel>
+        </div>
+        <div class="col-span-1 md:col-span-5">
+            <p-floatlabel variant="in">
+                <input id="code" pInputText formControlName="name" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
+                <label for="code">Name</label>
+            </p-floatlabel>
+        </div>
+    </div>
+    <ng-template #footer>
+        <div class="flex justify-end gap-3">
+            <p-button label="Cancel" severity="secondary" [routerLink]="['/screens/screen-registration']" />
+            <p-button label="Register Screen" (onClick)="onClickSave($event)" />
+        </div>
+    </ng-template>
+</p-card>
+
+<p-toast />
+<p-confirmdialog />

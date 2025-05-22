@@ -1,4 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Roles } from '../interfaces/account-settings';
 
 @Injectable({
@@ -10,6 +11,15 @@ export class RoleService {
   roles = computed(() => this.roleSignal());
 
   loadingSignal = signal<boolean>(false);
+  showDialog = signal<boolean>(false);
+  
+  roleForm: FormGroup = new FormGroup({
+    id: new FormControl(''),
+    name: new FormControl('', [ Validators.required ]),
+    description: new FormControl('', [ Validators.required ]),
+    modules: new FormControl([], { nonNullable: true }),
+    status: new FormControl(''),
+  })
 
   constructor() { }
 

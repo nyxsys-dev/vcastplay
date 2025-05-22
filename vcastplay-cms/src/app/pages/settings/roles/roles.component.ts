@@ -6,24 +6,25 @@ import { Roles } from '../../../core/interfaces/account-settings';
 import { UtilityService } from '../../../core/services/utility.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { RoleService } from '../../../core/services/role.service';
+import { RoleListItemComponent } from '../../../components/roles/role-list-item/role-list-item.component';
+import { RoleDetailsComponent } from '../../../components/roles/role-details/role-details.component';
 
 @Component({
   selector: 'app-roles',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, RoleListItemComponent, RoleDetailsComponent ],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss',
   providers: [ ConfirmationService, MessageService ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RolesComponent {
+
+  pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Role Management'} ];
   
   utils = inject(UtilityService);
   roleService = inject(RoleService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
-
-  pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Role Management'} ];
-  showDialog = signal<boolean>(false);
 
   filteredRoles = computed(() => {
     const { status, keywords }: any = this.utils.filterValues();
@@ -36,14 +37,6 @@ export class RolesComponent {
     })
   })
 
-  roleForm: FormGroup = new FormGroup({
-    id: new FormControl(''),
-    name: new FormControl('', [ Validators.required ]),
-    description: new FormControl('', [ Validators.required ]),
-    modules: new FormControl([], { nonNullable: true }),
-    status: new FormControl(''),
-  })
-
   rows: number = 8;
   totalRecords: number = 0;
 
@@ -53,6 +46,7 @@ export class RolesComponent {
 
   onInitializeData() {
     this.roleService.onGetRoles();
+    this.totalRecords = this.filteredRoles().length;
   }
 
   onClickRefresh() {
@@ -135,30 +129,12 @@ export class RolesComponent {
   }
 
   onPageChange(event: any) { }
-  
-  formControl(fieldName: string) {
-    return this.roleForm.get(fieldName);
+
+  get roleForm() {
+    return this.roleService.roleForm;
   }
 
-  isModuleSelected(module: any) {
-    return this.moduleCtrl?.value.some((m: any) => m.label === module.label);
-  }
-
-  onAddModule(module: any) {
-    const moduleCtrl = this.moduleCtrl?.value;
-    const index = moduleCtrl.findIndex((m: any) => m.label === module.label);
-    if (index !== -1) {
-      moduleCtrl.splice(index, 1);
-    } else {
-      moduleCtrl.push(module);
-    } 
-  }
-
-  get modules() {
-    return this.utils.modules();
-  }
-
-  get moduleCtrl() {
-    return this.roleForm.get('modules');
+  get showDialog() {
+    return this.roleService.showDialog;
   }
 }

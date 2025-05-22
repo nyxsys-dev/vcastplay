@@ -6,10 +6,12 @@ import { User } from '../../../core/interfaces/account-settings';
 import { UtilityService } from '../../../core/services/utility.service';
 import { UserService } from '../../../core/services/user.service';
 import { RoleService } from '../../../core/services/role.service';
+import { UserListItemComponent } from '../../../components/users/user-list-item/user-list-item.component';
+import { UserDetailsComponent } from '../../../components/users/user-details/user-details.component';
 
 @Component({
   selector: 'app-users',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, UserListItemComponent, UserDetailsComponent ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
   providers: [ ConfirmationService, MessageService ],
@@ -18,11 +20,10 @@ export class UsersComponent {
   
   pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Users Management'} ];
 
-  showDialog = signal<boolean>(false);
-
   userService = inject(UserService);
   roleService = inject(RoleService);
   utils = inject(UtilityService);
+  
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
 
@@ -63,7 +64,7 @@ export class UsersComponent {
     this.userService.onEditUser(user);
     this.showDialog.set(true);
   }
-
+  
   onClickSave(event: Event) {
     if (this.userForm.invalid) {
       this.userForm.markAllAsTouched();
@@ -125,11 +126,11 @@ export class UsersComponent {
     this.userForm.reset();
   }
 
-  formControl(fieldName: string) {
-    return this.userForm.get(fieldName);
-  }
-
   get userForm() {
     return this.userService.userForm;
+  }
+
+  get showDialog() {
+    return this.userService.showDialog;
   }
 }

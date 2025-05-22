@@ -14,6 +14,7 @@ export const routes: Routes = [
         loadComponent: () => import('./main/main.component').then(m => m.MainComponent),
         children: [
             { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent), title: `Dashboard • ${appTitle}`, },
+            { path: 'screens', loadChildren: () => import('./pages/screens/screens.routes') },
             { path: 'settings', loadChildren: () => import('./pages/settings/settings.routes') }
         ]
     },

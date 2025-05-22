@@ -12,7 +12,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex-1 h-full">
+            <div class="flex-1 md:h-full">
                 <p-table
                     class="hidden lg:block" 
                     [value]="roleService.loadingSignal() ? utils.tableSkeletonRows : filteredRoles()" 
@@ -51,19 +51,24 @@
                             </tr>
                         }
                     </ng-template>
+                    <ng-template #emptymessage>
+                        <tr>
+                            <td colspan="5" [height]="20">
+                                <div class="flex justify-center p-5"><p>No roles found</p></div>
+                            </td>
+                        </tr>
+                    </ng-template>
                 </p-table>
-                <div class="block lg:hidden grid grid-cols-1 gap-5">
-                    @for (item of filteredRoles(); track $index) {
-                        <div class="flex flex-row gap-2 justify-between items-center p-[1rem] border border-gray-200 rounded-lg">
-                            <div class="flex flex-col">
-                                <h6 class="font-semibold">{{ item.name }}</h6>
-                                <p>{{ item.description }}</p>
+                <div class="block lg:hidden flex flex-col gap-5">
+                    @if (!roleService.loadingSignal()) {
+                        @for (item of filteredRoles(); track $index) {
+                            <app-role-list-item [item]="item" [actionBtn]="actionBtn" />
+                        } @empty {
+                            <div class="flex justify-center items-center p-5 h-100">
+                                <p>No roles found</p>
                             </div>
-                            <div class="flex flex-row">
-                                <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
-                            </div>
-                        </div>
-                    } @empty {
+                        }
+                    } @else {
                         @for (item of utils.tableSkeletonRows; track $index) {
                             <p-skeleton height="5rem" />
                         }
@@ -83,60 +88,7 @@
 </ng-template>
 
 <p-dialog header="Role Information" [(visible)]="showDialog" styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false">
-    <div class="grid grid-cols-1 gap-4" [formGroup]="roleForm">
-        <div class="cols-span-1">
-            <p-floatlabel variant="in">
-                <input id="name" pInputText formControlName="name" 
-                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
-                <label for="name">Name</label>
-            </p-floatlabel>
-            @if (formControl('name')?.touched && (formControl('name')?.dirty || formControl('name')?.invalid)) {
-                @if (formControl('name')?.invalid) {
-                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
-                        <i class="pi pi-exclamation-circle"></i>
-                        @if (formControl('name')?.errors?.['required']) { This field is required }
-                    </div>
-                }
-            }
-        </div>
-        <div class="col-span-1">
-            <p-floatlabel variant="in">
-                <textarea pTextarea id="description" formControlName="description" rows="3" cols="30" style="resize: none" class="h-full w-full"
-                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('description')?.invalid && formControl('description')?.touched }"></textarea>
-                <label for="description">Description</label>
-            </p-floatlabel>
-            @if (formControl('description')?.touched && (formControl('description')?.dirty || formControl('description')?.invalid)) {
-                @if (formControl('description')?.invalid) {
-                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
-                        <i class="pi pi-exclamation-circle"></i>
-                        @if (formControl('description')?.errors?.['required']) { This field is required }
-                    </div>
-                }
-            }
-        </div>
-    </div>
-    <p-panel header="Permissions" toggleable>
-        <p-table [value]="modules" [scrollable]="true" scrollHeight="200px">
-            <ng-template #header>
-                <tr>
-                    <th>Name</th>
-                    <th><p class="text-center">Create</p></th>
-                    <th><p class="text-center">Update</p></th>
-                    <th><p class="text-center">Delete</p></th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-item>
-                <tr>
-                    <td class="flex gap-3">
-                        <p-toggleswitch [ngModel]="isModuleSelected(item)" (onChange)="onAddModule(item)" /> {{ item.label }}
-                    </td>
-                    <td><div class="flex justify-center"><p-checkbox /></div></td>
-                    <td><div class="flex justify-center"><p-checkbox /></div></td>
-                    <td><div class="flex justify-center"><p-checkbox /></div></td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </p-panel>
+    <app-role-details [roleForm]="roleForm" />
     <ng-template #footer>
         <p-button label="Cancel" severity="secondary" (onClick)="onClickCancel()" />
         <p-button label="Save" (onClick)="onClickSave($event)" />

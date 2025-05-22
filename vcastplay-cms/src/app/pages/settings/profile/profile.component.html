@@ -48,7 +48,7 @@
                 </div>
                 <div class="col-span-2 md:col-span-1">
                     <p-floatlabel variant="in">
-                        <p-select formControlName="role" inputId="role" [options]="utils.roles" appendTo="body" optionLabel="label" optionValue="value" fluid />
+                        <p-select formControlName="role" inputId="role" [options]="roleService.roles()" appendTo="body" optionLabel="name" optionValue="id" fluid />
                         <label for="role">Roles</label>
                     </p-floatlabel>
                 </div>
@@ -140,3 +140,6 @@
         </div>
     </div>
 </p-card>
+
+<p-toast />
+<p-confirmdialog />

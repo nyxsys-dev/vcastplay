@@ -1,15 +1,15 @@
-<div class="min-h-screen md:ms-[7rem]">
+<div class="min-h-screen md:ms-[7rem] relative">
     <app-toolbar></app-toolbar>
     <app-drawer></app-drawer>
     <div class="main-wrapper relative">
-        <div class="main-content p-3 md:p-[2rem] bg-gray-200 relative md:rounded-tl-[26px]">
+        <div class="main-content p-3 md:p-[1rem] bg-gray-200 relative md:rounded-tl-[26px]">
             <router-outlet></router-outlet>
         </div>
+    </div>
 
-        <div class="block md:hidden absolute bottom-0 end-0 z-100">
-            <div class="bg-[var(--p-primary-600)] py-[1rem] px-[1.125rem] text-white rounded-tl-xl cursor-pointer" (click)="utils.drawerVisible.set(!utils.drawerVisible())">
-                <i class="pi pi-bars"></i>
-            </div>
+    <div class="block md:hidden absolute bottom-0 end-0 z-100">
+        <div class="bg-[var(--p-primary-600)] py-[1rem] px-[1.125rem] text-white rounded-tl-xl cursor-pointer" (click)="utils.drawerVisible.set(!utils.drawerVisible())">
+            <i class="pi pi-bars"></i>
         </div>
     </div>
 </div>
