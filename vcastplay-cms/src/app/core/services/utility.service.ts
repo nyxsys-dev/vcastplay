@@ -140,6 +140,14 @@ export class UtilityService {
     { label: 'User', value: 'user' },
     { label: 'Guest', value: 'guest' },
   ]
+  
+  status: any[] = [
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Suspended', value: 'suspended' }
+  ]
+
 
   colors: any[] = [
     { text: 'blue', hex: '#36A2EB', rgb: '54, 162, 235' },

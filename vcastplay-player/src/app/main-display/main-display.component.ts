@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { PrimengModule } from '../core/modules/primeng/primeng.module';
 
 @Component({
   selector: 'app-main-display',
-  imports: [],
+  imports: [ PrimengModule ],
   templateUrl: './main-display.component.html',
   styleUrl: './main-display.component.scss'
 })

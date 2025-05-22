@@ -25,7 +25,9 @@ export class FiltersComponent {
 
   status: any[] = [
     { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' }
+    { label: 'Inactive', value: 'inactive' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Suspended', value: 'suspended' }
   ]
 
   sortBy: any[] = [

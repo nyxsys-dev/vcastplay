@@ -15,7 +15,7 @@
             <div class="flex-1 h-full">
                 <p-table
                     class="hidden lg:block" 
-                    [value]="isLoading() ? utils.tableSkeletonRows : filteredRoles()" 
+                    [value]="roleService.loadingSignal() ? utils.tableSkeletonRows : filteredRoles()" 
                     selectionMode="single"
                     [scrollable]="true" 
                     size="small"  
@@ -31,7 +31,7 @@
                         </tr>
                     </ng-template>
                     <ng-template #body let-item>
-                        @if (isLoading()) {
+                        @if (roleService.loadingSignal()) {
                             <tr>
                                 <td><p-skeleton height="2rem" /></td>
                                 <td><p-skeleton height="2rem" /></td>
@@ -45,7 +45,7 @@
                                 <td>{{ item.description }}</td>
                                 <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" /></td>
                                 <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
-                                <td class="flex flex-row" alignFrozen="right">
+                                <td class="flex flex-row">
                                     <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
                                 </td>
                             </tr>
