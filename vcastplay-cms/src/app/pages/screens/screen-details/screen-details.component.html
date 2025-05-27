@@ -41,7 +41,7 @@
                 </p-floatlabel>
             </div>
             <div class="col-span-1 md:col-span-12" formGroupName="displaySettings">
-                <p-divider [align]="'left'" type="solid" ><b>Display Settings</b></p-divider>
+                <p-divider [align]="'left'" type="solid"><b class="text-sm">Display Settings</b></p-divider>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                     <div class="col-span-1">
                         <p-floatlabel variant="in">
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="col-span-1 md:col-span-12" formGroupName="geographicalLocation">
-                <p-divider [align]="'left'" type="solid" ><b>Geographical Location</b></p-divider>
+                <p-divider [align]="'left'" type="solid"><b class="text-sm">Geographical Location</b></p-divider>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                     <div class="col-span-1">
                         <p-floatlabel variant="in">
@@ -75,7 +75,7 @@
                 </div>
             </div>
             <div class="col-span-1 md:col-span-12" formGroupName="schedule">
-                <p-divider [align]="'left'" type="solid"><b>Operational Schedule</b></p-divider>
+                <p-divider [align]="'left'" type="solid"><b class="text-sm">Operational Schedule</b></p-divider>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
                     <div class="col-span-1">
                         <p-floatlabel variant="in">
@@ -105,7 +105,7 @@
                 <app-mapmarkers [markers]="markers" (selectedScreen)="onGetLocation($event)" />
             </div>
             <div class="mt-5">
-                <p-divider [align]="'left'" type="solid"><b>Other</b></p-divider>
+                <p-divider [align]="'left'" type="solid"><b class="text-sm">Other</b></p-divider>
             </div>
         </div>
     </div>

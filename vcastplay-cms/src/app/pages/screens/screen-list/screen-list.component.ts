@@ -5,10 +5,11 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { UtilityService } from '../../../core/services/utility.service';
 import { Router } from '@angular/router';
+import { ScreenListItemComponent } from '../../../components/screen-list-item/screen-list-item.component';
 
 @Component({
   selector: 'app-screen-list',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, ScreenListItemComponent ],
   templateUrl: './screen-list.component.html',
   styleUrl: './screen-list.component.scss',
   providers: [ ConfirmationService, MessageService ],
