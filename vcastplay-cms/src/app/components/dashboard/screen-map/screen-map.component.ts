@@ -1,10 +1,11 @@
-import { Component, computed, effect, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { Screen } from '../../../core/interfaces/screen';
 import * as L from 'leaflet';
 import 'leaflet';
 import 'leaflet.markercluster';
 import { UtilityService } from '../../../core/services/utility.service';
+import { ScreenService } from '../../../core/services/screen.service';
 
 @Component({
   selector: 'app-screen-map',
@@ -13,6 +14,8 @@ import { UtilityService } from '../../../core/services/utility.service';
   styleUrl: './screen-map.component.scss'
 })
 export class ScreenMapComponent {
+  
+  screenService = inject(ScreenService);
 
   keywords = signal<string>('');
   status = signal<string>('All');
@@ -34,7 +37,7 @@ export class ScreenMapComponent {
   screens = signal<Screen[]>([]);
   
   filterScreens = computed(() => {
-    return this.screens().filter(screen =>
+    return this.screenService.screens().filter(screen =>
       screen.name.toLowerCase().includes(this.keywords().toLowerCase() || '') && (this.status() === 'All' || screen.status?.toLowerCase() === this.status().toLowerCase())
     );
   });
@@ -59,6 +62,7 @@ export class ScreenMapComponent {
   }
 
   ngOnInit() {
+    this.screenService.onGetScreens();
     this.initializeMap();
   }
 
