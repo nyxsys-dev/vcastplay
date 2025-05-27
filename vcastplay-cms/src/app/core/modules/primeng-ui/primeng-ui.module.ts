@@ -50,6 +50,9 @@ import { CarouselModule } from 'primeng/carousel';
 import { PaginatorModule } from 'primeng/paginator';
 import { TabsModule } from 'primeng/tabs';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { FieldsetModule } from 'primeng/fieldset';
+import { DatePickerModule } from 'primeng/datepicker';
+import { FluidModule } from 'primeng/fluid';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -110,6 +113,9 @@ const PRIMEUI_MODULES = [
   PaginatorModule,
   TabsModule,
   ToggleSwitchModule,
+  FieldsetModule,
+  DatePickerModule,
+  FluidModule,
 ];
 
 @NgModule({

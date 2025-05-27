@@ -4,11 +4,12 @@ import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { MapmarkersComponent } from '../../../components/mapmarkers/mapmarkers.component';
 
 @Component({
   selector: 'app-screen-details',
-  imports: [ PrimengUiModule, ComponentsModule, RouterLink ],
+  imports: [ PrimengUiModule, ComponentsModule, RouterLink, MapmarkersComponent ],
   templateUrl: './screen-details.component.html',
   styleUrl: './screen-details.component.scss',
   providers: [ ConfirmationService, MessageService ]
@@ -18,16 +19,23 @@ export class ScreenDetailsComponent {
 
   pageInfo: MenuItem = [ {label: 'Screens'}, {label: 'Registration', routerLink: '/screens/screen-registration'}, {label: 'Details'} ];
 
+  markers: any[] = [];
+
   screenService = inject(ScreenService);
   utils = inject(UtilityService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
+  router = inject(Router);
 
   ngOnInit() {
-    const screenData = this.screenService.selectedScreen();
-    if (!screenData) {
+    const screenData: any = this.screenService.selectedScreen();    
+    if (screenData) {      
+      this.screenForm.patchValue(screenData);
+      this.markers.push({ geolocation: screenData.geolocation, name: screenData.name });
+    } else {
       this.screenForm.patchValue({
-        code: this.utils.genereteScreenCode(6)
+        code: this.utils.genereteScreenCode(6),
+        geolocation: { lat: 14.6090, lng: 121.0223 }
       })
     }
   }
@@ -61,7 +69,9 @@ export class ScreenDetailsComponent {
       },
       accept: () => {
         this.message.add({ severity:'success', summary: 'Success', detail: 'Screen registered successfully!' });
-        this.screenForm.reset();
+        this.screenService.onSaveScreen(this.screenForm.value);
+        // this.router.navigate([ '/screens/screen-registration' ]);
+        // this.screenForm.reset();
       },
     })
   }
@@ -69,6 +79,11 @@ export class ScreenDetailsComponent {
   onClickCancel() {
     this.screenService.selectedScreen.set(null);
     this.screenForm.reset();
+    this.router.navigate([ '/screens/screen-registration' ]);
+  }
+
+  onGetLocation(event: Event) {
+    this.screenForm.patchValue(event);    
   }
 
   formControl(fieldName: string) {
@@ -77,5 +92,9 @@ export class ScreenDetailsComponent {
 
   get screenForm() {
     return this.screenService.screenForm;
+  }
+
+  get geolocation() {
+    return this.screenForm.get('geolocation');
   }
 }

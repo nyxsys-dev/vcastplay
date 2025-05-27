@@ -2,29 +2,116 @@
 <p-card>
     <ng-template #title>
         <div class="flex items-center gap-4">
-            <p-button [routerLink]="['/screens/screen-registration']" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+            <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
             <p class="text-xl font-semibold">Screen Details</p>
         </div>
     </ng-template>
-    <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4 mt-3" [formGroup]="screenForm">
-        <div class="col-span-1 md:col-span-2">
-            <p-floatlabel variant="in">
-                <input id="code" pInputText formControlName="code" 
-                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('code')?.invalid && formControl('code')?.touched }" readonly fluid />
-                <label for="code">Code</label>
-            </p-floatlabel>
+    <div class="flex flex-col md:flex-row gap-6 mt-4" [formGroup]="screenForm">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 w-full">
+            <div class="col-span-1 md:col-span-4">
+                <p-floatlabel variant="in">
+                    <input id="code" pInputText formControlName="code" 
+                        [ngClass]="{ 'ng-invalid ng-dirty': formControl('code')?.invalid && formControl('code')?.touched }" readonly fluid />
+                    <label for="code">Code</label>
+                </p-floatlabel>
+            </div>
+            <div class="col-span-1 md:col-span-8">
+                <p-floatlabel variant="in">
+                    <input id="name" pInputText formControlName="name" 
+                        [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
+                    <label for="name">Name</label>
+                </p-floatlabel>
+            </div>
+            <div class="col-span-1 md:col-span-4">
+                <p-floatlabel variant="in">
+                    <p-select id="type" [options]="utils.platForms" optionLabel="label" optionValue="value" formControlName="type" showClear fluid />
+                    <label for="type">Type</label>
+                </p-floatlabel>
+            </div>
+            <div class="col-span-1 md:col-span-4">
+                <p-floatlabel variant="in">
+                    <p-select id="group" [options]="screenService.filterGroup()" optionLabel="label" optionValue="value" formControlName="group" showClear fluid />
+                    <label for="group">Group</label>
+                </p-floatlabel>
+            </div>
+            <div class="col-span-1 md:col-span-4">
+                <p-floatlabel variant="in">
+                    <p-select id="subGroup" [options]="screenService.filterSubGroup()" optionLabel="label" optionValue="value" formControlName="subGroup" showClear fluid />
+                    <label for="subGroup">Subgroup</label>
+                </p-floatlabel>
+            </div>
+            <div class="col-span-1 md:col-span-12" formGroupName="displaySettings">
+                <p-divider [align]="'left'" type="solid" ><b>Display Settings</b></p-divider>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                    <div class="col-span-1">
+                        <p-floatlabel variant="in">
+                            <p-select id="orientation" [options]="screenService.orientations()" optionLabel="label" optionValue="value" formControlName="orientation" showClear fluid />
+                            <label for="orientation">Orientation</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-span-1">
+                        <p-floatlabel variant="in">
+                            <p-select id="resolution" [options]="screenService.resolution()" optionLabel="label" optionValue="value" formControlName="resolution" filterBy="label" filter showClear fluid />
+                            <label for="resolution">Resolution</label>
+                        </p-floatlabel>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-1 md:col-span-12" formGroupName="geographicalLocation">
+                <p-divider [align]="'left'" type="solid" ><b>Geographical Location</b></p-divider>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                    <div class="col-span-1">
+                        <p-floatlabel variant="in">
+                            <p-select id="location" [options]="screenService.location()" optionLabel="label" optionValue="value" formControlName="location" showClear fluid />
+                            <label for="location">Location</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-span-1">
+                        <p-floatlabel variant="in">
+                            <p-select id="landmarks" [options]="screenService.landmarks()" optionLabel="label" optionValue="value" formControlName="landmark" showClear fluid />
+                            <label for="landmarks">Landmarks</label>
+                        </p-floatlabel>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-1 md:col-span-12" formGroupName="schedule">
+                <p-divider [align]="'left'" type="solid"><b>Operational Schedule</b></p-divider>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                    <div class="col-span-1">
+                        <p-floatlabel variant="in">
+                            <p-select id="operation" [options]="screenService.operationSchedule()" optionLabel="label" optionValue="value" formControlName="operation" showClear fluid />
+                            <label for="operation">Operational</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-span-1">
+                        <p-floatlabel variant="in">
+                            <p-datepicker id="hours" formControlName="hours" timeOnly fluid />
+                            <label for="hours">Hours</label>
+                        </p-floatlabel>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-1 md:col-span-12">
+                <p-floatlabel variant="in">
+                    <input id="caltonDatxSerialNo" pInputText formControlName="caltonDatxSerialNo" 
+                        [ngClass]="{ 'ng-invalid ng-dirty': formControl('caltonDatxSerialNo')?.invalid && formControl('caltonDatxSerialNo')?.touched }" fluid />
+                    <label for="caltonDatxSerialNo">Calton Serial No.</label>
+                </p-floatlabel>
+            </div>
         </div>
-        <div class="col-span-1 md:col-span-5">
-            <p-floatlabel variant="in">
-                <input id="code" pInputText formControlName="name" 
-                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
-                <label for="code">Name</label>
-            </p-floatlabel>
+        <div class="flex flex-col gap-4 w-full">
+            <div class="pb-3">
+                <!-- <p-divider [align]="'left'" type="solid"><b>Map</b></p-divider> -->
+                <app-mapmarkers [markers]="markers" (selectedScreen)="onGetLocation($event)" />
+            </div>
+            <div class="mt-5">
+                <p-divider [align]="'left'" type="solid"><b>Other</b></p-divider>
+            </div>
         </div>
     </div>
     <ng-template #footer>
-        <div class="flex justify-end gap-3">
-            <p-button label="Cancel" severity="secondary" [routerLink]="['/screens/screen-registration']" />
+        <div class="flex justify-start md:justify-end gap-3">
+            <!-- <p-button label="Cancel" severity="secondary" [routerLink]="['/screens/screen-registration']" /> -->
             <p-button label="Register Screen" (onClick)="onClickSave($event)" />
         </div>
     </ng-template>

@@ -27,9 +27,35 @@
                             <th>Orientation & Resolution</th>
                             <th>Group</th>
                             <th>Sub-Group</th>
-                            <th>Last Group</th>
+                            <th>Last Update</th>
                             <th>Status</th>
                             <th>Actions</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-item>
+                        <tr>
+                            <td>{{ item.code }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>
+                                <p-tag severity="info">
+                                    <div class="flex items-center gap-4">
+                                        @switch (item.type) {
+                                            @case('desktop') { <i class="pi pi-desktop"></i> }
+                                            @case('mobile') { <i class="pi pi-mobile"></i> }
+                                            @default { <i class="pi pi-globe"></i> }
+                                        }
+                                        <span>{{ item.type.toUpperCase() }}</span>
+                                    </div>
+                                </p-tag>
+                            </td>
+                            <td>{{ item.displaySettings.orientation }} - {{ item.displaySettings.resolution }}</td>
+                            <td>{{ item.group }}</td>
+                            <td>{{ item.subGroup }}</td>
+                            <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
+                            <td><p-tag [value]="item.status.toUpperCase()" [severity]="utils.getStatus(item.status)" /></td>
+                            <td class="flex flex-row">
+                                <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                            </td>
                         </tr>
                     </ng-template>
                     <ng-template #emptymessage>
@@ -47,3 +73,11 @@
         </p-card>
     </div>
 </div>
+
+<ng-template #actionBtn let-item>
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" [rounded]="true" severity="success" />
+    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
+</ng-template>
+
+<p-toast />
+<p-confirmdialog />

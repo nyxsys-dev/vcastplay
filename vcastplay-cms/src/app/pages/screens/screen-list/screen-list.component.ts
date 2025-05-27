@@ -30,8 +30,43 @@ export class ScreenListComponent {
   rows: number = 8;
   totalRecords: number = 0;
 
+  ngOnInit() {
+    this.screenService.onGetScreens();
+    this.totalRecords = this.screenService.screens().length;
+  }
+
   onClickAddNew() {
     this.router.navigate([ '/screens/screen-details' ]);
+  }
+
+  onClickEdit(item: any) {
+    this.screenService.selectedScreen.set(item);
+    this.router.navigate([ '/screens/screen-details' ]);
+  }
+
+  onClickDelete(item: any, event: Event) {
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to delete this user?',
+      closable: true,
+      closeOnEscape: true,
+      header: 'Danger Zone',
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger',
+      },
+      accept: () => {
+        this.screenService.onDeleteScreen(item);
+        this.message.add({ severity:'success', summary: 'Success', detail: 'User deleted successfully!' });
+      },
+      reject: () => { }
+    })
   }
 
   onClickRefresh() {}
