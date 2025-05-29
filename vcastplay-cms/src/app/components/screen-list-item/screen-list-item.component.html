@@ -1,15 +1,15 @@
 <div class="p-[1rem] border border-gray-200 rounded-lg">
-    <div class="flex flex-row gap-2 justify-between items-center">
-        <div class="flex flex-col">
+    <div class="flex flex-row gap-2 justify-between items-center mb-3">
+        <div class="flex flex-col gap-1">
             <h6 class="font-semibold">{{ screen.code }}: {{ screen.name }}</h6>
-            <p>Type: {{ screen.type.toUpperCase() }}</p>
-            <p>Group: {{ screen.group }} / Sub-Group: {{ screen.subGroup }}</p>
+            <p>{{ screen.type.toUpperCase() }}</p>
+            <p class="text-sm">{{ screen.group }} | {{ screen.subGroup }}</p>
         </div>
         <div class="flex flex-row">
             <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: screen }"></ng-container>
         </div>
     </div>
-    <p-accordion value="0">
+    <p-accordion [value]="0">
         <p-accordion-panel value="0">
             <p-accordion-header>Display Settings</p-accordion-header>
             <p-accordion-content>
