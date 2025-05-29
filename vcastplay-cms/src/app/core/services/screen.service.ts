@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Screen } from '../interfaces/screen';
 import { SelectOption } from '../interfaces/general';
 
@@ -18,27 +18,27 @@ export class ScreenService {
   screenForm: FormGroup = new FormGroup({
     id: new FormControl(0),
     code: new FormControl(''),
-    name: new FormControl(''),
-    type: new FormControl(null),
-    group: new FormControl(null),
-    subGroup: new FormControl(null),
+    name: new FormControl('', [ Validators.required ]),
+    type: new FormControl(null, [ Validators.required ]),
+    group: new FormControl(null, [ Validators.required ]),
+    subGroup: new FormControl(null, [ Validators.required ]),
     displaySettings: new FormGroup({
-      orientation: new FormControl(null),
-      resolution: new FormControl(null),
+      orientation: new FormControl(null, [ Validators.required ]),
+      resolution: new FormControl(null, [ Validators.required ]),
     }),
     geolocation: new FormGroup({
       latitude: new FormControl(0),
       longitude: new FormControl(0),
     }),
     schedule: new FormGroup({
-      operation: new FormControl(null),
-      hours: new FormControl(null),
+      operation: new FormControl(null, [ Validators.required ]),
+      hours: new FormControl(null, [ Validators.required ]),
     }),
     geographicalLocation: new FormGroup({
-      location: new FormControl(null),
-      landmark: new FormControl(null),
+      location: new FormControl(null, [ Validators.required ]),
+      landmark: new FormControl(null, [ Validators.required ]),
     }),
-    caltonDatxSerialNo: new FormControl(''),
+    caltonDatxSerialNo: new FormControl('', [ Validators.required ]),
     status: new FormControl(''),
   });
 

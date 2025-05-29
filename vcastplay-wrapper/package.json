@@ -1,0 +1,38 @@
+{
+  "name": "vcastplay-wrapper",
+  "version": "1.0.1",
+  "description": "Player app for vcastplay system",
+  "main": "main.js",
+  "build": {
+    "appId": "com.vcastplay.player",
+    "productName": "VcastplayPlayer",
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/player/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    }
+  },
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "NYXSYS Philippines Inc",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "systeminformation": "^5.27.1"
+  }
+}
