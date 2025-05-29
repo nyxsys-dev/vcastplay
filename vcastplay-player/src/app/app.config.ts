@@ -6,6 +6,7 @@ import Aura from '@primeng/themes/aura';
 
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
+import myPreset from '../../public/assets/myPresets';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,7 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     providePrimeNG({
       theme: { 
-        preset: Aura,
+        preset: myPreset,
         options: {
           darkModeSelector: '.my-app-dark',
         }

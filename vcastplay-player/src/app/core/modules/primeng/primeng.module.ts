@@ -11,7 +11,6 @@ const PRIMENG_MODULES = [
   InputOtpModule,
   FormsModule,
   ReactiveFormsModule,
-
 ]
 
 @NgModule({
