@@ -81,4 +81,8 @@ export class ScreenListComponent {
     return this.screenService.isEditMode; 
   }
 
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
 }

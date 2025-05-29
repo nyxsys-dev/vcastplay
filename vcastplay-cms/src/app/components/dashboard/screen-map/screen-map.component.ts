@@ -6,6 +6,7 @@ import 'leaflet';
 import 'leaflet.markercluster';
 import { UtilityService } from '../../../core/services/utility.service';
 import { ScreenService } from '../../../core/services/screen.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-screen-map',
@@ -16,11 +17,11 @@ import { ScreenService } from '../../../core/services/screen.service';
 export class ScreenMapComponent {
   
   screenService = inject(ScreenService);
+  router = inject(Router);
 
   keywords = signal<string>('');
   status = signal<string>('All');
   drawerVisible = signal<boolean>(false);
-  selectedScreen = signal<Screen | null>(null);
 
   statusOptions: any[] =[
     { label: 'All', value: 'All' },
@@ -66,8 +67,14 @@ export class ScreenMapComponent {
     this.initializeMap();
   }
 
+  ngOnDestroy() {
+    if (this.map) this.map.remove();
+  }
+
   initializeMap() {
     this.selectedScreen.set(null);
+    this.isEditMode.set(false);
+        
     if (this.map) this.map.remove();
     this.map = L.map('screenMap', { center: [14.6090, 121.0223], zoom: 12, minZoom: 3, zoomControl: false, attributionControl: false });    
     
@@ -112,6 +119,25 @@ export class ScreenMapComponent {
     this.selectedScreen.set(screen);
     this.map.flyTo({ lat: screen.geolocation.latitude, lng: screen.geolocation.longitude }, 22);
     this.drawerVisible.set(true);
+  }
+
+  onClickEdit(item: any) {
+    this.isEditMode.set(true);
+    this.selectedScreen.set(item);
+    this.router.navigate([ '/screens/screen-details', item.code ]);
+  }
+
+  onClickCancel() {
+    this.selectedScreen.set(null); 
+    this.initializeMap();
+  }
+
+  get selectedScreen() {
+    return this.screenService.selectedScreen;
+  }
+
+  get isEditMode() {
+    return this.screenService.isEditMode;
   }
 
   get isMobile() {

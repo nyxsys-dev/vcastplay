@@ -40,7 +40,7 @@ export class MapmarkersComponent {
 
   initializedMap() {
     if (this.map) this.map.remove();
-    this.map = L.map('screenMap', { center: [14.6090, 121.0223], zoom: this.zoom, minZoom: this.minZoom, zoomControl: false, attributionControl: false });    
+    this.map = L.map('mapMarkers', { center: [14.6090, 121.0223], zoom: this.zoom, minZoom: this.minZoom, zoomControl: false, attributionControl: false });    
     
     L.tileLayer(this.tileLink, { maxZoom: this.maxZoom }).addTo(this.map);
 

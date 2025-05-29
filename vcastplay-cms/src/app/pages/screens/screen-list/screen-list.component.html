@@ -8,6 +8,7 @@
                 <div class="flex gap-4">
                     <p-button (onClick)="onClickAddNew()" label="Register" icon="pi pi-plus"></p-button>
                     <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
+                    <p-button [label]="!isMobile ? 'Download' : ''" variant="outlined" icon="pi pi-download" [text]="isMobile" />
                 </div>
             </div>
             <div class="flex-1 md:h-full">
@@ -48,7 +49,12 @@
                                     </div>
                                 </p-tag>
                             </td>
-                            <td>{{ item.displaySettings.orientation }} - {{ item.displaySettings.resolution }}</td>
+                            <td> 
+                                <div class="flex gap-2 items-center">
+                                    <i class="pi pi-exclamation-triangle text-red-500" pTooltip="Auto Detection" tooltipPosition="bottom"></i>
+                                    <p>{{ item.displaySettings.orientation }} - {{ item.displaySettings.resolution }}</p>
+                                </div>
+                            </td>
                             <td>{{ item.group }}</td>
                             <td>{{ item.subGroup }}</td>
                             <td>{{ item.updatedOn | date: 'mediumDate' }}</td>

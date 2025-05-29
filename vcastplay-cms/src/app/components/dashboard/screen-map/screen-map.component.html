@@ -19,7 +19,7 @@
                 <ng-template #header>
                     <div class="flex justify-between items-center gap-3 w-full">
                         <div class="flex items-center gap-3">
-                            <p-button (onClick)="selectedScreen.set(null); initializeMap()" [text]="true" icon="pi pi-arrow-left" />
+                            <p-button (onClick)="onClickCancel()" [text]="true" icon="pi pi-arrow-left" />
                             <h3 class="font-bold text-xl">{{ selectedScreen()?.name }}</h3>
                         </div>
                         <p-tag [value]="selectedScreen()?.status?.toUpperCase()" [severity]="utils.getStatus(selectedScreen()?.status ?? 'offline')" />
@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="flex justify-end">
-                    <p-button class="float-right" label="Edit" icon="pi pi-pencil" />
+                    <p-button (onClick)="onClickEdit(selectedScreen())" class="float-right" label="Edit" icon="pi pi-pencil" />
                 </div>
             </p-panel>
         } @else {
@@ -89,7 +89,7 @@
                     </div>
                 </div>
                 <div class="flex justify-end">
-                    <p-button class="float-right" label="Edit" icon="pi pi-pencil" />
+                    <p-button (onClick)="onClickEdit(selectedScreen())" class="float-right" label="Edit" icon="pi pi-pencil" />
                 </div>
             </p-panel>
         </p-drawer>
