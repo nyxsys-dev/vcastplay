@@ -1,8 +1,43 @@
-<div class="flex flex-col gap-4 justify-center items-center h-screen" [formGroup]="authForm">
+<div class="flex flex-col gap-4 justify-center items-center h-screen relative" [formGroup]="authForm">
+  @if (loading()) { <p-progress-bar mode="indeterminate" [style]="{ height: '6px' }" /> }
   <div class="flex flex-col gap-3 justify-center items-center">
-    <div class="font-bold text-xl md:text-4xl mb-2">Authenticate Player</div>
+    <div class="font-bold text-xl md:text-4xl mb-2">Authenticate</div>
     <p class="text-muted-color block mb-8">Please enter the code of the player.</p>
   </div>
   <p-inputotp formControlName="code" [length]="6" />
-  <p-button (onClick)="loadSystemInfo()" label="Login" />
+  <p-button label="Login" />
+
+  <div class="absolute bottom-3 left-3 p-2">
+    <p>System Information</p>
+    <div class="text-xs flex flex-col gap-3 mt-3">
+      @if (loading()) {
+        <p-skeleton width="5rem" styleClass="mb-2" />
+        <p-skeleton width="5rem" styleClass="mb-2" />
+        <p-skeleton width="5rem" styleClass="mb-2" />
+        <p-skeleton width="5rem" styleClass="mb-2" />
+        <p-skeleton width="5rem" styleClass="mb-2" />
+      } @else {
+        <p>IP Address: <span>{{ systemInfo?.ip ?? 'Unknown' }}</span></p>
+        <p>CPU: <span>{{ systemInfo?.cpu ?? 'Unknown' }}</span></p>
+        <p>RAM: <span>{{ systemInfo?.ram ?? 'Unknown' }}</span></p>
+        <p>OS: <span>{{ systemInfo?.os ?? 'Unknown' }}</span></p>
+        <p>UUID: <span>{{ systemInfo?.serial ?? 'Unknown' }}</span></p>
+      }
+    </div>
+  </div>
+
+  <div class="absolute top-3 right-3 p-2 flex flex-col items-center gap-3">
+    <!-- <p-tag [value]="networkService.isOnline() ? 'ONLINE' : 'OFFLINE'" [severity]="networkService.isOnline() ? 'success' : 'danger'" /> -->
+     @if (networkService.isOnline()) {
+      <p-chip class="text-xs" [style]="{ 'background-color': 'var(--color-green-200)' }">
+        <div class="h-2 w-2 rounded-xl bg-green-600"></div>
+        <p class="text-green-600 font-semibold">ONLINE</p>
+      </p-chip>
+     } @else {
+      <p-chip class="text-xs" [style]="{ 'background-color': 'var(--color-red-200)' }">
+        <div class="h-2 w-2 rounded-xl bg-red-600"></div>
+        <p class="text-red-600 font-semibold">OFFLINE</p>
+      </p-chip>
+     }
+  </div>
 </div>

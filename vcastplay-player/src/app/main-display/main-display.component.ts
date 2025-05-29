@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PrimengModule } from '../core/modules/primeng/primeng.module';
 import { HttpClient } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { NetworkService } from '../core/services/network.service';
+import { UtilsService } from '../core/services/utils.service';
 declare global {
   interface Window {
     system: {
@@ -19,11 +21,21 @@ declare global {
 export class MainDisplayComponent {
 constructor(private http: HttpClient) { }
 
+  networkService = inject(NetworkService);
+  utils = inject(UtilsService);
+
+  loading = signal<boolean>(false);
+
   authForm: FormGroup = new FormGroup({
     code: new FormControl('', [ Validators.required ])
   });
 
-  ngOnInit() { }
+  systemInfo: any;
+
+  ngOnInit() {
+    this.loadSystemInfo();
+    this.utils.requestLocation();
+  }
   
   send(action: string) {
     window.system.control(action)
@@ -42,8 +54,12 @@ constructor(private http: HttpClient) { }
   }
 
   loadSystemInfo() {
+    this.loading.set(true);
     window.system.getSystemInfo()
-      .then(response => console.log(response))
+      .then(response => {
+        this.systemInfo = response; 
+        this.loading.set(false);
+      })
       .catch(err => console.error(err));
   }
 }

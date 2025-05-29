@@ -1,8 +1,10 @@
 const si = require('systeminformation');
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, Menu } = require('electron');
 const { exec } = require('child_process');
 const path = require('path');
 const os = require('os');
+
+const isDev = !app.isPackaged;
 
 /**
  * Creates a new browser window with the specified configuration.
@@ -14,19 +16,31 @@ const os = require('os');
 function createWindow() {
   const win = new BrowserWindow({
     fullscreen: true,
+    autoHideMenuBar: true,
+    icon: path.join(__dirname, 'assets/favicon.png'),
     webPreferences: {
       contextIsolation: true,
-      nodeIntegration: false,
       preload: path.join(__dirname, 'preload.js')
     }
   });
 
-  // 🟢 PROD: Use built Angular app
-  win.loadFile('dist/player/browser/index.html');
-  
-  // 🟢 DEV: Use Angular live server
-  // win.loadURL('http://localhost:4200');
-  win.webContents.openDevTools();
+  if (isDev) {
+    // 🟢 DEV: Use Angular live server
+    win.loadURL('http://localhost:4200');
+    win.webContents.openDevTools();
+  } else {
+    // 🟢 PROD: Use built Angular app
+    win.loadFile('dist/player/browser/index.html');
+    
+    // Disable dev tools
+    win.webContents.on('devtools-opened', () => {
+      win.webContents.closeDevTools();
+    });
+
+    // Disable menu
+    Menu.setApplicationMenu(null);
+  }
+
 }
 
 

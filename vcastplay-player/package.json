@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "vercel-build": "ng build --configuration production --base-href ./",
-    "compile": "ng build --base-href ./ --output-path ../vcastplay-wrapper/dist/player"
+    "compile": "ng build --configuration production --base-href ./ --output-path ../vcastplay-wrapper/dist/player"
   },
   "private": true,
   "dependencies": {
