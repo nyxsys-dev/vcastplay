@@ -41,8 +41,9 @@ export class ScreenListComponent {
   }
 
   onClickEdit(item: any) {
-    this.screenService.selectedScreen.set(item);
-    this.router.navigate([ '/screens/screen-details' ]);
+    this.isEditMode.set(true);
+    this.selectedScreen.set(item);
+    this.router.navigate([ '/screens/screen-details', item.code ]);
   }
 
   onClickDelete(item: any, event: Event) {
@@ -70,6 +71,14 @@ export class ScreenListComponent {
     })
   }
 
-  onClickRefresh() {}
+  onClickRefresh() { }
+
+  get selectedScreen() {
+    return this.screenService.selectedScreen;
+  }
+
+  get isEditMode() { 
+    return this.screenService.isEditMode; 
+  }
 
 }

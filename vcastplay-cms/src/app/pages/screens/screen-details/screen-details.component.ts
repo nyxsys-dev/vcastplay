@@ -4,7 +4,7 @@ import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MapmarkersComponent } from '../../../components/mapmarkers/mapmarkers.component';
 
 @Component({
@@ -26,23 +26,29 @@ export class ScreenDetailsComponent {
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
   router = inject(Router);
+  route = inject(ActivatedRoute);
 
   ngOnInit() {
-    const screenData: any = this.screenService.selectedScreen();    
-    if (screenData) {      
-      this.screenForm.patchValue(screenData);
-      this.markers.push({ geolocation: screenData.geolocation, name: screenData.name });
+    // Get screen code from url
+    const code = this.route.snapshot.paramMap.get('code');
+    if (code) {
+      const screenData: any = this.screenService.selectedScreen();    
+      if (screenData) {      
+        this.screenForm.patchValue(screenData);
+        this.markers.push({ geolocation: screenData.geolocation, name: screenData.name });
+      }
     } else {
       this.screenForm.patchValue({
         code: this.utils.genereteScreenCode(6),
         geolocation: { lat: 14.6090, lng: 121.0223 }
       })
-    }
+    }    
   }
 
   ngOnDestroy() {
-    this.screenService.selectedScreen.set(null);
+    this.selectedScreen.set(null);
     this.screenForm.reset();
+    this.isEditMode.set(false);
   }
 
   onClickSave(event: Event) {
@@ -77,7 +83,7 @@ export class ScreenDetailsComponent {
   }
 
   onClickCancel() {
-    this.screenService.selectedScreen.set(null);
+    this.selectedScreen.set(null);
     this.screenForm.reset();
     this.router.navigate([ '/screens/screen-registration' ]);
   }
@@ -90,11 +96,19 @@ export class ScreenDetailsComponent {
     return this.screenForm.get(fieldName);
   }
 
+  get selectedScreen() {
+    return this.screenService.selectedScreen;
+  }
+
   get screenForm() {
     return this.screenService.screenForm;
   }
 
   get geolocation() {
     return this.screenForm.get('geolocation');
+  }
+
+  get isEditMode() { 
+    return this.screenService.isEditMode; 
   }
 }

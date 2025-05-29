@@ -102,7 +102,7 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col gap-4 w-full">
+        <div class="flex flex-col gap-4 w-full" [ngClass]="{ 'hidden': !isEditMode() }">
             <p-divider [align]="'left'" type="solid"><b class="text-sm">Screen Address</b></p-divider>
             <app-mapmarkers [markers]="markers" (selectedScreen)="onGetLocation($event)" />
             <p-accordion [value]="0">

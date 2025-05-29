@@ -233,6 +233,14 @@ export class ScreenService {
     return this.screens();
   }
 
+  onGetScreenByCode(code: string) {
+    /**Call GET screen by code or id API */
+    return new Promise((resolve, reject) => {
+      const screen = this.screens().find(s => s.code === code);
+      if (screen) resolve(screen);
+    })
+  }
+
   onRefreshScreens() {
     this.screenSignal.set([]);
     this.onLoadScreens();
