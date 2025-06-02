@@ -1,5 +1,6 @@
 const si = require('systeminformation');
-const { app, BrowserWindow, ipcMain, screen, Menu, autoUpdater } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, Menu } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const { exec } = require('child_process');
 const path = require('path');
 const os = require('os');
