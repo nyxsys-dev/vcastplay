@@ -1,0 +1,20 @@
+# Node/Electron
+node_modules/
+build/
+out/
+
+# Angular build
+dist/
+.angular/
+*.log
+
+# Auto-update artifacts
+*.exe
+*.dmg
+*.AppImage
+*.blockmap
+*.yml
+
+# VSCode and IDEs
+.vscode/
+.idea/

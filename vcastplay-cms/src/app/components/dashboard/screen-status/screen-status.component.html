@@ -1,0 +1,13 @@
+<div class="h-[300px]" echarts [options]="options" (chartInit)="onChartInit($event)"></div>
+<!-- <div class="flex justify-between items-center gap-5">
+    @for (item of chartData; track $index) {
+        <div class="flex justify-between items-center border-b-1 p-2 border-gray-200">
+            <div class="text-lg font-medium" [ngStyle]="{ 'color': item.itemStyle.color }">{{ item.name }}:</div>
+            <div class="font-bold text-[18px]">{{ item.value | number: '1.0-2' }}</div>
+        </div>
+        <p-card class="w-full">
+            <ng-template #subtitle><p class="text-sm" [ngStyle]="{ 'color': item.itemStyle.color }">{{ item.name }}</p></ng-template>
+            <div class="font-bold text-[24px]">{{ item.value | number: '1.0-2' }}</div>
+        </p-card>
+    }
+</div> -->

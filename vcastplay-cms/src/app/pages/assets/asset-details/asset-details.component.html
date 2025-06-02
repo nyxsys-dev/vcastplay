@@ -1,0 +1,12 @@
+<app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+<p-card>
+    <ng-template #title>
+        <div class="flex items-center gap-4">
+            <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+            <p class="text-xl font-semibold">Assets Details</p>
+        </div>
+    </ng-template>
+    <div class="flex gap-3" [formGroup]="assetForm">
+        
+    </div>
+</p-card>

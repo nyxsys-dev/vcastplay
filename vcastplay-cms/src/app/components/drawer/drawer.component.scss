@@ -1,0 +1,11 @@
+.arrow-left {
+  position: absolute;
+  left: -12px; /* distance from the menu */
+  bottom: 16px; /* adjust vertically */
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 12px solid white; /* match menu bg color */
+  z-index: 10;
+}

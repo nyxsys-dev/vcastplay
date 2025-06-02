@@ -1,0 +1,146 @@
+<app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+<p-card>
+    <ng-template #title>
+        <div class="flex items-center gap-4">
+            <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+            <p class="text-xl font-semibold">Screen Details</p>
+        </div>
+    </ng-template>
+    <div class="flex flex-col md:flex-row gap-6 mt-4" [formGroup]="screenForm">
+        <div class="flex flex-col gap-4 w-full">
+            <p-divider [align]="'left'" type="solid"><b class="text-sm">Information</b></p-divider>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="col-span-1 md:col-span-4">
+                    <p-floatlabel variant="in">
+                        <input id="code" pInputText formControlName="code" 
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('code')?.invalid && formControl('code')?.touched }" readonly fluid />
+                        <label for="code">Code</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-1 md:col-span-8">
+                    <p-floatlabel variant="in">
+                        <input id="name" pInputText formControlName="name" 
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
+                        <label for="name">Name</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-1 md:col-span-4">
+                    <p-floatlabel variant="in">
+                        <p-select id="type" [options]="utils.platForms" optionLabel="label" optionValue="value" formControlName="type" showClear fluid />
+                        <label for="type">Type</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-1 md:col-span-4">
+                    <p-floatlabel variant="in">
+                        <p-select id="group" [options]="screenService.filterGroup()" optionLabel="label" optionValue="value" formControlName="group" showClear fluid />
+                        <label for="group">Group</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-1 md:col-span-4">
+                    <p-floatlabel variant="in">
+                        <p-select id="subGroup" [options]="screenService.filterSubGroup()" optionLabel="label" optionValue="value" formControlName="subGroup" showClear fluid />
+                        <label for="subGroup">Subgroup</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-1 md:col-span-12" formGroupName="displaySettings">
+                    <p-divider [align]="'left'" type="solid">
+                        <b class="text-sm">Display Settings <span class="italic font-normal text-red-500">(Auto Detect)</span></b>
+                    </p-divider>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <div class="col-span-1">
+                            <p-floatlabel variant="in">
+                                <p-select id="orientation" [options]="screenService.orientations()" optionLabel="label" optionValue="value" formControlName="orientation" showClear fluid />
+                                <label for="orientation">Orientation</label>
+                            </p-floatlabel>
+                        </div>
+                        <div class="col-span-1">
+                            <p-floatlabel variant="in">
+                                <p-select id="resolution" [options]="screenService.resolution()" optionLabel="label" optionValue="value" formControlName="resolution" filterBy="label" filter showClear fluid />
+                                <label for="resolution">Resolution</label>
+                            </p-floatlabel>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-1 md:col-span-12" formGroupName="geographicalLocation">
+                    <p-divider [align]="'left'" type="solid"><b class="text-sm">Geographical Location</b></p-divider>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <div class="col-span-1">
+                            <p-floatlabel variant="in">
+                                <p-select id="location" [options]="screenService.location()" optionLabel="label" optionValue="value" formControlName="location" showClear fluid />
+                                <label for="location">Location</label>
+                            </p-floatlabel>
+                        </div>
+                        <div class="col-span-1">
+                            <p-floatlabel variant="in">
+                                <p-select id="landmarks" [options]="screenService.landmarks()" optionLabel="label" optionValue="value" formControlName="landmark" showClear fluid />
+                                <label for="landmarks">Landmarks</label>
+                            </p-floatlabel>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-1 md:col-span-12" formGroupName="schedule">
+                    <p-divider [align]="'left'" type="solid"><b class="text-sm">Operational Schedule</b></p-divider>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <div class="col-span-1">
+                            <p-floatlabel variant="in">
+                                <p-select id="operation" [options]="screenService.operationSchedule()" optionLabel="label" optionValue="value" formControlName="operation" showClear fluid />
+                                <label for="operation">Operational</label>
+                            </p-floatlabel>
+                        </div>
+                        <div class="col-span-1">
+                            <p-floatlabel variant="in">
+                                <p-datepicker id="hours" formControlName="hours" icon="pi pi-clock" showIcon showButtonBar timeOnly fluid />
+                                <label for="hours">Hours</label>
+                            </p-floatlabel>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-1 md:col-span-12">
+                    <p-floatlabel variant="in">
+                        <input id="caltonDatxSerialNo" pInputText formControlName="caltonDatxSerialNo" 
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('caltonDatxSerialNo')?.invalid && formControl('caltonDatxSerialNo')?.touched }" fluid />
+                        <label for="caltonDatxSerialNo">Calton Serial No.</label>
+                    </p-floatlabel>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col gap-4 w-full" [ngClass]="{ 'hidden': !isEditMode() }">
+            <p-divider [align]="'left'" type="solid"><b class="text-sm">Screen Address</b></p-divider>
+            <app-mapmarkers [markers]="markers" (selectedScreen)="onGetLocation($event)" />
+            <p-accordion [value]="0">
+                <p-accordion-panel value="0">
+                    <p-accordion-header><p class="text-sm">Software Information</p></p-accordion-header>
+                    <p-accordion-content>
+                        <div class="flex flex-col gap-4 text-sm px-10">
+                            <p>IP Address: 0.0.0.0</p>
+                            <p>CPU & Temp: Intel Core (i7) / 45°C</p>
+                            <p>Memory: 16GB / 80% </p>
+                            <p>Storage: 100GB / 80%</p>
+                            <p>OS: Windows 10</p>
+                            <p>Version: 1.0.0</p>
+                        </div>
+                    </p-accordion-content>
+                </p-accordion-panel>
+                <p-accordion-panel value="1">
+                    <p-accordion-header><p class="text-sm">Hardware Information</p></p-accordion-header>
+                    <p-accordion-content>
+                        <div class="flex flex-col gap-4 text-sm px-10">
+                            <div class="flex items-center gap-4"><p>Display Status:</p> <p-tag value="ON" severity="success" /></div>
+                            <div class="flex items-center gap-4"><p>HDMI Status:</p> <p-tag value="OFF" severity="danger" /></div>
+                            <p>UUID: 00000000-0000-0000-0000-000000000000</p>
+                        </div>
+                    </p-accordion-content>
+                </p-accordion-panel>
+            </p-accordion>
+        </div>
+    </div>
+    <ng-template #footer>
+        <div class="flex justify-start md:justify-end gap-3">
+            <!-- <p-button label="Cancel" severity="secondary" [routerLink]="['/screens/screen-registration']" /> -->
+            <p-button label="Register Screen" (onClick)="onClickSave($event)" />
+        </div>
+    </ng-template>
+</p-card>
+
+<p-toast />
+<p-confirmdialog />

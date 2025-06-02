@@ -1,0 +1,91 @@
+<div class="flex flex-col gap-5 h-full">
+    <div class="flex justify-between items-center">
+        <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+        <p-button 
+            class="hidden md:block" 
+            severity="primary" 
+            label="Upgrade Subscription" 
+            pTooltip="Purchase More Licenses"
+            tooltipPosition="bottom" 
+            icon="pi pi-angle-double-up" />
+        <p-button 
+            class="md:hidden" 
+            label="Upgrade" 
+            severity="primary" 
+            pTooltip="Purchase More Licenses" 
+            tooltipPosition="bottom" 
+            icon="pi pi-angle-double-up" />
+    </div>
+    <div class="grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <p-card styleClass="h-full">
+            <ng-template #title>
+                <div class="flex justify-between items-center gap-5">
+                    <p class="text-4xl font-bold">3</p>
+                    <div class="bg-green-900 p-3 rounded-lg text-white">
+                        <i class="pi pi-desktop" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template #footer>
+                Online
+            </ng-template>
+        </p-card>
+        <p-card styleClass="h-full">
+            <ng-template #title>
+                <div class="flex justify-between items-center gap-5">
+                    <p class="text-4xl font-bold">2</p>
+                    <div class="bg-red-900 p-3 rounded-lg text-white">
+                        <i class="pi pi-desktop" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template #footer>
+                Offline
+            </ng-template>
+        </p-card>
+        <p-card styleClass="h-full">
+            <ng-template #title>
+                <div class="flex justify-between items-center gap-5">
+                    <p class="text-3xl font-bold">50% <span class="text-sm font-normal">storage</span></p>
+                    <div class="bg-orange-700 p-3 rounded-lg text-white">
+                        <i class="pi pi-database" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </ng-template>
+            <div class="mt-4">
+                <p-progressbar [value]="50" [showValue]="false" class="storage-progressbar" />
+            </div>
+            <ng-template #footer>
+                <div class="flex justify-between text-sm xl:text-base">
+                    <p>Used: <span class="font-semibold">50 GB</span></p>
+                    <p>Limit: <span class="font-semibold">100 GB</span></p>
+                </div>
+            </ng-template>
+        </p-card>
+        <p-card styleClass="h-full">
+            <ng-template #title>
+                <div class="flex justify-between items-center gap-5">
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold">Premium Plan</p>
+                        <i class="pi pi-verified text-green-900" pTooltip="You’re on the Premium Plan – all features unlocked." tooltipPosition="bottom"></i>
+                    </div>
+                    <div class="bg-blue-900 p-3 rounded-lg text-white">
+                        <i class="pi pi-credit-card" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </ng-template>
+            <div class="mt-4">
+                <p-progressbar [value]="60" [showValue]="false" class="subscription-progressbar" />
+            </div>
+            <ng-template #footer>
+                <div class="flex justify-between text-sm xl:text-base">
+                    <p>Used License: <span class="font-semibold">6</span></p>
+                    <p>Total License: <span class="font-semibold">10</span></p>
+                </div>
+            </ng-template>
+        </p-card>
+    </div>
+    <div class="flex-1 relative shadow-lg">
+        <app-screen-map />
+    </div>
+</div>

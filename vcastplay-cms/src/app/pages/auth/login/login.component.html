@@ -1,0 +1,47 @@
+<div class="grid grid-cols-5 w-full h-screen">
+    <div class="col-span-3 hidden lg:block relative">
+        <div class="absolute top-0 left-0 m-5 z-50">
+            <img src="assets/vcast-logo.png" alt="app logo">
+        </div>
+        <p-carousel [value]="slides" [numVisible]="1" [numScroll]="1" [circular]="true" [showIndicators]="false" [showNavigators]="false" [autoplayInterval]="5000">
+            <ng-template let-item #item>
+                <div class="flex items-center justify-center w-full h-screen relative">
+                    <img [src]="item.image" class="w-full h-full object-cover" alt="banner">
+                    <div class="absolute top-0 left-0 w-full h-full bg-[var(--p-primary-500)] opacity-70"></div>
+                    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-center">
+                        <p class="text-[2.75rem] font-bold text-white">"{{ item.text }}"</p>
+                    </div>
+                </div>
+            </ng-template>
+        </p-carousel>
+    </div>
+    <div class="col-span-5 lg:col-span-2">
+        <div class="flex flex-col items-center justify-center h-full relative bg-gray-100 p-3 md:p-10 relative">
+            <div class="flex flex-col gap-4 w-full">
+                <div class="text-center">
+                    <p class="text-3xl font-bold">Login to your account</p>
+                </div>
+                <form class="grid grid-cols-1 gap-4 my-[2rem]" [formGroup]="auth.loginForm">
+                    <p-floatlabel variant="in">
+                        <input id="username" pInputText formControlName="username" [fluid]="true" />
+                        <label for="username">Username*</label>
+                    </p-floatlabel>
+                    <p-floatlabel variant="in">
+                        <p-password formControlName="password" inputId="password" [toggleMask]="true" [fluid]="true" [feedback]="false" />
+                        <label for="password">Password*</label>
+                    </p-floatlabel>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            <p-checkbox inputId="rememberMe" formControlName="rememberMe" [binary]="true" />
+                            <label for="rememberMe" class="ml-2">Remember Me</label>
+                        </div>
+                        <a href="/" class="hover:text-orange-500">Forgot Password?</a>
+                    </div>
+                </form>
+                <p-button (onClick)="auth.onLogin()" styleClass="w-full" label="Login" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-toast />

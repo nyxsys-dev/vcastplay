@@ -1,0 +1,99 @@
+<div class="flex flex-col gap-4 h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+
+    <div class="flex-1">
+        <p-card styleClass="h-full">
+            <div class="flex flex-col gap-4">
+                <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
+                    <app-filters class="w-full md:w-[25rem]"></app-filters>
+                    <div class="flex gap-3">
+                        <p-button (onClick)="onClickAddNew()" label="Add Role" icon="pi pi-plus" />
+                        <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 md:h-full">
+                <p-table
+                    class="hidden lg:block" 
+                    [value]="roleService.loadingSignal() ? utils.tableSkeletonRows : filteredRoles()" 
+                    selectionMode="single"
+                    [scrollable]="true" 
+                    size="small"  
+                    stripedRows
+                >
+                    <ng-template #header>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Last Update</th>
+                            <th>Actions</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-item>
+                        @if (roleService.loadingSignal()) {
+                            <tr>
+                                <td><p-skeleton height="2rem" /></td>
+                                <td><p-skeleton height="2rem" /></td>
+                                <td><p-skeleton height="2rem" /></td>
+                                <td><p-skeleton height="2rem" /></td>
+                                <td><p-skeleton height="2rem" /></td>
+                            </tr>
+                        } @else {
+                            <tr [pSelectableRow]="item">
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.description }}</td>
+                                <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" /></td>
+                                <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
+                                <td class="flex flex-row">
+                                    <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                                </td>
+                            </tr>
+                        }
+                    </ng-template>
+                    <ng-template #emptymessage>
+                        <tr>
+                            <td colspan="5" [height]="20">
+                                <div class="flex justify-center p-5"><p>No roles found</p></div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+                <div class="block lg:hidden flex flex-col gap-5">
+                    @if (!roleService.loadingSignal()) {
+                        @for (item of filteredRoles(); track $index) {
+                            <app-role-list-item [item]="item" [actionBtn]="actionBtn" />
+                        } @empty {
+                            <div class="flex justify-center items-center p-5 h-100">
+                                <p>No roles found</p>
+                            </div>
+                        }
+                    } @else {
+                        @for (item of utils.tableSkeletonRows; track $index) {
+                            <p-skeleton height="5rem" />
+                        }
+                    }
+                </div>
+            </div>
+            <ng-template #footer>
+                <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
+            </ng-template>
+        </p-card>
+    </div>
+</div>
+
+<ng-template #actionBtn let-item>
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" [rounded]="true" severity="success" />
+    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
+</ng-template>
+
+<p-dialog header="Role Information" [(visible)]="showDialog" styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false">
+    <app-role-details [roleForm]="roleForm" />
+    <ng-template #footer>
+        <p-button label="Cancel" severity="secondary" (onClick)="onClickCancel()" />
+        <p-button label="Save" (onClick)="onClickSave($event)" />
+    </ng-template>
+</p-dialog>
+
+<p-toast />
+<p-confirmdialog />
