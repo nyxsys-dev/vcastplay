@@ -100,18 +100,30 @@ ipcMain.on('restart_app', () => {
   autoUpdater.quitAndInstall();
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+  
+
+  // Auto update events
+  autoUpdater.on('update-downloaded', () => {
+    const choice = dialog.showMessageBoxSync({
+      type: 'question',
+      buttons: ['Restart', 'Later'],
+      title: 'Install Updates',
+      message: 'Updates downloaded. Restart now?',
+    });
+
+    if (choice === 0) {
+      autoUpdater.quitAndInstall();
+    }
+  });
+
+  autoUpdater.on('update-not-available', () => {
+    win.webContents.send('update-not-available');
+  });
+
+  autoUpdater.on('update-available', () => {
+    win.webContents.send('update-available');
+  })
+});
 app.on('window-all-closed', () => app.quit());
-
-// Auto update events
-autoUpdater.on('update-downloaded', () => {
-  win.webContents.send('update-downloaded');
-});
-
-autoUpdater.on('update-not-available', () => {
-  win.webContents.send('update-not-available');
-});
-
-autoUpdater.on('update-available', () => {
-  win.webContents.send('update-available');
-})

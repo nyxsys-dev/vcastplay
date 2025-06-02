@@ -1,6 +1,6 @@
 {
   "name": "vcastplay-wrapper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Player app for vcastplay system",
   "main": "main.js",
   "build": {
@@ -49,7 +49,7 @@
     "start": "electron .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "publish": "electron-builder --publish always"
+    "publish": "electron-builder --publish=always"
   },
   "keywords": [],
   "author": "NYXSYS Philippines Inc",
