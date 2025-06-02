@@ -1,6 +1,6 @@
 {
   "name": "vcastplay-wrapper",
-  "version": "1.0.4",
+  "version": "1.0.0",
   "description": "Player app for vcastplay system",
   "main": "main.js",
   "build": {
