@@ -36,9 +36,10 @@ function createWindow() {
     win.loadFile('dist/player/browser/index.html');
     
     // Disable dev tools
-    win.webContents.on('devtools-opened', () => {
-      win.webContents.closeDevTools();
-    });
+    // win.webContents.on('devtools-opened', () => {
+    //   win.webContents.closeDevTools();
+    // });
+    win.webContents.openDevTools();
 
     // Disable menu
     Menu.setApplicationMenu(null);
