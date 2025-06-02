@@ -19,7 +19,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "breadnut190",
+        "owner": "breadnut1906",
         "repo": "https://github.com/breadnut1906/vcastplay.git"
       }
     ],
@@ -48,7 +48,8 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "publish": "electron-builder --publish always"
   },
   "keywords": [],
   "author": "NYXSYS Philippines Inc",
