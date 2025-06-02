@@ -20,7 +20,7 @@
       {
         "provider": "github",
         "owner": "breadnut1906",
-        "repo": "https://github.com/breadnut1906/vcastplay.git"
+        "repo": "vcastplay"
       }
     ],
     "win": {
