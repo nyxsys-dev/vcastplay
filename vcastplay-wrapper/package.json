@@ -1,6 +1,6 @@
 {
   "name": "vcastplay-wrapper",
-  "version": "1.0.1",
+  "version": "1.0.8",
   "description": "Player app for vcastplay system",
   "main": "main.js",
   "build": {
@@ -20,7 +20,8 @@
       {
         "provider": "github",
         "owner": "breadnut1906",
-        "repo": "vcastplay"
+        "repo": "vcastplay",
+        "releaseType": "release"
       }
     ],
     "win": {
@@ -36,13 +37,15 @@
       ]
     },
     "nsis": {
-      "oneClick": false,
+      "oneClick": true,
       "perMachine": true,
       "allowElevation": true,
-      "allowToChangeInstallationDirectory": true,
+      "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Vcastplay Player"
+      "shortcutName": "Vcastplay Player",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true
     }
   },
   "scripts": {
@@ -60,6 +63,7 @@
     "electron-builder": "^26.0.12"
   },
   "dependencies": {
+    "electron-log": "^5.4.0",
     "electron-updater": "^6.6.2",
     "systeminformation": "^5.27.1"
   }

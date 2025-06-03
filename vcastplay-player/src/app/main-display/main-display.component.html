@@ -1,33 +1,33 @@
-<div class="flex flex-col gap-4 justify-center items-center h-screen relative" [formGroup]="authForm">
+<div class="flex flex-col gap-4 justify-center items-center h-screen relative bg-[var(--p-primary-500)]" [formGroup]="authForm">
   @if (loading()) { <p-progress-bar mode="indeterminate" [style]="{ height: '6px' }" /> }
-  <div class="flex flex-col gap-3 justify-center items-center">
-    <div class="font-bold text-xl md:text-4xl mb-2">Authenticate</div>
-    <p class="text-muted-color block mb-8">Please enter the code of the player.</p>
+  <div class="flex flex-col gap-3 justify-center items-center text-white">
+    <div class="font-bold text-5xl md:text-8xl mb-2 tracking-widest">{{ playerCode?.value }}</div>
+    <p class="text-muted-color block mb-8">Player code.</p>
   </div>
-  <p-inputotp formControlName="code" [length]="6" />
-  <p-button label="Login" />
 
-  <div class="absolute bottom-3 left-3 p-2">
+  <div class="absolute top-3 left-3 flex gap-3 m-2">
+    <img src="assets/vcast-logo.png" alt="app logo">
+    <p-tag [value]="systemInfo?.appVersion ?? '0.0.0'" severity="info" />
+  </div>
+
+  <div class="absolute bottom-3 left-3 p-2 text-gray-500">
     <p>System Information</p>
     <div class="text-xs flex flex-col gap-3 mt-3">
       @if (loading()) {
-        <p-skeleton width="5rem" styleClass="mb-2" />
-        <p-skeleton width="5rem" styleClass="mb-2" />
-        <p-skeleton width="5rem" styleClass="mb-2" />
-        <p-skeleton width="5rem" styleClass="mb-2" />
-        <p-skeleton width="5rem" styleClass="mb-2" />
+        @for (item of [1, 2, 3, 4, 5]; track $index) { <p-skeleton width="2rem" styleClass="mb-2" /> }
       } @else {
         <p>IP Address: <span>{{ systemInfo?.ip ?? 'Unknown' }}</span></p>
-        <p>CPU: <span>{{ systemInfo?.cpu ?? 'Unknown' }}</span></p>
+        <p>CPU: <span>{{ systemInfo?.cpu ?? 'Unknown' }}</span> ({{ systemInfo.cpuTemp ?? 0 }})</p>
         <p>RAM: <span>{{ systemInfo?.ram ?? 'Unknown' }}</span></p>
         <p>OS: <span>{{ systemInfo?.os ?? 'Unknown' }}</span></p>
         <p>UUID: <span>{{ systemInfo?.serial ?? 'Unknown' }}</span></p>
+        <p>Browser: <span>{{ systemInfo?.browserVersion ?? 'Unknown' }}</span></p>
+        <p>Location: <span>{{ systemInfo?.coords?.city  + ', ' + systemInfo?.coords?.region + ', ' + systemInfo?.coords?.country }}</span></p>
       }
     </div>
   </div>
 
   <div class="absolute top-3 right-3 p-2 flex flex-col items-center gap-3">
-    <!-- <p-tag [value]="networkService.isOnline() ? 'ONLINE' : 'OFFLINE'" [severity]="networkService.isOnline() ? 'success' : 'danger'" /> -->
      @if (networkService.isOnline()) {
       <p-chip class="text-xs" [style]="{ 'background-color': 'var(--color-green-200)' }">
         <div class="h-2 w-2 rounded-xl bg-green-600"></div>

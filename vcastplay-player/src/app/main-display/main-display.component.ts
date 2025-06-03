@@ -1,6 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { PrimengModule } from '../core/modules/primeng/primeng.module';
-import { HttpClient } from '@angular/common/http';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NetworkService } from '../core/services/network.service';
 import { UtilsService } from '../core/services/utils.service';
@@ -9,8 +8,9 @@ declare global {
     system: {
       control: (action: string, app?: string) => Promise<string>;
       getSystemInfo: () => Promise<string>;
-      onUpdateAvailable: (callback: () => void) => void;
-      onUpdateDownloaded: (callback: () => void) => void;
+      checkForUpdates: () => void;
+      // onUpdateAvailable: (callback: () => void) => void;
+      // onUpdateDownloaded: (callback: () => void) => void;
       restartApp: () => void;
     };
   }
@@ -22,7 +22,6 @@ declare global {
   styleUrl: './main-display.component.scss'
 })
 export class MainDisplayComponent {
-constructor(private http: HttpClient) { }
 
   networkService = inject(NetworkService);
   utils = inject(UtilsService);
@@ -35,20 +34,20 @@ constructor(private http: HttpClient) { }
 
   systemInfo: any;
 
+  constructor() {
+    effect(() => {
+      this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
+    })
+  }
+
   ngOnInit() {
     this.loadSystemInfo();
-    this.utils.requestLocation();
+    const code = this.utils.genereteScreenCode(6);
+    this.authForm.patchValue({ code });
+  }
 
-    window.system.onUpdateAvailable(() => {
-      alert('Update available. Downloading...');
-    });
-
-    window.system.onUpdateDownloaded(() => {
-      const restart = confirm('Update downloaded. Restart now?');
-      if (restart) {
-        window.system.restartApp();
-      }
-    });
+  onClickCheckUpdates() {
+    window.system.checkForUpdates();
   }
   
   send(action: string) {
@@ -70,10 +69,15 @@ constructor(private http: HttpClient) { }
   loadSystemInfo() {
     this.loading.set(true);
     window.system.getSystemInfo()
-      .then(response => {
+      .then(response => {        
         this.systemInfo = response; 
+        this.utils.requestLocation();        
         this.loading.set(false);
       })
       .catch(err => console.error(err));
+  }
+
+  get playerCode() {
+    return this.authForm.get('code');
   }
 }
