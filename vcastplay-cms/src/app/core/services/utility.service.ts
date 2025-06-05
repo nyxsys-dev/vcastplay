@@ -3,11 +3,14 @@ import { map } from 'rxjs';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DrawerMenu } from '../interfaces/drawer-menu';
+import { PrimeNG } from 'primeng/config';
+import { FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilityService {
+
   filterValues = signal<any>({});
   drawerVisible = signal<boolean>(false);
   tableSkeletonRows = Array(5).fill({});
@@ -37,8 +40,8 @@ export class UtilityService {
       icon: 'pi pi-list',
       expanded: false,
       items: [
-        { label: 'Add Playlist', icon: 'pi pi-plus', routerLink: ['/playlist-register'], },
-        { label: 'List', icon: 'pi pi-list', routerLink: ['/playlist-list'], }
+        { label: 'Add Playlist', icon: 'pi pi-plus', routerLink: ['/playlist/playlist-details'], },
+        { label: 'List', icon: 'pi pi-list', routerLink: ['/playlist/playlist-library'], }
       ]
     },
     { label: 'Layout', icon: 'pi pi-th-large', routerLink: '/dashboard' },
@@ -137,7 +140,25 @@ export class UtilityService {
     return code;
   }
 
-  constructor() { }
+  constructor(private config: PrimeNG) { }
+
+  formatSize(bytes: number) {
+    const k = 1024;
+    const dm = 3;
+    const sizes: any = this.config.translation.fileSizeTypes;    
+    if (bytes == 0) {
+      return `0 ${sizes[0]}`;
+    }
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const formattedSize = !isNaN(parseFloat((bytes / Math.pow(k, i)).toFixed(dm))) ? parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) : 0;
+
+    return `${formattedSize} ${sizes[i]}`;
+  }
+
+  getFormControl(formGroup: FormGroup, fieldName: string) {
+    return formGroup.controls[fieldName];
+  }
 
   getStatus(status: string) {
     switch (status) {

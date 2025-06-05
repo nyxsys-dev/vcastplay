@@ -1,0 +1,33 @@
+<div class="flex flex-col gap-5 h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+    <p-card styleClass="h-full" class="flex-1" cdkDropListGroup>
+        <div class="flex items-center gap-4 mb-5">
+            <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+            <p class="text-xl font-semibold">New Playlist</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 h-full pb-12">
+            <div class="col-span-1 md:col-span-6 xl:col-span-8">
+                <div class="w-full h-full flex justify-center items-center border border-[var(--p-surface-300)]">
+                    preview
+                </div>
+            </div>
+            <div class="col-span-1 md:col-span-6 xl:col-span-4">
+                <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] h-full">
+                    <div class="p-3">
+                        filters
+                    </div>
+                    <div class="flex-1 overflow-y-auto">
+                        <div class="h-50" cdkDropList [cdkDropListData]="assets()">
+                            @for (item of assets(); track $index) {
+                                <app-asset-list-item cdkDrag />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ng-template #footer>
+            <app-timeline-container [startTime]="moment('2025-06-05T08:00:00')" [endTime]="moment('2025-06-05T18:00:00')" />
+        </ng-template>
+    </p-card>
+</div>

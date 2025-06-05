@@ -37,12 +37,7 @@ export class ScreenDetailsComponent {
         this.screenForm.patchValue(screenData);
         this.markers.push({ geolocation: screenData.geolocation, name: screenData.name });
       }
-    } else {
-      this.screenForm.patchValue({
-        code: this.utils.genereteScreenCode(6),
-        geolocation: { lat: 14.6090, lng: 121.0223 }
-      })
-    }    
+    } 
   }
 
   ngOnDestroy() {
@@ -93,7 +88,7 @@ export class ScreenDetailsComponent {
   }
 
   formControl(fieldName: string) {
-    return this.screenForm.get(fieldName);
+    return this.utils.getFormControl(this.screenForm, fieldName);
   }
 
   get selectedScreen() {

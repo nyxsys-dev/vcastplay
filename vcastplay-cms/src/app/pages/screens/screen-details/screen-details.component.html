@@ -13,14 +13,14 @@
                 <div class="col-span-1 md:col-span-4">
                     <p-floatlabel variant="in">
                         <input id="code" pInputText formControlName="code" 
-                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('code')?.invalid && formControl('code')?.touched }" readonly fluid />
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('code').invalid && formControl('code').touched }" showClear fluid />
                         <label for="code">Code</label>
                     </p-floatlabel>
                 </div>
                 <div class="col-span-1 md:col-span-8">
                     <p-floatlabel variant="in">
                         <input id="name" pInputText formControlName="name" 
-                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
                         <label for="name">Name</label>
                     </p-floatlabel>
                 </div>
@@ -98,13 +98,13 @@
                 <div class="col-span-1 md:col-span-12">
                     <p-floatlabel variant="in">
                         <input id="caltonDatxSerialNo" pInputText formControlName="caltonDatxSerialNo" 
-                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('caltonDatxSerialNo')?.invalid && formControl('caltonDatxSerialNo')?.touched }" fluid />
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('caltonDatxSerialNo').invalid && formControl('caltonDatxSerialNo').touched }" fluid />
                         <label for="caltonDatxSerialNo">Calton Serial No.</label>
                     </p-floatlabel>
                 </div>
             </div>
         </div>
-        <div class="flex flex-col gap-4 w-full" [ngClass]="{ 'hidden': !isEditMode() }">
+        <div class="flex flex-col gap-4 w-full">
             <p-divider [align]="'left'" type="solid"><b class="text-sm">Screen Address</b></p-divider>
             <app-mapmarkers [markers]="markers" (selectedScreen)="onGetLocation($event)" />
             <p-accordion [value]="0">

@@ -1,0 +1,21 @@
+<div 
+    class="timeline-item" 
+    [style.left.px]="item.position * zoomLevel" 
+    [style.width.px]="item.duration * zoomLevel" 
+    cdkDrag 
+    (cdkDragEnded)="onDragEnded($event, item)"
+    (cdkDragStarted)="onDragStarted(item)"
+>
+    <!-- Left Resize Handle -->
+    <div class="resize-handle left" (mousedown)="startResizing($event, item, 'left')"></div>
+
+    <!-- Content -->
+    <div class="item-label h-100" cdkDragHandle>
+        {{ item.name }}<br />
+        {{ formatTime(item.position) }} - {{ formatTime(item.position + item.duration) }}
+    </div>
+
+    <!-- Right Resize Handle -->
+    <div class="resize-handle right" (mousedown)="startResizing($event, item, 'right')"></div>
+
+</div>

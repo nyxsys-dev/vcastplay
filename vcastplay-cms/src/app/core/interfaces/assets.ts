@@ -3,6 +3,7 @@ export interface Assets {
     code: string;
     name: string;
     type: string;
+    link: string;
     file: string;
     category: string;
     subCategory: string;
@@ -12,11 +13,24 @@ export interface Assets {
         size: string;
         type: string;
     };
-    audienceTag: string;
+    audienceTag?: string;
     availability: string;
     dateRange: {
         start: string;
         end: string;
     };
     hours: string[];
+}
+
+export interface AssetType {
+    label: string;
+    value: string;
+}
+
+export interface AssestInfo {
+    name: string,
+    type: string,
+    size: number,
+    orientation: string,
+    resolution: { width: number, height: number },
 }

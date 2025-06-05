@@ -1,0 +1,36 @@
+.timeline-container {
+    position: relative;
+    border: 1px solid var(--p-surface-300);
+    background: var(--color-gray-100);
+    overflow-x: auto;
+    height: 100px;
+    width: 100%;
+    
+    .timeline-wrapper {
+        position: relative;
+
+        .timeline-tick {
+            display: inline-block;
+            height: 100%;
+            border-left: 1px solid #ddd;
+            font-size: 10px;
+            padding-left: 4px;
+            box-sizing: border-box;
+        }
+    }
+
+    .timeline-item-wrapper {
+
+        .timeline-item {
+            position: absolute;
+            height: 40px;
+            top: 10px;
+            background-color: #2196f3;
+            color: white;
+            padding: 4px;
+            border-radius: 4px;
+            cursor: grab;
+            user-select: none;
+        }
+    }
+}
