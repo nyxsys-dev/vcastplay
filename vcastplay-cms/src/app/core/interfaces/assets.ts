@@ -20,6 +20,7 @@ export interface Assets {
         end: string;
     };
     hours: string[];
+    duration?: number;
 }
 
 export interface AssetType {

@@ -1,5 +1,7 @@
-<div class="mx-2 mb-2">
-    <div class="border border=[var(--p-surface-500)] rounded-lg p-3 mx-2 bg-white">
-        Media / Assets
+<div class="mx-2 mb-2" cdkDrag [cdkDragData]="asset">
+    <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg p-3 mx-2 bg-white">
+        <h4 class="font-semibold">{{ asset.name }}</h4>
+        <p class="text-sm">{{ asset.code }}</p>
     </div>
+    <div *cdkDragPlaceholder></div>
 </div>

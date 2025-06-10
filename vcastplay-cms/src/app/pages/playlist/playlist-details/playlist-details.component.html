@@ -1,14 +1,56 @@
-<div class="flex flex-col gap-5 h-full">
+<div class="flex flex-col gap-2 h-full relative">
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
-    <p-card styleClass="h-full" class="flex-1" cdkDropListGroup>
-        <div class="flex items-center gap-4 mb-5">
-            <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
-            <p class="text-xl font-semibold">New Playlist</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 h-full pb-12">
-            <div class="col-span-1 md:col-span-6 xl:col-span-8">
-                <div class="w-full h-full flex justify-center items-center border border-[var(--p-surface-300)]">
-                    preview
+    <p-card styleClass="h-full" class="flex-1" [formGroup]="playListForm" cdkDropListGroup>
+        <ng-template #title>
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+                    <p class="text-xl font-semibold">New Playlist</p>
+                </div>
+                <p-button label="Save" icon="pi pi-save" (onClick)="onClickSave($event)" />
+            </div>
+        </ng-template>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 h-full mb-2">
+            <div class="col-span-1 md:col-span-6 xl:col-span-8 flex flex-col gap-2">
+
+                <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4">
+                    <div class="col-span-1 md:col-span-4">
+                        <p-floatlabel variant="in">
+                            <input id="name" pInputText formControlName="name" 
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" showClear fluid />
+                            <label for="name">Name</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-span-1 md:col-span-8">
+                        <p-floatlabel variant="in">
+                            <input id="description" pInputText formControlName="description" 
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" showClear fluid />
+                            <label for="description">Description</label>
+                        </p-floatlabel>
+                    </div>
+                </div>
+
+                <div class="relative w-full h-full flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
+                    <div class="flex justify-center items-center">
+                        @switch (currentContent?.type) {
+                            @case ('video') {
+                                <video class="object-contain h-full" src="https://www.w3schools.com/tags/mov_bbb.mp4" 
+                                    (timeupdate)="onTimeUpdate($event)" [autoplay]="isPlaying()"></video>
+                            }
+                            @default {
+                                {{ currentContent?.name ?? 'Preview Content'}}
+                            }
+                        }
+                    </div>
+                    <div class="absolute bottom-0 z-50 flex opacity-0 translate-y-2 transition-all duration-300 
+                        group-hover:opacity-100 group-hover:translate-y-0 w-full bg-[var(--p-surface-300)]">
+
+                        <div class="w-full  p-2">
+                            <p-button icon="pi pi-play" (onClick)="onClickPlayPreview()" />
+                            
+                            <p-progressbar [value]="playlistService.progress()"></p-progressbar>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-span-1 md:col-span-6 xl:col-span-4">
@@ -16,10 +58,10 @@
                     <div class="p-3">
                         filters
                     </div>
-                    <div class="flex-1 overflow-y-auto">
-                        <div class="h-50" cdkDropList [cdkDropListData]="assets()">
+                    <div class="flex-1 overflow-y-auto cursor-grab">
+                        <div class="h-50" cdkDropList [cdkDropListData]="assets()" cdkDragPreviewContainer="parent">
                             @for (item of assets(); track $index) {
-                                <app-asset-list-item cdkDrag />
+                                <app-asset-list-item [asset]="item" />
                             }
                         </div>
                     </div>
@@ -27,7 +69,11 @@
             </div>
         </div>
         <ng-template #footer>
-            <app-timeline-container [startTime]="moment('2025-06-05T08:00:00')" [endTime]="moment('2025-06-05T18:00:00')" />
+            <app-timeline-container [playListForm]="playListForm" />
+            <div class="flex w-full justify-between items-center mt-2">
+                <p-tag [value]="'Duration: ' + utils.timeConversion(totalDuration())" />
+                <p class="italic text-sm text-red-400">Hold Shift + Mouse Wheel to scroll</p>
+            </div>
         </ng-template>
     </p-card>
 </div>

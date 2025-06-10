@@ -47,9 +47,9 @@ html {
     height: 100%;
 }
 
-.p-card-title {
-    height: 100%;
-}
+// .p-card-title {
+//     height: 100%;
+// }
 
 .p-card-footer {
     flex: 1;
@@ -147,6 +147,13 @@ html {
     background: radial-gradient(circle at center, rgba(52, 152, 219, 0.7), rgba(52, 152, 219, 0));
     z-index: -1;
 }
+
+
+// .cdk-drop-list-dragging {
+//   opacity: 0.5;
+//   border-left: 2px solid #000;
+//   padding-left: 8px;
+// }
 
 
 /* Scrollbar effect */

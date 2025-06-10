@@ -59,6 +59,8 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxEchartsModule } from 'ngx-echarts';
 
+import { DragDropModule, CdkDropList, CdkDropListGroup, CdkDrag, CdkDragPlaceholder  } from '@angular/cdk/drag-drop';
+
 const PRIMEUI_MODULES = [
   CommonModule,
   AccordionModule,
@@ -118,11 +120,12 @@ const PRIMEUI_MODULES = [
   DatePickerModule,
   FluidModule,
   ChipModule,
+  DragDropModule,
 ];
 
 @NgModule({
   declarations: [],
-  imports: [ CommonModule, ],
+  imports: [ CommonModule ],
   exports: [ ...PRIMEUI_MODULES ]
 })
 export class PrimengUiModule { }

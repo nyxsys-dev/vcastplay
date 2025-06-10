@@ -1,22 +1,13 @@
-<div class="flex justify-between items-center my-3">
-    <div class="flex gap-2">
-        <p-button size="small" icon="pi pi-minus" (onClick)="zoomOut()" [disabled]="currentZoomIndex === 0" />
-        <p-button size="small" icon="pi pi-plus" (onClick)="zoomIn()" [disabled]="currentZoomIndex === zoomLevels.length - 1" />
-    </div>
-    <p class="text-sm italic text-red-500">(Hold Shift + Mouse Wheel to scroll)</p>
-</div>
-<div class="timeline-container px-3" cdkDropList (cdkDropListDropped)="onDroppedItem($event)" [cdkDropListData]="playlistItems()">    
-    <!-- Ruler ticks -->
-    <div class="timeline-wrapper" [style.width.px]="getTicks().length * tickWidth">
-        @for (tick of getTicks(); track $index) {
-            <div class="timeline-tick" [style.width.px]="tickWidth">{{ tick }}</div>
+<div class="timeline-container p-3">
+    <div class="flex gap-4 h-full" cdkDropList (cdkDropListDropped)="onDropped($event)">
+        @for (item of contents?.value; track $index) {
+            <app-timeline-item [asset]="item" />
+        } @empty {
+            <div class="flex items-center justify-center h-full absolute top-0 left-0 w-full">
+                <p class="text-gray-400 italic">Drop items here</p>
+            </div>
         }
-    </div>
-
-    <div class="timeline-item-container" >
-        
-        @for (item of playlistItems(); track $index) {
-            <app-timeline-item [zoomLevel]="zoomLevel" [timelineItems]="playlistItems()" [item]="item" />
-        }
+        <div *cdkDragPlaceholder></div>
     </div>
 </div>
+<p-toast />
