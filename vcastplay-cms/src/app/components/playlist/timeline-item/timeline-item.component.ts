@@ -3,6 +3,7 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { Assets } from '../../../core/interfaces/assets';
 import { PlaylistService } from '../../../core/services/playlist.service';
+import { UtilityService } from '../../../core/services/utility.service';
 
 @Component({
   selector: 'app-timeline-item',
@@ -15,6 +16,8 @@ export class TimelineItemComponent {
   @Input() asset!: Assets;
 
   showConfig = signal<boolean>(false);
+
+  utils = inject(UtilityService);
   playlistService = inject(PlaylistService);
 
   currentPlaying() {

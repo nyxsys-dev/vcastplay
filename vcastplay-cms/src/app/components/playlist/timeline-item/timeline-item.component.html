@@ -9,7 +9,11 @@
     <div class="text-left text-xs flex flex-col">
         <p>{{ asset.name }}</p> 
         <p>{{ asset.code }}</p>
+        <p>{{ utils.timeConversion(asset.duration ?? 0) }}</p>
     </div>
+
+    <!-- <div class="absolute w-full h-full bg-green-500 opacity-30 shrink-box" [style.animation]="'shrinkY ' + asset.duration + 's linear forwards'">
+    </div> -->
 </div>
 
 <p-dialog [(visible)]="showConfig" [modal]="true" [draggable]="false" [resizable]="false" (onHide)="showConfig.set(false)">

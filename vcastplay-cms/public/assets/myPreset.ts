@@ -31,17 +31,6 @@ const myPreset = definePreset(Aura, {
             950: '{zinc.950}'
         }
     },
-    extend: {
-        animation: {
-            'fade-in': 'fadeIn 0.5s ease-in-out forwards',
-        },
-        keyframes: {
-            fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-            },
-        },
-    },
 })
 
 
