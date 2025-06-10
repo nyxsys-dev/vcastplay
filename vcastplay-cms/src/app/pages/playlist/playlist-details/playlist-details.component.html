@@ -10,32 +10,39 @@
                 <p-button label="Save" icon="pi pi-save" (onClick)="onClickSave($event)" />
             </div>
         </ng-template>
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 h-full mb-2">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-2 h-full mb-2">
             <div class="col-span-1 md:col-span-6 xl:col-span-8 flex flex-col gap-2">
 
                 <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4">
                     <div class="col-span-1 md:col-span-4">
                         <p-floatlabel variant="in">
-                            <input id="name" pInputText formControlName="name" 
-                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" showClear fluid />
+                            <input id="name" pInputText formControlName="name" pSize="small"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
                             <label for="name">Name</label>
                         </p-floatlabel>
                     </div>
                     <div class="col-span-1 md:col-span-8">
                         <p-floatlabel variant="in">
-                            <input id="description" pInputText formControlName="description" 
-                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" showClear fluid />
+                            <input id="description" pInputText formControlName="description"  pSize="small"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" fluid />
                             <label for="description">Description</label>
                         </p-floatlabel>
                     </div>
                 </div>
 
-                <div class="relative w-full h-full flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
-                    <div class="flex justify-center items-center">
+                <!-- Preview Contents -->
+                <div class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
+                    <div class="relative flex h-80 md:h-full w-full justify-center items-center">
                         @switch (currentContent?.type) {
                             @case ('video') {
-                                <video class="object-contain h-full" src="https://www.w3schools.com/tags/mov_bbb.mp4" 
+                                <video #videoPlayer class="object-cover border-none h-full w-[50%]" [src]="currentContent?.link | safeurl" 
                                     (timeupdate)="onTimeUpdate($event)" [autoplay]="isPlaying()"></video>
+                            }
+                            @case ('web') {
+                                <iframe class="object-contain border-none h-full" [src]="currentContent?.link | safeurl"></iframe>
+                            }
+                            @case ('image') {
+                                <img class="object-cover h-full w-[50%]" [src]="currentContent?.link | safeurl" alt="preview image">
                             }
                             @default {
                                 {{ currentContent?.name ?? 'Preview Content'}}
@@ -45,23 +52,37 @@
                     <div class="absolute bottom-0 z-50 flex opacity-0 translate-y-2 transition-all duration-300 
                         group-hover:opacity-100 group-hover:translate-y-0 w-full bg-[var(--p-surface-300)]">
 
-                        <div class="w-full  p-2">
-                            <p-button icon="pi pi-play" (onClick)="onClickPlayPreview()" />
+                        <div class="w-full flex flex-col justify-center gap-2 p-1">
+                            <p-button 
+                                [icon]="isPlaying() ? 'pi pi-stop-circle' : 'pi pi-play'" 
+                                [label]="isPlaying() ? 'Stop' : 'Play'" 
+                                (onClick)="onClickPlayPreview()" size="small" text />
                             
-                            <p-progressbar [value]="playlistService.progress()"></p-progressbar>
+                            <p-progressbar [value]="playlistService.progress()" [showValue]="false"></p-progressbar>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-span-1 md:col-span-6 xl:col-span-4">
-                <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] h-full">
+                <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg h-full">
                     <div class="p-3">
-                        filters
+                        <p-inputgroup>
+                            <input type="text" pInputText [formControl]="keywords" placeholder="Search" />
+                            <p-inputgroup-addon>
+                                <p-button pTooltip="Filter" tooltipPosition="bottom" icon="pi pi-filter" />
+                            </p-inputgroup-addon>
+                        </p-inputgroup>
                     </div>
                     <div class="flex-1 overflow-y-auto cursor-grab">
                         <div class="h-50" cdkDropList [cdkDropListData]="assets()" cdkDragPreviewContainer="parent">
-                            @for (item of assets(); track $index) {
-                                <app-asset-list-item [asset]="item" />
+                            @for (item of filteredAssets(); track $index) {
+                                <div class="flex items-center relative">
+                                    <app-asset-list-item class="w-full" [asset]="item" />
+                                </div>
+                            } @empty {
+                                <div class="flex items-center justify-center h-full w-full">
+                                    <p class="text-gray-400 italic">No items found</p>
+                                </div>
                             }
                         </div>
                     </div>
@@ -71,7 +92,16 @@
         <ng-template #footer>
             <app-timeline-container [playListForm]="playListForm" />
             <div class="flex w-full justify-between items-center mt-2">
-                <p-tag [value]="'Duration: ' + utils.timeConversion(totalDuration())" />
+                <div class="flex items-center gap-2">
+                    <p-tag severity="info" [value]="'Duration: ' + utils.timeConversion(totalDuration())" />
+                    <div class="flex items-center gap-2">
+                        <p-checkbox formControlName="loop" inputId="loop" size="small" binary />
+                        <label for="loop" class="mt-2 text-sm">Loop Video</label>
+                    </div>
+                    @if (totalDuration() > 0) {
+                        <p-button severity="danger" label="Clear All" size="small" (onClick)="onClickClearAll()" text />
+                    }
+                </div>
                 <p class="italic text-sm text-red-400">Hold Shift + Mouse Wheel to scroll</p>
             </div>
         </ng-template>

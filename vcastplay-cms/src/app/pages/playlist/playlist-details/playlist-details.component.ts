@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -10,15 +10,19 @@ import { Assets } from '../../../core/interfaces/assets';
 import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-item.component';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
+import { FormControl } from '@angular/forms';
+import { SafeurlPipe } from '../../../core/pipes/safeurl.pipe';
 
 @Component({
   selector: 'app-playlist-details',
-  imports: [ PrimengUiModule, ComponentsModule, TimelineContainerComponent, AssetListItemComponent ],
+  imports: [ PrimengUiModule, ComponentsModule, TimelineContainerComponent, AssetListItemComponent, SafeurlPipe ],
   templateUrl: './playlist-details.component.html',
   styleUrl: './playlist-details.component.scss',
   providers: [ MessageService ]
 })
 export class PlaylistDetailsComponent {
+  
+  @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
 
   pageInfo: MenuItem = [ {label: 'Playlist'}, {label: 'Playlist Library', routerLink: '/playlist/playlist-library'}, {label: 'New Playlist'} ];
 
@@ -30,7 +34,13 @@ export class PlaylistDetailsComponent {
 
   moment = moment;
 
+  keywords: FormControl = new FormControl('');
+  keywordSignal = signal<string>('');
+
   assets = signal<Assets[]>([]);
+  filteredAssets = computed(() => this.assets().filter(asset => {
+    return asset.name.toLowerCase().includes(this.keywordSignal().toLowerCase());
+  }));
   
   totalDuration = () => {
     const contents = this.formControl('contents').value;
@@ -39,10 +49,15 @@ export class PlaylistDetailsComponent {
 
   constructor() {
     this.assets.set(this.assetService.onGetAssets());
+    this.keywords.valueChanges.subscribe(value => this.keywordSignal.set(value));
+
+    effect(() => {
+      const progress = this.playlistService.progress();
+      if (progress > 0 && this.videoPlayer) this.playlistService.videoElement.set(this.videoPlayer.nativeElement);
+    })
   }
 
   onClickPlayPreview() {
-    // this.playlistService.duration.set(this.totalDuration());
     if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
     else this.playlistService.onPlayPreview();
   }
@@ -55,11 +70,16 @@ export class PlaylistDetailsComponent {
     this.router.navigate([ '/playlist/playlist-library' ]);
   }
 
+  onClickClearAll() {
+    this.formControl('contents').setValue([]);
+    this.playlistService.onStopPreview();
+  }
+
   onTimeUpdate(event: Event) {
     const video: HTMLVideoElement = event.target as HTMLVideoElement;
     const currentTime = video.currentTime;
     const duration = video.duration;
-    this.playlistService.updateProgress(currentTime, duration);
+    this.playlistService.onUpdateProgress(currentTime, duration);
   }
 
   formControl(fieldName: string) {
@@ -80,5 +100,9 @@ export class PlaylistDetailsComponent {
 
   get isPlaying() {
     return this.playlistService.isPlaying;
+  }
+
+  get isLooping() {
+    return this.playlistService.isLooping;
   }
 }

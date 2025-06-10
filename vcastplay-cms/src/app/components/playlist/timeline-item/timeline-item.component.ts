@@ -35,4 +35,8 @@ export class TimelineItemComponent {
     return this.playlistService.contents;
   }
 
+  get isPlaying() {
+    return this.playlistService.isPlaying;
+  }
+
 }

@@ -58,7 +58,7 @@ export class AssetsService {
       code: "VID001",
       name: "Intro Video",
       type: "video",
-      link: "/assets/videos/intro.mp4",
+      link: "assets/vcastplay-filler.mp4",
       file: "intro.mp4",
       category: "Media",
       subCategory: "Promotional",
@@ -74,7 +74,8 @@ export class AssetsService {
         start: "2025-06-01",
         end: "2025-12-31"
       },
-      hours: ["08:00", "12:00", "16:00"]
+      hours: ["08:00", "12:00", "16:00"],
+      duration: 10
     },
     {
       id: 2,
@@ -96,14 +97,15 @@ export class AssetsService {
         start: "2025-06-01",
         end: "2025-12-31"
       },
-      hours: ["00:00", "23:59"]
+      hours: ["00:00", "23:59"],
+      duration: 5
     },
     {
       id: 3,
       code: "IMG001",
       name: "Title Slide",
       type: "image",
-      link: "/assets/images/title.png",
+      link: "/assets/vcastplay-image-filler.png",
       file: "title.png",
       category: "Graphics",
       subCategory: "Slide",
@@ -118,7 +120,8 @@ export class AssetsService {
         start: "2025-07-01",
         end: "2025-12-31"
       },
-      hours: ["09:00", "17:00"]
+      hours: ["09:00", "17:00"],
+      duration: 10
     },
     {
       id: 4,
@@ -140,14 +143,15 @@ export class AssetsService {
         start: "2025-06-15",
         end: "2025-10-01"
       },
-      hours: ["10:00", "14:00"]
+      hours: ["10:00", "14:00"],
+      duration: 5
     },
     {
       id: 5,
       code: "VID002",
       name: "Main Scene",
       type: "video",
-      link: "/assets/videos/main.mp4",
+      link: "https://www.w3schools.com/tags/mov_bbb.mp4",
       file: "main.mp4",
       category: "Media",
       subCategory: "Content",
@@ -163,14 +167,15 @@ export class AssetsService {
         start: "2025-08-01",
         end: "2025-12-31"
       },
-      hours: ["13:00", "15:00", "18:00"]
+      hours: ["13:00", "15:00", "18:00"],
+      duration: 10
     },
     {
       id: 6,
       code: "IMG002",
       name: "End Card",
       type: "image",
-      link: "/assets/images/endcard.jpg",
+      link: "assets/vcastplay-image-filler.png",
       file: "endcard.jpg",
       category: "Graphics",
       subCategory: "Outro",
@@ -185,7 +190,8 @@ export class AssetsService {
         start: "2025-06-10",
         end: "2025-12-31"
       },
-      hours: ["07:00", "21:00"]
+      hours: ["07:00", "21:00"],
+      duration: 5
     },
     {
       id: 7,
@@ -207,14 +213,15 @@ export class AssetsService {
         start: "2025-06-01",
         end: "2025-12-31"
       },
-      hours: ["00:00", "23:59"]
+      hours: ["00:00", "23:59"],
+      duration: 3
     },
     {
       id: 8,
       code: "VID003",
       name: "Transition Clip",
       type: "video",
-      link: "/assets/videos/transition.mp4",
+      link: "assets/vcastplay-filler.mp4",
       file: "transition.mp4",
       category: "Media",
       subCategory: "Effect",
@@ -229,14 +236,15 @@ export class AssetsService {
         start: "2025-06-05",
         end: "2025-12-31"
       },
-      hours: ["12:00", "14:00"]
+      hours: ["12:00", "14:00"],
+      duration: 10
     },
     {
       id: 9,
       code: "TXT001",
       name: "Lower Third Text",
       type: "text",
-      link: "/assets/text/lower-third.json",
+      link: "assets/text/lower-third.json",
       file: "lower-third.json",
       category: "Text",
       subCategory: "Overlay",
@@ -251,14 +259,15 @@ export class AssetsService {
         start: "2025-06-01",
         end: "2025-12-31"
       },
-      hours: ["08:00", "18:00"]
+      hours: ["08:00", "18:00"],
+      duration: 5
     },
     {
       id: 10,
       code: "TXT002",
       name: "Subtitles",
       type: "text",
-      link: "/assets/text/subtitles.vtt",
+      link: "assets/text/subtitles.vtt",
       file: "subtitles.vtt",
       category: "Text",
       subCategory: "Caption",
@@ -273,7 +282,31 @@ export class AssetsService {
         start: "2025-06-01",
         end: "2025-12-31"
       },
-      hours: ["00:00", "23:59"]
+      hours: ["00:00", "23:59"],
+      duration: 5
+    },
+    {
+      id: 11,
+      code: "WEB002",
+      name: "Web Page",
+      type: "web",
+      link: "https://pub.movingwalls.com/sdk/IconicLCGC.html",
+      file: "n/a",
+      category: "Category 1",
+      subCategory: "Sub Category 1",
+      fileDetails: {
+        orientation: "n/a",
+        resolution: "n/a",
+        size: "n/a",
+        type: "n/a"
+      },
+      availability: "public",
+      dateRange: {
+        start: "2025-06-01",
+        end: "2025-12-31"
+      },
+      hours: ["00:00", "23:59"],
+      duration: 15
     }
     ]);
     this.loadingSignal.set(false);

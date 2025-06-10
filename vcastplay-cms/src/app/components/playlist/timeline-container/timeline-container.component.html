@@ -1,5 +1,5 @@
 <div class="timeline-container p-3">
-    <div class="flex gap-4 h-full" cdkDropList (cdkDropListDropped)="onDropped($event)">
+    <div class="flex gap-4 h-full" cdkDropList (cdkDropListDropped)="onDropped($event)" cdkDropListOrientation="horizontal">
         @for (item of contents?.value; track $index) {
             <app-timeline-item [asset]="item" />
         } @empty {
@@ -7,7 +7,6 @@
                 <p class="text-gray-400 italic">Drop items here</p>
             </div>
         }
-        <div *cdkDragPlaceholder></div>
     </div>
 </div>
 <p-toast />

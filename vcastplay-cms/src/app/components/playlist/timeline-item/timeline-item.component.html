@@ -1,7 +1,7 @@
 <div class="relative w-[160px] h-full bg-[var(--p-surface-300)] flex items-center justify-center group rounded-lg"
-    [ngClass]="{ 'shadow-lg shadow-[var(--p-primary-800)]': currentPlaying() }">
+    [ngClass]="{ 'shadow-lg shadow-red-600/70': currentPlaying() }">
     <div class="absolute top-0 right-0 p-2 h-full w-full">
-        <div class="flex items-center justify-center h-full gap-2 hidden group-hover:flex bg-gray-300">
+        <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300" [ngClass]="{ 'group-hover:flex': !isPlaying()}">
             <p-button severity="info" icon="pi pi-cog" pTooltip="Configuration" tooltipPosition="bottom" (onClick)="showConfig.set(true)" />
             <p-button severity="danger" icon="pi pi-trash" pTooltip="Remove" tooltipPosition="bottom" (onClick)="onClickRemove(asset)" text />
         </div>
@@ -16,26 +16,9 @@
     <ng-template #header>
         <div class="inline-flex items-center gap-2"><i class="pi pi-cog"></i> <span>Configuration</span></div>
     </ng-template>
-    <div class="p-3 border border-[var(--p-surface-300)] rounded-lg h-[50vh] md:h-[50vh] md:w-[50vw] flex justify-center items-center">
-        @switch (asset.type) {
-            @case('video') {
-                Preview Video
-            } @case('image') {
-                Preview Image
-            } @case('audio') {
-                Preview Audio
-            } @case('widget') {
-                Preview Widget
-            } @case('web') {
-                Preview Web Page
-            } @case('text') {
-                Preview Text
-            }
-        }
-    </div>
     <div class="mt-3 flex gap-2 items-center justify-between">
         <p class="font-semibold">Set Duration:</p>
-        <p-inputnumber [(ngModel)]="asset.duration" [useGrouping]="false" />
+        <p-inputnumber [(ngModel)]="asset.duration" [useGrouping]="false" [disabled]="['audio', 'video'].includes(asset.type)" />
     </div>
     <ng-template #footer>
         <div class="float-right flex gap-3">

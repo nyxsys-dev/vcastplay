@@ -157,7 +157,7 @@ export class UtilityService {
   }
 
   timeConversion(ms: number): string {
-    const totalSeconds = Math.floor(ms / 1000);
+    const totalSeconds = Math.floor(ms);
     const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
     const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
     const secs = (totalSeconds % 60).toString().padStart(2, '0');

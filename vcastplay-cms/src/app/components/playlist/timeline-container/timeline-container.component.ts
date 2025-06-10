@@ -31,13 +31,13 @@ export class TimelineContainerComponent {
   }
 
   onDropped(event: CdkDragDrop<string[]>) {
-    const { item: { data } } = event;
+    const { previousContainer, container, item: { data } } = event;
     const isExists = this.contents?.value.find((item: Assets) => item.id === data.id);
     if (isExists) {
-      this.message.add({ severity: 'error', summary: 'Error', detail: 'Item already exists' });
+      this.message.add({ severity: 'error', summary: 'Error', detail: `"${data.name}" is already exists` });
       return;
     };
-    this.contents?.setValue([...this.contents?.value, { ...data, duration: 5000 }]);
+    this.contents?.setValue([...this.contents?.value, data]);
   }
 
   get contents() {
