@@ -63,8 +63,9 @@
                                 [icon]="isPlaying() ? 'pi pi-stop-circle' : 'pi pi-play'" 
                                 [label]="isPlaying() ? 'Stop' : 'Play'" 
                                 (onClick)="onClickPlayPreview()" size="small" text />
-                            
-                            <p-progressbar [value]="playlistService.progress()" [showValue]="false"></p-progressbar>
+                            <ng-container *ngIf="playlistService.currentContent() as currentContent">
+                                <p-progressbar [value]="playlistService.progress()" [showValue]="false"></p-progressbar>
+                            </ng-container>
                         </div>
                     </div>
                 </div>
@@ -119,7 +120,9 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <label for="speed" class="text-sm">Transition Speed:</label>
-                        <p-inputnumber formControlName="speed" size="small" inputId="speed" placeholder="Speed" [useGrouping]="false" [inputStyle]="{ width: '5rem' }" />
+                        <p-inputnumber formControlName="speed" size="small" inputId="speed" [min]="0"
+                            placeholder="Speed" [useGrouping]="false" [inputStyle]="{ width: '4rem' }" showButtons />
+                        <span>sec.</span>
                     </div>
                 </div>
                 @if (totalDuration() > 0) {

@@ -1,4 +1,4 @@
-<div class="relative w-[140px] h-full bg-[var(--p-surface-300)] flex items-center justify-center group rounded-lg"
+<div class="relative w-[140px] h-full bg-[var(--p-surface-300)] flex items-center justify-center group rounded-lg cursor-grab"
     [ngClass]="{ 'shadow-lg shadow-blue-600/70': currentPlaying() }">
     <div class="absolute top-0 right-0 p-2 h-full w-full z-10">
         <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300" [ngClass]="{ 'group-hover:flex': !isPlaying()}">
@@ -17,6 +17,7 @@
             <p class="font-semibold text-sm">{{ utils.timeConversion(asset.duration ?? 0) }}</p>
         </div>
     </div>
+    <div class="w-[140px] outline-dashed outline-2 outline-offset-2 outline-gray-400" *cdkDragPlaceholder></div>
 </div>
 
 <p-dialog [(visible)]="showConfig" [modal]="true" [draggable]="false" [resizable]="false" (onHide)="showConfig.set(false)">

@@ -12,5 +12,5 @@ import { CdkDragPlaceholder, CdkDragPreview } from '@angular/cdk/drag-drop';
 export class AssetListItemComponent {
 
   @Input() asset: any;
-
+  @Input() disableDrag: boolean = false;
 }

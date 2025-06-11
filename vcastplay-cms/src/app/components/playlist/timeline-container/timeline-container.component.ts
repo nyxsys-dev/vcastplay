@@ -3,7 +3,7 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { CommonModule } from '@angular/common';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AssetsService } from '../../../core/services/assets.service';
 import { Assets } from '../../../core/interfaces/assets';
 import { TimelineItemComponent } from '../timeline-item/timeline-item.component';
@@ -31,13 +31,26 @@ export class TimelineContainerComponent {
   }
 
   onDropped(event: CdkDragDrop<string[]>) {
-    const { previousContainer, container, item: { data } } = event;
-    const isExists = this.contents?.value.find((item: Assets) => item.id === data.id);
+    const contents = this.contents?.value || [];
+    const { previousIndex, previousContainer, currentIndex, container, item: { data } } = event;
+
+    // If the item is from the same container (reordering)
+    if (previousContainer == container) {
+      moveItemInArray(contents, previousIndex, currentIndex);
+      this.contents?.setValue([...contents]);
+      return;
+    }
+
+    // If it's from another container (adding)
+    const isExists = contents.some((item: Assets) => item.id === data.id);
     if (isExists) {
       this.message.add({ severity: 'error', summary: 'Error', detail: `"${data.name}" is already exists` });
       return;
-    };
-    this.contents?.setValue([...this.contents?.value, data]);
+    }
+
+    // Add item
+    contents.splice(currentIndex, 0, data);
+    this.contents?.setValue([...contents]);
   }
 
   get contents() {

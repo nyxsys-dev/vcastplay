@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg p-3 shadow shadow-lg
-    bg-[var(--p-surface-300)] hover:bg-[var(--p-surface-200)] w-full" cdkDrag [cdkDragData]="asset">
+    bg-[var(--p-surface-300)] hover:bg-[var(--p-surface-200)] w-full" cdkDrag [cdkDragDisabled]="disableDrag" [cdkDragData]="asset">
     <h4 class="font-semibold text-sm">{{ asset.name }}</h4>
     <p class="text-sm">{{ asset.code }}</p>
 
