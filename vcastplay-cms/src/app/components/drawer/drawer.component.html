@@ -1,21 +1,21 @@
 <div class="fixed drawer-container hidden md:block w-[7rem] h-full bg-gray-800 z-50">
-    <div class="relative flex flex-col gap-3 h-full">
+    <div class="relative flex flex-col gap-3 mt-6 h-full">
         @for (menu of menuItems; track $index) {
-            <li 
-                (click)="onToggleMenu(menu, $event)"
-                class="relative px-4 py-3 list-none hover:bg-[var(--p-primary-600)] flex flex-col items-center justify-center w-full hover:rounded-md cursor-pointer"
-            >
-                <i style="font-size: 1.5rem;" class="mb-2 text-white" [class]="menu.icon"></i>
-                <p class="text-white !select-none">{{ menu.label }}</p>
+            <li (click)="onToggleMenu(menu, $event)" class="relative list-none">
+                <div class="hover:bg-[var(--p-primary-600)] flex flex-col items-center justify-center cursor-pointer text-center p-2" 
+                    [ngClass]="{ 'bg-[var(--p-primary-600)]': menu.routerLink === router.url }">
+                    <i style="font-size: 1.2rem;" class="mb-2 text-white" [class]="menu.icon"></i>
+                    <p class="text-sm text-white !select-none">{{ menu.label }}</p>
 
-                @if (menu.items && menu.expanded) {
-                    <div class="relative left-15">
-                        <div class="absolute bottom-0 left-full rounded-md shadow-md">
-                            <p-menu #subMenu [model]="menu.items" appendTo="body" />
+                    @if (menu.items && menu.expanded) {
+                        <div class="relative left-15">
+                            <div class="absolute bottom-0 left-full rounded-md shadow-md">
+                                <p-menu #subMenu [model]="menu.items" appendTo="body" />
+                            </div>
+                            <div class="arrow-left"></div>
                         </div>
-                        <div class="arrow-left"></div>
-                    </div>
-                }
+                    }
+                </div>
             </li>
         }
     </div>

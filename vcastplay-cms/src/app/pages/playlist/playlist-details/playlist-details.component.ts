@@ -23,7 +23,7 @@ import { SafeurlPipe } from '../../../core/pipes/safeurl.pipe';
 export class PlaylistDetailsComponent {
   
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
-
+  
   pageInfo: MenuItem = [ {label: 'Playlist'}, {label: 'Playlist Library', routerLink: '/playlist/playlist-library'}, {label: 'New Playlist'} ];
 
   utils = inject(UtilityService);
@@ -41,6 +41,13 @@ export class PlaylistDetailsComponent {
   filteredAssets = computed(() => this.assets().filter(asset => {
     return asset.name.toLowerCase().includes(this.keywordSignal().toLowerCase());
   }));
+
+  assetViewModeSignal = signal<string>('Grid');
+  assetViewMode: FormControl = new FormControl('Grid');
+  assetViewModes = [
+    { icon: 'pi pi-table', label: 'Grid' },
+    { icon: 'pi pi-list', label: 'List' },
+  ]
   
   totalDuration = () => {
     const contents = this.formControl('contents').value;
@@ -50,11 +57,15 @@ export class PlaylistDetailsComponent {
   constructor() {
     this.assets.set(this.assetService.onGetAssets());
     this.keywords.valueChanges.subscribe(value => this.keywordSignal.set(value));
+    this.assetViewMode.valueChanges.subscribe(value => this.assetViewModeSignal.set(value));
 
     effect(() => {
       const progress = this.playlistService.progress();
-      if (progress > 0 && this.videoPlayer) this.playlistService.videoElement.set(this.videoPlayer.nativeElement);
+      if (progress > 0 && this.videoPlayer) this.playlistService.videoElement.set(this.videoPlayer.nativeElement);      
     })
+  }
+
+  ngOnInit() {
   }
 
   onClickPlayPreview() {
@@ -86,6 +97,17 @@ export class PlaylistDetailsComponent {
     return this.utils.getFormControl(this.playListForm, fieldName);
   }
 
+  getTransitionClasses() {
+    const { type } = this.currentTransition ?? '';
+    const fadeIn = this.playlistService.fadeIn();    
+    return {
+      'transition-all duration-500 ease-in-out': true,
+      'w-full h-full flex justify-center items-center': true,
+      [`${type?.opacity ? 'opacity-0' : ''} ${type?.x ?? ''}`]: !fadeIn,
+      [`${type?.opacity ? 'opacity-100' : ''} ${type?.y ?? ''}`]: fadeIn
+    };
+  }
+
   get currentContent() {
     return this.playlistService.currentContent();
   }
@@ -104,5 +126,13 @@ export class PlaylistDetailsComponent {
 
   get isLooping() {
     return this.playlistService.isLooping;
+  }
+
+  get transitionTypes() {
+    return this.playlistService.transitionTypes;
+  }
+
+  get currentTransition() {
+    return this.playlistService.currentTransition();
   }
 }

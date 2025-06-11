@@ -17,43 +17,12 @@ export class UtilityService {
 
   modules = signal<DrawerMenu[]>([
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
-    {
-      label: 'Screen',
-      icon: 'pi pi-desktop',
-      expanded: false,
-      items: [
-        { label: 'Registration', icon: 'pi pi-plus', routerLink: ['/screens/screen-registration'], },
-        { label: 'Monitoring', icon: 'pi pi-desktop', routerLink: ['/screens/screen-management'], },
-      ]
-    },
-    {
-      label: 'Assets',
-      icon: 'pi pi-image',
-      expanded: false,
-      items: [
-        { label: 'Upload', icon: 'pi pi-upload', routerLink: ['/assets/asset-details'], },
-        { label: 'List', icon: 'pi pi-list', routerLink: ['/assets/asset-library'], }
-      ]
-    },
-    {
-      label: 'Playlist',
-      icon: 'pi pi-list',
-      expanded: false,
-      items: [
-        { label: 'Add Playlist', icon: 'pi pi-plus', routerLink: ['/playlist/playlist-details'], },
-        { label: 'List', icon: 'pi pi-list', routerLink: ['/playlist/playlist-library'], }
-      ]
-    },
+    { label: 'Screen', icon: 'pi pi-desktop', routerLink: '/screens/screen-registration' },
+    { label: 'Assets', icon: 'pi pi-image', routerLink: '/assets/asset-library' },
+    { label: 'Playlist', icon: 'pi pi-list', routerLink: '/playlist/playlist-library' },
     { label: 'Layout', icon: 'pi pi-th-large', routerLink: '/dashboard' },
-    {
-      label: 'Schedules',
-      icon: 'pi pi-calendar',
-      expanded: false,
-      items: [
-        { label: 'Add Schedule', icon: 'pi pi-plus', routerLink: ['/schedule-register'], },
-        { label: 'List', icon: 'pi pi-list', routerLink: ['/schedule-list'], }
-      ]
-    },
+    { label: 'Schedules', icon: 'pi pi-calendar', routerLink: '/schedule-list' },
+    { label: 'Screen Mangement', icon: 'pi pi-cloud', routerLink: '/screens/screen-management' },
     { label: 'Reports', icon: 'pi pi-chart-bar', routerLink: '/dashboard' },
     {
       label: 'Settings',

@@ -1,19 +1,22 @@
-<div class="relative w-[160px] h-full bg-[var(--p-surface-300)] flex items-center justify-center group rounded-lg"
-    [ngClass]="{ 'shadow-lg shadow-red-600/70': currentPlaying() }">
-    <div class="absolute top-0 right-0 p-2 h-full w-full">
+<div class="relative w-[140px] h-full bg-[var(--p-surface-300)] flex items-center justify-center group rounded-lg"
+    [ngClass]="{ 'shadow-lg shadow-blue-600/70': currentPlaying() }">
+    <div class="absolute top-0 right-0 p-2 h-full w-full z-10">
         <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300" [ngClass]="{ 'group-hover:flex': !isPlaying()}">
-            <p-button severity="info" icon="pi pi-cog" pTooltip="Configuration" tooltipPosition="bottom" (onClick)="showConfig.set(true)" />
+            @if (!['video', 'audio'].includes(asset.type)) {
+                <p-button severity="info" icon="pi pi-cog" pTooltip="Configuration" tooltipPosition="bottom" (onClick)="showConfig.set(true)" />
+            }
             <p-button severity="danger" icon="pi pi-trash" pTooltip="Remove" tooltipPosition="bottom" (onClick)="onClickRemove(asset)" text />
         </div>
     </div>
-    <div class="text-left text-xs flex flex-col">
-        <p>{{ asset.name }}</p> 
-        <p>{{ asset.code }}</p>
-        <p>{{ utils.timeConversion(asset.duration ?? 0) }}</p>
+    <div class="h-full w-full p-3">
+        <div class="text-left flex flex-col ">
+            <p class="text-sm">{{ asset.name }}</p> 
+            <p class="text-xs">{{ asset.code }}</p>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center text-center m-2">
+            <p class="font-semibold text-sm">{{ utils.timeConversion(asset.duration ?? 0) }}</p>
+        </div>
     </div>
-
-    <!-- <div class="absolute w-full h-full bg-green-500 opacity-30 shrink-box" [style.animation]="'shrinkY ' + asset.duration + 's linear forwards'">
-    </div> -->
 </div>
 
 <p-dialog [(visible)]="showConfig" [modal]="true" [draggable]="false" [resizable]="false" (onHide)="showConfig.set(false)">

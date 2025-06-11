@@ -11,6 +11,7 @@ export class PlaylistService {
   intervalId: any;
   currentIndex = signal<number>(0);
   currentContent = signal<Assets | null>(null);
+  currentTransition = signal<any>(null);
   duration = signal<number>(3000); // default 3 seconds per content
   isPlaying = signal<boolean>(false);
   fadeIn = signal<boolean>(false);
@@ -25,13 +26,21 @@ export class PlaylistService {
     description: new FormControl('This is a sample description of a new playlist'),
     transition: new FormGroup({
       hasGap: new FormControl(false),
-      type: new FormControl(''),
-      duration: new FormControl(0)
+      type: new FormControl(null),
+      speed: new FormControl(5)
     }),
-    contents: new FormControl<Assets[]>([]),
+    contents: new FormControl<Assets[] | any>([]),
     status: new FormControl(''),
     loop: new FormControl(false),
   })
+
+  transitionTypes: any[] = [
+    { label: 'Fade', value: 'fade-in', transition: { opacity: true } },
+    { label: 'Slide Up', value: 'slide-in', transition: { opacity: true, x: 'translate-y-4', y: 'translate-y-0' } },
+    { label: 'Slide Down', value: 'slide-out', transition: { opacity: true, x: '-translate-y-4', y: 'translate-y-0' } },
+    { label: 'Slide Left', value: 'slide-in', transition: { opacity: true, x: 'translate-x-4', y: 'translate-x-0' } },
+    { label: 'Slide Right', value: 'slide-out', transition: { opacity: true, x: '-translate-x-4', y: 'translate-x-0' } },
+  ]
 
   videoElement = signal<HTMLVideoElement | null>(null);
 
@@ -39,12 +48,24 @@ export class PlaylistService {
 
   onPlayPreview(index: number = 0) {
     const contents = this.contents?.value;
+    const { hasGap, type, speed } = this.transition?.value;
+    const transitionSpeed = speed * 100;
+    const gapDuration = hasGap ? 1000 : 0;
+
+    this.currentTransition.set({ type, speed: transitionSpeed });    
+
     if (contents.length === 0) return;
 
     this.isPlaying.set(true);
 
     const item = contents[this.currentIndex()];
     this.currentContent.set(item);
+    // setTimeout(() => {
+    //   this.fadeIn.set(true);
+    //   this.currentContent.set(item)
+    // }, gapDuration + 50);
+    
+    this.fadeIn.set(true);
     this.progress.set(0);
 
     const duration = item.duration * 1000;
@@ -65,20 +86,31 @@ export class PlaylistService {
     this.timeoutId = setTimeout(() => {
       const nextIndex = (index + 1) % contents.length; // Loop back to 0 after last item
       const isLooping = this.loop?.value;
-            
-      if (isLooping) this.currentIndex.set(nextIndex);
-      else {
-        if (index + 1 >= contents.length) {
-          this.onStopPreview();
-          return;
+      
+      // Trigger fade-in again for next content
+      this.fadeIn.set(false);
+
+      // Clear content
+      this.currentContent.set(null);
+
+      // If there is a gap, wait for the gap duration before playing the next content
+      setTimeout(() => {
+        if (isLooping) {
+          this.currentIndex.set(nextIndex);
+        } else {
+          if (index + 1 >= contents.length) {
+            this.onStopPreview();
+            return;
+          }
+          this.currentIndex.set(this.currentIndex() + 1);
         }
         
-        this.currentIndex.set(this.currentIndex() + 1);
-      }
+        this.fadeIn.set(true);
+        this.currentContent.set(contents[this.currentIndex()]);
+        this.onPlayPreview(this.currentIndex());
+      }, gapDuration + 50);
 
-      this.currentContent.set(contents[this.currentIndex()]);
-      this.onPlayPreview(this.currentIndex());
-    }, duration + 1500); // added 1 sec for complete transition
+    }, duration + 1500); // added 1.5 sec for complete transition
   }
 
   onStopPreview() {
@@ -115,5 +147,9 @@ export class PlaylistService {
 
   get loop() {
     return this.playListForm.get('loop');
+  }
+
+  get transition() {
+    return this.playListForm.get('transition');
   }
 }
