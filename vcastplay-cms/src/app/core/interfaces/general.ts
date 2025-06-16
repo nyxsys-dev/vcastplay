@@ -18,3 +18,11 @@ export interface AudienceTag {
         pointOfIntereset: string
     }
 }
+
+export interface Availability {
+    selected: boolean;
+    weekday: string;
+    hour: string;
+}
+
+export const WEEKDAYS: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

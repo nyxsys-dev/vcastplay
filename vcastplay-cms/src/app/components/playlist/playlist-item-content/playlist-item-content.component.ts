@@ -6,13 +6,13 @@ import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
 
 @Component({
-  selector: 'app-timeline-item',
+  selector: 'app-playlist-item-content',
   imports: [ PrimengUiModule, ComponentsModule ],
-  templateUrl: './timeline-item.component.html',
-  styleUrl: './timeline-item.component.scss'
+  templateUrl: './playlist-item-content.component.html',
+  styleUrl: './playlist-item-content.component.scss'
 })
-export class TimelineItemComponent {
-
+export class PlaylistItemContentComponent {
+  
   @Input() asset!: Assets;
 
   showConfig = signal<boolean>(false);
@@ -41,5 +41,4 @@ export class TimelineItemComponent {
   get isPlaying() {
     return this.playlistService.isPlaying;
   }
-
 }

@@ -1,21 +1,20 @@
 import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { PlaylistContainerComponent } from '../../../components/playlist/playlist-container/playlist-container.component';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { MenuItem, MessageService } from 'primeng/api';
-import { Router } from '@angular/router';
-import { TimelineContainerComponent } from '../../../components/playlist/timeline-container/timeline-container.component';
-import moment from 'moment';
 import { AssetsService } from '../../../core/services/assets.service';
 import { Assets } from '../../../core/interfaces/assets';
 import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-item.component';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
+import { MenuItem, MessageService } from 'primeng/api';
 import { FormControl } from '@angular/forms';
-import { SafeurlPipe } from '../../../core/pipes/safeurl.pipe';
+import { Router } from '@angular/router';
+import moment from 'moment';
 
 @Component({
   selector: 'app-playlist-details',
-  imports: [ PrimengUiModule, ComponentsModule, TimelineContainerComponent, AssetListItemComponent, SafeurlPipe ],
+  imports: [ PrimengUiModule, ComponentsModule, PlaylistContainerComponent, AssetListItemComponent ],
   templateUrl: './playlist-details.component.html',
   styleUrl: './playlist-details.component.scss',
   providers: [ MessageService ]
@@ -65,8 +64,9 @@ export class PlaylistDetailsComponent {
     })
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
+
+  ngOnDestroy() { }
 
   onClickPlayPreview() {
     if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
@@ -86,10 +86,8 @@ export class PlaylistDetailsComponent {
     this.playlistService.onStopPreview();
   }
 
-  onTimeUpdate(event: Event) {
-    const video: HTMLVideoElement = event.target as HTMLVideoElement;
-    const currentTime = video.currentTime;
-    const duration = video.duration;
+  onTimeUpdate(event: any) {    
+    const { currentTime, duration } = event;
     this.playlistService.onUpdateProgress(currentTime, duration);
   }
 

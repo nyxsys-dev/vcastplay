@@ -21,6 +21,9 @@ export interface Assets {
     };
     hours: string[];
     duration?: number;
+    status?: string;
+    createdOn?: Date;
+    updatedOn?: Date;
 }
 
 export interface AssetType {

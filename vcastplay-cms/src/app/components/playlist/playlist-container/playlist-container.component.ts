@@ -6,17 +6,17 @@ import { CommonModule } from '@angular/common';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AssetsService } from '../../../core/services/assets.service';
 import { Assets } from '../../../core/interfaces/assets';
-import { TimelineItemComponent } from '../timeline-item/timeline-item.component';
 import { MessageService } from 'primeng/api';
 import { FormGroup } from '@angular/forms';
+import { PlaylistItemContentComponent } from '../playlist-item-content/playlist-item-content.component';
 
 @Component({
-  selector: 'app-timeline-container',
-  imports: [ PrimengUiModule, CommonModule, ComponentsModule, TimelineItemComponent ],
-  templateUrl: './timeline-container.component.html',
-  styleUrl: './timeline-container.component.scss'
+  selector: 'app-playlist-container',
+  imports: [ PrimengUiModule, CommonModule, ComponentsModule, PlaylistItemContentComponent ],
+  templateUrl: './playlist-container.component.html',
+  styleUrl: './playlist-container.component.scss'
 })
-export class TimelineContainerComponent {
+export class PlaylistContainerComponent {
 
   @Input() playListForm!: FormGroup;
 

@@ -15,7 +15,7 @@ export default [
         title: `Asset Upload • ${appTitle}`,
     },
     {
-        path: 'asset-details/:id', 
+        path: 'asset-details/:code', 
         loadComponent: () => import('./asset-details/asset-details.component').then(m => m.AssetDetailsComponent),
         title: `Asset Upload • ${appTitle}`,
     },

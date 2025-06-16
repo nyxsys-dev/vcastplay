@@ -4,6 +4,7 @@ import { ToolbarComponent } from '../../../components/toolbar/toolbar.component'
 import { DrawerComponent } from '../../../components/drawer/drawer.component';
 import { BreadcrumbsComponent } from '../../../components/breadcrumbs/breadcrumbs.component';
 import { FiltersComponent } from '../../../components/filters/filters.component';
+import { PreviewContentComponent } from '../../../components/preview-content/preview-content.component';
 
 
 const COMPONENT_MODULES = [
@@ -12,6 +13,7 @@ const COMPONENT_MODULES = [
   DrawerComponent,
   BreadcrumbsComponent,
   FiltersComponent,
+  PreviewContentComponent,
 ]
 
 @NgModule({
