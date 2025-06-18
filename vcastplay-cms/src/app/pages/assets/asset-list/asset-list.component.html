@@ -4,13 +4,37 @@
         <ng-template #title>
             <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
                 <app-filters class="w-full md:w-[25rem]"></app-filters>
-                <div class="flex gap-4">
+                <div class="flex items-center gap-4 block lg:hidden">
+                    <p class="text-base font-normal">View:</p>
+                    <p-selectbutton [options]="assetViewModes" [formControl]="assetViewModeCtrl" optionLabel="label" optionValue="label" [allowEmpty]="false">
+                        <ng-template #item let-item>
+                            <i [class]="item.icon" [pTooltip]="item.label" tooltipPosition="bottom"></i>
+                        </ng-template>
+                    </p-selectbutton>
+                </div>
+                <div class="flex items-center gap-4 hidden lg:block">
                     <p-button (onClick)="onClickAddNew()" label="Upload" icon="pi pi-plus"></p-button>
                     <!-- <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
                     <p-button [label]="!isMobile ? 'Download' : ''" variant="outlined" icon="pi pi-download" [text]="isMobile" /> -->
                 </div>
             </div>
         </ng-template>
+
+        <div class="relative block lg:hidden px-3 pb-2 gap-4" [ngClass]="{ 
+            'grid grid-cols-2 md:grid-cols-3 gap-4': assetViewModeSignal() == 'Grid',
+            'flex flex-col gap-2': assetViewModeSignal() == 'List'
+        }">
+            @for (item of filteredAssets(); track $index) {
+                <app-asset-list-item [ngClass]="{ 'h-30': assetViewModeSignal() == 'List' }" [asset]="item" [disableDrag]="true" />
+            }
+            <div class="flex items-center justify-center border-dashed border-2 border-gray-400 p-5 
+                rounded-lg cursor-pointer hover:bg-gray-100" (click)="onClickAddNew()">
+                <div class="flex flex-col gap-4 items-center justify-center">
+                    <i class="pi pi-plus-circle text-gray-400" style="font-size: 2rem;"></i>
+                    <p>Upload</p>
+                </div>
+            </div>
+        </div>
         
         <div class="flex-1 md:h-full">
             <p-table
@@ -24,9 +48,9 @@
                 <ng-template #header>
                     <tr>
                         <th>Preview</th>
-                        <th>Code</th>
                         <th>Name</th>
                         <th>Type</th>
+                        <th>Orientation</th>
                         <th>Category & Subcategory</th>
                         <th>Last Update</th>
                         <th>Actions</th>
@@ -34,40 +58,49 @@
                 </ng-template>
                 <ng-template #body let-item>
                     <tr>
-                        <td>Preview</td>
-                        <td>{{ item.code }}</td>
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.type }}</td>
+                        <td>
+                            <div class="flex group relative">
+                                @if(['video', 'image'].includes(item.type)) {
+                                    <p-image [src]="item.fileDetails.thumbnail" alt="Image" width="80" />
+                                } @else {
+                                    <div class="h-20 flex justify-center items-center">
+                                        @switch (item.type) {
+                                            @case('audio') { <i class="pi pi-volume-up" [style]="{ 'font-size': '2rem'}"></i> }
+                                            @case('web') { <i class="pi pi-globe" [style]="{ 'font-size': '2rem'}"></i> }
+                                            @case('widget') { <i class="pi pi-layout" [style]="{ 'font-size': '2rem'}"></i> }
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex flex-col gap-1">
+                                <p class="font-semibold">{{ item.name }}</p>
+                                <div class="flex gap-2">
+                                    <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
+                                    <p class="text-sm italic">({{ item.fileDetails.resolution.width }} x {{ item.fileDetails.resolution.height }})</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td><p-tag [value]="item.type.toUpperCase()" severity="info" /></td>
+                        <td>{{ item.fileDetails.orientation }}</td>
                         <td>{{ item.category }} & {{ item.subCategory }}</td>
                         <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
-                        <td class="flex flex-row">
-                            <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                        <td>
+                            <div class="flex flex-row">
+                                <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                            </div>
                         </td>
                     </tr>
                 </ng-template>
                 <ng-template #emptymessage>
-                    <tr>
+                    <tr class="h-[calc(100vh-370px)]">
                         <td colspan="9" [height]="20">
                             <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
                         </td>
                     </tr>
                 </ng-template>
             </p-table>
-            <!-- <div class="block lg:hidden flex flex-col gap-4">
-                @if (!screenService.loadingSignal()) {
-                    @for (item of filteredScreen(); track $index) {
-                        <app-screen-list-item [screen]="item" [actionBtn]="actionBtn" />
-                    } @empty {
-                        <div class="flex justify-center items-center p-5 h-100">
-                            <p>No screend found</p>
-                        </div>
-                    }
-                } @else {
-                    @for (item of utils.tableSkeletonRows; track $index) {
-                        <p-skeleton height="5rem" />
-                    }
-                }
-            </div> -->
         </div>
         <ng-template #footer>
             <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
@@ -75,9 +108,17 @@
     </p-card>
 </div>
 
+<p-dialog header="Preview" [(visible)]="isShowPreview" [style]="{ width: '50rem' }" modal>
+    <div class="relative h-100">
+        <app-preview-content class="absolute h-full w-full flex items-center justify-center"
+            [currentContent]="selectedAsset()" [showControls]="true" [autoPlay]="true" />
+    </div>
+</p-dialog>
+
 <ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" [rounded]="true" severity="success" />
-    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" severity="success" />
+    <p-button (onClick)="onClickOpenOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-ellipsis-v" [text]="true" severity="secondary" />
+    <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
 </ng-template>
 
 <p-toast />

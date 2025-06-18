@@ -1,16 +1,16 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
+import { ComponentsModule } from '../../../core/modules/components/components.module';
+import { AssetScheduleComponent } from '../asset-schedule/asset-schedule.component';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { UtilityService } from '../../../core/services/utility.service';
 import { AssetsService } from '../../../core/services/assets.service';
-import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
-import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WEEKDAYS } from '../../../core/interfaces/general';
 import { FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-asset-details',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, AssetScheduleComponent ],
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.scss',
   providers: [ ConfirmationService, MessageService ]
@@ -31,44 +31,38 @@ export class AssetDetailsComponent {
   totalSizePercent : number = 0;
 
   previewUrl = signal<string>('');
-  currentFileType = signal<string>('image');
 
-  weekdays: string[] = WEEKDAYS;
+  isShowSchedule = signal<boolean>(false);
+  isShowInfo = signal<boolean>(false);
 
   showLinkInput = () => {
-    const type = this.assetForm.get('type')?.value;
+    const type = this.assetTypeControl.value;
     return [ 'web', 'widget' ].includes(type);
   }
 
   constructor() {
-    this.type?.valueChanges.subscribe(value => {
-      this.currentFileType.set(value);
-      this.assetForm.patchValue({
-        link: '',
-        file: null
-      })
-    });
-  }
-  
-  ngOnInit() {
+    this.assetTypeControl.enable();
+
     // Get screen code from url
-    const code = this.route.snapshot.paramMap.get('code');
+    const code = this.route.snapshot.paramMap.get('code');    
     if (code) {
-      const assetData: any = this.assetService.selectedAsset();
+      const assetData: any = this.assetService.selectedAsset();      
       if (assetData) {      
         this.assetForm.patchValue(assetData);
+        this.assetTypeControl.disable();
       }
-    } 
+    }
   }
   
-  onRemoveTemplatingFile(event: any, file: File, removeFileCallback: any, index: any) {
-    removeFileCallback(event, index);
-    this.totalSize -= parseInt(this.utils.formatSize(file.size));
-    this.totalSizePercent = this.totalSize / 10;
-  }
+  ngOnInit() { }
 
-  onClearFiles() {
-    this.assetForm.reset();
+  onChangeType(event: any) {
+    const type = event.value;
+    if (['web', 'widget'].includes(type)) {
+      this.assetForm.patchValue({ type })
+    } else {
+      this.assetForm.reset();
+    }
   }
 
   onFileSelected(event: Event): void {
@@ -77,53 +71,77 @@ export class AssetDetailsComponent {
     const file = fileInput.files?.[0];
     if (!file) return;
 
+    this.formControl('duration').enable();
+    
     if (file.size > maxSizeBytes) {
       this.message.add({ severity: 'error', summary: 'Error', detail: 'File size exceeds the maximum limit of 300MB.' });
       return;
     }
 
-    if (['image', 'video', 'audio'].includes(this.type?.value)) {
+    if (['file'].includes(this.assetTypeControl.value)) {
       this.assetForm.patchValue({ name: file.name });
     }
-    
+
     const reader = new FileReader();
     reader.onload = () => {
       this.assetService.getImageOrientationAndResolution(file).then((res) => {      
-        const type = this.type?.value;
+        const type = file.type.split('/')[0];        
         switch (type) {
           case 'video':
             const video = document.createElement('video');
             video.preload = 'metadata';
+            video.src = URL.createObjectURL(file);
+
             video.onloadedmetadata = () => {
-              URL.revokeObjectURL(video.src);
-              const durationInSeconds = video.duration;             
+              video.currentTime = 1;
+              
+              video.onseeked = () => {
+                setTimeout(() => {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = video.videoWidth;
+                  canvas.height = video.videoHeight;
 
-              this.assetForm.patchValue({
-                name: res.name,
-                link: reader.result as string,
-                file,
-                fileDetails: {
-                  size: res.size,
-                  type: res.type,
-                  orientation: res.orientation,
-                  resolution: `${res.resolution.width} x ${res.resolution.height}`,
-                },
-                duration: Math.max(Math.floor(durationInSeconds), 1),
-              });
+                  const ctx = canvas.getContext('2d');
+                  const thumbnail = ctx ? (() => {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    return canvas.toDataURL('image/png');
+                  })() : '';
+
+                  URL.revokeObjectURL(video.src);
+                  
+                  this.assetForm.patchValue({
+                    name: res.name,
+                    link: reader.result as string,
+                    type,
+                    fileDetails: {
+                      name: res.name,
+                      size: res.size,
+                      type: res.type,
+                      orientation: res.orientation,
+                      resolution: {
+                        width: res.resolution.width,
+                        height: res.resolution.height,
+                      },
+                      thumbnail,
+                    },
+                    duration: Math.floor(video.duration),
+                  });                  
+                }, 100);
+              };
             };
-
-              video.src = URL.createObjectURL(file);
             break;
           default:
             this.assetForm.patchValue({
               name: res.name,
               link: reader.result as string,
-              file,
+              type,
               fileDetails: {
+                name: res.name,
                 size: res.size,
                 type: res.type,
                 orientation: res.orientation,
-                resolution: `${res.resolution.width} x ${res.resolution.height}`
+                resolution: { width: res.resolution.width, height: res.resolution.height },
+                thumbnail: reader.result as string
               }
             })
             break;
@@ -160,10 +178,11 @@ export class AssetDetailsComponent {
         label: 'Save',
       },
       accept: () => {
-        this.assetService.onSaveAssets(this.assetForm.value)
+        this.assetService.onSaveAssets(this.assetForm.value);
         this.message.add({ severity:'success', summary: 'Success', detail: 'Assets upload successfully!' });
         this.selectedAsset.set(null);
         this.assetForm.reset();
+        this.isEditMode.set(false);
         this.router.navigate([ '/assets/asset-library' ]);
       },
     })
@@ -175,8 +194,16 @@ export class AssetDetailsComponent {
     this.router.navigate([ '/assets/asset-library' ]);
   }
 
+  onClickCloseSchedule() {    
+    this.isShowSchedule.set(false);
+  }
+
   formControl(fieldName: string) {
     return this.utils.getFormControl(this.assetForm, fieldName);
+  }
+
+  get isEditMode() {
+    return this.assetService.isEditMode;
   }
 
   get selectedAsset() {
@@ -193,6 +220,10 @@ export class AssetDetailsComponent {
 
   get assetTypes() {
     return this.assetService.assetType;
+  }
+
+  get assetTypeControl() {
+    return this.assetService.assetTypeControl;
   }
 
   get type() {

@@ -35,28 +35,20 @@ export class PlaylistDetailsComponent {
 
   keywords: FormControl = new FormControl('');
   keywordSignal = signal<string>('');
-
-  assets = signal<Assets[]>([]);
+  
   filteredAssets = computed(() => this.assets().filter(asset => {
     return asset.name.toLowerCase().includes(this.keywordSignal().toLowerCase());
   }));
 
-  assetViewModeSignal = signal<string>('Grid');
-  assetViewMode: FormControl = new FormControl('Grid');
-  assetViewModes = [
-    { icon: 'pi pi-table', label: 'Grid' },
-    { icon: 'pi pi-list', label: 'List' },
-  ]
   
   totalDuration = () => {
-    const contents = this.formControl('contents').value;
+    const contents: any[] = this.formControl('contents').value;
     return contents.reduce((acc: any, item: any) => acc + item.duration, 0);
   }
 
   constructor() {
-    this.assets.set(this.assetService.onGetAssets());
     this.keywords.valueChanges.subscribe(value => this.keywordSignal.set(value));
-    this.assetViewMode.valueChanges.subscribe(value => this.assetViewModeSignal.set(value));
+    this.assetViewModeCtrl.valueChanges.subscribe(value => this.assetViewModeSignal.set(value));
 
     effect(() => {
       const progress = this.playlistService.progress();
@@ -79,6 +71,7 @@ export class PlaylistDetailsComponent {
   
   onClickCancel() {
     this.router.navigate([ '/playlist/playlist-library' ]);
+    this.playListForm.patchValue({ contents: []})
   }
 
   onClickClearAll() {
@@ -132,5 +125,21 @@ export class PlaylistDetailsComponent {
 
   get currentTransition() {
     return this.playlistService.currentTransition();
+  }
+
+  get assets() {
+    return this.assetService.assets;
+  }
+
+  get assetViewModes() {
+    return this.assetService.assetViewModes;
+  }
+
+  get assetViewModeCtrl() {
+    return this.assetService.assetViewModeCtrl;
+  }
+
+  get assetViewModeSignal() {
+    return this.assetService.assetViewModeSignal;
   }
 }

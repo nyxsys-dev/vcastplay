@@ -1,7 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AssestInfo, Assets, AssetType } from '../interfaces/assets';
-import { Availability, WEEKDAYS } from '../interfaces/general';
 
 @Injectable({
   providedIn: 'root'
@@ -14,53 +13,54 @@ export class AssetsService {
   selectedAsset = signal<Assets | null>(null);
 
   loadingSignal = signal<boolean>(false);
+  isEditMode = signal<boolean>(false);
 
   assetType = signal<AssetType[]>([
-    { label: 'Image', value: 'image' },
-    { label: 'Audio', value: 'audio' },
+    { label: 'File', value: 'file' },
     { label: 'Web Pages', value: 'web' },
-    { label: 'Videos', value: 'video' },
     { label: 'Widgets', value: 'widget' },
-  ])
+  ]);
+
+  assetTypeControl: FormControl = new FormControl('file');
+  
+  assetViewModeSignal = signal<string>('Grid');
+  assetViewModeCtrl: FormControl = new FormControl('Grid');
+  assetViewModes = [
+    { icon: 'pi pi-table', label: 'Grid' },
+    { icon: 'pi pi-list', label: 'List' },
+  ]
 
   categories: any[] = [
     { label: 'Category 1', value: 'Category 1', subCategory: [{ label: 'Sub-Category 1', value: 'Sub-Category 1' }] },
-    { label: 'Category 2', value: 'Category 2', subGroup: [{ label: 'Sub-Category 2', value: 'Sub-Category 2' }] },
+    { label: 'Category 2', value: 'Category 2', subCategory: [{ label: 'Sub-Category 2', value: 'Sub-Category 2' }] },
   ]
   
   filterCategory = computed(() => this.categories.map(category => ({ label: category.label, value: category.value })));
-  filterSubCategory = computed(() => this.categories.map(category => category.subGroup).flat().map(subGroup => ({ label: subGroup.label, value: subGroup.value })));
-
-  weekdays: string[] = WEEKDAYS;
+  filterSubCategory = computed(() => this.categories.map(category => category.subCategory).flat().map(subCategory => ({ label: subCategory.label, value: subCategory.value })));
 
   assetForm: FormGroup = new FormGroup({
     id: new FormControl(''),
     code: new FormControl(''),
     name: new FormControl('', [ Validators.required ]),
-    type: new FormControl('image', { nonNullable: true }),
+    type: new FormControl(''),
     link: new FormControl(''),
-    file: new FormControl(null),
     category: new FormControl(null),
     subCategory: new FormControl(null),
-    fileDetails: new FormGroup({
+    fileDetails: new FormGroup<AssestInfo | any>({
       size: new FormControl(null),
       type: new FormControl(null),
       orientation: new FormControl(null),
       resolution: new FormControl(null),
+      thumbnail: new FormControl(null),
     }),
     audienceTag: new FormControl(null),
-    availability: new FormArray(
-      WEEKDAYS.map(day => new FormGroup<Availability | any>({
-        selected: new FormControl(false),
-        weekday: new FormControl(day),
-        hour: new FormControl(null),
-      }))
-    ),
     dateRange: new FormGroup({
-      start: new FormControl(null, [ Validators.required]),
-      end: new FormControl(null, [ Validators.required]),
+      start: new FormControl(null),
+      end: new FormControl(null),
     }),
-    duration: new FormControl(2),
+    weekdays: new FormControl([], { nonNullable: true }),
+    hours: new FormControl<[{ start: string, end: string }] | []>([], { nonNullable: true }),
+    duration: new FormControl(5),
   })
 
   constructor() { }
@@ -392,7 +392,7 @@ export class AssetsService {
 
   onSaveAssets(assets: Assets) {
     const tempAssets = this.assets();
-    const { id, code, status, ...info } = assets;
+    const { id, code, status, ...info } = assets;    
     const index = tempAssets.findIndex(u => u.id === id);
     if (index !== -1) tempAssets[index] = { ...tempAssets[index], ...info };
     else tempAssets.push({ id: tempAssets.length + 1, code: `NYX00${tempAssets.length + 1}`, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });

@@ -10,11 +10,11 @@
     </div>
     <div class="h-full w-full p-3">
         <div class="text-left flex flex-col ">
-            <p class="text-sm">{{ asset.name }}</p> 
+            <p class="text-xs break-all">{{ asset.name }}</p> 
             <p class="text-xs">{{ asset.code }}</p>
         </div>
         <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center text-center m-2">
-            <p class="font-semibold text-sm">{{ utils.timeConversion(asset.duration ?? 0) }}</p>
+            <p class="font-semibold text-sm">{{ utils.timeConversion(asset.duration || 0) }}</p>
         </div>
     </div>
     <div class="w-[140px] outline-dashed outline-2 outline-offset-2 outline-gray-400" *cdkDragPlaceholder></div>

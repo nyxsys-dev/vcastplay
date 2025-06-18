@@ -125,13 +125,14 @@ export class UtilityService {
     return `${formattedSize} ${sizes[i]}`;
   }
 
-  timeConversion(ms: number): string {
+  timeConversion(ms: number, isReadable: boolean = false): string {
     const totalSeconds = Math.floor(ms);
     const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
     const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
     const secs = (totalSeconds % 60).toString().padStart(2, '0');
 
-    return `${hrs}:${mins}:${secs}`;
+    if (!isReadable) return `${hrs}:${mins}:${secs}`;
+    else return [ hrs ? `${hrs}h` : '', mins ? `${mins}m` : '', secs || (!hrs && !mins) ? `${secs}s` : '' ].filter(Boolean).join(' ');
   }
 
   getFormControl(formGroup: FormGroup, fieldName: string) {

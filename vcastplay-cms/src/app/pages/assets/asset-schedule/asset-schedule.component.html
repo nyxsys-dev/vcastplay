@@ -1,0 +1,72 @@
+<div class="flex flex-col gap-5 mt-2">
+    <form [formGroup]="assetForm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" formGroupName="dateRange">
+            <p-floatlabel variant="on">
+                <p-datepicker formControlName="start" inputId="start" [showIcon]="true" appendTo="body" fluid />
+                <label for="start">Start Date</label>
+            </p-floatlabel>
+            <p-floatlabel variant="on">
+                <p-datepicker formControlName="end" inputId="end" [showIcon]="true" appendTo="body" fluid />
+                <label for="end">End Date</label>
+            </p-floatlabel>
+        </div>
+    </form>
+
+    <div class="flex justify-end">
+        <p-button label="Add Hours" (onClick)="onClickAddHours()" icon="pi pi-plus" size="small" />
+    </div>
+    <div class="border border-gray-300 rounded-lg p-2">
+        <p-table [value]="hoursControl?.value" scrollHeight="220px" showGridlines scrollable>
+            <ng-template #header>
+                <tr>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-item let-index="rowIndex">
+                <tr>
+                    <td>
+                        <p-datepicker [(ngModel)]="item.start" [timeOnly]="true" appendTo="body"
+                            [iconDisplay]="'input'" placeholder="Start Time" hourFormat="12" showButtonBar showIcon fluid>
+                            <ng-template #inputicon let-clickCallBack="clickCallBack">
+                                <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+                            </ng-template>
+                        </p-datepicker>
+                    </td>
+                    <td>
+                        <p-datepicker [(ngModel)]="item.end" [timeOnly]="true" appendTo="body"
+                            [iconDisplay]="'input'" placeholder="End Time" hourFormat="12" showButtonBar showIcon fluid>
+                            <ng-template #inputicon let-clickCallBack="clickCallBack">
+                                <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+                            </ng-template>
+                        </p-datepicker>
+                    </td>
+                    <td>
+                        <p-button icon="pi pi-trash" severity="danger" text (onClick)="onClickDeleteHour(item)"></p-button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="3" [height]="20">
+                        <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <p-divider [align]="'left'"><b>Weekdays</b></p-divider>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5" [formGroup]="assetForm">
+        <div class="flex items-center gap-2">
+            <p-checkbox value="All" (onChange)="onCheckAllWeekdays($event)" [indeterminate]="isCheckedWeekday()" binary />
+            <label for="All">All</label>
+        </div>
+        @for (item of weekdays; track $index) {
+            <div class="flex items-center gap-2">
+                <p-checkbox [value]="item" formControlName="weekdays" />
+                <label [for]="item">{{ item }}</label>
+            </div>
+        }
+    </div>
+</div>

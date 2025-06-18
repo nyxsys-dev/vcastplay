@@ -4,26 +4,20 @@ export interface Assets {
     name: string;
     type: string;
     link: string;
-    file: string;
     category: string;
     subCategory: string;
-    fileDetails: {
-        orientation: string;
-        resolution: string;
-        size: string;
-        type: string;
-    };
-    audienceTag?: string;
-    availability: string;
+    fileDetails: AssestInfo;
+    audienceTag: string;
     dateRange: {
         start: string;
         end: string;
     };
     hours: string[];
-    duration?: number;
-    status?: string;
-    createdOn?: Date;
-    updatedOn?: Date;
+    weekdays: string[];
+    duration: number;
+    status: string;
+    createdOn: Date;
+    updatedOn: Date;
 }
 
 export interface AssetType {
@@ -37,4 +31,5 @@ export interface AssestInfo {
     size: number,
     orientation: string,
     resolution: { width: number, height: number },
+    thumbnail?: string
 }

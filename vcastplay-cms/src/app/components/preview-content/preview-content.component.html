@@ -1,17 +1,16 @@
 @switch (currentContent?.type) {
     @case ('video') {
-        <video #videoPlayer class="object-container border-none h-full" [src]="currentContent?.link | safeurl" 
-            (timeupdate)="onTimeUpdate($event)" [autoplay]="isPlaying" [controls]="showControls"></video>
+        <video class="max-h-full object-contain" [src]="currentContent?.link | safeurl" [controls]="showControls" [autoplay]="autoPlay"></video>
     }
     @case ('web') {
-        <iframe class="object-contain border-none h-full" [src]="currentContent?.link | safeurl"></iframe>
+        <iframe class="w-full h-full border-none" [src]="currentContent?.link | safeurl"></iframe>
     }
     @case ('image') {
-        <img class="object-contain h-full" [src]="currentContent?.link | safeurl" alt="preview image">
+        <img class="max-h-full object-contain" [src]="currentContent?.link | safeurl" alt="preview image" />
     }
     @default {
         <div class="h-full w-full flex justify-center items-center">
-            {{ currentContent?.name ?? 'Preview Content'}}
+            {{ currentContent?.name || 'Preview Content' }}
         </div>
     }
 }

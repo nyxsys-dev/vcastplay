@@ -54,12 +54,13 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FluidModule } from 'primeng/fluid';
 import { ChipModule } from 'primeng/chip';
+import { ImageModule } from 'primeng/image';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxEchartsModule } from 'ngx-echarts';
 
-import { DragDropModule, CdkDropList, CdkDropListGroup, CdkDrag, CdkDragPlaceholder  } from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 const PRIMEUI_MODULES = [
   CommonModule,
@@ -121,6 +122,7 @@ const PRIMEUI_MODULES = [
   FluidModule,
   ChipModule,
   DragDropModule,
+  ImageModule,
 ];
 
 @NgModule({
