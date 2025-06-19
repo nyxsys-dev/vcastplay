@@ -8,9 +8,9 @@ export interface Assets {
     subCategory: string;
     fileDetails: AssestInfo;
     audienceTag: string;
-    dateRange: {
-        start: string;
-        end: string;
+    dateRange: { 
+        start: Date;
+        end: Date;
     };
     hours: string[];
     weekdays: string[];
@@ -26,10 +26,10 @@ export interface AssetType {
 }
 
 export interface AssestInfo {
-    name: string,
-    type: string,
-    size: number,
-    orientation: string,
-    resolution: { width: number, height: number },
+    name: string;
+    type: string;
+    size: number;
+    orientation: string;
+    resolution: { width: number; height: number };
     thumbnail?: string
 }

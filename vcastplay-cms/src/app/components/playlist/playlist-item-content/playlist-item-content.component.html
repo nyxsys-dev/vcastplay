@@ -1,6 +1,6 @@
 <div class="relative w-[140px] h-full bg-[var(--p-surface-300)] flex items-center justify-center group rounded-lg cursor-grab"
-    [ngClass]="{ 'shadow-lg shadow-blue-600/70': currentPlaying() }">
-    <div class="absolute top-0 right-0 p-2 h-full w-full z-10">
+    [ngClass]="{ 'shadow-lg shadow-red-600/70': currentPlaying() }">
+    <div class="absolute top-0 right-0 p-2 h-full w-full z-10 bg-gradient-to-t from-[var(--p-primary-500)] to-transparent ">
         <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300" [ngClass]="{ 'group-hover:flex': !isPlaying()}">
             @if (!['video', 'audio'].includes(asset.type)) {
                 <p-button severity="info" icon="pi pi-cog" pTooltip="Configuration" tooltipPosition="bottom" (onClick)="showConfig.set(true)" />
@@ -8,15 +8,15 @@
             <p-button severity="danger" icon="pi pi-trash" pTooltip="Remove" tooltipPosition="bottom" (onClick)="onClickRemove(asset)" text />
         </div>
     </div>
-    <div class="h-full w-full p-3">
-        <div class="text-left flex flex-col ">
-            <p class="text-xs break-all">{{ asset.name }}</p> 
-            <p class="text-xs">{{ asset.code }}</p>
-        </div>
-        <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center text-center m-2">
-            <p class="font-semibold text-sm">{{ utils.timeConversion(asset.duration || 0) }}</p>
-        </div>
+
+    <div class="flex items-center justify-center h-full w-full ">
+        <img [src]="asset.fileDetails.thumbnail" alt="Content" class="w-full h-full object-contain">
     </div>
+
+    <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center text-center text-white w-full mb-1 z-50">
+        <p class="font-semibold text-sm">{{ utils.timeConversion(asset.duration || 0) }}</p>
+    </div>
+
     <div class="w-[140px] outline-dashed outline-2 outline-offset-2 outline-gray-400" *cdkDragPlaceholder></div>
 </div>
 

@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { Assets } from '../../../core/interfaces/assets';
 import { AssetListItemComponent } from '../asset-list-item/asset-list-item.component';
 import { PreviewContentComponent } from '../../../components/preview-content/preview-content.component';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-asset-list',
@@ -37,7 +38,10 @@ export class AssetListComponent {
   message = inject(MessageService);
   router = inject(Router);
 
+  assetViewModeSignal = signal<string>('Grid');
   isShowPreview = signal<boolean>(false);
+
+  assetViewModeCtrl: FormControl = new FormControl('Grid');
   
   filteredAssets = computed(() => {
     return this.assetService.assets();
@@ -53,6 +57,49 @@ export class AssetListComponent {
   ngOnInit() {
     this.assetService.onGetAssets();
     this.totalRecords = this.assetService.assets().length;
+  }
+
+  async onFileSelect(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      await this.assetService.onDropFile(input.files);
+      this.message.add({ severity:'success', summary: 'Success', detail: `${input.files.length} file(s) uploaded successfully!` });  
+    }
+  }
+
+  onDropFile(event: DragEvent) {
+    event.preventDefault();
+    const files = Array.from(event.dataTransfer?.files || []);    
+    if (files) {
+      this.confirmation.confirm({
+        target: event.target as EventTarget,
+        message: 'Do you want to upload these assets?',
+        closable: true,
+        closeOnEscape: true,
+        header: 'Confirm Save',
+        icon: 'pi pi-info-circle',
+        rejectButtonProps: {
+          label: 'Cancel',
+          severity: 'secondary',
+          outlined: true,
+        },
+        acceptButtonProps: {
+          label: 'Save',
+        },
+        accept: async () => {        
+          await this.assetService.onDropFile(files);
+          this.message.add({ severity:'success', summary: 'Success', detail: `${files.length} file(s) uploaded successfully!` });  
+        },
+      })
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
   }
 
   onClickAddNew() {
@@ -79,7 +126,7 @@ export class AssetListComponent {
   onClickDelete(item: any, event: Event) {
     this.confirmation.confirm({
       target: event.target as EventTarget,
-      message: 'Do you want to delete this user?',
+      message: 'Do you want to delete this asset?',
       closable: true,
       closeOnEscape: true,
       header: 'Danger Zone',
@@ -132,13 +179,5 @@ export class AssetListComponent {
 
   get assetViewModes() {
     return this.assetService.assetViewModes;
-  }
-
-  get assetViewModeCtrl() {
-    return this.assetService.assetViewModeCtrl;
-  }
-
-  get assetViewModeSignal() {
-    return this.assetService.assetViewModeSignal;
   }
 }

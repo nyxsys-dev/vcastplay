@@ -42,6 +42,8 @@ export class PlaylistContainerComponent {
     }
 
     // If it's from another container (adding)
+    console.log(data);
+    
     const isExists = contents.some((item: Assets) => item.id === data.id);
     if (isExists) {
       this.message.add({ severity: 'error', summary: 'Error', detail: `"${data.name}" is already exists` });

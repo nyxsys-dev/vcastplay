@@ -9,8 +9,8 @@
             </div>
         </ng-template>
 
-        <div class="flex flex-col gap-4 py-3 h-full" [formGroup]="assetForm">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="flex flex-col gap-2 py-3 h-200 md:h-full" [formGroup]="assetForm">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
                 <div class="col-span-1 md:col-span-2">
                     <p-floatlabel variant="on">
                         <p-select inputId="type" [options]="assetTypes()" optionLabel="label" optionValue="value" 
@@ -18,48 +18,26 @@
                         <label for="type">Type</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-4 lg:col-span-6">
-                    @if (showLinkInput()) {
-                        <p-floatlabel variant="on">
-                            <input id="link" pInputText formControlName="link"
-                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('link').invalid && formControl('link').touched }" fluid />
-                            <label for="link">Link</label>
-                        </p-floatlabel>
-                    } @else {
-                        @if (!isEditMode()) {
-                            <p-button styleClass="w-full" (onClick)="fileInput.click()" label="Upload" icon="pi pi-upload" />
-                            <input #fileInput type="file" accept="image/*, video/*, html/*" hidden (change)="onFileSelected($event)" [multiple]="false" />
-                        }
-                    }
-                </div>
-                <div class="col-span-1 md:col-span-3 lg:col-span-2">
-                    <p-button styleClass="w-full" label="Schedule" (onClick)="isShowSchedule.set(!isShowSchedule())"
-                        icon="pi pi-calendar" badge="!" badgeSeverity="danger" outlined />
-                </div>
-                <div class="col-span-1 md:col-span-3 lg:col-span-2">
-                    <p-button styleClass="w-full" label="Audience" icon="pi pi-user" outlined />
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div class="col-span-1 md:col-span-2">
-                    <p-floatlabel variant="on">
-                        <label for="code">Code</label>
-                        <input id="code" pInputText formControlName="code"
-                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('code').invalid && formControl('code').touched }" fluid />
-                    </p-floatlabel>
-                </div>
+                
                 <div class="col-span-1 md:col-span-4 lg:col-span-6">
                     <p-floatlabel variant="on">
                         <label for="name">Name</label>
                         <input id="name" pInputText formControlName="name"
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
                     </p-floatlabel>
+                    @if (formControl('name').touched && (formControl('name').dirty || formControl('name').invalid)) {
+                        @if (formControl('name').invalid) {
+                            <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                                <i class="pi pi-exclamation-circle"></i>
+                                @if (formControl('name').errors?.['required']) { This field is required }
+                            </div>
+                        }
+                    }
                 </div>
                 <div class="col-span-1 md:col-span-3 lg:col-span-2">
                     <p-floatlabel variant="on">
-                        <p-select inputId="category" [options]="assetService.filterCategory()"
-                            optionLabel="label" optionValue="value" formControlName="category" showClear fluid>
+                        <p-select inputId="category" [options]="assetService.filterCategory()" optionLabel="label" optionValue="value" formControlName="category" 
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('category').invalid && formControl('category').touched }" showClear fluid>
                             <ng-template #footer>
                                 <div class="p-3">
                                     <p-button label="Add New" fluid severity="secondary" size="small" icon="pi pi-plus" text />
@@ -68,11 +46,19 @@
                         </p-select>
                         <label for="category">Category</label>
                     </p-floatlabel>
+                    @if (formControl('category').touched && (formControl('category').dirty || formControl('category').invalid)) {
+                        @if (formControl('category').invalid) {
+                            <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                                <i class="pi pi-exclamation-circle"></i>
+                                @if (formControl('category').errors?.['required']) { This field is required }
+                            </div>
+                        }
+                    }
                 </div>
                 <div class="col-span-1 md:col-span-3 lg:col-span-2">
                     <p-floatlabel variant="on">
-                        <p-select inputId="subCategory" [options]="assetService.filterSubCategory()" 
-                            optionLabel="label" optionValue="value" formControlName="subCategory" showClear fluid>
+                        <p-select inputId="subCategory" [options]="assetService.filterSubCategory()" optionLabel="label" optionValue="value" formControlName="subCategory" 
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('subCategory').invalid && formControl('subCategory').touched }" showClear fluid>
                             <ng-template #footer>
                                 <div class="p-3">
                                     <p-button label="Add New" fluid severity="secondary" size="small" icon="pi pi-plus" text />
@@ -81,38 +67,78 @@
                         </p-select>
                         <label for="subCategory">Sub Category</label>
                     </p-floatlabel>
+                    @if (formControl('subCategory').touched && (formControl('subCategory').dirty || formControl('subCategory').invalid)) {
+                        @if (formControl('subCategory').invalid) {
+                            <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                                <i class="pi pi-exclamation-circle"></i>
+                                @if (formControl('subCategory').errors?.['required']) { This field is required }
+                            </div>
+                        }
+                    }
+                </div>
+                
+                <div class="col-span-1 md:col-span-12">
+                    @if (showLinkInput()) {
+                        <p-floatlabel variant="on">
+                            <input id="link" pInputText formControlName="link"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('link').invalid && formControl('link').touched }" fluid />
+                            <label for="link">Link</label>
+                        </p-floatlabel>
+                    }
                 </div>
             </div>
             
-            <div class="flex-1 border-2 border-dashed border-gray-400 rounded-lg relative overflow-y-auto">
-                <div class="absolute top-0 right-0 m-2 z-100">
-                    <p-button icon="pi pi-info-circle" severity="secondary" (onClick)="isShowInfo.set(true)"
-                        pTooltip="File info" tooltipPosition="bottom" rounded />
+            <div class="flex-1 border-2 border-dashed border-gray-400 rounded-lg relative overflow-y-auto relative" >
+
+                <div *ngIf="!formControl('link').value as currentContent" class="absolute top-0 left-0 h-full w-full flex items-center justify-center z-20" 
+                    [ngClass]="{ 'hover:blue-100 cursor-pointer': !showLinkInput() }" (drop)="onDropFile($event)" (dragover)="onDragOver($event)" 
+                    (dragleave)="onDragLeave($event)" (click)="!showLinkInput() && fileInput.click()">
+                    @if (!showLinkInput()) { <p class="text-gray-500"><span class="font-semibold">Drop files here</span> or click to upload</p> }
+                    <input #fileInput type="file" accept="image/*, video/*, .html, .htm" (change)="onFileSelected($event)" [multiple]="false" hidden />
                 </div>
+
                 <ng-container *ngIf="formControl('link').value as currentContent">
-                    <app-preview-content class="absolute h-full w-full flex items-center justify-center"
+
+                    <div class="absolute flex gap-2 top-0 left-0 w-full p-2 z-100">
+                        <p-button icon="pi pi-trash" severity="danger" (onClick)="assetForm.reset()" pTooltip="Clear" tooltipPosition="bottom" rounded />
+                        @if (['image', 'video', 'audio'].includes(assetForm.value.type)) {
+                            <p-button icon="pi pi-info-circle" severity="secondary" (onClick)="isShowInfo.set(true)" pTooltip="File info" tooltipPosition="bottom" rounded />
+                        }
+
+                        <div class="ms-auto">
+                            <p-button icon="pi pi-cog" pTooltip="Settings" tooltipPosition="left" severity="secondary" size="large"
+                                (click)="fileSettings.toggle($event); $event.stopPropagation()" rounded />
+                            <p-menu #fileSettings [model]="fileSettingItems" appendTo="body" popup />
+                        </div>
+                    </div>
+                    <app-preview-content class="absolute h-full w-full flex items-center justify-center bg-stone-800"
                         [currentContent]="assetForm.value" [showControls]="true" />
                 </ng-container>
             </div>
 
         </div>
         <ng-template #footer>
-            <div class="flex justify-end gap-2">
-                <p-button (onClick)="onClickCancel()" label="Cancel" text />
-                <p-button (onClick)="onClickSave($event)" label="Save" />
+            <div class="flex justify-between w-full gap-2">
+                @if (isEditMode()) {
+                    <p-button (onClick)="onClickDelete(assetForm.value, $event)" label="Delete" icon="pi pi-trash" severity="danger" text />
+                }
+                <div class="flex ms-auto gap-2">
+                    <p-button (onClick)="onClickCancel()" label="Cancel" text />
+                    <p-button (onClick)="onClickSave($event)" label="Save" />
+                </div>
             </div>
         </ng-template>
     </p-card>
 </div>
 
-<p-dialog header="Set Schedule" [(visible)]="isShowSchedule" [style]="{ width: '50rem' }" modal>
+<p-dialog header="Set Schedule" [(visible)]="isShowSchedule" [style]="{ width: '50rem' }" [draggable]="false" [closable]="false" modal>
     <app-asset-schedule [assetForm]="assetForm" />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCloseSchedule()" />
     </ng-template>
 </p-dialog>
 
-<p-dialog header="File Info" [(visible)]="isShowInfo" [style]="{ width: '30rem' }" closeOnEscape draggable modal>
+<p-dialog header="File Info" [(visible)]="isShowInfo" [style]="{ width: '30rem' }" closeOnEscape draggable dismissableMask modal>
     <div class="flex flex-col gap-4">
         <p>File Size: <span class="font-semibold">{{ utils.formatSize(fileDetails?.value.size) }}</span></p>
         <div class="flex gap-2 items-center">

@@ -6,7 +6,6 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { UtilityService } from '../../../core/services/utility.service';
 import { AssetsService } from '../../../core/services/assets.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormArray } from '@angular/forms';
 
 @Component({
   selector: 'app-asset-details',
@@ -18,6 +17,15 @@ import { FormArray } from '@angular/forms';
 export class AssetDetailsComponent {
 
   pageInfo: MenuItem = [ {label: 'Asset Library'}, {label: 'Lists', routerLink: '/assets/asset-library'}, {label: 'Details'} ];
+  fileSettingItems: MenuItem[] = [
+    { 
+      label: 'Options', 
+      items: [ 
+        { label: 'Schedule', icon: 'pi pi-calendar', command: () => this.isShowSchedule.set(!this.isShowSchedule()) }, 
+        { label: 'Audience Tag', icon: 'pi pi-users' } 
+      ] 
+    }
+  ]
 
   utils = inject(UtilityService);
   assetService = inject(AssetsService);
@@ -59,100 +67,48 @@ export class AssetDetailsComponent {
   onChangeType(event: any) {
     const type = event.value;
     if (['web', 'widget'].includes(type)) {
-      this.assetForm.patchValue({ type })
+      this.assetForm.patchValue({ type, name: null, link: null })
     } else {
       this.assetForm.reset();
     }
   }
+  
+  async onDropFile(event: DragEvent) {
+    event.preventDefault();
+    if (this.showLinkInput()) return;
+    const files = Array.from(event.dataTransfer?.files || []);    
 
-  onFileSelected(event: Event): void {
-    const maxSizeBytes = 300 * 1024 * 1024; // 300MB
+    const file = files[0];
+    const result = await this.assetService.processFile(file);
+    if (result) {
+      this.assetForm.patchValue(result);
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  async onFileSelected(event: Event) {
+    const MAX_SIZE = 300 * 1024 * 1024; // 300MB
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files?.[0];
     if (!file) return;
 
-    this.formControl('duration').enable();
-    
-    if (file.size > maxSizeBytes) {
-      this.message.add({ severity: 'error', summary: 'Error', detail: 'File size exceeds the maximum limit of 300MB.' });
+    if (file.size > MAX_SIZE) {
+      this.message.add({ severity: 'error', summary: 'Error', detail: 'File size should be less than 300MB' });
       return;
     }
-
-    if (['file'].includes(this.assetTypeControl.value)) {
-      this.assetForm.patchValue({ name: file.name });
+    
+    const result = await this.assetService.processFile(file);
+    if (result) {
+      this.assetForm.patchValue(result);
     }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.assetService.getImageOrientationAndResolution(file).then((res) => {      
-        const type = file.type.split('/')[0];        
-        switch (type) {
-          case 'video':
-            const video = document.createElement('video');
-            video.preload = 'metadata';
-            video.src = URL.createObjectURL(file);
-
-            video.onloadedmetadata = () => {
-              video.currentTime = 1;
-              
-              video.onseeked = () => {
-                setTimeout(() => {
-                  const canvas = document.createElement('canvas');
-                  canvas.width = video.videoWidth;
-                  canvas.height = video.videoHeight;
-
-                  const ctx = canvas.getContext('2d');
-                  const thumbnail = ctx ? (() => {
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    return canvas.toDataURL('image/png');
-                  })() : '';
-
-                  URL.revokeObjectURL(video.src);
-                  
-                  this.assetForm.patchValue({
-                    name: res.name,
-                    link: reader.result as string,
-                    type,
-                    fileDetails: {
-                      name: res.name,
-                      size: res.size,
-                      type: res.type,
-                      orientation: res.orientation,
-                      resolution: {
-                        width: res.resolution.width,
-                        height: res.resolution.height,
-                      },
-                      thumbnail,
-                    },
-                    duration: Math.floor(video.duration),
-                  });                  
-                }, 100);
-              };
-            };
-            break;
-          default:
-            this.assetForm.patchValue({
-              name: res.name,
-              link: reader.result as string,
-              type,
-              fileDetails: {
-                name: res.name,
-                size: res.size,
-                type: res.type,
-                orientation: res.orientation,
-                resolution: { width: res.resolution.width, height: res.resolution.height },
-                thumbnail: reader.result as string
-              }
-            })
-            break;
-        }
-      });
-    };
-    reader.readAsDataURL(file);
-  }
-
-  onClickUpload(input: any) {
-    this.message.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
+    
   }
 
   onClickSave(event: Event) {    
@@ -187,6 +143,34 @@ export class AssetDetailsComponent {
       },
     })
   }
+
+  onClickDelete(item: any, event: Event) {
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to delete this asset?',
+      closable: true,
+      closeOnEscape: true,
+      header: 'Danger Zone',
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger',
+      },
+      accept: () => {
+        this.assetService.onDeleteAssets(item);
+        this.message.add({ severity:'success', summary: 'Success', detail: 'User deleted successfully!' });
+        this.selectedAsset.set(null);
+        this.assetForm.reset();
+        this.router.navigate([ '/assets/asset-library' ]);
+      },
+      reject: () => { }
+    })
+  }
   
   onClickCancel() {
     this.selectedAsset.set(null);
@@ -194,7 +178,17 @@ export class AssetDetailsComponent {
     this.router.navigate([ '/assets/asset-library' ]);
   }
 
-  onClickCloseSchedule() {    
+  onClickCloseSchedule() {
+    const isAvailable = this.availability?.value;
+    const dateRange = this.dateRange;
+    const weekdays = this.weekdays?.value;
+    const hours = this.hours?.value;
+    if (isAvailable) {
+      if (dateRange?.errors?.['startAfterEnd'] || weekdays.length === 0 || hours.length === 0) {
+        this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
+        return;
+      }
+    } 
     this.isShowSchedule.set(false);
   }
 
@@ -230,8 +224,20 @@ export class AssetDetailsComponent {
     return this.assetForm.get('type');
   }
 
-  get availability(): FormArray {
-    return this.assetForm.get('availability') as FormArray;
+  get availability() {
+    return this.assetForm.get('availability');
+  }
+
+  get dateRange() {
+    return this.assetForm.get('dateRange');
+  }
+
+  get weekdays() {
+    return this.assetForm.get('weekdays');
+  }
+
+  get hours() {
+    return this.assetForm.get('hours');
   }
 
 }

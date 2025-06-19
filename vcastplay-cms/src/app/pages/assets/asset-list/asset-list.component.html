@@ -1,8 +1,8 @@
-<div class="flex flex-col gap-4 h-full">
+<div class="flex flex-col gap-1 h-full">
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
     <p-card styleClass="h-full" class="flex-1">
         <ng-template #title>
-            <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
+            <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between">
                 <app-filters class="w-full md:w-[25rem]"></app-filters>
                 <div class="flex items-center gap-4 block lg:hidden">
                     <p class="text-base font-normal">View:</p>
@@ -14,18 +14,23 @@
                 </div>
                 <div class="flex items-center gap-4 hidden lg:block">
                     <p-button (onClick)="onClickAddNew()" label="Upload" icon="pi pi-plus"></p-button>
-                    <!-- <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
-                    <p-button [label]="!isMobile ? 'Download' : ''" variant="outlined" icon="pi pi-download" [text]="isMobile" /> -->
                 </div>
             </div>
         </ng-template>
+        
+        
+        <div class="hidden lg:flex justify-center items-center border-dashed border-2 border-blue-400 p-5 rounded-lg cursor-pointer hover:bg-blue-100 mb-8" 
+            (drop)="onDropFile($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (click)="fileInput.click()">
+            <p class="text-gray-500"><span class="font-semibold">Drop files here</span> or click to upload</p>
+            <input type="file" multiple (change)="onFileSelect($event)" hidden #fileInput />
+        </div>
 
-        <div class="relative block lg:hidden px-3 pb-2 gap-4" [ngClass]="{ 
+        <div class="relative block lg:hidden px-3 gap-4" [ngClass]="{ 
             'grid grid-cols-2 md:grid-cols-3 gap-4': assetViewModeSignal() == 'Grid',
             'flex flex-col gap-2': assetViewModeSignal() == 'List'
         }">
             @for (item of filteredAssets(); track $index) {
-                <app-asset-list-item [ngClass]="{ 'h-30': assetViewModeSignal() == 'List' }" [asset]="item" [disableDrag]="true" />
+                <app-asset-list-item [asset]="item" [disableDrag]="true" />
             }
             <div class="flex items-center justify-center border-dashed border-2 border-gray-400 p-5 
                 rounded-lg cursor-pointer hover:bg-gray-100" (click)="onClickAddNew()">
@@ -35,8 +40,8 @@
                 </div>
             </div>
         </div>
-        
-        <div class="flex-1 md:h-full">
+
+        <div class="flex-1">
             <p-table
                 class="hidden lg:block" 
                 [value]="assetService.loadingSignal() ? utils.tableSkeletonRows : filteredAssets()" 
@@ -47,11 +52,11 @@
             >
                 <ng-template #header>
                     <tr>
-                        <th>Preview</th>
+                        <th [style]="{ width: '80px' }">Preview</th>
                         <th>Name</th>
                         <th>Type</th>
                         <th>Orientation</th>
-                        <th>Category & Subcategory</th>
+                        <th>Category & Sub Category</th>
                         <th>Last Update</th>
                         <th>Actions</th>
                     </tr>
@@ -59,32 +64,38 @@
                 <ng-template #body let-item>
                     <tr>
                         <td>
-                            <div class="flex group relative">
-                                @if(['video', 'image'].includes(item.type)) {
-                                    <p-image [src]="item.fileDetails.thumbnail" alt="Image" width="80" />
-                                } @else {
-                                    <div class="h-20 flex justify-center items-center">
+                            <div class="relative h-15">
+                                <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                                    @if(['video', 'image'].includes(item.type)) {
+                                        <img [src]="item.fileDetails.thumbnail" class="max-h-full object-contain" alt="Image">
+                                    } @else {
                                         @switch (item.type) {
                                             @case('audio') { <i class="pi pi-volume-up" [style]="{ 'font-size': '2rem'}"></i> }
                                             @case('web') { <i class="pi pi-globe" [style]="{ 'font-size': '2rem'}"></i> }
                                             @case('widget') { <i class="pi pi-layout" [style]="{ 'font-size': '2rem'}"></i> }
                                         }
-                                    </div>
-                                }
+                                    }
+                                </div>
                             </div>
                         </td>
                         <td>
                             <div class="flex flex-col gap-1">
                                 <p class="font-semibold">{{ item.name }}</p>
                                 <div class="flex gap-2">
-                                    <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
-                                    <p class="text-sm italic">({{ item.fileDetails.resolution.width }} x {{ item.fileDetails.resolution.height }})</p>
+                                    <p class="text-sm italic">{{ utils.formatSize(item?.fileDetails.size ?? 0) }}</p>
+                                    <p class="text-sm italic">({{ item?.fileDetails.resolution?.width ?? 0 }} x {{ item.fileDetails.resolution?.height ?? 0 }})</p>
                                 </div>
                             </div>
                         </td>
                         <td><p-tag [value]="item.type.toUpperCase()" severity="info" /></td>
-                        <td>{{ item.fileDetails.orientation }}</td>
-                        <td>{{ item.category }} & {{ item.subCategory }}</td>
+                        <td><p class="text-sm font-medium">{{ item.fileDetails?.orientation?.toUpperCase() ?? '-' }}</p></td>
+                        <td>
+                            @if (!item.category || !item.subCategory) {
+                                <p class="text-sm text-red-500 italic">No category available</p>
+                            } @else {
+                                {{ item.category }} & {{ item.subCategory }}
+                            }
+                        </td>
                         <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
                         <td>
                             <div class="flex flex-row">
@@ -94,7 +105,7 @@
                     </tr>
                 </ng-template>
                 <ng-template #emptymessage>
-                    <tr class="h-[calc(100vh-370px)]">
+                    <tr>
                         <td colspan="9" [height]="20">
                             <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
                         </td>

@@ -1,34 +1,55 @@
-<div class="flex flex-col gap-5 mt-2">
+<div class="flex gap-2 items-center" [formGroup]="assetForm">
+    <p-toggleswitch inputId="availability" formControlName="availability" (onChange)="onChangeAvailability($event)" />
+    <label for="availability">Availability</label>
+</div>
+
+<div class="flex flex-col gap-5 my-8">
     <form [formGroup]="assetForm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" formGroupName="dateRange">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 relative" formGroupName="dateRange">
+            <div class="h-full w-full absolute top-0 left-0 bg-gray-400 z-50 opacity-10" [ngClass]="{ 'hidden': availability?.value }"></div>
             <p-floatlabel variant="on">
-                <p-datepicker formControlName="start" inputId="start" [showIcon]="true" appendTo="body" fluid />
-                <label for="start">Start Date</label>
+                <p-datepicker formControlName="start" inputId="start" [showIcon]="true" appendTo="body" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': dateRangeControl?.errors?.['startAfterEnd'] }" fluid />
+                <label for="start">Start Date*</label>
             </p-floatlabel>
             <p-floatlabel variant="on">
-                <p-datepicker formControlName="end" inputId="end" [showIcon]="true" appendTo="body" fluid />
-                <label for="end">End Date</label>
+                <p-datepicker formControlName="end" inputId="end" [showIcon]="true" appendTo="body" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': dateRangeControl?.errors?.['startAfterEnd'] }" fluid />
+                <label for="end">End Date*</label>
             </p-floatlabel>
         </div>
     </form>
 
-    <div class="flex justify-end">
-        <p-button label="Add Hours" (onClick)="onClickAddHours()" icon="pi pi-plus" size="small" />
+    <div class="flex gap-2">
+        
+        @if (dateRangeControl?.errors?.['startAfterEnd'] && dateRangeControl?.invalid) { 
+            <p class="italic text-sm text-red-400">*Start Date must be before End Date</p>
+        }
+
+        <div class="ml-auto">
+            <p-button label="Add Hours" (onClick)="onClickAddHours()" icon="pi pi-plus" size="small" [disabled]="!availability?.value" />
+        </div>
     </div>
-    <div class="border border-gray-300 rounded-lg p-2">
-        <p-table [value]="hoursControl?.value" scrollHeight="220px" showGridlines scrollable>
+
+    <div class="relative">
+        <div class="h-full w-full absolute top-0 left-0 bg-gray-400 z-50 opacity-10" [ngClass]="{ 'hidden': availability?.value }"></div>
+        <p-table [value]="hoursControl?.value" scrollHeight="160px" showGridlines scrollable>
             <ng-template #header>
                 <tr>
                     <th>Start Time</th>
                     <th>End Time</th>
-                    <th></th>
+                    <th>
+                        @if (hoursControl?.value.length > 0) {
+                            <p-button icon="pi pi-trash" severity="danger" (onClick)="hoursControl?.reset()" text />
+                        }
+                    </th>
                 </tr>
             </ng-template>
             <ng-template #body let-item let-index="rowIndex">
                 <tr>
                     <td>
                         <p-datepicker [(ngModel)]="item.start" [timeOnly]="true" appendTo="body"
-                            [iconDisplay]="'input'" placeholder="Start Time" hourFormat="12" showButtonBar showIcon fluid>
+                            [iconDisplay]="'input'" placeholder="Start Time" hourFormat="12" showIcon fluid>
                             <ng-template #inputicon let-clickCallBack="clickCallBack">
                                 <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
                             </ng-template>
@@ -36,7 +57,7 @@
                     </td>
                     <td>
                         <p-datepicker [(ngModel)]="item.end" [timeOnly]="true" appendTo="body"
-                            [iconDisplay]="'input'" placeholder="End Time" hourFormat="12" showButtonBar showIcon fluid>
+                            [iconDisplay]="'input'" placeholder="End Time" hourFormat="12" showIcon fluid>
                             <ng-template #inputicon let-clickCallBack="clickCallBack">
                                 <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
                             </ng-template>
@@ -56,17 +77,26 @@
             </ng-template>
         </p-table>
     </div>
+    
     <p-divider [align]="'left'"><b>Weekdays</b></p-divider>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-5" [formGroup]="assetForm">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" [formGroup]="assetForm">
         <div class="flex items-center gap-2">
-            <p-checkbox value="All" (onChange)="onCheckAllWeekdays($event)" [indeterminate]="isCheckedWeekday()" binary />
-            <label for="All">All</label>
+            <p-checkbox value="All" (onChange)="onCheckAllWeekdays($event)" [indeterminate]="isCheckedWeekday()" [readonly]="!availability?.value" binary />
+            <label for="All" [ngClass]="{ 'text-gray-400': !availability?.value }">All</label>
         </div>
         @for (item of weekdays; track $index) {
             <div class="flex items-center gap-2">
-                <p-checkbox [value]="item" formControlName="weekdays" />
-                <label [for]="item">{{ item }}</label>
+                <p-checkbox [value]="item" formControlName="weekdays" [readonly]="!availability?.value" />
+                <label [for]="item" [ngClass]="{ 'text-gray-400': !availability?.value }">{{ item }}</label>
             </div>
         }
     </div>
+</div>
+
+<div class="flex flex-col md:flex-row md:items-center gap-2 " [formGroup]="assetForm">
+    <p-floatlabel variant="on">
+        <p-inputnumber inputId="duration" formControlName="duration" [min]="0" [readonly]="typeControl?.value == 'video'" showButtons />
+        <label for="duration">Duration (seconds)</label>
+    </p-floatlabel>
+    <p class="italic text-sm text-red-400">* Duration can be set only for video asset</p>
 </div>

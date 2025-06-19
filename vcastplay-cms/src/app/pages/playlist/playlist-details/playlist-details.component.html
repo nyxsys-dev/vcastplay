@@ -56,7 +56,7 @@
                 </div>
             </div>
             <div class="col-span-1 md:col-span-6 xl:col-span-4">
-                <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg h-full">
+                <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg h-80 md:h-full">
                     <div class="p-3 flex items-center gap-2">
                         <p-inputgroup>
                             <input type="text" pInputText [formControl]="keywords" placeholder="Search" />
@@ -71,13 +71,13 @@
                         </p-selectbutton>
                     </div>
                     <div class="relative flex-1 overflow-y-auto cursor-grab" cdkDropList [cdkDropListData]="assets()" 
-                        cdkDragPreviewContainer="parent" cdkDropListOrientation="horizontal">
-                        <div class="px-3 pb-2"  [ngClass]="{ 
-                            'grid grid-cols-2 gap-5 h-full': assetViewModeSignal() == 'Grid',
-                            'flex flex-col gap-2': assetViewModeSignal() == 'List'
+                        cdkDragPreviewContainer="body" cdkDropListOrientation="vertical">
+                        <div class="px-3 pb-2 absolute w-full"  [ngClass]="{ 
+                            'grid grid-cols-2 xl:grid-cols-3 gap-3': assetViewModeSignal() == 'Grid',
+                            'flex flex-col gap-5 ': assetViewModeSignal() == 'List'
                         }">
                             @for (item of filteredAssets(); track $index) {
-                                <app-asset-list-item [ngClass]="{ 'h-30': assetViewModeSignal() == 'List' }" [asset]="item" />
+                                <app-asset-list-item [asset]="item" />
                             } @empty {
                                 <div class="flex items-center justify-center h-full w-full" [ngClass]="{ 'col-span-3 ': assetViewModeSignal() == 'Grid' }">
                                     <p class="text-gray-400 italic">No items found</p>
@@ -117,7 +117,7 @@
             <app-playlist-container [playListForm]="playListForm" />
             <div class="flex w-full justify-between items-center mt-2">
                 <p-tag severity="info" [value]="'Duration: ' + utils.timeConversion(totalDuration())" />
-                <p class="italic text-sm text-red-400">Hold Shift + Mouse Wheel to scroll</p>
+                <p class="italic text-sm text-red-400 hidden md:block">Hold Shift + Mouse Wheel to scroll</p>
             </div>
         </ng-template>
     </p-card>

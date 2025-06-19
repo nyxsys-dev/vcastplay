@@ -4,6 +4,7 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { CdkDragPlaceholder, CdkDragPreview } from '@angular/cdk/drag-drop';
 import { AssetsService } from '../../../core/services/assets.service';
 import { PreviewContentComponent } from '../../../components/preview-content/preview-content.component';
+import { UtilityService } from '../../../core/services/utility.service';
 
 @Component({
   selector: 'app-asset-list-item',
@@ -14,9 +15,11 @@ import { PreviewContentComponent } from '../../../components/preview-content/pre
 export class AssetListItemComponent {
 
   @Input() asset: any;
+  @Input() showDetails: boolean = true;
   @Input() disableDrag: boolean = false;
 
   assetService = inject(AssetsService);
+  utils = inject(UtilityService);
 
   get assetViewModeSignal() {
     return this.assetService.assetViewModeSignal;

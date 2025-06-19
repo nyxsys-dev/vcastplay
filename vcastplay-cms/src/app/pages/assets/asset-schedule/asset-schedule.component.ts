@@ -14,14 +14,17 @@ import moment from 'moment';
 export class AssetScheduleComponent {
 
   @Input() assetForm!: FormGroup;
-
-  hoursForm: FormGroup = new FormGroup({
-    id: new FormControl(null),
-    start: new FormControl(new Date()),
-    end: new FormControl(new Date())
-  })
   
   weekdays: string[] = WEEKDAYS;
+
+  onChangeAvailability(event: any) {
+    const checked = event.checked;
+    if (!checked) {
+      this.dateRangeControl?.reset();
+      this.weekdaysControl?.reset();
+      this.hoursControl?.reset();
+    }
+  }
   
   onClickAddHours() {
     const hoursTotal = this.hoursControl?.value.length;
@@ -60,11 +63,23 @@ export class AssetScheduleComponent {
     return weekdaysCtrl.length > 0 && weekdaysCtrl.length < this.weekdays.length;
   }
 
+  get dateRangeControl() {
+    return this.assetForm.get('dateRange');
+  }
+
   get weekdaysControl() {
     return this.assetForm.get('weekdays');
   }
 
   get hoursControl() {
     return this.assetForm.get('hours');
+  }
+
+  get typeControl() {
+    return this.assetForm.get('type');
+  }
+
+  get availability() {
+    return this.assetForm.get('availability');
   }
 }

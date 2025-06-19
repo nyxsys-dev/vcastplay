@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { AssestInfo, Assets, AssetType } from '../interfaces/assets';
 
 @Injectable({
@@ -44,8 +44,8 @@ export class AssetsService {
     name: new FormControl('', [ Validators.required ]),
     type: new FormControl(''),
     link: new FormControl(''),
-    category: new FormControl(null),
-    subCategory: new FormControl(null),
+    category: new FormControl(null, [ Validators.required ]),
+    subCategory: new FormControl(null, [ Validators.required ]),
     fileDetails: new FormGroup<AssestInfo | any>({
       size: new FormControl(null),
       type: new FormControl(null),
@@ -54,13 +54,14 @@ export class AssetsService {
       thumbnail: new FormControl(null),
     }),
     audienceTag: new FormControl(null),
+    availability: new FormControl<boolean>(false),
     dateRange: new FormGroup({
       start: new FormControl(null),
       end: new FormControl(null),
-    }),
+    }, { validators: [ this.dateRangeValidator()]}),
     weekdays: new FormControl([], { nonNullable: true }),
     hours: new FormControl<[{ start: string, end: string }] | []>([], { nonNullable: true }),
-    duration: new FormControl(5),
+    duration: new FormControl(5, { nonNullable: true }),
   })
 
   constructor() { }
@@ -338,56 +339,17 @@ export class AssetsService {
     this.onLoadAssets();
   }
 
-  getImageOrientationAndResolution(file: File): Promise<AssestInfo> {
-    return new Promise((resolve, reject) => {
-      const img: any = new Image();
-      const reader = new FileReader();
-
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        if (!e.target || !e.target.result) {
-          reject(new Error('Failed to read file'));
-          return;
+  async onDropFile(files: any) {
+    if (files) {
+      for (const file of files) {
+        const result = await this.processFile(file);
+        if (result) {
+          this.assetForm.patchValue(result);
+          this.onSaveAssets(this.assetForm.value);
         }
-
-        if (file.type.includes('image')) {
-          img.onload = () => {
-            const width = img.width;
-            const height = img.height;
-            resolve({
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              orientation: width > height ? 'landscape' : height > width ? 'portrait' : 'square',
-              resolution: { width, height },
-            })
-          };
-        
-          img.onerror = reject;
-          img.src = e.target.result as string;
-
-        } else if (file.type.includes('video')) {          
-          const video: any = document.createElement('video');
-          video.preload = 'metadata'; // Load metadata only
-
-          video.onloadedmetadata = () => {
-            const width = video.videoWidth;
-            const height = video.videoHeight;
-            resolve({
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              orientation: width > height ? 'landscape' : height > width ? 'portrait' : 'square',
-              resolution: { width, height },
-            });
-          };
-          video.onerror = () => reject(new Error('Failed to load video metadata for dimension/duration extraction.'));
-          video.src = e.target.result;
-        }
-      };
-
-      reader.onerror = () => reject(new Error('FileReader error during file read.'));
-      reader.readAsDataURL(file);
-    })
+      }
+      this.assetForm.reset();
+    }
   }
 
   onSaveAssets(assets: Assets) {
@@ -405,5 +367,149 @@ export class AssetsService {
     const tempAssets = this.assets().filter(u => u.id !== assets.id);
     this.assetSignal.set([...tempAssets]);
     /**Call DELETE user API */
+  }
+
+  dateRangeValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const start = group.get('start')?.value;
+      const end = group.get('end')?.value;
+      if (start && end && new Date(start) > new Date(end)) {
+        return { startAfterEnd: true }
+      }
+      return null;
+    }
+  }
+  
+  async processFile(file: File): Promise<Assets | any> {
+    const MAX_SIZE  = 300 * 1024 * 1024;
+    if (file.size > MAX_SIZE) return false;
+
+    if (this.assetTypeControl.value === 'file') {
+      this.assetForm.patchValue({ name: file.name });
+    }
+
+    const fileDataURL = await this.readFileAsDataURL(file);
+    const metadata = await this.getImageOrientationAndResolution2(file, fileDataURL);
+    const type = file.type.split('/')[0];
+    
+    if (type === 'video') {
+      const [thumbnail, duration] = await Promise.all([
+        this.extractVideoThumbnail(file),
+        this.getVideoDuration(file)
+      ]);
+
+      return this.buildAssetObject(fileDataURL, metadata, thumbnail, duration);
+    }
+
+    return this.buildAssetObject(fileDataURL, metadata, fileDataURL);
+  }
+
+  private readFileAsDataURL(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  
+  private getImageOrientationAndResolution2(file: File, dataURL: string): Promise<AssestInfo> {
+    return new Promise((resolve, reject) => {      
+      const isImage = file.type.startsWith('image');
+      const isVideo = file.type.startsWith('video');
+      const isText = file.type.startsWith('text');
+      
+      if (isImage) {
+        const img = new Image();
+        img.onload = () => {
+          resolve({
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            orientation: img.width > img.height ? 'landscape' : img.height > img.width ? 'portrait' : 'square',
+            resolution: { width: img.width, height: img.height }
+          });
+        };
+        img.onerror = reject;
+        img.src = dataURL;
+      } else if (isVideo) {
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+          resolve({
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            orientation: video.videoWidth > video.videoHeight ? 'landscape' : video.videoHeight > video.videoWidth ? 'portrait' : 'square',
+            resolution: { width: video.videoWidth, height: video.videoHeight }
+          });
+        };
+        video.onerror = () => reject(new Error('Failed to load video metadata'));
+        video.src = dataURL;
+      } else if (isText) {
+        resolve({
+          name: file.name,
+          size: file.size,
+          type: 'web',
+          orientation: 'portrait',
+          resolution: { width: 0, height: 0 }
+        });
+      } else {
+        reject(new Error('Unsupported file type for orientation/resolution extraction'));
+      }
+    });
+  }
+
+  private extractVideoThumbnail(file: File): Promise<string> {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.src = URL.createObjectURL(file);
+
+      video.onloadedmetadata = () => {
+        video.currentTime = 1;
+      };
+
+      video.onseeked = () => {
+        setTimeout(() => {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(video.src);
+          resolve(canvas.toDataURL('image/png'));
+        }, 100);
+      };
+    });
+  }
+
+  private getVideoDuration(file: File): Promise<number> {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      video.src = URL.createObjectURL(file);
+      video.onloadedmetadata = () => {
+        URL.revokeObjectURL(video.src);
+        resolve(Math.floor(video.duration));
+      };
+    });
+  }
+
+  private buildAssetObject(link: string, meta: AssestInfo, thumbnail: string, duration?: number) {
+    const base = {
+      name: meta.name,
+      link,
+      type: meta.type.split('/')[0],
+      fileDetails: {
+        name: meta.name,
+        size: meta.size,
+        type: meta.type,
+        orientation: meta.orientation,
+        resolution: meta.resolution,
+        thumbnail
+      }
+    };
+    return { ...base, duration: duration ?? 5 }
   }
 }
