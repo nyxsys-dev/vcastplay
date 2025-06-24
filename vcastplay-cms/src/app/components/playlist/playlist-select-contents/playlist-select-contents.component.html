@@ -16,7 +16,7 @@
                         @for (item of filteredAssets(); track $index) {
                             <app-asset-list-item [asset]="item" />
                         } @empty {
-                            <div class="flex items-center justify-center h-full w-full col-span-2 xl:col-span-3">
+                            <div class="flex items-center justify-center h-50 w-full col-span-2 xl:col-span-3">
                                 <p class="text-gray-400 italic">No items found</p>
                             </div>
                         }

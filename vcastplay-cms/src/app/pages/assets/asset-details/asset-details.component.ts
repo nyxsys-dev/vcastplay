@@ -126,7 +126,7 @@ export class AssetDetailsComponent {
       closable: true,
       closeOnEscape: true,
       header: 'Confirm Save',
-      icon: 'pi pi-info-circle',
+      icon: 'pi pi-question-circle',
       rejectButtonProps: {
         label: 'Cancel',
         severity: 'secondary',

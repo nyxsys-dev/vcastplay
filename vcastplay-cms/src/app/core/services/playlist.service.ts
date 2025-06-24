@@ -1,35 +1,42 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Assets } from '../interfaces/assets';
+import { Playlist } from '../interfaces/playlist';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlaylistService {
 
-  timeoutId: any;
-  intervalId: any;
+  private playlistSignal = signal<Playlist[]>([]);
+  playlists = computed(() => this.playlistSignal());
+  selectedPlaylist = signal<Playlist | null>(null);
+
+  loadingSignal = signal<boolean>(false);
+  isEditMode = signal<boolean>(false);
+
   currentIndex = signal<number>(0);
   currentContent = signal<Assets | null>(null);
   currentTransition = signal<any>(null);
-  duration = signal<number>(3000); // default 3 seconds per content
+  duration = signal<number>(3000);
   isPlaying = signal<boolean>(false);
   fadeIn = signal<boolean>(false);
   isLooping = signal<boolean>(false);
-
   progress = signal<number>(0);
+  timeoutId: any;
+  intervalId: any;
+  gapTimeout: any;
 
-  playlistItems = signal<any[]>([]);
   playListForm: FormGroup = new FormGroup({
     id: new FormControl(0),
-    name: new FormControl('New Playlist'),
-    description: new FormControl('This is a sample description of a new playlist'),
+    name: new FormControl('', [ Validators.required ]),
+    description: new FormControl('', [ Validators.required ]),
     transition: new FormGroup({
       hasGap: new FormControl(false),
       type: new FormControl(null),
-      speed: new FormControl(5)
+      speed: new FormControl(5, { nonNullable: true }),
     }),
-    contents: new FormControl<Assets[] | any>([]),
+    contents: new FormControl<Assets[]>([], { nonNullable: true, validators: [ Validators.required ] }),
     status: new FormControl(''),
     loop: new FormControl(false),
   })
@@ -62,10 +69,6 @@ export class PlaylistService {
 
     const item = contents[this.currentIndex()];
     this.currentContent.set(item);
-    // setTimeout(() => {
-    //   this.fadeIn.set(true);
-    //   this.currentContent.set(item)
-    // }, gapDuration + 50);
     
     this.fadeIn.set(true);
     this.progress.set(0);
@@ -96,7 +99,7 @@ export class PlaylistService {
       this.currentContent.set(null);
 
       // If there is a gap, wait for the gap duration before playing the next content
-      setTimeout(() => {
+      this.gapTimeout = setTimeout(() => {
         if (isLooping) {
           this.currentIndex.set(nextIndex);
         } else {
@@ -109,6 +112,10 @@ export class PlaylistService {
         
         this.fadeIn.set(true);
         this.currentContent.set(contents[this.currentIndex()]);
+
+        // Trigger content schedule
+        this.onGetContentSchedule(contents[this.currentIndex()])
+
         this.onPlayPreview(this.currentIndex());
       }, gapDuration + 50);
 
@@ -122,6 +129,7 @@ export class PlaylistService {
     this.currentContent.set(null);
     clearTimeout(this.timeoutId);
     clearInterval(this.intervalId);
+    clearTimeout(this.gapTimeout);
   }
 
   onTriggerInterval(duration: number) {
@@ -141,6 +149,54 @@ export class PlaylistService {
   onUpdateProgress(currentSeconds: number, duration: number) {
     const percent = (currentSeconds / duration) * 100;
     this.progress.set(Math.min(percent, 100));
+  }
+
+  onGetContentSchedule(content: Assets) {
+    const { dateRange, weekdays, hours } = content;
+    console.log({
+      dateRange,
+      weekdays,
+      hours
+    });
+  }
+
+  onLoadPlaylist() {
+    /**CALL GET API */
+  }
+
+  onGetPlaylists() {
+    if (this.playlistSignal().length === 0) this.onLoadPlaylist();
+    return this.playlistSignal();
+  }
+
+  onRefreshPlaylist() {
+    this.playlistSignal.set([]);
+    this.onLoadPlaylist(); 
+  }
+
+  onSavePlaylist(playlist: Playlist) {
+    const tempData = this.playlists();
+    const { id, status, ...info } = playlist;
+    const index = tempData.findIndex(item => item.id === playlist.id);
+
+    if (index !== -1) tempData[index] = playlist;
+    else tempData.push({ id: tempData.length + 1, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+
+    this.playlistSignal.set([...tempData]);
+    /**CALL POST API */
+  }
+
+  onDeletePlaylist(playlist: Playlist) {
+    const tempData = this.playlists().filter(item => item.id !== playlist.id);
+    this.playlistSignal.set([...tempData]);
+    /**CALL DELETE API */
+  }
+
+  onDuplicatePlaylist(playlist: Playlist) {
+    const tempData = this.playlists();
+    tempData.push({ ...playlist, id: tempData.length + 1, name: `Copy of ${playlist.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
+    this.playlistSignal.set([...tempData]);
+    /**CALL POST API */
   }
 
   get contents() {

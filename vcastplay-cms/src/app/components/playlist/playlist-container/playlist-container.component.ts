@@ -53,7 +53,6 @@ export class PlaylistContainerComponent {
     this.contents?.setValue([...contents]);
   }
 
-  get contents() {
-    return this.playListForm.get('contents');
-  }
+  get contents() { return this.playListForm.get('contents'); }
+  get isPlaying() { return this.playlistService.isPlaying; }
 }

@@ -57,8 +57,11 @@
                         <th>Type</th>
                         <th>Orientation</th>
                         <th>Category & Sub Category</th>
+                        <th>Duration</th>
                         <th>Last Update</th>
-                        <th>Actions</th>
+                        <th>
+                            <div class="text-center">Actions</div>
+                        </th>
                     </tr>
                 </ng-template>
                 <ng-template #body let-item>
@@ -96,9 +99,10 @@
                                 {{ item.category }} & {{ item.subCategory }}
                             }
                         </td>
+                        <td>{{ utils.timeConversion(item.duration) }}</td>
                         <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
                         <td>
-                            <div class="flex flex-row">
+                            <div class="flex flex-row gap-2 items-center justify-center">
                                 <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
                             </div>
                         </td>
@@ -127,8 +131,8 @@
 </p-dialog>
 
 <ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" severity="success" />
-    <p-button (onClick)="onClickOpenOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-ellipsis-v" [text]="true" severity="secondary" />
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" text />
+    <p-button (onClick)="onClickOpenOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="secondary" text />
     <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
 </ng-template>
 

@@ -14,9 +14,4 @@ export default [
         loadComponent: () => import('./playlist-details/playlist-details.component').then(m => m.PlaylistDetailsComponent),
         title: `Playlist Details • ${appTitle}`,
     },
-    {
-        path: 'playlist-details/:id', 
-        loadComponent: () => import('./playlist-details/playlist-details.component').then(m => m.PlaylistDetailsComponent),
-        title: `Playlist Details • ${appTitle}`,
-    },
 ] as Routes

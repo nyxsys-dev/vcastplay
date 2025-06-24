@@ -5,7 +5,7 @@ import { ComponentsModule } from '../../../core/modules/components/components.mo
 import { AssetsService } from '../../../core/services/assets.service';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
-import { MenuItem, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import moment from 'moment';
@@ -18,7 +18,7 @@ import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-
   imports: [ PrimengUiModule, ComponentsModule, PlaylistContainerComponent, PlaylistSelectContentsComponent, AssetListItemComponent ],
   templateUrl: './playlist-details.component.html',
   styleUrl: './playlist-details.component.scss',
-  providers: [ MessageService ]
+  providers: [ MessageService, ConfirmationService ]
 })
 export class PlaylistDetailsComponent {
   
@@ -29,6 +29,7 @@ export class PlaylistDetailsComponent {
   utils = inject(UtilityService);
   assetService = inject(AssetsService);
   playlistService = inject(PlaylistService);
+  confirmation = inject(ConfirmationService);
   message = inject(MessageService);
   router = inject(Router);
 
@@ -38,8 +39,10 @@ export class PlaylistDetailsComponent {
   keywordSignal = signal<string>('');
   
   filteredAssets = signal<Assets[]>([]);
+  selectedAssets = signal<Assets[]>([]);
 
   showContents = signal<boolean>(false);
+  isExpanded = signal<boolean>(true);
   
   totalDuration = () => {
     const contents: any[] = this.formControl('contents').value;
@@ -58,15 +61,64 @@ export class PlaylistDetailsComponent {
 
   ngOnInit() { }
 
-  ngOnDestroy() { }
+  ngOnDestroy() {
+    this.playListForm.reset();
+    this.isEditMode.set(false);
+  }
 
   onClickPlayPreview() {
     if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
     else this.playlistService.onPlayPreview();
   }
 
+  onClickGetContents() {
+    this.showContents.set(true);
+    this.activeStep.set(1);
+    this.playlistService.onStopPreview();
+  }
+
+  onClickComplete(event: Event) {
+    const contents = this.selectedAssets();
+    if (contents.length === 0) {
+      this.message.add({ severity:'error', summary: 'Error', detail: 'No contents available' });
+      return;
+    };
+    this.filteredAssets.set(contents);
+    this.playListForm.patchValue({ contents });
+    this.showContents.set(false);
+    this.message.add({ severity:'success', summary: 'Success', detail: `Added ${contents.length} contents to playlist` });
+  }
+
   onClickSave(event: Event) {
-    console.log(this.playListForm.value);    
+    if (this.playListForm.invalid) {
+      this.playListForm.markAllAsTouched();
+      this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
+      return;
+    }
+
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to save changes?',
+      closable: true,
+      closeOnEscape: true,
+      header: 'Confirm Save',
+      icon: 'pi pi-question-circle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Save',
+      },
+      accept: () => {
+        this.playlistService.onSavePlaylist(this.playListForm.value);
+        this.message.add({ severity:'success', summary: 'Success', detail: 'Playlist saved successfully!' });
+        this.playListForm.reset();
+        this.isEditMode.set(false);
+        this.router.navigate([ '/playlist/playlist-library' ]);
+      },
+    })    
   }
   
   onClickCancel() {
@@ -101,7 +153,6 @@ export class PlaylistDetailsComponent {
 
   get currentContent() { return this.playlistService.currentContent(); }
   get playListForm() { return this.playlistService.playListForm; }
-  get playlistItems() { return this.playlistService.playlistItems; }
   get isPlaying() { return this.playlistService.isPlaying; }
   get isLooping() { return this.playlistService.isLooping; }
   get transitionTypes() { return this.playlistService.transitionTypes; }
@@ -111,4 +162,5 @@ export class PlaylistDetailsComponent {
   get assetViewModeCtrl() { return this.assetService.assetViewModeCtrl; }
   get assetViewModeSignal() { return this.assetService.assetViewModeSignal; }
   get activeStep() { return this.playlistService.activeStep; }
+  get isEditMode() { return this.playlistService.isEditMode; }
 }

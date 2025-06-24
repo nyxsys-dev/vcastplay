@@ -6,10 +6,65 @@
                 <app-filters class="w-full md:w-[25rem]"></app-filters>
                 <div class="flex gap-4">
                     <p-button (onClick)="onClickAddNew()" label="New Playlist" icon="pi pi-plus"></p-button>
-                    <!-- <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
-                    <p-button [label]="!isMobile ? 'Download' : ''" variant="outlined" icon="pi pi-download" [text]="isMobile" /> -->
                 </div>
             </div>
         </ng-template>
+        <div class="flex-1">
+            <p-table
+                class="hidden lg:block" 
+                [value]="playlistService.loadingSignal() ? utils.tableSkeletonRows : playlists()" 
+                selectionMode="single"
+                [scrollable]="true" 
+                size="small"
+                stripedRows
+            >
+                <ng-template #header>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Last Update</th>
+                        <th>
+                            <div class="text-center">Actions</div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.description }}</td>
+                        <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)"></p-tag></td>
+                        <td><p class="text-sm">{{ item.updatedOn | date: 'medium' }}</p></td>
+                        <td>
+                            <div class="flex flex-row justify-center">
+                                <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="5" [height]="20">
+                            <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <ng-template #footer>
+            <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
+        </ng-template>
     </p-card>
 </div>
+
+<ng-template #actionBtn let-item>
+    <p-button icon="pi pi-pencil" (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" severity="success" text />
+    <p-button icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" text />
+    <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" text />
+    <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" text />
+    <p-button (onClick)="onClickOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="secondary" text />
+    <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
+</ng-template>
+
+<p-toast />
+<p-confirmdialog />

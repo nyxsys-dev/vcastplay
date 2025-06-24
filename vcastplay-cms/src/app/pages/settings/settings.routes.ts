@@ -20,7 +20,7 @@ export default [
     },
     {
         path: 'audience-tag',
-        loadComponent: () => import('./audience-tag/audience-tag-list/audience-tag-list.component').then(m => m.AudienceTagListComponent),
+        loadComponent: () => import('./audience-tag-list/audience-tag-list.component').then(m => m.AudienceTagListComponent),
         title: `Audience Tag • ${appTitle}`,
     }
 ] as Routes
