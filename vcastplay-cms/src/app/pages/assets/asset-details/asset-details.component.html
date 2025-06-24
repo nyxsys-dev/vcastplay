@@ -138,6 +138,13 @@
     </ng-template>
 </p-dialog>
 
+<p-dialog header="Audience Tags" [(visible)]="isShowAudienceTag" [style]="{ width: '50rem', height: '520px' }" [draggable]="false" [closable]="false" modal [focusOnShow]="false">
+    <app-audience-tag-filters [audienceTagForm]="assetForm" />
+    <ng-template #footer>
+        <p-button label="Close" severity="secondary" (onClick)="onClickCloseAudienceTag()" />
+    </ng-template>
+</p-dialog>
+
 <p-dialog header="File Info" [(visible)]="isShowInfo" [style]="{ width: '30rem' }" closeOnEscape draggable dismissableMask modal>
     <div class="flex flex-col gap-4">
         <p>File Size: <span class="font-semibold">{{ utils.formatSize(fileDetails?.value.size) }}</span></p>

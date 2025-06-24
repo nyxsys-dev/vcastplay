@@ -1,0 +1,68 @@
+<div class="flex flex-col gap-1 h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+
+    <div class="flex-1 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+        @for (item of filteredAudienceTagList(); track $index) {
+            <p-card styleClass="h-full">
+                <ng-container *ngTemplateOutlet="audienceTagInput; context: {
+                    control: audienceTagControl,
+                    label: item.name,
+                    id: item.id,
+                    onClick: onClickSave,
+                    type: item.id
+                }"></ng-container>
+                <div class="mt-4 p-3">
+                    <p-table
+                        [value]="item.data()"
+                        selectionMode="single"
+                        [scrollable]="true"
+                        scrollHeight="300px"
+                        size="small"
+                        stripedRows
+                    >
+                        <ng-template #header>
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>Actions</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-tag>
+                            <tr>
+                                <td>{{ tag }}</td>
+                                <td class="flex flex-row">
+                                    <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: tag, type: item.id }"></ng-container>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="2" [height]="20">
+                                    <div class="flex justify-center p-5"><p>No {{ item.name }} tags found</p></div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </p-card>
+        }
+    </div>
+</div>
+
+<ng-template #audienceTagInput let-control="control" let-label="label" let-id="id" let-onClick="onClick" let-type="type">
+    <p-inputgroup>
+        <p-floatlabel variant="on">
+            <input [id]="id" type="text" [formControl]="control" pInputText fluid>
+            <label [for]="id">{{ label }}</label>
+        </p-floatlabel>
+        <p-inputgroup-addon>
+            <p-button icon="pi pi-plus" [text]="false" pTooltip="Add" tooltipPosition="bottom" (onClick)="onClick(control.value, type)" />
+        </p-inputgroup-addon>
+    </p-inputgroup>
+</ng-template>
+
+<ng-template #actionBtn let-item let-type="type">
+    <p-button (onClick)="onClickDelete($event, item, type)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
+</ng-template>
+
+<p-toast />
+<p-confirmdialog />

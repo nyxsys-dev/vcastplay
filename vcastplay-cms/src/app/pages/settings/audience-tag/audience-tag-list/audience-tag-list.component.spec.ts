@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AudienceTagComponent } from './audience-tag.component';
+import { AudienceTagListComponent } from './audience-tag-list.component';
 
-describe('AudienceTagComponent', () => {
-  let component: AudienceTagComponent;
-  let fixture: ComponentFixture<AudienceTagComponent>;
+describe('AudienceTagListComponent', () => {
+  let component: AudienceTagListComponent;
+  let fixture: ComponentFixture<AudienceTagListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AudienceTagComponent]
+      imports: [AudienceTagListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AudienceTagComponent);
+    fixture = TestBed.createComponent(AudienceTagListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

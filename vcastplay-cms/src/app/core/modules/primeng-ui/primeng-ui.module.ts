@@ -55,6 +55,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FluidModule } from 'primeng/fluid';
 import { ChipModule } from 'primeng/chip';
 import { ImageModule } from 'primeng/image';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { StepperModule } from 'primeng/stepper';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -123,6 +125,8 @@ const PRIMEUI_MODULES = [
   ChipModule,
   DragDropModule,
   ImageModule,
+  MultiSelectModule,
+  StepperModule,
 ];
 
 @NgModule({

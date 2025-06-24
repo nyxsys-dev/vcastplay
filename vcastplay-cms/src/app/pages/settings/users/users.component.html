@@ -31,11 +31,7 @@
                     <ng-template #body let-item>
                         @if (userService.loadingSignal()) {
                             <tr>
-                                <td><p-skeleton /></td>
-                                <td><p-skeleton /></td>
-                                <td><p-skeleton /></td>
-                                <td><p-skeleton /></td>
-                                <td><p-skeleton /></td>
+                                @for (item of [1,2,3,4,5]; track $index) { <td><p-skeleton /></td> }
                             </tr>
                         } @else {
                             <tr>

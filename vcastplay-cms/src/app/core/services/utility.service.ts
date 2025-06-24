@@ -34,7 +34,7 @@ export class UtilityService {
         { label: 'Roles', icon: 'pi pi-lock', routerLink: ['/settings/role-management'], },
         { label: 'Modules', icon: 'pi pi-globe', routerLink: ['/settings/module-management'], },
         { separator: true },
-        { label: 'Audience Tag', icon: 'pi pi-users', routerLink: ['/settings/module-management'], },
+        { label: 'Audience Tag', icon: 'pi pi-users', routerLink: ['/settings/audience-tag'], },
       ]
     }
   ]);

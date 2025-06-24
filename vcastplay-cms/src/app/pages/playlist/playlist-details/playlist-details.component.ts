@@ -3,18 +3,19 @@ import { PlaylistContainerComponent } from '../../../components/playlist/playlis
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { AssetsService } from '../../../core/services/assets.service';
-import { Assets } from '../../../core/interfaces/assets';
-import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-item.component';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { MenuItem, MessageService } from 'primeng/api';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import moment from 'moment';
+import { PlaylistSelectContentsComponent } from '../../../components/playlist/playlist-select-contents/playlist-select-contents.component';
+import { Assets } from '../../../core/interfaces/assets';
+import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-item.component';
 
 @Component({
   selector: 'app-playlist-details',
-  imports: [ PrimengUiModule, ComponentsModule, PlaylistContainerComponent, AssetListItemComponent ],
+  imports: [ PrimengUiModule, ComponentsModule, PlaylistContainerComponent, PlaylistSelectContentsComponent, AssetListItemComponent ],
   templateUrl: './playlist-details.component.html',
   styleUrl: './playlist-details.component.scss',
   providers: [ MessageService ]
@@ -36,10 +37,9 @@ export class PlaylistDetailsComponent {
   keywords: FormControl = new FormControl('');
   keywordSignal = signal<string>('');
   
-  filteredAssets = computed(() => this.assets().filter(asset => {
-    return asset.name.toLowerCase().includes(this.keywordSignal().toLowerCase());
-  }));
+  filteredAssets = signal<Assets[]>([]);
 
+  showContents = signal<boolean>(false);
   
   totalDuration = () => {
     const contents: any[] = this.formControl('contents').value;
@@ -99,47 +99,16 @@ export class PlaylistDetailsComponent {
     };
   }
 
-  get currentContent() {
-    return this.playlistService.currentContent();
-  }
-
-  get playListForm() {
-    return this.playlistService.playListForm;
-  }
-  
-  get playlistItems() {
-    return this.playlistService.playlistItems;
-  }
-
-  get isPlaying() {
-    return this.playlistService.isPlaying;
-  }
-
-  get isLooping() {
-    return this.playlistService.isLooping;
-  }
-
-  get transitionTypes() {
-    return this.playlistService.transitionTypes;
-  }
-
-  get currentTransition() {
-    return this.playlistService.currentTransition();
-  }
-
-  get assets() {
-    return this.assetService.assets;
-  }
-
-  get assetViewModes() {
-    return this.assetService.assetViewModes;
-  }
-
-  get assetViewModeCtrl() {
-    return this.assetService.assetViewModeCtrl;
-  }
-
-  get assetViewModeSignal() {
-    return this.assetService.assetViewModeSignal;
-  }
+  get currentContent() { return this.playlistService.currentContent(); }
+  get playListForm() { return this.playlistService.playListForm; }
+  get playlistItems() { return this.playlistService.playlistItems; }
+  get isPlaying() { return this.playlistService.isPlaying; }
+  get isLooping() { return this.playlistService.isLooping; }
+  get transitionTypes() { return this.playlistService.transitionTypes; }
+  get currentTransition() { return this.playlistService.currentTransition(); }
+  get assets() { return this.assetService.assets; }
+  get assetViewModes() { return this.assetService.assetViewModes; }
+  get assetViewModeCtrl() { return this.assetService.assetViewModeCtrl; }
+  get assetViewModeSignal() { return this.assetService.assetViewModeSignal; }
+  get activeStep() { return this.playlistService.activeStep; }
 }

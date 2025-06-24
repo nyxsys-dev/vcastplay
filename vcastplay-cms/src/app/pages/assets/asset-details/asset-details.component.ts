@@ -6,10 +6,11 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { UtilityService } from '../../../core/services/utility.service';
 import { AssetsService } from '../../../core/services/assets.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
 
 @Component({
   selector: 'app-asset-details',
-  imports: [ PrimengUiModule, ComponentsModule, AssetScheduleComponent ],
+  imports: [ PrimengUiModule, ComponentsModule, AssetScheduleComponent, AudienceTagFiltersComponent ],
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.scss',
   providers: [ ConfirmationService, MessageService ]
@@ -22,7 +23,7 @@ export class AssetDetailsComponent {
       label: 'Options', 
       items: [ 
         { label: 'Schedule', icon: 'pi pi-calendar', command: () => this.isShowSchedule.set(!this.isShowSchedule()) }, 
-        { label: 'Audience Tag', icon: 'pi pi-users' } 
+        { label: 'Audience Tag', icon: 'pi pi-users', command: () => this.isShowAudienceTag.set(!this.isShowAudienceTag()) }, 
       ] 
     }
   ]
@@ -41,6 +42,7 @@ export class AssetDetailsComponent {
   previewUrl = signal<string>('');
 
   isShowSchedule = signal<boolean>(false);
+  isShowAudienceTag = signal<boolean>(false);
   isShowInfo = signal<boolean>(false);
 
   showLinkInput = () => {
@@ -133,7 +135,7 @@ export class AssetDetailsComponent {
       acceptButtonProps: {
         label: 'Save',
       },
-      accept: () => {
+      accept: () => {        
         this.assetService.onSaveAssets(this.assetForm.value);
         this.message.add({ severity:'success', summary: 'Success', detail: 'Assets upload successfully!' });
         this.selectedAsset.set(null);
@@ -190,6 +192,10 @@ export class AssetDetailsComponent {
       }
     } 
     this.isShowSchedule.set(false);
+  }
+
+  onClickCloseAudienceTag() {
+    this.isShowAudienceTag.set(false);
   }
 
   formControl(fieldName: string) {

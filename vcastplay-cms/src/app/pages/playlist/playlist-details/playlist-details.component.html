@@ -7,24 +7,27 @@
                     <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
                     <p class="text-xl font-semibold">New Playlist</p>
                 </div>
-                <p-button label="Save Playlist" icon="pi pi-save" (onClick)="onClickSave($event)" />
+                <div class="flex gap-4">
+                    <p-button label="Get Contents" icon="pi pi-tag" (onClick)="showContents.set(true)" />
+                    <p-button label="Save Playlist" icon="pi pi-save" (onClick)="onClickSave($event)" />
+                </div>
             </div>
         </ng-template>
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-2 h-full mb-2">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-2 h-full mt-2">
             <div class="col-span-1 md:col-span-6 xl:col-span-8 flex flex-col gap-2">
 
                 <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4">
-                    <div class="col-span-1 md:col-span-4">
-                        <p-floatlabel variant="in">
+                    <div class="col-span-1 md:col-span-3">
+                        <p-floatlabel variant="on">
                             <label for="name">Name</label>
-                            <input id="name" pInputText formControlName="name" pSize="small"
+                            <input id="name" pInputText formControlName="name"
                                 [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
                         </p-floatlabel>
                     </div>
-                    <div class="col-span-1 md:col-span-8">
-                        <p-floatlabel variant="in">
+                    <div class="col-span-1 md:col-span-9">
+                        <p-floatlabel variant="on">
                             <label for="description">Description</label>
-                            <input id="description" pInputText formControlName="description"  pSize="small"
+                            <input id="description" pInputText formControlName="description"
                                 [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" fluid />
                         </p-floatlabel>
                     </div>
@@ -55,6 +58,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-span-1 md:col-span-6 xl:col-span-4">
                 <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg h-80 md:h-full">
                     <div class="p-3 flex items-center gap-2">
@@ -122,3 +126,17 @@
         </ng-template>
     </p-card>
 </div>
+
+<p-dialog header="Select Contents" [(visible)]="showContents" [style]="{ width: '50rem', height: '520px' }" [draggable]="false" closable modal>
+    <app-playlist-select-contents [playListForm]="playListForm" (assetSelected)="filteredAssets.set($event)" />
+    <ng-template #footer>
+        <div class="flex items-center w-full gap-2">
+            @if (activeStep() > 1) {
+                <p-button label="Back" severity="secondary" icon="pi pi-arrow-left" (onClick)="activeStep.set(1)" />
+                <p-button class="ml-auto" label="Complete" severity="success" icon="pi pi-check" iconPos="right" (onClick)="showContents.set(false)" />
+            } @else {
+                <p-button class="ml-auto" label="Next" icon="pi pi-arrow-right" (onClick)="activeStep.set(2)" />
+            }
+        </div>
+    </ng-template>
+</p-dialog>

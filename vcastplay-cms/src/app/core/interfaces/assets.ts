@@ -1,3 +1,5 @@
+import { AudienceTag } from "./general";
+
 export interface Assets {
     id: number;
     code: string;
@@ -7,7 +9,6 @@ export interface Assets {
     category: string;
     subCategory: string;
     fileDetails: AssestInfo;
-    audienceTag: string;
     dateRange: { 
         start: Date;
         end: Date;
@@ -15,6 +16,7 @@ export interface Assets {
     hours: string[];
     weekdays: string[];
     duration: number;
+    audienceTag: AudienceTag;
     status: string;
     createdOn: Date;
     updatedOn: Date;

@@ -18,4 +18,9 @@ export default [
         loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent),
         title: `Profile • ${appTitle}`,
     },
+    {
+        path: 'audience-tag',
+        loadComponent: () => import('./audience-tag/audience-tag-list/audience-tag-list.component').then(m => m.AudienceTagListComponent),
+        title: `Audience Tag • ${appTitle}`,
+    }
 ] as Routes

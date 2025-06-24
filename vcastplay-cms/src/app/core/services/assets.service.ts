@@ -53,7 +53,6 @@ export class AssetsService {
       resolution: new FormControl(null),
       thumbnail: new FormControl(null),
     }),
-    audienceTag: new FormControl(null),
     availability: new FormControl<boolean>(false),
     dateRange: new FormGroup({
       start: new FormControl(null),
@@ -62,6 +61,15 @@ export class AssetsService {
     weekdays: new FormControl([], { nonNullable: true }),
     hours: new FormControl<[{ start: string, end: string }] | []>([], { nonNullable: true }),
     duration: new FormControl(5, { nonNullable: true }),
+    audienceTag: new FormGroup({
+      genders: new FormControl([], { nonNullable: true }),
+      ageGroups: new FormControl([], { nonNullable: true }),
+      timeOfDays: new FormControl([], { nonNullable: true }),
+      seasonalities: new FormControl([], { nonNullable: true }),
+      locations: new FormControl([], { nonNullable: true }),
+      pointOfInterests: new FormControl([], { nonNullable: true }),
+      tags: new FormControl([], { nonNullable: true }),
+    }),
   })
 
   constructor() { }

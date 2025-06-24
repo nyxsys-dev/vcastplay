@@ -44,6 +44,8 @@ export class PlaylistService {
 
   videoElement = signal<HTMLVideoElement | null>(null);
 
+  activeStep = signal<number>(1);
+
   constructor() { }
 
   onPlayPreview(index: number = 0) {
