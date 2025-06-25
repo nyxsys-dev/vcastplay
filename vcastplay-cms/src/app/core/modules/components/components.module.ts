@@ -18,6 +18,7 @@ import { RoleListItemComponent } from '../../../components/roles/role-list-item/
 import { RoleDetailsComponent } from '../../../components/roles/role-details/role-details.component';
 import { AddToPlaylistComponent } from '../../../components/playlist/add-to-playlist/add-to-playlist.component';
 import { PlaylistPreviewComponent } from '../../../components/playlist/playlist-preview/playlist-preview.component';
+import { UserApprovalComponent } from '../../../components/users/user-approval/user-approval.component';
 
 
 const COMPONENT_MODULES = [
@@ -32,6 +33,7 @@ const COMPONENT_MODULES = [
   // Users Components
   UserListItemComponent, 
   UserDetailsComponent,
+  UserApprovalComponent,
 
   // Roles Components
   RoleListItemComponent,

@@ -43,6 +43,11 @@ export class PlaylistService {
     contents: new FormControl<Assets[]>([], { nonNullable: true, validators: [ Validators.required ] }),
     status: new FormControl(''),
     loop: new FormControl(false),
+    approvedInfo: new FormGroup({
+      approvedBy: new FormControl('Admin'),
+      approvedOn: new FormControl(new Date()),
+      remarks: new FormControl(''),
+    })
   })
 
   transitionTypes: any[] = [
@@ -168,8 +173,7 @@ export class PlaylistService {
       weekdays,
       hours
     });
-  }
-  
+  }  
   
   getTransitionClasses() {
     const { type } = this.currentTransition() ?? '';
@@ -295,6 +299,16 @@ export class PlaylistService {
   onDuplicatePlaylist(playlist: Playlist) {
     const tempData = this.playlists();
     tempData.push({ ...playlist, id: tempData.length + 1, name: `Copy of ${playlist.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
+    this.playlistSignal.set([...tempData]);
+    
+    this.totalRecords.set(this.playlists().length);
+    /**CALL POST API */
+  }
+
+  onApprovePlaylist(playlist: Playlist, status: string) {
+    const tempData = this.playlists();
+    const index = tempData.findIndex(item => item.id === playlist.id);
+    tempData[index] = { ...playlist, status, updatedOn: new Date() };
     this.playlistSignal.set([...tempData]);
     
     this.totalRecords.set(this.playlists().length);

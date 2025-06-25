@@ -21,7 +21,7 @@ export class PlaylistDetailsComponent {
   
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
   
-  pageInfo: MenuItem = [ {label: 'Playlist'}, {label: 'Playlist Library', routerLink: '/playlist/playlist-library'}, {label: 'Playlist Details'} ];
+  pageInfo: MenuItem = [ {label: 'Playlist'}, {label: 'Library', routerLink: '/playlist/playlist-library'}, {label: 'Details'} ];
 
   utils = inject(UtilityService);
   assetService = inject(AssetsService);

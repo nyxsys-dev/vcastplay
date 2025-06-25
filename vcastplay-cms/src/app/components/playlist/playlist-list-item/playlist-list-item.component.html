@@ -1,21 +1,22 @@
-
-<!-- <div class="flex flex-row gap-2 justify-between items-center p-[1rem] border border-gray-200 rounded-lg">
-    <div class="flex flex-col">
-        <h6 class="font-semibold">{{ playlist.name }}</h6>
-        <p>{{ playlist.description }}</p>
-    </div>
-    <div class="flex flex-row">
-        <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: playlist }"></ng-container>
-    </div>
-</div> -->
 <p-card class="">
     <ng-template #title>
-        <div class="flex gap-2 items-center">
-            <h6 class="font-semibold">{{ playlist.name }}</h6>
-            <p-tag [value]="playlist.status" [severity]="utils.getStatus(playlist.status)" />
+        <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
+                <p class="font-semibold">{{ playlist.name }}</p>
+                <p-tag [value]="playlist.status" [severity]="utils.getStatus(playlist.status)" [icon]="'pi ' + utils.getIcon(playlist.status)" />
+            </div>
         </div>
     </ng-template>
     <ng-template #subtitle><p>{{ playlist.description }}</p></ng-template>
+    <div class="flex flex-col my-5 gap-5">
+        <div class="flex gap-2 items-center">
+            <p class="font-semibold">Last Update:</p>
+            <div class="flex gap-2 items-center ml-auto">
+                <i class="pi pi-clock" [style]="{ 'font-size': '0.75rem'}"></i>
+                <p class="text-sm italic">{{ playlist.updatedOn | date: 'mediumDate' }}</p>
+            </div>
+        </div>
+    </div>
     <ng-template #footer>
         <div class="text-end">
             <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: playlist }"></ng-container>

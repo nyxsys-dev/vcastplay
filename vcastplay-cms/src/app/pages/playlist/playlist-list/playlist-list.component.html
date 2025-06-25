@@ -35,10 +35,10 @@
                     </tr>
                 </ng-template>
                 <ng-template #body let-item>
-                    <tr>
+                    <tr class="text-sm">
                         <td>{{ item.name }}</td>
                         <td>{{ item.description }}</td>
-                        <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)"></p-tag></td>
+                        <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" [icon]="'pi ' + utils.getIcon(item.status)"></p-tag></td>
                         <td><p class="text-sm">{{ item.updatedOn | date: 'medium' }}</p></td>
                         <td>
                             <div class="flex flex-row justify-center">
@@ -81,21 +81,54 @@
     </p-card>
 </div>
 
-<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" modal>
-    <div class="flex justify-center h-80">
+<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="playlistService.onStopPreview()" modal>
+    <div class="flex h-full md:h-100">
         <app-playlist-preview class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
             [currentContent]="playlistService.currentContent()" />
     </div>
 </p-dialog>
 
 <ng-template #actionBtn let-item>
-    <p-button icon="pi pi-pencil" (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" severity="success" text />
-    <p-button icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" text />
+    <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" severity="success" text />
+    <p-button (onClick)="onClickShowApprove($event, item, approved)" icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" text />
     <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" text />
     <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" text />
     <p-button (onClick)="onClickOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="secondary" text />
-    <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
 </ng-template>
 
 <p-toast />
 <p-confirmdialog />
+
+<p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
+<p-popover #approved (onHide)="playlistForm.reset()" appendTo="body">
+    <ng-template #content>
+        <div class="flex flex-col gap-3" [formGroup]="playlistForm">
+            @if (!['Approved', 'Disapproved'].includes(status?.value)) {
+                <p class="text-sm font-semibold">Approve this playlist?</p>
+                <div formGroupName="approvedInfo">
+                    <p-floatlabel variant="on">
+                        <textarea pTextarea id="remarks" formControlName="remarks" rows="5" cols="2" style="resize: none" class="h-full" fluid></textarea>
+                        <label for="remarks">Remarks</label>
+                    </p-floatlabel>
+                </div>
+
+                
+                <div class="flex gap-2 justify-end">
+                    <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApprove($event, approved, 'Disapproved')" size="small" outlined />
+                    <p-button label="Approve" (onClick)="onClickConfirmApprove($event, approved, 'Approved')" size="small" />
+                </div>
+            } @else {
+                <p class="text-sm font-semibold">Approval Info:</p>
+                
+                <div class="flex flex-col gap-2 w-50">
+                    <p>User: {{ approvedInfo?.value.approvedBy }}</p>
+                    <p>Remarks: {{ approvedInfo?.value.remarks }}</p>
+                </div>
+                
+                <div class="flex gap-2 justify-end">
+                    <p-button label="Close" (onClick)="approved.hide()" size="small" text />
+                </div>
+            }
+        </div>
+    </ng-template>
+</p-popover>

@@ -141,16 +141,35 @@ export class UtilityService {
 
   getStatus(status: string) {
     switch (status) {
+      case 'Approved':
       case 'Active':
       case 'online':
         return 'success';
       case 'Inactive':
         return 'warn';
+      case 'Disapproved':
       case 'Suspended':
       case 'offline':
         return 'danger';
       default:
         return 'secondary';
+    }
+  }
+
+  getIcon(status: string) {
+    switch (status) {
+      case 'Approved':
+      case 'Active':
+      case 'online':
+        return 'pi-check-circle';
+      case 'Inactive':
+        return 'pi-pause-circle';
+      case 'Disapproved':
+      case 'Suspended':
+      case 'offline':
+        return 'pi-times-circle';
+      default:
+        return 'pi-question-circle';
     }
   }
 }

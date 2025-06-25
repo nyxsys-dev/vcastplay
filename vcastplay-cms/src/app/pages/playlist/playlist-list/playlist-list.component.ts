@@ -17,7 +17,7 @@ import { Menu } from 'primeng/menu';
 })
 export class PlaylistListComponent {
 
-  pageInfo: MenuItem = [ { label: 'Playlist' }, { label: 'Playlist Library' } ];
+  pageInfo: MenuItem = [ { label: 'Playlist' }, { label: 'Library' } ];
   actionItems: MenuItem[] = [
     { 
       label: 'Options',
@@ -36,6 +36,7 @@ export class PlaylistListComponent {
   router = inject(Router);
 
   showPreview = signal<boolean>(false);
+  showApprove = signal<boolean>(false);
 
   ngOnInit() {
     this.playlistService.onGetPlaylists();
@@ -79,7 +80,8 @@ export class PlaylistListComponent {
   }
 
   onClickDuplicate(playlist: any) {
-    this.playlistService.onDuplicatePlaylist(playlist);
+    const { approvedInfo, ...info } = playlist;
+    this.playlistService.onDuplicatePlaylist(info);
     this.message.add({ severity:'success', summary: 'Success', detail: 'Playlist duplicated successfully!' });
   }
 
@@ -93,6 +95,18 @@ export class PlaylistListComponent {
     menu.toggle(event);
   }
 
+  onClickShowApprove(event: any, item: any, popup: any) {
+    popup.toggle(event);
+    this.playlistForm.patchValue(item);
+  }
+
+  onClickConfirmApprove(event: Event, popup: any, type: string) {
+    this.showApprove.set(false);
+    this.playlistService.onApprovePlaylist(this.playlistForm.value, type);
+    this.playlistForm.reset();
+    popup.hide();
+  }
+
   get playlists() { return this.playlistService.playlists; }
   get playlistForm() { return this.playlistService.playListForm; }
   get isEditMode() { return this.playlistService.isEditMode; }
@@ -103,4 +117,6 @@ export class PlaylistListComponent {
   get currentTransition() { return this.playlistService.currentTransition(); }
   get isPlaying() { return this.playlistService.isPlaying; }
   get getTransitionClasses() { return this.playlistService.getTransitionClasses; }
+  get status() { return this.playlistForm.get('status'); }
+  get approvedInfo() { return this.playlistForm.get('approvedInfo'); }
 }

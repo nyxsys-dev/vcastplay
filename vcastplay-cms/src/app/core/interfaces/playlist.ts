@@ -1,3 +1,4 @@
+import { User } from "./account-settings";
 import { Assets } from "./assets";
 
 export interface Playlist {
@@ -12,6 +13,11 @@ export interface Playlist {
     contents: Assets[];
     loop: boolean;
     status: string;
+    approvedInfo?: {
+        approvedBy: string;
+        approvedOn: Date;
+        remarks: string;
+    };
     createdOn: Date;
     updatedOn: Date;
 }
