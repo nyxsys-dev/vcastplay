@@ -13,6 +13,10 @@ export class AssetsService {
 
   selectedAsset = signal<Assets | null>(null);
 
+  first = signal<number>(0);
+  rows = signal<number>(8);
+  totalRecords = signal<number>(0);
+
   loadingSignal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
 
@@ -119,6 +123,7 @@ export class AssetsService {
         updatedOn: new Date(),
       }
     ]);
+    this.totalRecords.set(this.assets().length);
     // this.loadingSignal.set(false);
   }
 
@@ -145,6 +150,11 @@ export class AssetsService {
       this.assetForm.reset();
     }
   }
+  
+  onPageChange(event: any) {
+    this.first.set(event.first);
+    this.rows.set(event.rows);
+  }
 
   onSaveAssets(assets: Assets) {
     const tempAssets = this.assets();
@@ -154,12 +164,14 @@ export class AssetsService {
     else tempAssets.push({ id: tempAssets.length + 1, code: `NYX00${tempAssets.length + 1}`, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
 
     this.assetSignal.set([...tempAssets]);
+    this.totalRecords.set(this.assets().length);
     /**Call POST/PATCH user API */
   }
 
   onDeleteAssets(assets: Assets) {
     const tempAssets = this.assets().filter(u => u.id !== assets.id);
     this.assetSignal.set([...tempAssets]);
+    this.totalRecords.set(this.assets().length);
     /**Call DELETE user API */
   }
 
@@ -167,6 +179,7 @@ export class AssetsService {
     const tempData = this.assets();
     tempData.push({ ...assets, id: tempData.length + 1, name: `Copy of ${assets.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
     this.assetSignal.set([...tempData]);
+    this.totalRecords.set(this.assets().length);
     /**CALL POST API */
   }
 

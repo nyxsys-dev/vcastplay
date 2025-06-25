@@ -114,7 +114,9 @@
                 <ng-container *ngIf="formControl('link').value as currentContent">
 
                     <div class="absolute flex gap-2 top-0 left-0 w-full p-2 z-100">
-                        <p-button icon="pi pi-trash" severity="danger" (onClick)="assetForm.reset()" pTooltip="Clear" tooltipPosition="bottom" rounded />
+                        @if (!isEditMode()) {
+                            <p-button icon="pi pi-trash" severity="danger" (onClick)="assetForm.reset()" pTooltip="Clear" tooltipPosition="bottom" rounded />
+                        }
                         @if (['image', 'video', 'audio'].includes(assetForm.value.type)) {
                             <p-button icon="pi pi-info-circle" severity="secondary" (onClick)="isShowInfo.set(true)" pTooltip="File info" tooltipPosition="bottom" rounded />
                         }

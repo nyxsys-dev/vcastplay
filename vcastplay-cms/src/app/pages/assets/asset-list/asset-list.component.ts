@@ -48,11 +48,6 @@ export class AssetListComponent {
   filteredAssets = computed(() => {
     return this.assetService.assets();
   });
-  
-  rows: number = 8;
-  totalRecords: number = 0;
-
-  selectedPlaylist = signal<Playlist[]>([]);
 
   constructor() {
     this.assetViewModeCtrl.valueChanges.subscribe(value => this.assetViewModeSignal.set(value));
@@ -60,7 +55,6 @@ export class AssetListComponent {
 
   ngOnInit() {
     this.assetService.onGetAssets();
-    this.totalRecords = this.assetService.assets().length;
   }
 
   async onFileSelect(event: Event) {
@@ -132,10 +126,10 @@ export class AssetListComponent {
   }
 
   onClickSaveToPlaylist(event: Event) {    
-    this.playlistService.onSaveAssetToPlaylist(this.assetForm.value, this.selectedPlaylist());
+    this.playlistService.onSaveAssetToPlaylist(this.assetForm.value, this.selectedArrPlaylist());
     this.message.add({ severity:'success', summary: 'Success', detail: 'Asset added to playlist successfully!' });
     this.isShowAddToPlaylist.set(false);
-    this.selectedPlaylist.set([]);
+    this.selectedArrPlaylist.set([]);
     this.assetForm.reset();
   }
 
@@ -183,4 +177,8 @@ export class AssetListComponent {
   get selectedAsset() { return this.assetService.selectedAsset; }
   get assetViewModes() { return this.assetService.assetViewModes; }
   get assetForm() { return this.assetService.assetForm; }
+  get first() { return this.assetService.first; }
+  get rows() { return this.assetService.rows; }
+  get totalRecords() { return this.assetService.totalRecords; }
+  get selectedArrPlaylist() { return this.playlistService.selectedArrPlaylist; }
 }

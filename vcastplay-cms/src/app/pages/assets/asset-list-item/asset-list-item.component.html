@@ -10,7 +10,7 @@
                 (click)="showOptions && showDrawer.set(true)" [ngClass]="{ 'cursor-pointer': showOptions }">
                 <div class="flex flex-col w-full">
                     <p class="text-sm line-clamp-1">{{ asset.name }}</p>
-                    <p class="text-xs">{{ utils.formatSize(asset.fileDetails.size) }}</p>
+                    <p class="text-xs">{{ utils.formatSize(asset.fileDetails.size ?? 0) }}</p>
                 </div>
             </div>
         }

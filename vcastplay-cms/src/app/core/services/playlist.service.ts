@@ -11,6 +11,7 @@ export class PlaylistService {
   private playlistSignal = signal<Playlist[]>([]);
   playlists = computed(() => this.playlistSignal());
   selectedPlaylist = signal<Playlist | null>(null);
+  selectedArrPlaylist = signal<Playlist[]>([]);
 
   first = signal<number>(0);
   rows = signal<number>(8);

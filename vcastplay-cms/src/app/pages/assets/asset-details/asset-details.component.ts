@@ -138,12 +138,12 @@ export class AssetDetailsComponent {
         label: 'Save',
       },
       accept: () => {
+        this.message.add({ severity: 'success', summary: 'Success', detail: 'Assets upload successfully!' });
         this.assetService.onSaveAssets(this.assetForm.value);
         this.selectedAsset.set(null);
         this.assetForm.reset();
         this.isEditMode.set(false);
-        // this.router.navigate(['/assets/asset-library']);
-        this.message.add({ severity: 'success', summary: 'Success', detail: 'Assets upload successfully!' });
+        this.router.navigate(['/assets/asset-library']);
       },
     });
   }
@@ -205,48 +205,16 @@ export class AssetDetailsComponent {
     return this.utils.getFormControl(this.assetForm, fieldName);
   }
 
-  get isEditMode() {
-    return this.assetService.isEditMode;
-  }
-
-  get selectedAsset() {
-    return this.assetService.selectedAsset;
-  }
-
-  get assetForm() {
-    return this.assetService.assetForm;
-  }
-
-  get fileDetails() {
-    return this.assetForm.get('fileDetails');
-  }
-
-  get assetTypes() {
-    return this.assetService.assetType;
-  }
-
-  get assetTypeControl() {
-    return this.assetService.assetTypeControl;
-  }
-
-  get type() {
-    return this.assetForm.get('type');
-  }
-
-  get availability() {
-    return this.assetForm.get('availability');
-  }
-
-  get dateRange() {
-    return this.assetForm.get('dateRange');
-  }
-
-  get weekdays() {
-    return this.assetForm.get('weekdays');
-  }
-
-  get hours() {
-    return this.assetForm.get('hours');
-  }
+  get isEditMode() { return this.assetService.isEditMode; }
+  get selectedAsset() { return this.assetService.selectedAsset; }
+  get assetForm() { return this.assetService.assetForm; }
+  get fileDetails() { return this.assetForm.get('fileDetails'); }
+  get assetTypes() { return this.assetService.assetType; }
+  get assetTypeControl() { return this.assetService.assetTypeControl; }
+  get type() { return this.assetForm.get('type'); }
+  get availability() { return this.assetForm.get('availability'); }
+  get dateRange() { return this.assetForm.get('dateRange'); }
+  get weekdays() { return this.assetForm.get('weekdays'); }
+  get hours() { return this.assetForm.get('hours'); }
 
 }

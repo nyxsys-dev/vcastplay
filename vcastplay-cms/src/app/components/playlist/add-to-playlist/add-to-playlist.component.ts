@@ -17,11 +17,10 @@ export class AddToPlaylistComponent {
 
   playlistService = inject(PlaylistService);
 
-  selectedPlaylists: Playlist[] = [];
-
   onSelectionChange(event: any) {
     this.selectedPlaylistsChange.emit(event);
   }
 
   get playlists() { return this.playlistService.playlists; }
+  get selectedArrPlaylist() { return this.playlistService.selectedArrPlaylist; }
 }

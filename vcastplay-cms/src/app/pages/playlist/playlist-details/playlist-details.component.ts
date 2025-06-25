@@ -94,22 +94,21 @@ export class PlaylistDetailsComponent {
       return;
     }
 
-    const confirmed = this.confirmation.confirm({
+    this.confirmation.confirm({
       target: event.target as EventTarget,
       message: 'Do you want to save changes?',
       header: 'Confirm Save',
       icon: 'pi pi-question-circle',
       acceptButtonProps: { label: 'Save' },
       rejectButtonProps: { label: 'Cancel', severity: 'secondary', outlined: true },
+      accept: () => {
+        this.message.add({ severity: 'success', summary: 'Success', detail: 'Playlist saved successfully!' });
+        this.playlistService.onSavePlaylist(this.playListForm.value);
+        this.playListForm.reset();
+        this.isEditMode.set(false);
+        this.router.navigate([ '/playlist/playlist-library' ]);
+      },
     });
-
-    if (confirmed) {      
-      this.playlistService.onSavePlaylist(this.playListForm.value);
-      this.message.add({ severity: 'success', summary: 'Success', detail: 'Playlist saved successfully!' });
-      this.playListForm.reset();
-      this.isEditMode.set(false);
-      await this.router.navigate([ '/playlist/playlist-library' ]);
-    }
   }
   
   onClickCancel() {

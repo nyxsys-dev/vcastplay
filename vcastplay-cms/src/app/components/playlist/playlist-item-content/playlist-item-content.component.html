@@ -4,14 +4,21 @@
     <div class="absolute top-0 right-0 h-full w-full z-10 bg-gradient-to-t from-[var(--p-primary-500)] to-transparent ">
         <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300/60" [ngClass]="{ 'group-hover:flex': !isPlaying()}">
             @if (!['video', 'audio'].includes(asset.type)) {
-                <p-button severity="info" icon="pi pi-cog" pTooltip="Configuration" tooltipPosition="bottom" (onClick)="showConfig.set(true)" size="small" rounded />
+                <p-button severity="info" icon="pi pi-cog" pTooltip="Configuration" 
+                    tooltipPosition="bottom" (onClick)="showConfig.set(true); $event.stopPropagation()" size="small" rounded />
             }
             <p-button severity="danger" icon="pi pi-trash" pTooltip="Remove" tooltipPosition="bottom" (onClick)="onClickRemove(asset)" size="small" rounded />
         </div>
     </div>
 
-    <div class="flex items-center justify-center h-full w-full ">
-        <img [src]="asset.fileDetails.thumbnail" alt="Content" class="w-full h-full object-contain">
+    <div class="flex items-center justify-center h-full w-full relative">
+        @switch (asset.type) {
+            @case('web') {
+                <app-preview-content class="absolute h-full w-full flex items-center justify-center" 
+                    [currentContent]="asset" [showControls]="false" />
+            } 
+            @default { <img [src]="asset.fileDetails.thumbnail" alt="Content" class="w-full h-full object-contain"> }
+        }
     </div>
 
     <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center text-center text-white w-full mb-1 z-50">

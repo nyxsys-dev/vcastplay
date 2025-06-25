@@ -3,14 +3,18 @@
 
     <div class="flex-1">
         <p-card styleClass="h-full">
-            <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
+            <div class="flex gap-8 items-center mb-2">
                 <app-filters class="w-full md:w-[25rem]"></app-filters>
-                <div class="flex gap-4">
-                    <p-button (onClick)="onClickAddNew()" label="Add New" icon="pi pi-user-plus"></p-button>
-                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
+                <div class="hidden md:flex gap-2 ml-auto">
+                    <p-button (onClick)="onClickAddNew()" label="Add New" icon="pi pi-user-plus" />
+                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh" />
+                </div>
+                <div class="flex gap-2 md:hidden">
+                    <p-button (onClick)="onClickAddNew()" label="" icon="pi pi-user-plus" pTooltip="Add New" tooltipPosition="bottom" />
+                    <p-button (onClick)="onClickRefresh()" label="" variant="outlined" icon="pi pi-refresh" pTooltip="Refresh" tooltipPosition="bottom" />
                 </div>
             </div>
-            <div class="flex-1 md:h-full">
+            <div class="flex-1">
                 <p-table 
                     class="hidden lg:block" 
                     [value]="userService.loadingSignal() ? utils.tableSkeletonRows : filteredUsers()" 
@@ -25,7 +29,9 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th>
+                                <div class="text-center">Actions</div>
+                            </th>
                         </tr>
                     </ng-template>
                     <ng-template #body let-item>
@@ -39,7 +45,7 @@
                                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                                 <td>{{ item.email }}</td>
                                 <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" /></td>
-                                <td class="flex flex-row">
+                                <td class="flex flex-row justify-center gap-2">
                                     <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
                                 </td>
                             </tr>
@@ -77,8 +83,8 @@
 </div>
 
 <ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" [rounded]="true" severity="success" />
-    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" size="small" />
+    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" severity="danger" size="small" />
 </ng-template>
 
 <p-dialog header="User Information" [(visible)]="userService.showDialog" styleClass="w-[30rem] md:w-[50rem] h-auto" [modal]="true" [draggable]="false" [focusOnShow]="false">

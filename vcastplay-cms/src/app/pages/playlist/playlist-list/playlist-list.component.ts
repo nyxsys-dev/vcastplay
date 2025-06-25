@@ -95,15 +95,25 @@ export class PlaylistListComponent {
     menu.toggle(event);
   }
 
-  onClickShowApprove(event: any, item: any, popup: any) {
+  onClickShowApproved(event: any, item: any, popup: any) {
     popup.toggle(event);
     this.playlistForm.patchValue(item);
   }
 
-  onClickConfirmApprove(event: Event, popup: any, type: string) {
+  onClickConfirmApproved(event: Event, popup: any, type: string) {
+    const { approvedInfo, ...info } = this.playlistForm.value;
+    if (approvedInfo.remarks === '') {
+      this.message.add({ severity: 'error', summary: 'Error', detail: 'Remarks is required!' });
+      return;
+    }
     this.showApprove.set(false);
     this.playlistService.onApprovePlaylist(this.playlistForm.value, type);
     this.playlistForm.reset();
+    popup.hide();
+  }
+
+  onClickCloseApproved(event: Event, popup: any) {
+    this.showApprove.set(false);
     popup.hide();
   }
 

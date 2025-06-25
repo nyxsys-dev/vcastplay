@@ -3,10 +3,11 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { Assets } from '../../../core/interfaces/assets';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
+import { PreviewContentComponent } from '../../preview-content/preview-content.component';
 
 @Component({
   selector: 'app-playlist-item-content',
-  imports: [ PrimengUiModule ],
+  imports: [ PrimengUiModule, PreviewContentComponent ],
   templateUrl: './playlist-item-content.component.html',
   styleUrl: './playlist-item-content.component.scss'
 })

@@ -19,7 +19,7 @@
         </ng-template>
         
         
-        <div class="hidden lg:flex justify-center items-center border-dashed border-2 border-blue-400 p-5 rounded-lg cursor-pointer hover:bg-blue-100 mb-8" 
+        <div class="hidden lg:flex justify-center items-center border-dashed border-2 border-zinc-300 p-5 rounded-lg cursor-pointer hover:bg-zinc-100 mb-8" 
             (drop)="onDropFile($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (click)="fileInput.click()">
             <p class="text-gray-500"><span class="font-semibold">Drop files here</span> or click to upload</p>
             <input type="file" multiple (change)="onFileSelect($event)" hidden #fileInput />
@@ -29,9 +29,6 @@
             'grid grid-cols-2 md:grid-cols-3 gap-4': assetViewModeSignal() == 'Grid',
             'flex flex-col gap-2': assetViewModeSignal() == 'List'
         }">
-            @for (item of filteredAssets(); track $index) {
-                <app-asset-list-item [asset]="item" [disableDrag]="true" [showOptions]="true" [actionBtn]="actionBtn" />
-            }
             <div class="flex items-center justify-center border-dashed border-2 border-gray-400 p-5 
                 rounded-lg cursor-pointer hover:bg-gray-100" (click)="onClickAddNew()">
                 <div class="flex flex-col gap-4 items-center justify-center">
@@ -39,6 +36,9 @@
                     <p>Upload</p>
                 </div>
             </div>
+            @for (item of filteredAssets(); track $index) {
+                <app-asset-list-item [asset]="item" [disableDrag]="true" [showOptions]="true" [actionBtn]="actionBtn" />
+            }
         </div>
 
         <div class="flex-1">
@@ -47,8 +47,13 @@
                 [value]="assetService.loadingSignal() ? utils.tableSkeletonRows : filteredAssets()" 
                 selectionMode="single"
                 [scrollable]="true" 
-                size="small"  
+                [rows]="rows()"
+                [first]="first()"
+                scrollHeight="flex-1"
+                size="small"
+                (onPage)="assetService.onPageChange($event)"
                 stripedRows
+                paginator
             >
                 <ng-template #header>
                     <tr>
@@ -117,35 +122,35 @@
                 </ng-template>
             </p-table>
         </div>
-        <ng-template #footer>
+        <!-- <ng-template #footer>
             <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
-        </ng-template>
+        </ng-template> -->
     </p-card>
 </div>
 
 <p-dialog header="Preview" [(visible)]="isShowPreview" [style]="{ width: '50rem' }" modal>
-    <div class="relative h-100">
+    <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
         <app-preview-content class="absolute h-full w-full flex items-center justify-center"
             [currentContent]="selectedAsset()" [showControls]="true" [autoPlay]="true" />
     </div>
 </p-dialog>
 
 <p-dialog header="Add to playlist" [(visible)]="isShowAddToPlaylist" [style]="{ width: '42rem', height: '520px' }" modal>
-    <app-add-to-playlist [assetForm]="assetForm" (selectedPlaylistsChange)="selectedPlaylist.set($event)" />
+    <app-add-to-playlist [assetForm]="assetForm" />
     <ng-template #footer>
         <div class="flex items-center w-full">
-            <p class="text-sm text-red-500 italic">{{ selectedPlaylist().length }} playlist(s) selected</p>
+            <p class="text-sm text-red-500 italic">{{ selectedArrPlaylist().length }} playlist(s) selected</p>
             <div class="flex gap-2 ml-auto">
                 <p-button label="Close" severity="secondary" (onClick)="isShowAddToPlaylist.set(false)" />
-                <p-button label="Save" (onClick)="onClickSaveToPlaylist($event)" [disabled]="selectedPlaylist().length == 0" />
+                <p-button label="Save" (onClick)="onClickSaveToPlaylist($event)" [disabled]="selectedArrPlaylist().length == 0" />
             </div>
         </div>
     </ng-template>
 </p-dialog>
 
 <ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" text />
-    <p-button (onClick)="onClickOpenOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="secondary" text />
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" size="small" />
+    <p-button (onClick)="onClickOpenOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
     <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
 </ng-template>
 

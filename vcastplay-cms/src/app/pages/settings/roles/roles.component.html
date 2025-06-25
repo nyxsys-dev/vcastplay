@@ -3,13 +3,15 @@
 
     <div class="flex-1">
         <p-card styleClass="h-full">
-            <div class="flex flex-col gap-4">
-                <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
-                    <app-filters class="w-full md:w-[25rem]"></app-filters>
-                    <div class="flex gap-3">
-                        <p-button (onClick)="onClickAddNew()" label="Add Role" icon="pi pi-plus" />
-                        <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
-                    </div>
+            <div class="flex gap-4 items-center mb-2">
+                <app-filters class="w-full md:w-[25rem]"></app-filters>
+                <div class="hidden md:flex gap-3 ml-auto">
+                    <p-button (onClick)="onClickAddNew()" label="Add Role" icon="pi pi-plus" />
+                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
+                </div>
+                <div class="flex gap-3 md:hidden">
+                    <p-button (onClick)="onClickAddNew()" label="" icon="pi pi-plus" pTooltip="Add Role" tooltipPosition="bottom" />
+                    <p-button (onClick)="onClickRefresh()" label="" variant="outlined" icon="pi pi-refresh" pTooltip="Refresh" tooltipPosition="bottom" />
                 </div>
             </div>
             <div class="flex-1 md:h-full">
@@ -27,7 +29,7 @@
                             <th>Description</th>
                             <th>Status</th>
                             <th>Last Update</th>
-                            <th>Actions</th>
+                            <th><div class="text-center">Actions</div></th>
                         </tr>
                     </ng-template>
                     <ng-template #body let-item>
@@ -45,7 +47,7 @@
                                 <td>{{ item.description }}</td>
                                 <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" /></td>
                                 <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
-                                <td class="flex flex-row">
+                                <td class="flex flex-row justify-center gap-2">
                                     <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
                                 </td>
                             </tr>
@@ -83,8 +85,8 @@
 </div>
 
 <ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" [rounded]="true" severity="success" />
-    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" size="small" />
+    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" severity="danger" size="small" />
 </ng-template>
 
 <p-dialog header="Role Information" [(visible)]="showDialog" styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false">

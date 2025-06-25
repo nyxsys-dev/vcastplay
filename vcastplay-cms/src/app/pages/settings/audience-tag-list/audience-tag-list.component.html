@@ -22,14 +22,16 @@
                     >
                         <ng-template #header>
                             <tr>
-                                <td>{{ item.name }}</td>
-                                <td>Actions</td>
+                                <th>{{ item.name }}</th>
+                                <th style="width: 12%;">
+                                    <div class="text-center">Actions</div>
+                                </th>
                             </tr>
                         </ng-template>
                         <ng-template #body let-tag>
                             <tr>
                                 <td>{{ tag }}</td>
-                                <td class="flex flex-row">
+                                <td class="flex justify-center">
                                     <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: tag, type: item.id }"></ng-container>
                                 </td>
                             </tr>
@@ -61,7 +63,7 @@
 </ng-template>
 
 <ng-template #actionBtn let-item let-type="type">
-    <p-button (onClick)="onClickDelete($event, item, type)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
+    <p-button (onClick)="onClickDelete($event, item, type)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" severity="danger" size="small" />
 </ng-template>
 
 <p-toast />

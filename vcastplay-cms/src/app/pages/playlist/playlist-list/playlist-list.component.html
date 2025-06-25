@@ -2,10 +2,11 @@
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
     <p-card styleClass="h-full" class="flex-1">
         <ng-template #title>
-            <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
-                <app-filters class="w-full md:w-[25rem]"></app-filters>
-                <div class="flex gap-4">
-                    <p-button (onClick)="onClickAddNew()" label="New Playlist" icon="pi pi-plus"></p-button>
+            <div class="flex gap-4 items-center mb-2">
+                <app-filters class="w-full md:w-[25rem]" />
+                <div class="flex gap-4 ml-auto">
+                    <p-button class="hidden md:block" (onClick)="onClickAddNew()" label="New Playlist" icon="pi pi-plus"></p-button>
+                    <p-button class="md:hidden" (onClick)="onClickAddNew()" label="" icon="pi pi-plus" />
                 </div>
             </div>
         </ng-template>
@@ -41,7 +42,7 @@
                         <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" [icon]="'pi ' + utils.getIcon(item.status)"></p-tag></td>
                         <td><p class="text-sm">{{ item.updatedOn | date: 'medium' }}</p></td>
                         <td>
-                            <div class="flex flex-row justify-center">
+                            <div class="flex flex-row justify-center gap-2">
                                 <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
                             </div>
                         </td>
@@ -81,26 +82,23 @@
     </p-card>
 </div>
 
-<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="playlistService.onStopPreview()" modal>
+<ng-template #actionBtn let-item>
+    <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" severity="success" size="small" />
+    <p-button (onClick)="onClickShowApproved($event, item, approved)" icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" size="small" />
+    <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" size="small" />
+    <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" size="small" />
+    <p-button (onClick)="onClickOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
+</ng-template>
+
+<p-dialog header="Preview Playlist" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="playlistService.onStopPreview()" modal>
     <div class="flex h-full md:h-100">
         <app-playlist-preview class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
             [currentContent]="playlistService.currentContent()" />
     </div>
 </p-dialog>
 
-<ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" severity="success" text />
-    <p-button (onClick)="onClickShowApprove($event, item, approved)" icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" text />
-    <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" text />
-    <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" text />
-    <p-button (onClick)="onClickOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="secondary" text />
-</ng-template>
-
-<p-toast />
-<p-confirmdialog />
-
 <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
-<p-popover #approved (onHide)="playlistForm.reset()" appendTo="body">
+<p-popover #approved (onHide)="playlistForm.reset()" appendTo="body" (onHide)="playlistForm.reset()">
     <ng-template #content>
         <div class="flex flex-col gap-3" [formGroup]="playlistForm">
             @if (!['Approved', 'Disapproved'].includes(status?.value)) {
@@ -111,24 +109,23 @@
                         <label for="remarks">Remarks</label>
                     </p-floatlabel>
                 </div>
-
-                
                 <div class="flex gap-2 justify-end">
-                    <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApprove($event, approved, 'Disapproved')" size="small" outlined />
-                    <p-button label="Approve" (onClick)="onClickConfirmApprove($event, approved, 'Approved')" size="small" />
+                    <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApproved($event, approved, 'Disapproved')" size="small" outlined />
+                    <p-button label="Approve" (onClick)="onClickConfirmApproved($event, approved, 'Approved')" size="small" />
                 </div>
             } @else {
                 <p class="text-sm font-semibold">Approval Info:</p>
-                
                 <div class="flex flex-col gap-2 w-50">
                     <p>User: {{ approvedInfo?.value.approvedBy }}</p>
                     <p>Remarks: {{ approvedInfo?.value.remarks }}</p>
                 </div>
-                
                 <div class="flex gap-2 justify-end">
-                    <p-button label="Close" (onClick)="approved.hide()" size="small" text />
+                    <p-button label="Close" (onClick)="onClickCloseApproved($event, approved)" size="small" text />
                 </div>
             }
         </div>
     </ng-template>
 </p-popover>
+
+<p-toast />
+<p-confirmdialog />
