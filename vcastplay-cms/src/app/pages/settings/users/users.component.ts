@@ -6,12 +6,10 @@ import { User } from '../../../core/interfaces/account-settings';
 import { UtilityService } from '../../../core/services/utility.service';
 import { UserService } from '../../../core/services/user.service';
 import { RoleService } from '../../../core/services/role.service';
-import { UserListItemComponent } from '../../../components/users/user-list-item/user-list-item.component';
-import { UserDetailsComponent } from '../../../components/users/user-details/user-details.component';
 
 @Component({
   selector: 'app-users',
-  imports: [ PrimengUiModule, ComponentsModule, UserListItemComponent, UserDetailsComponent ],
+  imports: [ PrimengUiModule, ComponentsModule,  ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss',
   providers: [ ConfirmationService, MessageService ],

@@ -1,9 +1,8 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { WEEKDAYS } from '../../../core/interfaces/general';
-import { FormControl, FormGroup } from '@angular/forms';
-import moment from 'moment';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-asset-schedule',

@@ -1,11 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
-import { Router } from '@angular/router';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { Playlist } from '../../../core/interfaces/playlist';
+import { Router } from '@angular/router';
 import { Menu } from 'primeng/menu';
 
 @Component({
@@ -22,7 +22,7 @@ export class PlaylistListComponent {
     { 
       label: 'Options',
       items: [
-        { label: 'View', icon: 'pi pi-eye', command: ($event: any) => { } },
+        { label: 'View', icon: 'pi pi-eye', command: ($event: any) => { this.onClickPreview(this.selectedPlaylist()); } },
         { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate(this.selectedPlaylist()) },
         { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete(this.selectedPlaylist(), $event) }  
       ]
@@ -35,12 +35,10 @@ export class PlaylistListComponent {
   message = inject(MessageService);
   router = inject(Router);
 
-  rows: number = 8;
-  totalRecords: number = 0;
+  showPreview = signal<boolean>(false);
 
   ngOnInit() {
     this.playlistService.onGetPlaylists();
-    this.totalRecords = this.playlists().length;
   }
 
   onClickAddNew() {
@@ -85,6 +83,11 @@ export class PlaylistListComponent {
     this.message.add({ severity:'success', summary: 'Success', detail: 'Playlist duplicated successfully!' });
   }
 
+  onClickPreview(playlist: any) {
+    this.showPreview.set(true);
+    this.playlistForm.patchValue(playlist);
+  }
+
   onClickOptions(event: Event, playlist: Playlist, menu: Menu) {
     this.selectedPlaylist.set(playlist);
     menu.toggle(event);
@@ -94,4 +97,10 @@ export class PlaylistListComponent {
   get playlistForm() { return this.playlistService.playListForm; }
   get isEditMode() { return this.playlistService.isEditMode; }
   get selectedPlaylist() { return this.playlistService.selectedPlaylist; }
+  get first() { return this.playlistService.first; }
+  get rows() { return this.playlistService.rows; }
+  get totalRecords() { return this.playlistService.totalRecords; }
+  get currentTransition() { return this.playlistService.currentTransition(); }
+  get isPlaying() { return this.playlistService.isPlaying; }
+  get getTransitionClasses() { return this.playlistService.getTransitionClasses; }
 }

@@ -5,11 +5,10 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MapmarkersComponent } from '../../../components/mapmarkers/mapmarkers.component';
 
 @Component({
   selector: 'app-screen-details',
-  imports: [ PrimengUiModule, ComponentsModule, MapmarkersComponent ],
+  imports: [ PrimengUiModule, ComponentsModule,  ],
   templateUrl: './screen-details.component.html',
   styleUrl: './screen-details.component.scss',
   providers: [ ConfirmationService, MessageService ]

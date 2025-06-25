@@ -6,13 +6,13 @@ import { AssetsService } from '../../../core/services/assets.service';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { Assets } from '../../../core/interfaces/assets';
-import { AssetListItemComponent } from '../asset-list-item/asset-list-item.component';
-import { PreviewContentComponent } from '../../../components/preview-content/preview-content.component';
 import { FormControl } from '@angular/forms';
+import { PlaylistService } from '../../../core/services/playlist.service';
+import { Playlist } from '../../../core/interfaces/playlist';
 
 @Component({
   selector: 'app-asset-list',
-  imports: [ PrimengUiModule, ComponentsModule, AssetListItemComponent, PreviewContentComponent ],
+  imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss',
   providers: [ ConfirmationService, MessageService ]
@@ -26,13 +26,14 @@ export class AssetListComponent {
       items: [
         { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => this.onClickPreview(this.selectedAsset()) },
         { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate(this.selectedAsset(), $event) },
-        { label: 'Add to Playlist', icon: 'pi pi-users', command: ($event: any) => this.onClickAddToPlaylist(this.selectedAsset(), $event) },
+        { label: 'Add to Playlist', icon: 'pi pi-list', command: ($event: any) => this.onClickAddToPlaylist(this.selectedAsset(), $event) },
         { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete(this.selectedAsset(), $event) }
       ]
     }
   ];
 
   assetService = inject(AssetsService);
+  playlistService = inject(PlaylistService);
   utils = inject(UtilityService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
@@ -40,6 +41,7 @@ export class AssetListComponent {
 
   assetViewModeSignal = signal<string>('Grid');
   isShowPreview = signal<boolean>(false);
+  isShowAddToPlaylist = signal<boolean>(false);
 
   assetViewModeCtrl: FormControl = new FormControl('Grid');
   
@@ -49,6 +51,8 @@ export class AssetListComponent {
   
   rows: number = 8;
   totalRecords: number = 0;
+
+  selectedPlaylist = signal<Playlist[]>([]);
 
   constructor() {
     this.assetViewModeCtrl.valueChanges.subscribe(value => this.assetViewModeSignal.set(value));
@@ -86,7 +90,8 @@ export class AssetListComponent {
         acceptButtonProps: {
           label: 'Save',
         },
-        accept: async () => {        
+        accept: async () => {     
+          this.assetForm.reset();   
           await this.assetService.onDropFile(files);
           this.message.add({ severity:'success', summary: 'Success', detail: `${files.length} file(s) uploaded successfully!` });  
         },
@@ -103,6 +108,7 @@ export class AssetListComponent {
   }
 
   onClickAddNew() {
+    this.assetForm.reset();
     this.isEditMode.set(false);
     this.router.navigate([ '/assets/asset-details' ]);
   }
@@ -114,13 +120,23 @@ export class AssetListComponent {
   }
 
   onClickDuplicate(item: any, event: Event) {
+    this.assetService.onDuplicateAssets(item);
     this.message.add({ severity:'success', summary: 'Success', detail: 'Asset duplicated successfully!' });
     this.selectedAsset.set(null);
   }
 
   onClickAddToPlaylist(item: any, event: Event) {
+    this.playlistService.onGetPlaylists();
+    this.isShowAddToPlaylist.set(true);
+    this.assetForm.patchValue(item);
+  }
+
+  onClickSaveToPlaylist(event: Event) {    
+    this.playlistService.onSaveAssetToPlaylist(this.assetForm.value, this.selectedPlaylist());
     this.message.add({ severity:'success', summary: 'Success', detail: 'Asset added to playlist successfully!' });
-    this.selectedAsset.set(null);
+    this.isShowAddToPlaylist.set(false);
+    this.selectedPlaylist.set([]);
+    this.assetForm.reset();
   }
 
   onClickDelete(item: any, event: Event) {
@@ -161,23 +177,10 @@ export class AssetListComponent {
     menu.toggle(event);
   }
 
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
-  get isTablet() {
-    return this.utils.isTablet();
-  }
-
-  get isEditMode() {
-    return this.assetService.isEditMode;
-  }
-
-  get selectedAsset() {
-    return this.assetService.selectedAsset;
-  }
-
-  get assetViewModes() {
-    return this.assetService.assetViewModes;
-  }
+  get isMobile() { return this.utils.isMobile(); }
+  get isTablet() { return this.utils.isTablet(); }
+  get isEditMode() { return this.assetService.isEditMode; }
+  get selectedAsset() { return this.assetService.selectedAsset; }
+  get assetViewModes() { return this.assetService.assetViewModes; }
+  get assetForm() { return this.assetService.assetForm; }
 }

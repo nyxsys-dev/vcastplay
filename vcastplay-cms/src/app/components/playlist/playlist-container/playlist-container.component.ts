@@ -1,8 +1,6 @@
 import { Component, computed, inject, Input, signal, } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { PlaylistService } from '../../../core/services/playlist.service';
-import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { CommonModule } from '@angular/common';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AssetsService } from '../../../core/services/assets.service';
 import { Assets } from '../../../core/interfaces/assets';
@@ -12,7 +10,7 @@ import { PlaylistItemContentComponent } from '../playlist-item-content/playlist-
 
 @Component({
   selector: 'app-playlist-container',
-  imports: [ PrimengUiModule, CommonModule, ComponentsModule, PlaylistItemContentComponent ],
+  imports: [ PrimengUiModule, PlaylistItemContentComponent ],
   templateUrl: './playlist-container.component.html',
   styleUrl: './playlist-container.component.scss'
 })

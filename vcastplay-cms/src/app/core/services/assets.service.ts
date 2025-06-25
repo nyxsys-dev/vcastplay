@@ -1,6 +1,7 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { AssestInfo, Assets, AssetType } from '../interfaces/assets';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
@@ -77,263 +78,47 @@ export class AssetsService {
   onLoadAssets() {
     /** Get API */
     // this.loadingSignal.set(true);
-    // this.assetSignal.set([
-    // {
-    //   id: 1,
-    //   code: "VID001",
-    //   name: "Intro Video",
-    //   type: "video",
-    //   link: "assets/vcastplay-filler.mp4",
-    //   file: "intro.mp4",
-    //   category: "Media",
-    //   subCategory: "Promotional",
-    //   fileDetails: {
-    //     orientation: "landscape",
-    //     resolution: "1920x1080",
-    //     size: "15MB",
-    //     type: "mp4"
-    //   },
-    //   audienceTag: "General",
-    //   availability: "public",
-    //   dateRange: {
-    //     start: "2025-06-01",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["08:00", "12:00", "16:00"],
-    //   duration: 10
-    // },
-    // {
-    //   id: 2,
-    //   code: "AUD001",
-    //   name: "Background Music",
-    //   type: "audio",
-    //   link: "/assets/audio/background.mp3",
-    //   file: "background.mp3",
-    //   category: "Sound",
-    //   subCategory: "Music",
-    //   fileDetails: {
-    //     orientation: "n/a",
-    //     resolution: "n/a",
-    //     size: "3MB",
-    //     type: "mp3"
-    //   },
-    //   availability: "public",
-    //   dateRange: {
-    //     start: "2025-06-01",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["00:00", "23:59"],
-    //   duration: 5
-    // },
-    // {
-    //   id: 3,
-    //   code: "IMG001",
-    //   name: "Title Slide",
-    //   type: "image",
-    //   link: "/assets/vcastplay-image-filler.png",
-    //   file: "title.png",
-    //   category: "Graphics",
-    //   subCategory: "Slide",
-    //   fileDetails: {
-    //     orientation: "landscape",
-    //     resolution: "1280x720",
-    //     size: "2MB",
-    //     type: "png"
-    //   },
-    //   availability: "private",
-    //   dateRange: {
-    //     start: "2025-07-01",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["09:00", "17:00"],
-    //   duration: 10
-    // },
-    // {
-    //   id: 4,
-    //   code: "AUD002",
-    //   name: "Voice Over",
-    //   type: "audio",
-    //   link: "/assets/audio/voice.mp3",
-    //   file: "voice.mp3",
-    //   category: "Sound",
-    //   subCategory: "Narration",
-    //   fileDetails: {
-    //     orientation: "n/a",
-    //     resolution: "n/a",
-    //     size: "5MB",
-    //     type: "mp3"
-    //   },
-    //   availability: "public",
-    //   dateRange: {
-    //     start: "2025-06-15",
-    //     end: "2025-10-01"
-    //   },
-    //   hours: ["10:00", "14:00"],
-    //   duration: 5
-    // },
-    // {
-    //   id: 5,
-    //   code: "VID002",
-    //   name: "Main Scene",
-    //   type: "video",
-    //   link: "https://www.w3schools.com/tags/mov_bbb.mp4",
-    //   file: "main.mp4",
-    //   category: "Media",
-    //   subCategory: "Content",
-    //   fileDetails: {
-    //     orientation: "landscape",
-    //     resolution: "1920x1080",
-    //     size: "50MB",
-    //     type: "mp4"
-    //   },
-    //   audienceTag: "Teens",
-    //   availability: "private",
-    //   dateRange: {
-    //     start: "2025-08-01",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["13:00", "15:00", "18:00"],
-    //   duration: 10
-    // },
-    // {
-    //   id: 6,
-    //   code: "IMG002",
-    //   name: "End Card",
-    //   type: "image",
-    //   link: "assets/vcastplay-image-filler.png",
-    //   file: "endcard.jpg",
-    //   category: "Graphics",
-    //   subCategory: "Outro",
-    //   fileDetails: {
-    //     orientation: "portrait",
-    //     resolution: "1080x1920",
-    //     size: "1MB",
-    //     type: "jpg"
-    //   },
-    //   availability: "public",
-    //   dateRange: {
-    //     start: "2025-06-10",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["07:00", "21:00"],
-    //   duration: 5
-    // },
-    // {
-    //   id: 7,
-    //   code: "AUD003",
-    //   name: "Ding Sound",
-    //   type: "audio",
-    //   link: "/assets/audio/ding.mp3",
-    //   file: "ding.mp3",
-    //   category: "Sound",
-    //   subCategory: "Effect",
-    //   fileDetails: {
-    //     orientation: "n/a",
-    //     resolution: "n/a",
-    //     size: "0.5MB",
-    //     type: "mp3"
-    //   },
-    //   availability: "public",
-    //   dateRange: {
-    //     start: "2025-06-01",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["00:00", "23:59"],
-    //   duration: 3
-    // },
-    // {
-    //   id: 8,
-    //   code: "VID003",
-    //   name: "Transition Clip",
-    //   type: "video",
-    //   link: "assets/vcastplay-filler.mp4",
-    //   file: "transition.mp4",
-    //   category: "Media",
-    //   subCategory: "Effect",
-    //   fileDetails: {
-    //     orientation: "landscape",
-    //     resolution: "1280x720",
-    //     size: "8MB",
-    //     type: "mp4"
-    //   },
-    //   availability: "private",
-    //   dateRange: {
-    //     start: "2025-06-05",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["12:00", "14:00"],
-    //   duration: 10
-    // },
-    // {
-    //   id: 9,
-    //   code: "TXT001",
-    //   name: "Lower Third Text",
-    //   type: "text",
-    //   link: "assets/text/lower-third.json",
-    //   file: "lower-third.json",
-    //   category: "Text",
-    //   subCategory: "Overlay",
-    //   fileDetails: {
-    //     orientation: "n/a",
-    //     resolution: "n/a",
-    //     size: "0.1MB",
-    //     type: "json"
-    //   },
-    //   availability: "public",
-    //   dateRange: {
-    //     start: "2025-06-01",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["08:00", "18:00"],
-    //   duration: 5
-    // },
-    // {
-    //   id: 10,
-    //   code: "TXT002",
-    //   name: "Subtitles",
-    //   type: "text",
-    //   link: "assets/text/subtitles.vtt",
-    //   file: "subtitles.vtt",
-    //   category: "Text",
-    //   subCategory: "Caption",
-    //   fileDetails: {
-    //     orientation: "n/a",
-    //     resolution: "n/a",
-    //     size: "0.2MB",
-    //     type: "vtt"
-    //   },
-    //   availability: "public",
-    //   dateRange: {
-    //     start: "2025-06-01",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["00:00", "23:59"],
-    //   duration: 5
-    // },
-    // {
-    //   id: 11,
-    //   code: "WEB002",
-    //   name: "Web Page",
-    //   type: "web",
-    //   link: "https://pub.movingwalls.com/sdk/IconicLCGC.html",
-    //   file: "n/a",
-    //   category: "Category 1",
-    //   subCategory: "Sub Category 1",
-    //   fileDetails: {
-    //     orientation: "n/a",
-    //     resolution: "n/a",
-    //     size: "n/a",
-    //     type: "n/a"
-    //   },
-    //   availability: "public",
-    //   dateRange: {
-    //     start: "2025-06-01",
-    //     end: "2025-12-31"
-    //   },
-    //   hours: ["00:00", "23:59"],
-    //   duration: 15
-    // }
-    // ]);
+    this.assetSignal.set([
+      {
+        id: 1,
+        code: 'NYX001',
+        name: 'image (2).png',
+        type: 'image',
+        link: 'https://picsum.photos/id/237/200/300',
+        category: 'Category 1',
+        subCategory: 'Sub-Category 1',
+        fileDetails: {
+          name: 'image (2).png',
+          size: 55782,
+          type: 'image/png',
+          orientation: 'landscape',
+          resolution: {
+            width: 326,
+            height: 195
+          },
+          thumbnail: 'https://picsum.photos/id/237/200/300'
+        },
+        dateRange: {
+          start: null,
+          end: null
+        },
+        weekdays: [],
+        hours: [],
+        duration: 5,
+        audienceTag: {
+          genders: [ 'Male' ],
+          ageGroups: [],
+          timeOfDays: [],
+          seasonalities: [],
+          locations: [],
+          pointOfInterests: [],
+          tags: []
+        },
+        status: 'Pending',
+        createdOn: new Date(),
+        updatedOn: new Date(),
+      }
+    ]);
     // this.loadingSignal.set(false);
   }
 
@@ -349,7 +134,8 @@ export class AssetsService {
 
   async onDropFile(files: any) {
     if (files) {
-      for (const file of files) {
+      const tempData = files;
+      for (const file of tempData) {
         const result = await this.processFile(file);
         if (result) {
           this.assetForm.patchValue(result);
@@ -375,6 +161,13 @@ export class AssetsService {
     const tempAssets = this.assets().filter(u => u.id !== assets.id);
     this.assetSignal.set([...tempAssets]);
     /**Call DELETE user API */
+  }
+
+  onDuplicateAssets(assets: Assets) {
+    const tempData = this.assets();
+    tempData.push({ ...assets, id: tempData.length + 1, name: `Copy of ${assets.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
+    this.assetSignal.set([...tempData]);
+    /**CALL POST API */
   }
 
   dateRangeValidator(): ValidatorFn {

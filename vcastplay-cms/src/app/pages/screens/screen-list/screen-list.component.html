@@ -5,7 +5,7 @@
         <p-card styleClass="h-full">
             <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
                 <app-filters class="w-full md:w-[25rem]"></app-filters>
-                <div class="flex gap-4">
+                <div class="flex gap-2">
                     <p-button (onClick)="onClickAddNew()" label="Register" icon="pi pi-plus"></p-button>
                     <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
                     <p-button [label]="!isMobile ? 'Download' : ''" variant="outlined" icon="pi pi-download" [text]="isMobile" />

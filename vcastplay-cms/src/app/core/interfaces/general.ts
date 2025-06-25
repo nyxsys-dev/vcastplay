@@ -4,8 +4,8 @@ export interface SelectOption {
 }
 
 export interface AudienceTag {
-    gender: string[];
-    ageGroup: string[];
+    genders: string[];
+    ageGroups: string[];
     timeOfDays: string[];
     seasonalities: string[];
     locations: string[];

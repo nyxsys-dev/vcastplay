@@ -3,13 +3,27 @@
 
     <p-card styleClass="h-full" class="flex-1">
         <ng-template #title>
-            <div class="flex items-center gap-4">
-                <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
-                <p class="text-xl font-semibold">Assets Details</p>
+            <div class="flex gap-2">
+                <div class="flex items-center gap-4">
+                    <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+                    <p class="text-xl font-semibold">Assets Details</p>
+                </div>
+                
+                <div class="flex ml-auto gap-2">
+                    @if (isEditMode()) {
+                        <p-button class="hidden md:block" (onClick)="onClickDelete(assetForm.value, $event)" label="Delete" 
+                            icon="pi pi-trash" severity="danger" size="small" text />
+                        <p-button class="block md:hidden" (onClick)="onClickDelete(assetForm.value, $event)" 
+                            icon="pi pi-trash" severity="danger" size="small" pTooltip="Delete" tooltipPosition="bottom" text />
+                    }
+                    <p-button class="hidden md:block" (onClick)="onClickSave($event)" label="Save" size="small" icon="pi pi-save" />
+                    <p-button class="block md:hidden" (onClick)="onClickSave($event)" 
+                        size="small" icon="pi pi-save" pTooltip="Save" tooltipPosition="bottom" />
+                </div>
             </div>
         </ng-template>
 
-        <div class="flex flex-col gap-2 py-3 h-200 md:h-full" [formGroup]="assetForm">
+        <div class="flex flex-col gap-2 pt-4 h-200 md:h-full" [formGroup]="assetForm">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
                 <div class="col-span-1 md:col-span-2">
                     <p-floatlabel variant="on">
@@ -117,17 +131,6 @@
             </div>
 
         </div>
-        <ng-template #footer>
-            <div class="flex justify-between w-full gap-2">
-                @if (isEditMode()) {
-                    <p-button (onClick)="onClickDelete(assetForm.value, $event)" label="Delete" icon="pi pi-trash" severity="danger" text />
-                }
-                <div class="flex ms-auto gap-2">
-                    <p-button (onClick)="onClickCancel()" label="Cancel" text />
-                    <p-button (onClick)="onClickSave($event)" label="Save" />
-                </div>
-            </div>
-        </ng-template>
     </p-card>
 </div>
 

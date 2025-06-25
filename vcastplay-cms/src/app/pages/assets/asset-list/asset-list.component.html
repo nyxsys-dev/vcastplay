@@ -30,7 +30,7 @@
             'flex flex-col gap-2': assetViewModeSignal() == 'List'
         }">
             @for (item of filteredAssets(); track $index) {
-                <app-asset-list-item [asset]="item" [disableDrag]="true" />
+                <app-asset-list-item [asset]="item" [disableDrag]="true" [showOptions]="true" [actionBtn]="actionBtn" />
             }
             <div class="flex items-center justify-center border-dashed border-2 border-gray-400 p-5 
                 rounded-lg cursor-pointer hover:bg-gray-100" (click)="onClickAddNew()">
@@ -128,6 +128,19 @@
         <app-preview-content class="absolute h-full w-full flex items-center justify-center"
             [currentContent]="selectedAsset()" [showControls]="true" [autoPlay]="true" />
     </div>
+</p-dialog>
+
+<p-dialog header="Add to playlist" [(visible)]="isShowAddToPlaylist" [style]="{ width: '42rem', height: '520px' }" modal>
+    <app-add-to-playlist [assetForm]="assetForm" (selectedPlaylistsChange)="selectedPlaylist.set($event)" />
+    <ng-template #footer>
+        <div class="flex items-center w-full">
+            <p class="text-sm text-red-500 italic">{{ selectedPlaylist().length }} playlist(s) selected</p>
+            <div class="flex gap-2 ml-auto">
+                <p-button label="Close" severity="secondary" (onClick)="isShowAddToPlaylist.set(false)" />
+                <p-button label="Save" (onClick)="onClickSaveToPlaylist($event)" [disabled]="selectedPlaylist().length == 0" />
+            </div>
+        </div>
+    </ng-template>
 </p-dialog>
 
 <ng-template #actionBtn let-item>

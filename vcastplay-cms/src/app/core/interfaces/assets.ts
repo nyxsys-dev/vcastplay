@@ -10,8 +10,8 @@ export interface Assets {
     subCategory: string;
     fileDetails: AssestInfo;
     dateRange: { 
-        start: Date;
-        end: Date;
+        start: Date | null;
+        end: Date | null;
     };
     hours: string[];
     weekdays: string[];

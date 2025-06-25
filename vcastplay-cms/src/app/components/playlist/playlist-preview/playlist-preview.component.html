@@ -1,0 +1,21 @@
+<div class="flex h-80 md:h-full w-full justify-center items-center">
+    <div class="relative transition-all duration-{{currentTransition?.speed}} ease-in-out" [ngClass]="getTransitionClasses()">
+        <ng-container *ngIf="currentContent">
+            <app-preview-content class="absolute h-full w-full flex items-center justify-center" 
+                [currentContent]="currentContent" [isPlaying]="isPlaying()" (timeUpdate)="onTimeUpdate($event)" [autoPlay]="true" />
+        </ng-container>
+    </div>
+</div>
+<div class="absolute bottom-0 z-50 flex opacity-0 translate-y-2 transition-all duration-300 
+    group-hover:opacity-100 group-hover:translate-y-0 w-full bg-[var(--p-surface-300)]">
+
+    <div class="w-full flex flex-col justify-center gap-2 p-1">
+        <div class="flex gap-2">
+            <p-button [icon]="isPlaying() ? 'pi pi-stop-circle' : 'pi pi-play'" [label]="isPlaying() ? 'Stop' : 'Play'" 
+                (onClick)="onClickPlayPreview()" size="small" text />
+        </div>
+        <ng-container *ngIf="currentContent">
+            <p-progressbar [value]="playlistService.progress()" [showValue]="false"></p-progressbar>
+        </ng-container>
+    </div>
+</div>

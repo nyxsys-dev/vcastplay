@@ -57,6 +57,8 @@ import { ChipModule } from 'primeng/chip';
 import { ImageModule } from 'primeng/image';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { StepperModule } from 'primeng/stepper';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -127,6 +129,8 @@ const PRIMEUI_MODULES = [
   ImageModule,
   MultiSelectModule,
   StepperModule,
+  IconFieldModule,
+  InputIconModule,
 ];
 
 @NgModule({

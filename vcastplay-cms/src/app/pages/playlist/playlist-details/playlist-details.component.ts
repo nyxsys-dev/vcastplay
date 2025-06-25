@@ -1,21 +1,18 @@
-import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
-import { PlaylistContainerComponent } from '../../../components/playlist/playlist-container/playlist-container.component';
+import { Component, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { AssetsService } from '../../../core/services/assets.service';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
+import { Assets } from '../../../core/interfaces/assets';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import moment from 'moment';
-import { PlaylistSelectContentsComponent } from '../../../components/playlist/playlist-select-contents/playlist-select-contents.component';
-import { Assets } from '../../../core/interfaces/assets';
-import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-item.component';
 
 @Component({
   selector: 'app-playlist-details',
-  imports: [ PrimengUiModule, ComponentsModule, PlaylistContainerComponent, PlaylistSelectContentsComponent, AssetListItemComponent ],
+  imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './playlist-details.component.html',
   styleUrl: './playlist-details.component.scss',
   providers: [ MessageService, ConfirmationService ]
@@ -24,7 +21,7 @@ export class PlaylistDetailsComponent {
   
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
   
-  pageInfo: MenuItem = [ {label: 'Playlist'}, {label: 'Playlist Library', routerLink: '/playlist/playlist-library'}, {label: 'New Playlist'} ];
+  pageInfo: MenuItem = [ {label: 'Playlist'}, {label: 'Playlist Library', routerLink: '/playlist/playlist-library'}, {label: 'Playlist Details'} ];
 
   utils = inject(UtilityService);
   assetService = inject(AssetsService);
@@ -64,6 +61,7 @@ export class PlaylistDetailsComponent {
   ngOnDestroy() {
     this.playListForm.reset();
     this.isEditMode.set(false);
+    this.playlistService.onStopPreview();
   }
 
   onClickPlayPreview() {
@@ -89,36 +87,29 @@ export class PlaylistDetailsComponent {
     this.message.add({ severity:'success', summary: 'Success', detail: `Added ${contents.length} contents to playlist` });
   }
 
-  onClickSave(event: Event) {
+  async onClickSave(event: Event) {
     if (this.playListForm.invalid) {
       this.playListForm.markAllAsTouched();
       this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
       return;
     }
 
-    this.confirmation.confirm({
+    const confirmed = this.confirmation.confirm({
       target: event.target as EventTarget,
       message: 'Do you want to save changes?',
-      closable: true,
-      closeOnEscape: true,
       header: 'Confirm Save',
       icon: 'pi pi-question-circle',
-      rejectButtonProps: {
-        label: 'Cancel',
-        severity: 'secondary',
-        outlined: true,
-      },
-      acceptButtonProps: {
-        label: 'Save',
-      },
-      accept: () => {
-        this.playlistService.onSavePlaylist(this.playListForm.value);
-        this.message.add({ severity:'success', summary: 'Success', detail: 'Playlist saved successfully!' });
-        this.playListForm.reset();
-        this.isEditMode.set(false);
-        this.router.navigate([ '/playlist/playlist-library' ]);
-      },
-    })    
+      acceptButtonProps: { label: 'Save' },
+      rejectButtonProps: { label: 'Cancel', severity: 'secondary', outlined: true },
+    });
+
+    if (confirmed) {      
+      this.playlistService.onSavePlaylist(this.playListForm.value);
+      this.message.add({ severity: 'success', summary: 'Success', detail: 'Playlist saved successfully!' });
+      this.playListForm.reset();
+      this.isEditMode.set(false);
+      await this.router.navigate([ '/playlist/playlist-library' ]);
+    }
   }
   
   onClickCancel() {
@@ -131,24 +122,8 @@ export class PlaylistDetailsComponent {
     this.playlistService.onStopPreview();
   }
 
-  onTimeUpdate(event: any) {    
-    const { currentTime, duration } = event;
-    this.playlistService.onUpdateProgress(currentTime, duration);
-  }
-
   formControl(fieldName: string) {
     return this.utils.getFormControl(this.playListForm, fieldName);
-  }
-
-  getTransitionClasses() {
-    const { type } = this.currentTransition ?? '';
-    const fadeIn = this.playlistService.fadeIn();    
-    return {
-      'transition-all duration-500 ease-in-out': true,
-      'w-full h-full flex justify-center items-center': true,
-      [`${type?.opacity ? 'opacity-0' : ''} ${type?.x ?? ''}`]: !fadeIn,
-      [`${type?.opacity ? 'opacity-100' : ''} ${type?.y ?? ''}`]: fadeIn
-    };
   }
 
   get currentContent() { return this.playlistService.currentContent(); }
@@ -163,4 +138,5 @@ export class PlaylistDetailsComponent {
   get assetViewModeSignal() { return this.assetService.assetViewModeSignal; }
   get activeStep() { return this.playlistService.activeStep; }
   get isEditMode() { return this.playlistService.isEditMode; }
+  get onTimeUpdate() { return this.playlistService.onTimeUpdate; }
 }

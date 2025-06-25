@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
-import { ComponentsModule } from '../../core/modules/components/components.module';
 import { Assets } from '../../core/interfaces/assets';
 
 @Component({
   selector: 'app-preview-content',
-  imports: [ SafeurlPipe, ComponentsModule ],
+  imports: [ SafeurlPipe ],
   templateUrl: './preview-content.component.html',
   styleUrl: './preview-content.component.scss'
 })

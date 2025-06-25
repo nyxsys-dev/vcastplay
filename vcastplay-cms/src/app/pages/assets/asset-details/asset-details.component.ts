@@ -1,16 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { AssetScheduleComponent } from '../asset-schedule/asset-schedule.component';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { UtilityService } from '../../../core/services/utility.service';
 import { AssetsService } from '../../../core/services/assets.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
 
 @Component({
   selector: 'app-asset-details',
-  imports: [ PrimengUiModule, ComponentsModule, AssetScheduleComponent, AudienceTagFiltersComponent ],
+  imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.scss',
   providers: [ ConfirmationService, MessageService ]
@@ -66,6 +64,10 @@ export class AssetDetailsComponent {
   
   ngOnInit() { }
 
+  ngOnDestroy() {
+    this.onClickCancel();
+  }
+
   onChangeType(event: any) {
     const type = event.value;
     if (['web', 'widget'].includes(type)) {
@@ -113,7 +115,7 @@ export class AssetDetailsComponent {
     
   }
 
-  onClickSave(event: Event) {    
+  async onClickSave(event: Event) {
     if (this.assetForm.invalid) {
       this.assetForm.markAllAsTouched();
       this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
@@ -135,15 +137,15 @@ export class AssetDetailsComponent {
       acceptButtonProps: {
         label: 'Save',
       },
-      accept: () => {        
+      accept: () => {
         this.assetService.onSaveAssets(this.assetForm.value);
-        this.message.add({ severity:'success', summary: 'Success', detail: 'Assets upload successfully!' });
         this.selectedAsset.set(null);
         this.assetForm.reset();
         this.isEditMode.set(false);
-        this.router.navigate([ '/assets/asset-library' ]);
+        // this.router.navigate(['/assets/asset-library']);
+        this.message.add({ severity: 'success', summary: 'Success', detail: 'Assets upload successfully!' });
       },
-    })
+    });
   }
 
   onClickDelete(item: any, event: Event) {
@@ -177,6 +179,7 @@ export class AssetDetailsComponent {
   onClickCancel() {
     this.selectedAsset.set(null);
     this.assetForm.reset();
+    this.isEditMode.set(false);
     this.router.navigate([ '/assets/asset-library' ]);
   }
 

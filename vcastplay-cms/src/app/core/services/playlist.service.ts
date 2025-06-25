@@ -12,6 +12,10 @@ export class PlaylistService {
   playlists = computed(() => this.playlistSignal());
   selectedPlaylist = signal<Playlist | null>(null);
 
+  first = signal<number>(0);
+  rows = signal<number>(8);
+  totalRecords = signal<number>(0);
+
   loadingSignal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
 
@@ -131,6 +135,12 @@ export class PlaylistService {
     clearInterval(this.intervalId);
     clearTimeout(this.gapTimeout);
   }
+  
+  
+  onTimeUpdate(event: any) {    
+    const { currentTime, duration } = event;
+    this.onUpdateProgress(currentTime, duration);
+  }
 
   onTriggerInterval(duration: number) {
     let startTime = Date.now();
@@ -159,8 +169,83 @@ export class PlaylistService {
       hours
     });
   }
+  
+  
+  getTransitionClasses() {
+    const { type } = this.currentTransition() ?? '';
+    const fadeIn = this.fadeIn();    
+    return {
+      'transition-all duration-500 ease-in-out': true,
+      'w-full h-full flex justify-center items-center': true,
+      [`${type?.opacity ? 'opacity-0' : ''} ${type?.x ?? ''}`]: !fadeIn,
+      [`${type?.opacity ? 'opacity-100' : ''} ${type?.y ?? ''}`]: fadeIn
+    };
+  }
+  
+  onPageChange(event: any) {
+    this.first.set(event.first);
+    this.rows.set(event.rows);
+  }
 
   onLoadPlaylist() {
+    this.playlistSignal.set([
+      {
+        id: 1,
+        name: 'New Playlist',
+        description: 'This is a sample description of a new playlist',
+        transition: {
+          hasGap: false,
+          type: '',
+          speed: 5
+        },
+        contents: [
+          {
+            id: 1,
+            code: 'NYX001',
+            name: 'image (2).png',
+            type: 'image',
+            link: 'https://picsum.photos/id/237/200/300',
+            category: 'Category 1',
+            subCategory: 'Sub-Category 1',
+            fileDetails: {
+              name: 'image (2).png',
+              size: 55782,
+              type: 'image/png',
+              orientation: 'landscape',
+              resolution: {
+                width: 326,
+                height: 195
+              },
+              thumbnail: 'https://picsum.photos/id/237/200/300'
+            },
+            dateRange: {
+              start: null,
+              end: null
+            },
+            weekdays: [],
+            hours: [],
+            duration: 5,
+            audienceTag: {
+              genders: [ 'Male' ],
+              ageGroups: [],
+              timeOfDays: [],
+              seasonalities: [],
+              locations: [],
+              pointOfInterests: [],
+              tags: []
+            },
+            status: 'Pending',
+            createdOn: new Date(),
+            updatedOn: new Date()
+          }
+        ],
+        status: 'Pending',
+        loop: false,
+        createdOn: new Date(),
+        updatedOn: new Date()
+      }
+    ])
+    this.totalRecords.set(this.playlists().length);
     /**CALL GET API */
   }
 
@@ -174,21 +259,36 @@ export class PlaylistService {
     this.onLoadPlaylist(); 
   }
 
+  onSaveAssetToPlaylist(asset: Assets, playlist: Playlist[]) {
+    playlist.forEach(item => {
+      const tempData = item.contents;
+      const assetItem = item.contents.find(item => item.id === asset.id);
+      if (!assetItem) {
+        item.contents = [...tempData, asset];
+        this.onSavePlaylist(item);
+      };
+    })    
+  }
+
   onSavePlaylist(playlist: Playlist) {
     const tempData = this.playlists();
     const { id, status, ...info } = playlist;
     const index = tempData.findIndex(item => item.id === playlist.id);
 
-    if (index !== -1) tempData[index] = playlist;
+    if (index !== -1) tempData[index] = { ...playlist, updatedOn: new Date() };
     else tempData.push({ id: tempData.length + 1, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    
+    this.playlistSignal.set([...tempData]); 
 
-    this.playlistSignal.set([...tempData]);
+    this.totalRecords.set(this.playlists().length);
     /**CALL POST API */
   }
 
   onDeletePlaylist(playlist: Playlist) {
     const tempData = this.playlists().filter(item => item.id !== playlist.id);
     this.playlistSignal.set([...tempData]);
+    
+    this.totalRecords.set(this.playlists().length);
     /**CALL DELETE API */
   }
 
@@ -196,6 +296,8 @@ export class PlaylistService {
     const tempData = this.playlists();
     tempData.push({ ...playlist, id: tempData.length + 1, name: `Copy of ${playlist.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
     this.playlistSignal.set([...tempData]);
+    
+    this.totalRecords.set(this.playlists().length);
     /**CALL POST API */
   }
 

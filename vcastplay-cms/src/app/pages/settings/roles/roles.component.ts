@@ -4,14 +4,11 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Roles } from '../../../core/interfaces/account-settings';
 import { UtilityService } from '../../../core/services/utility.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { RoleService } from '../../../core/services/role.service';
-import { RoleListItemComponent } from '../../../components/roles/role-list-item/role-list-item.component';
-import { RoleDetailsComponent } from '../../../components/roles/role-details/role-details.component';
 
 @Component({
   selector: 'app-roles',
-  imports: [ PrimengUiModule, ComponentsModule, RoleListItemComponent, RoleDetailsComponent ],
+  imports: [ PrimengUiModule, ComponentsModule,  ],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss',
   providers: [ ConfirmationService, MessageService ],
