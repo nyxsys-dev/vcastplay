@@ -59,12 +59,15 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { StepperModule } from 'primeng/stepper';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { SliderModule } from 'primeng/slider';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxEchartsModule } from 'ngx-echarts';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
+
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 const PRIMEUI_MODULES = [
   CommonModule,
@@ -131,6 +134,8 @@ const PRIMEUI_MODULES = [
   StepperModule,
   IconFieldModule,
   InputIconModule,
+  SliderModule,
+  FullCalendarModule,
 ];
 
 @NgModule({

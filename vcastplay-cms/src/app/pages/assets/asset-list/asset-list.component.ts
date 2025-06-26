@@ -125,12 +125,22 @@ export class AssetListComponent {
     this.assetForm.patchValue(item);
   }
 
+  onClickAddMultipleToPlaylist(event: Event) {
+    this.playlistService.onGetPlaylists();
+    this.isShowAddToPlaylist.set(true);
+  }
+
   onClickSaveToPlaylist(event: Event) {    
     this.playlistService.onSaveAssetToPlaylist(this.assetForm.value, this.selectedArrPlaylist());
     this.message.add({ severity:'success', summary: 'Success', detail: 'Asset added to playlist successfully!' });
     this.isShowAddToPlaylist.set(false);
     this.selectedArrPlaylist.set([]);
     this.assetForm.reset();
+  }
+
+  onClickCancelSaveToPlaylist() {
+    this.isShowAddToPlaylist.set(false);
+    this.selectedArrPlaylist.set([]);
   }
 
   onClickDelete(item: any, event: Event) {
@@ -181,4 +191,5 @@ export class AssetListComponent {
   get rows() { return this.assetService.rows; }
   get totalRecords() { return this.assetService.totalRecords; }
   get selectedArrPlaylist() { return this.playlistService.selectedArrPlaylist; }
+  get selectedArrAssets() { return this.assetService.selectedArrAssets; }
 }

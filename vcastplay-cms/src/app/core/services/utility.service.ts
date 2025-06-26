@@ -21,9 +21,9 @@ export class UtilityService {
     { label: 'Assets', icon: 'pi pi-image', routerLink: '/assets/asset-library' },
     { label: 'Playlist', icon: 'pi pi-list', routerLink: '/playlist/playlist-library' },
     { label: 'Layout', icon: 'pi pi-th-large', routerLink: '/dashboard' },
-    { label: 'Schedules', icon: 'pi pi-calendar', routerLink: '/schedule-list' },
+    { label: 'Schedules', icon: 'pi pi-calendar', routerLink: '/schedule/schedule-library' },
     { label: 'Screen Mangement', icon: 'pi pi-cloud', routerLink: '/screens/screen-management' },
-    { label: 'Reports', icon: 'pi pi-chart-bar', routerLink: '/dashboard' },
+    { label: 'Reports', icon: 'pi pi-chart-bar', routerLink: '/reports' },
     {
       label: 'Settings',
       icon: 'pi pi-cog',
@@ -107,6 +107,17 @@ export class UtilityService {
       code += characters.charAt(randomIndex);
     }
     return code;
+  }
+
+  generateTimeOptions(): string[] {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 15) {
+        const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        times.push(time);
+      }
+    }
+    return times;
   }
 
   constructor(private config: PrimeNG) { }

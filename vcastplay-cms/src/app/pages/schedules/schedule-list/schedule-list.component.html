@@ -1,0 +1,67 @@
+<div class="flex flex-col h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+    <p-card styleClass="h-full" class="flex-1">
+        <ng-template #title>
+            <div class="flex gap-4 items-center mb-2">
+                <app-filters class="w-full md:w-[25rem]" />
+                <div class="flex gap-4 ml-auto">
+                    <p-button class="hidden md:block" (onClick)="onClickAddNew()" label="Add Schedule" icon="pi pi-plus"></p-button>
+                    <p-button class="md:hidden" (onClick)="onClickAddNew()" label="" icon="pi pi-plus" />
+                </div>
+            </div>
+        </ng-template>
+        
+        <div class="flex-1">
+            <p-table
+                class="hidden lg:block" 
+                [value]="scheduleServices.loadingSignal() ? utils.tableSkeletonRows : schedules()" 
+                selectionMode="single"
+                [scrollable]="true" 
+                [rows]="rows()"
+                [first]="first()"
+                scrollHeight="flex-1"
+                size="small"
+                (onPage)="scheduleServices.onPageChange($event)"
+                stripedRows
+                paginator
+            >
+                <ng-template #header>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Last Update</th>
+                        <th>Status</th>
+                        <th>
+                            <div class="text-center">Actions</div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                    <tr class="text-sm">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.description }}</td>
+                        <td><p class="text-sm">{{ item.updatedOn | date: 'medium' }}</p></td>
+                        <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" [icon]="'pi ' + utils.getIcon(item.status)"></p-tag></td>
+                        <td>
+                            <div class="flex flex-row justify-center gap-2">
+                                <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </p-card>
+</div>
+
+<ng-template #actionBtn let-item>
+    <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" severity="success" size="small" />
+</ng-template>
+
+<p-dialog header="Add Schedule" [(visible)]="showAddSchedule" [style]="{ width: '42rem' }" modal>
+    Inputs
+    <ng-template #footer>
+        <p-button label="Cancel" severity="secondary" (onClick)="onClickCancel()" />
+        <p-button label="Save" (onClick)="onClickSave($event)" />
+    </ng-template>
+</p-dialog>

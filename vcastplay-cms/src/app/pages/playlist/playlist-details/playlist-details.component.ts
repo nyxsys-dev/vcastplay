@@ -103,7 +103,7 @@ export class PlaylistDetailsComponent {
       rejectButtonProps: { label: 'Cancel', severity: 'secondary', outlined: true },
       accept: () => {
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Playlist saved successfully!' });
-        this.playlistService.onSavePlaylist(this.playListForm.value);
+        this.playlistService.onSavePlaylist({ ...this.playListForm.value, duration: this.totalDuration() });
         this.playListForm.reset();
         this.isEditMode.set(false);
         this.router.navigate([ '/playlist/playlist-library' ]);

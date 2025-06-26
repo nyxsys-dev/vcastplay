@@ -13,6 +13,7 @@ export interface Playlist {
     contents: Assets[];
     loop: boolean;
     status: string;
+    duration?: number;
     approvedInfo?: {
         approvedBy: string;
         approvedOn: Date;

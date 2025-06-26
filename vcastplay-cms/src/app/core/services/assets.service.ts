@@ -12,6 +12,7 @@ export class AssetsService {
   assets = computed(() => this.assetSignal());
 
   selectedAsset = signal<Assets | null>(null);
+  selectedArrAssets = signal<Assets[]>([]);
 
   first = signal<number>(0);
   rows = signal<number>(8);
