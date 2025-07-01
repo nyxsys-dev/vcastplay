@@ -141,7 +141,7 @@ export class AssetsService {
   async onDropFile(files: any) {
     if (files) {
       const tempData = files;
-      for (const file of tempData) {
+      for (const file of await tempData) {
         const result = await this.processFile(file);
         if (result) {
           this.assetForm.patchValue(result);

@@ -56,12 +56,8 @@
 
 <ng-template #actionBtn let-item>
     <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" severity="success" size="small" />
+    <p-button icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" size="small" />
+    <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" size="small" />
+    <p-button (onClick)="onClickOpenOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
+    <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
 </ng-template>
-
-<p-dialog header="Add Schedule" [(visible)]="showAddSchedule" [style]="{ width: '42rem' }" modal>
-    Inputs
-    <ng-template #footer>
-        <p-button label="Cancel" severity="secondary" (onClick)="onClickCancel()" />
-        <p-button label="Save" (onClick)="onClickSave($event)" />
-    </ng-template>
-</p-dialog>

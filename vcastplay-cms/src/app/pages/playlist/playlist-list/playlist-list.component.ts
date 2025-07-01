@@ -22,7 +22,7 @@ export class PlaylistListComponent {
     { 
       label: 'Options',
       items: [
-        { label: 'View', icon: 'pi pi-eye', command: ($event: any) => { this.onClickPreview(this.selectedPlaylist()); } },
+        { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => { this.onClickPreview(this.selectedPlaylist()); } },
         { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate(this.selectedPlaylist()) },
         { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete(this.selectedPlaylist(), $event) }  
       ]

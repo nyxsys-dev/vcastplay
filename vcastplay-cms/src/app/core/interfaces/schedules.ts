@@ -1,11 +1,19 @@
 export interface Schedule {
     id: number,
-    title: string,
+    name: string,
     description: string,
-    contents: any[];
-    start: Date;
-    end: Date;
+    contents: ScheduleContentItem[];
     status: string;
     createdOn: Date,
     updatedOn: Date
+}
+
+export interface ScheduleContentItem {
+    type: 'asset' | 'playlist' | 'layout';
+    id: string;
+    title: string;
+    start: string;
+    end: string;
+    color: string;
+    extendedProps: any;
 }

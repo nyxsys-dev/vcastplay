@@ -246,6 +246,7 @@ export class PlaylistService {
         ],
         status: 'Pending',
         loop: false,
+        duration: 5,
         createdOn: new Date(),
         updatedOn: new Date()
       }

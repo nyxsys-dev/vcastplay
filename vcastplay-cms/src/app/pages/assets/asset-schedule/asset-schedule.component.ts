@@ -62,23 +62,9 @@ export class AssetScheduleComponent {
     return weekdaysCtrl.length > 0 && weekdaysCtrl.length < this.weekdays.length;
   }
 
-  get dateRangeControl() {
-    return this.assetForm.get('dateRange');
-  }
-
-  get weekdaysControl() {
-    return this.assetForm.get('weekdays');
-  }
-
-  get hoursControl() {
-    return this.assetForm.get('hours');
-  }
-
-  get typeControl() {
-    return this.assetForm.get('type');
-  }
-
-  get availability() {
-    return this.assetForm.get('availability');
-  }
+  get dateRangeControl() { return this.assetForm.get('dateRange'); }
+  get weekdaysControl() { return this.assetForm.get('weekdays'); }
+  get hoursControl() { return this.assetForm.get('hours'); }
+  get typeControl() { return this.assetForm.get('type'); }
+  get availability() { return this.assetForm.get('availability'); }
 }

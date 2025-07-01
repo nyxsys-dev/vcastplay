@@ -19,6 +19,7 @@ import { RoleDetailsComponent } from '../../../components/roles/role-details/rol
 import { AddToPlaylistComponent } from '../../../components/playlist/add-to-playlist/add-to-playlist.component';
 import { PlaylistPreviewComponent } from '../../../components/playlist/playlist-preview/playlist-preview.component';
 import { UserApprovalComponent } from '../../../components/users/user-approval/user-approval.component';
+import { SchedulesContentListComponent } from '../../../pages/schedules/schedules-content-list/schedules-content-list.component';
 
 
 const COMPONENT_MODULES = [
@@ -51,7 +52,10 @@ const COMPONENT_MODULES = [
   AssetScheduleComponent, 
 
   // Audience Tag Components
-  AudienceTagFiltersComponent
+  AudienceTagFiltersComponent,
+
+  // Schedule Components
+  SchedulesContentListComponent,
 ]
 
 @NgModule({

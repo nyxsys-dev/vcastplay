@@ -4,12 +4,12 @@
         <ng-template #title>
             <div class="flex items-center justify-between gap-4">
                 <div class="flex items-center gap-2">
-                    <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+                    <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" text />
                     <p class="text-sm md:text-xl font-semibold">{{ isEditMode() ? 'Edit Schedule' : 'New Schedule' }}</p>
                 </div>
                 <div class="ml:auto">
-                    <p-button class="hidden md:block" icon="pi pi-save" size="small" label="Save" (onClick)="onClickSave($event)" />
-                    <p-button class="block md:hidden" icon="pi pi-save" size="small" (onClick)="onClickSave($event)" />
+                    <p-button class="hidden md:block" icon="pi pi-save" label="Save" (onClick)="onClickSave($event)" />
+                    <p-button class="block md:hidden" icon="pi pi-save" (onClick)="onClickSave($event)" />
                 </div>
             </div>
         </ng-template>
@@ -17,59 +17,70 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4" [formGroup]="scheduleForm">
                 <div class="col-span-1 md:col-span-3">
                     <p-floatlabel variant="on">
-                        <input id="name" pInputText formControlName="name" fluid />
+                        <input id="name" pInputText formControlName="name" 
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
                         <label for="name">Name</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-5">
+                <div class="col-span-1 md:col-span-9">
                     <p-floatlabel variant="on">
-                        <input id="description" pInputText formControlName="description" fluid />
-                        <!-- <textarea rows="5" cols="30" pTextarea formControlName="description" showIcon fluid></textarea> -->
+                        <input id="description" pInputText formControlName="description"
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" fluid />
                         <label for="description">Description</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-4 flex gap-4" formGroupName="dateRange">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="col-span-1 md:col-span-3">
                     <p-floatlabel variant="on">
-                        <p-datepicker inputId="start" formControlName="start" appendTo="body" [showTime]="true" readonlyInput showIcon fluid />
-                        <label for="start">Start Date</label>
-                    </p-floatlabel>
-                    <p-floatlabel variant="on">
-                        <p-datepicker inputId="end" formControlName="end" appendTo="body" [showTime]="true" readonlyInput showIcon fluid />
-                        <label for="end">End Date</label>
+                        <p-select inputId="calendarView" [(ngModel)]="calendarViewSignal" [options]="calendarViews()" optionLabel="label" optionValue="value" 
+                            (onChange)="onChangeCalendarView($event)" fluid />
+                        <label for="calendarView">Calendar View</label>
                     </p-floatlabel>
                 </div>
-                <!-- <div class="flex flex-col gap-4" formGroupName="dateRange">
-                    <div class="flex justify-between gap-4">
-                        <p-floatlabel variant="on">
-                            <p-datepicker inputId="start" formControlName="start" appendTo="body" showIcon fluid />
-                            <label for="start">Start Date</label>
-                        </p-floatlabel>
-                        <p-floatlabel variant="on">
-                            <p-select inputId="timeStart" formControlName="timeStart" [options]="timeValues()" appendTo="body" fluid />
-                            <label for="timeStart">Start Time</label>
-                        </p-floatlabel>
+                <div class="col-span-1 md:col-span-9 flex">
+                    <div class="flex gap-3 ml-auto">
+                        <p-button icon="pi pi-chevron-left" size="small" pTooltip="Previous" tooltipPosition="bottom" (onClick)="onClickPreviousCalendar()" />
+                        <p class="font-semibold text-lg">{{ calendarTitle() }}</p>
+                        <p-button icon="pi pi-chevron-right" size="small" pTooltip="Next" tooltipPosition="bottom" (onClick)="onClickNextCalendar()" />
                     </div>
-                    <div class="flex justify-between gap-4">
-                        <p-floatlabel variant="on">
-                            <p-datepicker inputId="end" formControlName="end" appendTo="body" showIcon />
-                            <label for="end">End Date</label>
-                        </p-floatlabel>
-                        <p-floatlabel variant="on">
-                            <p-select inputId="timeEnd" formControlName="timeEnd" [options]="timeValues()" appendTo="body" />
-                            <label for="timeEnd">End Time</label>
-                        </p-floatlabel>
-                    </div>
-                </div> -->
+                </div>
             </div>
             
-                <full-calendar #scheduleCalendar [options]="calendarOptions"></full-calendar>
+            <full-calendar #scheduleCalendar [options]="calendarOptions"></full-calendar>
         </div>
-        <!-- <div class="grid grid-cols-1 md:grid-cols-12 gap-5 h-full flex-1">
-            <div class="col-span-1 md:col-span-4">
-            </div>
-            <div class="col-span-1 md:col-span-8 h-full">
-                <full-calendar #scheduleCalendar [options]="calendarOptions"></full-calendar>
-            </div>
-        </div> -->
     </p-card>
 </div>
+
+<p-dialog header="Select Contents" [(visible)]="showAddContents" [style]="{ height: '520px' }" [draggable]="false" closable modal>
+    <app-schedules-content-list />
+    <ng-template #footer>
+        <p-button label="Close" severity="secondary" (onClick)="onClickCancelContent()" />
+        <p-button label="Save" severity="success" (onClick)="onClickSaveContent($event)" />
+    </ng-template>
+</p-dialog>
+
+<p-dialog header="Content Preview" [(visible)]="showPreviewEvent" (onHide)="onClosePreview()"
+    styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false" [resizable]="true">
+    @switch (type?.value) {
+        @case('asset') {
+            <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
+                <app-preview-content class="absolute h-full w-full flex items-center justify-center"
+                    [currentContent]="selectedContent()" [showControls]="true" [autoPlay]="true" />
+            </div>
+        }
+        @case ('playlist') {
+            <div class="flex h-full md:h-100">
+                <app-playlist-preview class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
+                    [currentContent]="playlistService.currentContent()" />
+            </div>
+        }
+    }
+    <ng-template #footer>
+        <p-button label="Close" severity="secondary" (onClick)="showPreviewEvent.set(false)" />
+        <p-button label="Delete" severity="danger" (onClick)="onClickDeleteContent($event)" />
+    </ng-template>
+</p-dialog>
+
+<p-toast />
+<p-confirmdialog />

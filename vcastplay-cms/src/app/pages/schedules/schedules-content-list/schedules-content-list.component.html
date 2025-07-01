@@ -1,1 +1,83 @@
-<p>schedules-content-list works!</p>
+<div class="flex flex-col gap-4 pt-2 h-full">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center" [formGroup]="contentItemForm">
+        <p-floatlabel variant="on">
+            <p-datepicker inputId="start" formControlName="start" [timeOnly]="true" [showIcon]="true" 
+                appendTo="body" [showTime]="true" stepMinute="5" stepSecond="5" hourFormat="12" [showSeconds]="true"  fluid />
+            <label for="start">Start Date*</label>
+        </p-floatlabel>
+        <p-floatlabel variant="on">
+            <p-datepicker inputId="end" formControlName="end" [timeOnly]="true" [showIcon]="true" 
+                appendTo="body" [showTime]="true" stepMinute="5" stepSecond="5" hourFormat="12"  [showSeconds]="true" fluid />
+            <label for="end">End Date*</label>
+        </p-floatlabel>
+        <div class="flex gap-2">
+            <p-checkbox formControlName="allDay" binary />
+            <p>All Day</p>
+        </div>
+        @if (contentItemForm.errors?.['startAfterEnd']) {
+            <p class="italic text-sm text-red-400">*Start Date must be before End Date</p>
+        }
+        
+        <div class="col-span-1 md:col-span-3">
+            <p-floatlabel variant="on">
+                <p-select inputId="type" [options]="contentTypes()" optionLabel="label" optionValue="value" formControlName="type" appendTo="body" fluid />
+                <label for="type">Type</label>
+            </p-floatlabel>
+        </div>
+    </div>
+    <p-inputgroup>
+        <p-inputgroup-addon>
+            <i class="pi pi-search"></i>
+        </p-inputgroup-addon>
+        <input pInputText type="text" [(ngModel)]="keywords" placeholder="Search keyword" fluid />
+    </p-inputgroup>
+    <div class="flex-1 h-full border border-[var(--p-surface-300)] rounded-lg">
+        <p-table
+            #contentTable
+            [value]="filteredContentLists()"
+            [(selection)]="selectedContent"
+            (selectionChange)="onSelectionChange($event)"
+            dataKey="id"
+            [scrollable]="true" 
+            scrollHeight="150px" 
+            size="small"
+            stripedRows
+            showGridlines
+        >
+            <ng-template #header>
+                <tr>
+                    <th style="width: 3rem"></th>
+                    <th>Name</th>
+                    <th>Duration</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-item>
+                <tr>
+                    <td>
+                        <div class="text-center"><p-tableRadioButton [value]="item" /></div>
+                    </td>
+                    <td><p class="line-clamp-1">{{ item.name }}</p></td>
+                    <td>{{ utils.timeConversion(item.duration) }}</td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="3" [height]="20">
+                        <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <div class="flex flex-col gap-2">
+        <p class="text-sm italic" [ngClass]="{ 'text-red-400' : formcontrol('color').errors }">Select event color*:</p>
+        <div class="flex gap-2">
+            @for (color of colors; track $index) {
+                <div class="border-none w-6 h-6 rounded-full p-0 cursor-pointer outline-none outline-offset-1" 
+                    (click)="onUpdateContentEventColor(color)"
+                    [ngClass]="{ 'ring ring-2 ring-offset-2' : selectedColor?.value == color.hex }"
+                    [style]="{'background-color': color.hex }"></div>
+            }
+        </div>
+    </div>
+</div>
