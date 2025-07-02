@@ -57,8 +57,6 @@
                 </ng-template>
             </p-table>
 
-            <div class="block lg:hidden">
-                
             <div class="block lg:hidden flex flex-col gap-4">
                 @if (!playlistService.loadingSignal()) {
                     @for (item of playlists(); track $index) {
@@ -73,7 +71,6 @@
                         <p-skeleton height="5rem" />
                     }
                 }
-            </div>
             </div>
         </div>
         <!-- <ng-template #footer>

@@ -57,6 +57,22 @@
                     </tr>
                 </ng-template>
             </p-table>
+                
+            <div class="block lg:hidden flex flex-col gap-4">
+                @if (!scheduleServices.loadingSignal()) {
+                    @for (item of schedules(); track $index) {
+                        <app-schedule-list-item [schedule]="item" [actionBtn]="actionBtn" />
+                    } @empty {
+                        <div class="flex justify-center items-center p-5 h-100">
+                            <p>No playlists found</p>
+                        </div>
+                    }
+                } @else {
+                    @for (item of utils.tableSkeletonRows; track $index) {
+                        <p-skeleton height="5rem" />
+                    }
+                }
+            </div>
         </div>
     </p-card>
 </div>
@@ -68,3 +84,6 @@
     <p-button (onClick)="onClickOpenOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
     <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
 </ng-template>
+
+<p-toast />
+<p-confirmdialog />

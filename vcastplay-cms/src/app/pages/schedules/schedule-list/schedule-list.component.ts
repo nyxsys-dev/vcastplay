@@ -21,8 +21,8 @@ export class ScheduleListComponent {
     { 
       label: 'Options',
       items: [
-        { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate($event) },
-        { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete($event) }
+        { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate($event, this.selectedSchedule()) },
+        { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete($event, this.selectedSchedule()) }
       ]
     }
   ];
@@ -51,14 +51,36 @@ export class ScheduleListComponent {
     menu.toggle(event);
   }
 
-  onClickDuplicate(event: Event) {
-    const schedule = this.selectedSchedule();
-    console.log(schedule);
+  onClickDuplicate(event: Event, schedule: any) {
+    this.scheduleServices.onDuplicateSchedule(schedule);
+    this.message.add({ severity:'success', summary: 'Success', detail: 'Schedule duplicated successfully!' });
   }
 
-  onClickDelete(event: Event) {
-    const schedule = this.selectedSchedule();
-    console.log(schedule);
+  onClickDelete(event: Event, schedule: any) {
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to delete this asset?',
+      closable: true,
+      closeOnEscape: true,
+      header: 'Danger Zone',
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger',
+      },
+      accept: () => {
+        this.scheduleServices.onDeleteSchedule(schedule);
+        this.message.add({ severity:'success', summary: 'Success', detail: 'Schedule deleted successfully!' });
+        this.selectedSchedule.set(null);
+        this.scheduleForm.reset();
+      },
+      reject: () => { }
+    })
   }
 
   get isEditMode() { return this.scheduleServices.isEditMode; }

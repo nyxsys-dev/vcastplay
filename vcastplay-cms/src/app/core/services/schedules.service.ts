@@ -189,4 +189,13 @@ export class SchedulesService {
     /**Call DELETE API */
   }
 
+  onDuplicateSchedule(schedule: Schedule) {
+    const tempData = this.schedules();
+    tempData.push({ ...schedule, id: tempData.length + 1, name: `Copy of ${schedule.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
+    this.scheduleSignal.set([...tempData]);
+    
+    this.totalRecords.set(this.schedules().length);
+    /**CALL POST API */
+  }
+
 }

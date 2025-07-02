@@ -8,7 +8,7 @@ import { PreviewContentComponent } from '../../../components/preview-content/pre
 import { PlaylistContainerComponent } from '../../../components/playlist/playlist-container/playlist-container.component';
 import { PlaylistSelectContentsComponent } from '../../../components/playlist/playlist-select-contents/playlist-select-contents.component';
 import { AssetListItemComponent } from '../../../pages/assets/asset-list-item/asset-list-item.component';
-import { PlaylistListItemComponent } from '../../../components/playlist/playlist-list-item/playlist-list-item.component';
+import { PlaylistListItemComponent } from '../../../pages/playlist/playlist-list-item/playlist-list-item.component';
 import { AssetScheduleComponent } from '../../../pages/assets/asset-schedule/asset-schedule.component';
 import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
 import { MapmarkersComponent } from '../../../components/mapmarkers/mapmarkers.component';
@@ -20,6 +20,7 @@ import { AddToPlaylistComponent } from '../../../components/playlist/add-to-play
 import { PlaylistPreviewComponent } from '../../../components/playlist/playlist-preview/playlist-preview.component';
 import { UserApprovalComponent } from '../../../components/users/user-approval/user-approval.component';
 import { SchedulesContentListComponent } from '../../../pages/schedules/schedules-content-list/schedules-content-list.component';
+import { ScheduleListItemComponent } from '../../../pages/schedules/schedule-list-item/schedule-list-item.component';
 
 
 const COMPONENT_MODULES = [
@@ -56,6 +57,7 @@ const COMPONENT_MODULES = [
 
   // Schedule Components
   SchedulesContentListComponent,
+  ScheduleListItemComponent,
 ]
 
 @NgModule({

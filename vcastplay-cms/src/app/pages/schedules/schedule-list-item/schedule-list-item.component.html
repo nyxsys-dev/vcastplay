@@ -1,0 +1,25 @@
+<p-card class="text-sm md:text-base">
+    <ng-template #title>
+        <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
+                <p class="font-semibold line-clamp-1">{{ schedule.name }}</p>
+                <p-tag [value]="schedule.status" [severity]="utils.getStatus(schedule.status)" [icon]="'pi ' + utils.getIcon(schedule.status)" />
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #subtitle><p class="line-clamp-1">{{ schedule.description }}</p></ng-template>
+    <div class="flex flex-col my-5 gap-5">
+        <div class="flex gap-2 items-center">
+            <p class="font-semibold">Last Update:</p>
+            <div class="flex gap-2 items-center ml-auto">
+                <i class="pi pi-clock" [style]="{ 'font-size': '0.75rem'}"></i>
+                <p class="text-sm italic">{{ schedule.updatedOn | date: 'mediumDate' }}</p>
+            </div>
+        </div>
+    </div>
+    <ng-template #footer>
+        <div class="flex justify-end gap-2">
+            <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: schedule }"></ng-container>
+        </div>
+    </ng-template>
+</p-card>
