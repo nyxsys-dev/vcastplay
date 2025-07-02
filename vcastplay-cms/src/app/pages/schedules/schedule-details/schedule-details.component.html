@@ -52,7 +52,8 @@
     </p-card>
 </div>
 
-<p-dialog header="Select Contents" [(visible)]="showAddContents" [style]="{ height: '520px' }" [draggable]="false" closable modal>
+<p-dialog [header]="currentDateRange()" [(visible)]="showAddContents" 
+    [style]="{ width: '36rem', height: '520px' }" [draggable]="false" closable modal>
     <app-schedules-content-list />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCancelContent()" />

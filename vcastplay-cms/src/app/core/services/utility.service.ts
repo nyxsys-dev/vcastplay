@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DrawerMenu } from '../interfaces/drawer-menu';
 import { PrimeNG } from 'primeng/config';
 import { FormGroup } from '@angular/forms';
+import moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -121,6 +122,10 @@ export class UtilityService {
   }
 
   constructor(private config: PrimeNG) { }
+
+  formatDate(date: any, format: string, timeZone: string = 'Asia/Manila') {
+    return moment(date).tz(timeZone);
+  }
 
   formatSize(bytes: number) {
     const k = 1024;

@@ -26,6 +26,8 @@ export class SchedulesContentListComponent {
     })
   })
 
+  dateRange: { start: Date; end: Date } = { start: new Date(), end: new Date() };
+
   constructor() {
     this.formcontrol('type').valueChanges.subscribe(value => {      
       this.contentSignal.set(value);

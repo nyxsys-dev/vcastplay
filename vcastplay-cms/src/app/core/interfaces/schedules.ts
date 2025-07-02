@@ -16,4 +16,5 @@ export interface ScheduleContentItem {
     end: string;
     color: string;
     extendedProps: any;
+    allDay: boolean;
 }

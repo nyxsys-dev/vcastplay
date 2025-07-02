@@ -28,6 +28,14 @@ export class SchedulesService {
     { label: 'Playlist', value: 'playlist' },
     { label: 'Design Layout', value: 'layout' },
   ]);
+  
+  calendarTitle = signal<string>('');
+  calendarViewSignal = signal<string>('timeGridWeek');
+  calendarViews = signal<any[]>([
+    { label: 'Day', value: 'timeGridDay' },
+    { label: 'Week', value: 'timeGridWeek' },
+    { label: 'Month', value: 'dayGridMonth' },
+  ]);
 
   loadingSignal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
@@ -53,39 +61,24 @@ export class SchedulesService {
     start: new FormControl('', [ Validators.required ]),
     end: new FormControl('', [ Validators.required ]),
     color: new FormControl('', [ Validators.required ]),
-    allDay: new FormControl(false),
     type: new FormControl('asset', { nonNullable: true, validators: Validators.required }),
-  }, { validators: this.dateRangeValidator })
+    allDay: new FormControl(false),
+    overlap: new FormControl(false),
+  }, { validators: this.onTimeRangeValidator })
+
+  onTimeRangeValidator(group: AbstractControl): ValidationErrors | null {
+    const start = group.get('start')?.value;
+    const end = group.get('end')?.value;
+
+    if (start && end && new Date(start) > new Date(end)) {
+      return { startAfterEnd: true }
+    }
+    return null;
+  }
   
   onPageChange(event: any) {
     this.first.set(event.first);
     this.rows.set(event.rows);
-  }
-  
-  dateRangeValidator(): ValidatorFn {
-    return (group: AbstractControl): ValidationErrors | null => {
-      const start = group.get('start')?.value;
-      const end = group.get('end')?.value;
-      if (start && end && new Date(start) > new Date(end)) {
-        return { startAfterEnd: true }
-      }
-      return null;
-    }
-  }
-
-  timeRangeValidator(group: AbstractControl): ValidationErrors | null {
-    const start = group.get('startTime')?.value;
-    const end = group.get('endTime')?.value;
-
-    if (!start || !end) return null;
-
-    const [startH, startM] = start.split(':').map(Number);
-    const [endH, endM] = end.split(':').map(Number);
-
-    const startTotal = startH * 60 + startM;
-    const endTotal = endH * 60 + endM;    
-
-    return { timeInvalid: startTotal > endTotal };
   }
 
   onLoadSchedules() {
@@ -97,32 +90,56 @@ export class SchedulesService {
     return this.scheduleSignal();
   }
 
-  onSaveContent(content: ScheduleContentItem, fullcalendar: FullCalendarComponent) {
-    const calendar = fullcalendar.getApi();
-    calendar.addEvent({
-      id: content.id,
-      title: content.title,
-      start: moment(content.start).tz('Asia/Manila').toDate(),
-      end: moment(content.end).tz('Asia/Manila').toDate(),
-      backgroundColor: content.color,
-      borderColor: content.color,
-      extendedProps: content
-    })
-    const events = calendar.getEvents().map(event => event.extendedProps);    
-    this.scheduleForm.patchValue({ contents: events });
+  async onSaveContent(content: ScheduleContentItem, fullCalendar: FullCalendarComponent) {
+    const calendarApi = fullCalendar.getApi();
+    const dayCount = moment(content.end).tz('Asia/Manila').diff(content.start, 'days');
+    const eventDays = content.allDay || this.calendarViewSignal() == 'dayGridMonth' ? dayCount : dayCount + 1;    
+
+    for (let day = 0; day < eventDays; day++) {
+      // debugger
+      const currentDate = moment(content.start).add(day, 'days');
+      const startTime = moment(content.start).tz('Asia/Manila').format('HH:mm:ss');
+      const endTime = moment(content.end).tz('Asia/Manila').format('HH:mm:ss');
+
+      const eventData = {
+        eventId: calendarApi.getEvents().length + 1,
+        id: content.id,
+        title: content.title,
+        start: currentDate.tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + startTime,
+        end: currentDate.tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + endTime,
+        color: content.color,
+        allDay: content.allDay,
+        type: content.type,
+      };
+
+      calendarApi.addEvent({
+        id: eventData.eventId.toString(),
+        title: eventData.title,
+        start: eventData.start,
+        end: eventData.end,
+        backgroundColor: eventData.color,
+        borderColor: eventData.color,
+        extendedProps: eventData,
+        allDay: eventData.allDay,
+      });
+    }
+
+    const updatedContents = calendarApi.getEvents().map(event => event.extendedProps);
+    this.scheduleForm.patchValue({ contents: updatedContents });
   }
 
   onUpdateContent(event: any, fullcalendar: FullCalendarComponent) {
-    const { start, end, ...info } = event.extendedProps;
+    const { start, end, allDay, ...info } = event.extendedProps;    
     
     const tempContents = this.scheduleForm.value.contents || [];
-    const index = tempContents.findIndex((item: any) => item.id === event.id);
-
+    const index = tempContents.findIndex((item: any) => item.eventId == event.id);
+    
     tempContents[index] = { 
-      start: moment(event.start).tz('Asia/Manila').toDate(),
-      end: moment(event.end).tz('Asia/Manila').toDate(),
+      start: moment(event.start).toISOString(),
+      end: moment(event.end).toISOString(),
+      allDay: event.allDay,
       ...info
-    };    
+    };
     this.scheduleForm.patchValue({ contents: tempContents });
   }
 

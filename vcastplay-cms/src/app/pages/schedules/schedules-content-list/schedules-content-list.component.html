@@ -1,14 +1,14 @@
 <div class="flex flex-col gap-4 pt-2 h-full">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center" [formGroup]="contentItemForm">
         <p-floatlabel variant="on">
-            <p-datepicker inputId="start" formControlName="start" [timeOnly]="true" [showIcon]="true" 
-                appendTo="body" [showTime]="true" stepMinute="5" stepSecond="5" hourFormat="12" [showSeconds]="true"  fluid />
-            <label for="start">Start Date*</label>
+            <p-datepicker inputId="start" formControlName="start" [timeOnly]="true" [showIcon]="true" appendTo="body" [showTime]="true" 
+                [ngClass]="{ 'ng-invalid ng-dirty': contentItemForm.errors?.['startAfterEnd'] }" stepMinute="5" stepSecond="5" hourFormat="12" fluid />
+            <label for="start">Start Time*</label>
         </p-floatlabel>
         <p-floatlabel variant="on">
-            <p-datepicker inputId="end" formControlName="end" [timeOnly]="true" [showIcon]="true" 
-                appendTo="body" [showTime]="true" stepMinute="5" stepSecond="5" hourFormat="12"  [showSeconds]="true" fluid />
-            <label for="end">End Date*</label>
+            <p-datepicker inputId="end" formControlName="end" [timeOnly]="true" [showIcon]="true" appendTo="body" [showTime]="true" 
+                [ngClass]="{ 'ng-invalid ng-dirty': contentItemForm.errors?.['startAfterEnd'] }" stepMinute="5" stepSecond="5" hourFormat="12"  fluid />
+            <label for="end">End Time*</label>
         </p-floatlabel>
         <div class="flex gap-2">
             <p-checkbox formControlName="allDay" binary />
