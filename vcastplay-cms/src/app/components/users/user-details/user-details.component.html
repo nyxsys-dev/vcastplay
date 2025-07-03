@@ -1,6 +1,6 @@
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" [formGroup]="userForm">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-1" [formGroup]="userForm">
     <div class="col-span-2 md:col-span-1">
-        <p-floatlabel variant="in">
+        <p-floatlabel variant="on">
             <input id="firstName" pInputText formControlName="firstName" 
                 [ngClass]="{ 'ng-invalid ng-dirty': formControl('firstName')?.invalid && formControl('firstName')?.touched }" fluid />
             <label for="firstName">First Name</label>
@@ -15,7 +15,7 @@
         }
     </div>
     <div class="col-span-2 md:col-span-1">
-        <p-floatlabel variant="in">
+        <p-floatlabel variant="on">
             <input id="lastName" pInputText formControlName="lastName" 
                 [ngClass]="{ 'ng-invalid ng-dirty': formControl('lastName')?.invalid && formControl('lastName')?.touched }" fluid />
             <label for="lastName">Last Name</label>
@@ -30,7 +30,7 @@
         }
     </div>
     <div class="col-span-2">
-        <p-floatlabel variant="in" class="md:col-span-2">
+        <p-floatlabel variant="on" class="md:col-span-2">
             <input id="email" pInputText formControlName="email" type="email" 
                 [ngClass]="{ 'ng-invalid ng-dirty': formControl('email')?.invalid && formControl('email')?.touched }" fluid />
             <label for="email">Email</label>
@@ -46,7 +46,7 @@
         }
     </div>
     <div class="col-span-2 md:col-span-1">
-        <p-floatlabel variant="in">
+        <p-floatlabel variant="on">
             <p-inputnumber inputId="integeronly" formControlName="mobile" 
                 [ngClass]="{ 'ng-invalid ng-dirty': formControl('mobile')?.invalid && formControl('mobile')?.touched }" fluid />
             <!-- <p-inputmask mask="999-999-9999" formControlName="mobile" styleClass="w-full" /> -->
@@ -62,7 +62,7 @@
         }
     </div>
     <div class="col-span-2 md:col-span-1">
-        <p-floatlabel variant="in">
+        <p-floatlabel variant="on">
             <p-select formControlName="role" inputId="role" [options]="roleService.roles()" appendTo="body" optionLabel="name" optionValue="id" 
                 [ngClass]="{ 'ng-invalid ng-dirty': formControl('role')?.invalid && formControl('role')?.touched }" fluid />
             <label for="role">Roles</label>

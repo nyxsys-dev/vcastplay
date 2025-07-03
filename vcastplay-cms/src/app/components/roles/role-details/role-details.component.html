@@ -1,54 +1,56 @@
-<div class="grid grid-cols-1 gap-4 mb-3" [formGroup]="roleForm">
-    <div class="cols-span-1">
-        <p-floatlabel variant="in">
-            <input id="name" pInputText formControlName="name" 
-                [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
-            <label for="name">Name</label>
-        </p-floatlabel>
-        @if (formControl('name')?.touched && (formControl('name')?.dirty || formControl('name')?.invalid)) {
-            @if (formControl('name')?.invalid) {
-                <div class="p-2 text-sm text-red-500 flex items-center gap-2">
-                    <i class="pi pi-exclamation-circle"></i>
-                    @if (formControl('name')?.errors?.['required']) { This field is required }
-                </div>
+<div class="flex flex-col gap-3 mt-1">
+    <div class="grid grid-cols-1 gap-4" [formGroup]="roleForm">
+        <div class="cols-span-1">
+            <p-floatlabel variant="on">
+                <input id="name" pInputText formControlName="name" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('name')?.invalid && formControl('name')?.touched }" fluid />
+                <label for="name">Name</label>
+            </p-floatlabel>
+            @if (formControl('name')?.touched && (formControl('name')?.dirty || formControl('name')?.invalid)) {
+                @if (formControl('name')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('name')?.errors?.['required']) { This field is required }
+                    </div>
+                }
             }
-        }
-    </div>
-    <div class="col-span-1">
-        <p-floatlabel variant="in">
-            <textarea pTextarea id="description" formControlName="description" rows="3" cols="30" style="resize: none" class="h-full w-full"
-                [ngClass]="{ 'ng-invalid ng-dirty': formControl('description')?.invalid && formControl('description')?.touched }"></textarea>
-            <label for="description">Description</label>
-        </p-floatlabel>
-        @if (formControl('description')?.touched && (formControl('description')?.dirty || formControl('description')?.invalid)) {
-            @if (formControl('description')?.invalid) {
-                <div class="p-2 text-sm text-red-500 flex items-center gap-2">
-                    <i class="pi pi-exclamation-circle"></i>
-                    @if (formControl('description')?.errors?.['required']) { This field is required }
-                </div>
+        </div>
+        <div class="col-span-1">
+            <p-floatlabel variant="on">
+                <textarea pTextarea id="description" formControlName="description" rows="3" cols="30" style="resize: none" class="h-full w-full"
+                    [ngClass]="{ 'ng-invalid ng-dirty': formControl('description')?.invalid && formControl('description')?.touched }"></textarea>
+                <label for="description">Description</label>
+            </p-floatlabel>
+            @if (formControl('description')?.touched && (formControl('description')?.dirty || formControl('description')?.invalid)) {
+                @if (formControl('description')?.invalid) {
+                    <div class="p-2 text-sm text-red-500 flex items-center gap-2">
+                        <i class="pi pi-exclamation-circle"></i>
+                        @if (formControl('description')?.errors?.['required']) { This field is required }
+                    </div>
+                }
             }
-        }
+        </div>
     </div>
+    <p-panel header="Permissions" toggleable>
+        <p-table [value]="modules" [scrollable]="true" scrollHeight="200px">
+            <ng-template #header>
+                <tr>
+                    <th>Name</th>
+                    <th><p class="text-center">Create</p></th>
+                    <th><p class="text-center">Update</p></th>
+                    <th><p class="text-center">Delete</p></th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-item>
+                <tr>
+                    <td class="flex gap-3">
+                        <p-toggleswitch [ngModel]="isModuleSelected(item)" (onChange)="onAddModule(item)" /> {{ item.label }}
+                    </td>
+                    <td><div class="flex justify-center"><p-checkbox /></div></td>
+                    <td><div class="flex justify-center"><p-checkbox /></div></td>
+                    <td><div class="flex justify-center"><p-checkbox /></div></td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-panel>
 </div>
-<p-panel header="Permissions" toggleable>
-    <p-table [value]="modules" [scrollable]="true" scrollHeight="200px">
-        <ng-template #header>
-            <tr>
-                <th>Name</th>
-                <th><p class="text-center">Create</p></th>
-                <th><p class="text-center">Update</p></th>
-                <th><p class="text-center">Delete</p></th>
-            </tr>
-        </ng-template>
-        <ng-template #body let-item>
-            <tr>
-                <td class="flex gap-3">
-                    <p-toggleswitch [ngModel]="isModuleSelected(item)" (onChange)="onAddModule(item)" /> {{ item.label }}
-                </td>
-                <td><div class="flex justify-center"><p-checkbox /></div></td>
-                <td><div class="flex justify-center"><p-checkbox /></div></td>
-                <td><div class="flex justify-center"><p-checkbox /></div></td>
-            </tr>
-        </ng-template>
-    </p-table>
-</p-panel>

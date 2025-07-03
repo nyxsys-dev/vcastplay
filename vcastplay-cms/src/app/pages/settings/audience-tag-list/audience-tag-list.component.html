@@ -9,7 +9,8 @@
                     label: item.name,
                     id: item.id,
                     onClick: onClickSave,
-                    type: item.id
+                    type: item.id,
+                    index: $index
                 }"></ng-container>
                 <div class="mt-4 p-3">
                     <p-table
@@ -50,14 +51,14 @@
     </div>
 </div>
 
-<ng-template #audienceTagInput let-control="control" let-label="label" let-id="id" let-onClick="onClick" let-type="type">
+<ng-template #audienceTagInput let-control="control" let-label="label" let-id="id" let-onClick="onClick" let-type="type" let-index="index">
     <p-inputgroup>
         <p-floatlabel variant="on">
             <input [id]="id" type="text" [formControl]="control" pInputText fluid>
             <label [for]="id">{{ label }}</label>
         </p-floatlabel>
         <p-inputgroup-addon>
-            <p-button icon="pi pi-plus" [text]="false" pTooltip="Add" tooltipPosition="bottom" (onClick)="onClick(control.value, type)" />
+            <p-button icon="pi pi-plus" [text]="false" pTooltip="Add" tooltipPosition="bottom" (onClick)="onClick(control.value, type, label)" />
         </p-inputgroup-addon>
     </p-inputgroup>
 </ng-template>

@@ -29,14 +29,38 @@ export class AudienceTagListComponent {
     return audienceTagLists.filter((audienceTag: any) => audienceTag.showInSettings);
   })
 
-  onClickSave = (item: any, type: string) => {
-    if (this.audienceTagControl.invalid) return;
+  onClickSave = (item: any, type: string, label: string) => {
+    if (this.audienceTagControl.invalid) {
+      this.message.add({ severity: 'error', summary: 'Error', detail: `Please input ${label}` });
+      return
+    };
     this.audienceTagService.onSaveAudienceTags(item, type);
     this.audienceTagControl.reset();
   }
 
   onClickDelete = (event: Event, item: any, type: string) => {
-    this.audienceTagService.onDeleteAudienceTags(item, type);
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to delete this tag?',
+      closable: true,
+      closeOnEscape: true,
+      header: 'Danger Zone',
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger',
+      },
+      accept: () => {
+        this.audienceTagService.onDeleteAudienceTags(item, type);
+        this.message.add({ severity:'success', summary: 'Success', detail: 'Tag deleted successfully!' });
+      },
+      reject: () => { }
+    })
   }
 
   get audienceTagsLists() { return this.audienceTagService.audienceTagsLists; }

@@ -52,8 +52,10 @@
     </p-card>
 </div>
 
-<p-dialog [header]="currentDateRange()" [(visible)]="showAddContents" 
-    [style]="{ width: '36rem', height: '520px' }" [draggable]="false" closable modal>
+<p-dialog [(visible)]="showAddContents" [style]="{ width: '36rem' }" [draggable]="false" closable modal>
+    <ng-template #header>
+        <div class="text-sm py-1 px-2 rounded-lg bg-[var(--p-surface-300)] font-bold">Date Range: {{ currentDateRange() }}</div>
+    </ng-template>
     <app-schedules-content-list />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCancelContent()" />

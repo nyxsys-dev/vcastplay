@@ -92,10 +92,15 @@ export class SchedulesService {
 
   async onSaveContent(content: ScheduleContentItem, fullCalendar: FullCalendarComponent) {
     const calendarApi = fullCalendar.getApi();
-    const dayCount = moment(content.end).tz('Asia/Manila').diff(content.start, 'days');
-    const eventDays = content.allDay || this.calendarViewSignal() == 'dayGridMonth' ? dayCount : dayCount + 1;    
+    const type = calendarApi.view.type;
+    const start = moment(content.start);
+    let end = moment(content.end);
 
-    for (let day = 0; day < eventDays; day++) {
+    if (type.startsWith('timeGrid') && end.isSameOrAfter(start)) end.add(1, 'day');
+
+    const daysCount = moment(end).tz('Asia/Manila').diff(start, 'days');
+    
+    for (let day = 0; day < daysCount; day++) {
       // debugger
       const currentDate = moment(content.start).add(day, 'days');
       const startTime = moment(content.start).tz('Asia/Manila').format('HH:mm:ss');
@@ -141,6 +146,49 @@ export class SchedulesService {
       ...info
     };
     this.scheduleForm.patchValue({ contents: tempContents });
+  }
+
+  onSelectAllow(info: any, fullcalendar: FullCalendarComponent): boolean {
+    const calendarApi = fullcalendar.getApi();
+    const type = calendarApi.view.type;
+
+    if (type.startsWith('timeGrid') && info.allDay) return false;
+
+    // Remove previous selection
+    const existing = calendarApi.getEventById('selectBox');
+    if (existing) existing.remove();
+
+    let startMoment = moment(info.start);
+    let endMoment = moment(info.end);
+
+    // Swap if start is after end
+    if (startMoment.isAfter(endMoment)) [startMoment, endMoment] = [endMoment, startMoment];
+
+    const startTime = startMoment.format('HH:mm:ss');
+    const endTime = endMoment.format('HH:mm:ss');
+
+    const eventData: any = {
+      id: 'selectBox',
+      start: startMoment.toISOString(),
+      end: endMoment.toISOString(),
+      overlap: false
+    };
+
+    if (this.calendarViewSignal() == 'dayGridMonth') {
+      eventData.allDay = true;
+      eventData.display = 'background';
+    } else {
+      eventData.startTime = startTime;
+      eventData.endTime = endTime;
+      eventData.startRecur = startMoment.toISOString();
+      eventData.endRecur = endMoment.toISOString();
+      eventData.display = 'background';
+      eventData.backgroundColor = '#53EAFD';
+    }
+
+    calendarApi.addEvent(eventData);
+
+    return true;
   }
 
   onGetContentDetails(id: any, type: string) {

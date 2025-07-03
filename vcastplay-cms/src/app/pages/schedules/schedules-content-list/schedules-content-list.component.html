@@ -25,13 +25,17 @@
             </p-floatlabel>
         </div>
     </div>
+    <p>Add Content:</p>
     <p-inputgroup>
         <p-inputgroup-addon>
             <i class="pi pi-search"></i>
         </p-inputgroup-addon>
         <input pInputText type="text" [(ngModel)]="keywords" placeholder="Search keyword" fluid />
+        <p-inputgroup-addon>
+            <p-button icon="pi pi-filter" [text]="false" pTooltip="Filter" tooltipPosition="bottom" />
+        </p-inputgroup-addon>
     </p-inputgroup>
-    <div class="flex-1 h-full border border-[var(--p-surface-300)] rounded-lg">
+    <div class="border border-[var(--p-surface-300)] rounded-lg h-[250px]">
         <p-table
             #contentTable
             [value]="filteredContentLists()"
@@ -39,7 +43,7 @@
             (selectionChange)="onSelectionChange($event)"
             dataKey="id"
             [scrollable]="true" 
-            scrollHeight="150px" 
+            scrollHeight="250px" 
             size="small"
             stripedRows
             showGridlines

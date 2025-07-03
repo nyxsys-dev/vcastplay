@@ -86,19 +86,6 @@ html {
     transform: rotate(-45deg);
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
 
-    // &::after {
-        // content: '';
-        // position: absolute;
-        // bottom: -px;
-        // left: 50%;
-        // transform: translateX(-50%);
-        // width: 0;
-        // height: 0;
-        // border: 10px solid transparent;
-        // border-top-color: var(--color-slate-500);
-        // border-bottom: 0;
-    // }
-
     i {
         transform: rotate(45deg);
     }
@@ -148,13 +135,9 @@ html {
     z-index: -1;
 }
 
-
-// .cdk-drop-list-dragging {
-//   opacity: 0.5;
-//   border-left: 2px solid #000;
-//   padding-left: 8px;
-// }
-
+.fc .fc-highlight {
+  background: none !important;
+}
 
 /* Scrollbar effect */
 

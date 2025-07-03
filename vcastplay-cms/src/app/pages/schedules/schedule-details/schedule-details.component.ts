@@ -41,14 +41,12 @@ export class ScheduleDetailsComponent {
     height: '100%',
     selectable: true,
     editable: true,
-    droppable: true,
-    dayMaxEvents: true,
     dayHeaderFormat: { weekday: 'short' },
     headerToolbar: false,
     slotDuration: '00:05:00',
     views: {
       timeGridWeek: { type: 'timeGrid', duration: { days: 7 }, buttonText: 'Week' },
-      timeGridDay: { type: 'timeGrid', duration: { days: 1 }, buttonText: 'Day' }
+      timeGridDay: { type: 'timeGrid', duration: { days: 1 }, buttonText: 'Day' },
     },
     eventTimeFormat: {
       hour: 'numeric',
@@ -63,8 +61,9 @@ export class ScheduleDetailsComponent {
     events: [],
     datesSet: this.onDateSet.bind(this), // trigger when view changes
     eventChange: (info: any) => this.onEventUpdate(info),
-    select: (info: any) => this.onClickSelectContents(info),
     eventClick: (info: any) => this.onClickEditContent(info),
+    select: (info: any) => this.onClickSelectContents(info),
+    selectAllow: (info: any) => this.onSelectAllow(info),
   }
 
   ngAfterViewInit() {
@@ -118,7 +117,12 @@ export class ScheduleDetailsComponent {
     this.selectedContent.set(null);
   }
 
-  onClickSelectContents({ start, end, allDay }: { start: moment.Moment, end: moment.Moment, allDay: boolean }) {    
+  onClickSelectContents({ start, end, allDay }: { start: moment.Moment, end: moment.Moment, allDay: boolean }) {       
+    // Remove the selection box
+    const calendarApi = this.scheduleCalendar.getApi();
+    const existing = calendarApi.getEventById('selectBox');
+    if (existing) existing.remove();
+
     const startDate = moment(start);
     const endDate = allDay ? moment(end).subtract(1, 'day') : moment(end);
     this.currentDateRange.set(`${startDate.format('MMM DD, yyyy')} - ${endDate.format('MMM DD, yyyy')}`);
@@ -189,6 +193,10 @@ export class ScheduleDetailsComponent {
 
   onEventUpdate(event: any) {
     this.scheduleServices.onUpdateContent(event.event, this.scheduleCalendar);
+  }
+
+  onSelectAllow(info: any) {
+    return this.scheduleServices.onSelectAllow(info, this.scheduleCalendar);
   }
 
   onDateSet(event: any) {

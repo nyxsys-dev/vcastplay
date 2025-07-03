@@ -39,9 +39,7 @@ export class ScheduleListComponent {
   }
 
   onClickEdit(schedule: Schedule) {
-    this.isEditMode.set(true);
-    console.log(schedule);
-    
+    this.isEditMode.set(true);    
     this.scheduleForm.patchValue(schedule);
     this.router.navigate([ '/schedule/schedule-details' ]);
   }

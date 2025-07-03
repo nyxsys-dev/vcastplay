@@ -21,7 +21,7 @@ export class UtilityService {
     { label: 'Screen', icon: 'pi pi-desktop', routerLink: '/screens/screen-registration' },
     { label: 'Assets', icon: 'pi pi-image', routerLink: '/assets/asset-library' },
     { label: 'Playlist', icon: 'pi pi-list', routerLink: '/playlist/playlist-library' },
-    { label: 'Layout', icon: 'pi pi-th-large', routerLink: '/dashboard' },
+    { label: 'Layout', icon: 'pi pi-th-large', routerLink: '/layout/design-layout-library' },
     { label: 'Schedules', icon: 'pi pi-calendar', routerLink: '/schedule/schedule-library' },
     { label: 'Screen Mangement', icon: 'pi pi-cloud', routerLink: '/screens/screen-management' },
     { label: 'Reports', icon: 'pi pi-chart-bar', routerLink: '/reports' },
@@ -33,7 +33,6 @@ export class UtilityService {
         { label: 'Profile', icon: 'pi pi-user', routerLink: ['/settings/profile'], },
         { label: 'Users', icon: 'pi pi-users', routerLink: ['/settings/user-management'], },
         { label: 'Roles', icon: 'pi pi-lock', routerLink: ['/settings/role-management'], },
-        { label: 'Modules', icon: 'pi pi-globe', routerLink: ['/settings/module-management'], },
         { separator: true },
         { label: 'Audience Tag', icon: 'pi pi-users', routerLink: ['/settings/audience-tag'], },
       ]
