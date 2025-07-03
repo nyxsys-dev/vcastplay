@@ -18,10 +18,10 @@ export class UtilityService {
 
   modules = signal<DrawerMenu[]>([
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
-    { label: 'Screen', icon: 'pi pi-desktop', routerLink: '/screens/screen-registration' },
+    { label: 'Screens', icon: 'pi pi-desktop', routerLink: '/screens/screen-registration' },
     { label: 'Assets', icon: 'pi pi-image', routerLink: '/assets/asset-library' },
-    { label: 'Playlist', icon: 'pi pi-list', routerLink: '/playlist/playlist-library' },
-    { label: 'Layout', icon: 'pi pi-th-large', routerLink: '/layout/design-layout-library' },
+    { label: 'Playlists', icon: 'pi pi-list', routerLink: '/playlist/playlist-library' },
+    { label: 'Layouts', icon: 'pi pi-th-large', routerLink: '/layout/design-layout-library' },
     { label: 'Schedules', icon: 'pi pi-calendar', routerLink: '/schedule/schedule-library' },
     { label: 'Screen Mangement', icon: 'pi pi-cloud', routerLink: '/screens/screen-management' },
     { label: 'Reports', icon: 'pi pi-chart-bar', routerLink: '/reports' },
@@ -155,15 +155,15 @@ export class UtilityService {
   }
 
   getStatus(status: string) {
-    switch (status) {
-      case 'Approved':
-      case 'Active':
+    switch (status.toLowerCase()) {
+      case 'approved':
+      case 'active':
       case 'online':
         return 'success';
-      case 'Inactive':
+      case 'inactive':
         return 'warn';
-      case 'Disapproved':
-      case 'Suspended':
+      case 'disapproved':
+      case 'suspended':
       case 'offline':
         return 'danger';
       default:
@@ -172,15 +172,15 @@ export class UtilityService {
   }
 
   getIcon(status: string) {
-    switch (status) {
-      case 'Approved':
-      case 'Active':
+    switch (status.toLowerCase()) {
+      case 'approved':
+      case 'active':
       case 'online':
         return 'pi-check-circle';
-      case 'Inactive':
+      case 'inactive':
         return 'pi-pause-circle';
-      case 'Disapproved':
-      case 'Suspended':
+      case 'disapproved':
+      case 'suspended':
       case 'offline':
         return 'pi-times-circle';
       default:

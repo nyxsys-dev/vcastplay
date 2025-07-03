@@ -2,25 +2,33 @@ export interface Screen {
     id: number;
     code: string;
     name: string;
-    type: string;
+    type: 'desktop' | 'android' | 'web';
+    address: {
+        country: string;
+        region: string;
+        city: string;
+        latitude: number;
+        longitude: number;
+        zipCode: string;
+    };
+    group?: string;
+    subGroup?: string;
     displaySettings: {
         orientation: string;
         resolution: string;
     }
-    group: string;
-    subGroup: string;
-    layout: string;
-    status: 'online' | 'offline';
-    geolocation: { latitude: number; longitude: number };
-    schedule: {
-        operation: any;
+    operation?: {
+        alwaysOn: boolean;
         hours: any;
     };
-    geographicalLocation: {
+    geographic?: {
         location: string;
         landmark: string;
     };
-    caltonDatxSerialNo: string;
+    tags?: string[];
+    status: 'active' | 'inactive';
+    others?: any;
+    registeredOn?: Date;
     createdOn: Date;
     updatedOn: Date;
 }

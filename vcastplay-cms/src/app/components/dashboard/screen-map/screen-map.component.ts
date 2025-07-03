@@ -92,29 +92,29 @@ export class ScreenMapComponent {
     });
 
     this.map.addLayer(this.markerClusterGroup);
-    this.onAddMarkers();
+    // this.onAddMarkers();
   }
-  onAddMarkers(): void {
-    this.filterScreens().forEach(screen => {
-      const marker = L.marker([screen.geolocation.latitude, screen.geolocation.longitude], {
-        icon: this.onCreateDivIcon(screen)
-      }).bindTooltip(screen.name, {
-        permanent: false,
-        direction: 'top',
-        opacity: 0.9
-      });
+  // onAddMarkers(): void {
+  //   this.filterScreens().forEach(screen => {
+  //     const marker = L.marker([screen.geolocation.latitude, screen.geolocation.longitude], {
+  //       icon: this.onCreateDivIcon(screen)
+  //     }).bindTooltip(screen.name, {
+  //       permanent: false,
+  //       direction: 'top',
+  //       opacity: 0.9
+  //     });
 
-      this.markerClusterGroup.addLayer(marker);
+  //     this.markerClusterGroup.addLayer(marker);
       
-      marker.on('click', ({ latlng }: any) => {
-        const { lat, lng } = latlng;
-        const screen: any = this.filterScreens().find(screen => screen.geolocation.latitude === lat && screen.geolocation.longitude === lng);
-        this.selectedScreen.set(screen);
-        if (!this.isMobile) this.map.flyTo({ lat: lat - 0.00005, lng }, 22);
-        this.drawerVisible.set(true);
-      })
-    });
-  }
+  //     marker.on('click', ({ latlng }: any) => {
+  //       const { lat, lng } = latlng;
+  //       const screen: any = this.filterScreens().find(screen => screen.geolocation.latitude === lat && screen.geolocation.longitude === lng);
+  //       this.selectedScreen.set(screen);
+  //       if (!this.isMobile) this.map.flyTo({ lat: lat - 0.00005, lng }, 22);
+  //       this.drawerVisible.set(true);
+  //     })
+  //   });
+  // }
   onClickScreen(screen: any) {
     this.selectedScreen.set(screen);
     this.map.flyTo({ lat: screen.geolocation.latitude, lng: screen.geolocation.longitude }, 22);

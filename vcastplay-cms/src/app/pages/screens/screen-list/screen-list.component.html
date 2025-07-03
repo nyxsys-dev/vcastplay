@@ -5,8 +5,8 @@
             <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
                 <app-filters class="w-full md:w-[25rem]"></app-filters>
                 <div class="flex gap-2">
-                    <p-button (onClick)="onClickAddNew()" label="Register" icon="pi pi-plus"></p-button>
-                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button>
+                    <!-- <p-button (onClick)="onClickAddNew()" label="Register" icon="pi pi-plus"></p-button>
+                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button> -->
                     <p-button [label]="!isMobile ? 'Download' : ''" variant="outlined" icon="pi pi-download" [text]="isMobile" />
                 </div>
             </div>
@@ -21,45 +21,55 @@
                 >
                     <ng-template #header>
                         <tr>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Orientation & Resolution</th>
-                            <th>Group</th>
-                            <th>Sub-Group</th>
+                            <th>Screen</th>
+                            <th>Orientation</th>
+                            <th>Resolution</th>
+                            <th>Groups</th>
                             <th>Last Update</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th>
+                                <div class="text-center">Actions</div>
+                            </th>
                         </tr>
                     </ng-template>
                     <ng-template #body let-item>
                         <tr>
-                            <td>{{ item.code }}</td>
-                            <td>{{ item.name }}</td>
                             <td>
-                                <p-tag severity="info">
-                                    <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-4 bg-[var(--p-primary-500)] 
+                                        text-white rounded-full p-3" [pTooltip]="item.type.toUpperCase()" tooltipPosition="bottom">
                                         @switch (item.type) {
                                             @case('desktop') { <i class="pi pi-desktop"></i> }
                                             @case('mobile') { <i class="pi pi-mobile"></i> }
                                             @default { <i class="pi pi-globe"></i> }
                                         }
-                                        <span>{{ item.type.toUpperCase() }}</span>
                                     </div>
-                                </p-tag>
-                            </td>
-                            <td> 
-                                <div class="flex gap-2 items-center">
-                                    <i class="pi pi-exclamation-triangle text-red-500" pTooltip="Auto Detection" tooltipPosition="bottom"></i>
-                                    <p>{{ item.displaySettings.orientation }} - {{ item.displaySettings.resolution }}</p>
+
+                                    <div class="flex flex-col">
+                                        <p class="text-base font-semibold">{{ item.name }}</p>
+                                        <p class="text-sm">{{ item.code }}</p>
+                                    </div>
                                 </div>
                             </td>
-                            <td>{{ item.group }}</td>
-                            <td>{{ item.subGroup }}</td>
+                            <td>
+                                <p class="text-sm font-semibold">{{ item.displaySettings.orientation.toUpperCase() ?? '-' }}</p>
+                            </td>
+                            <td>
+                                <p class="text-sm">{{ item.displaySettings.resolution }}</p>
+                            </td>
+                            <td>
+                                @if (!item.category || !item.subCategory) {
+                                    <p class="text-sm text-red-500 italic">No category available</p>
+                                } @else {
+                                    {{ item.category }} & {{ item.subCategory }}
+                                }
+                            </td>
                             <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
                             <td><p-tag [value]="item.status.toUpperCase()" [severity]="utils.getStatus(item.status)" /></td>
-                            <td class="flex flex-row">
-                                <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                            <td>
+                                <div class="flex flex-row justify-center gap-2">
+                                    <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                                </div> 
                             </td>
                         </tr>
                     </ng-template>
@@ -95,8 +105,8 @@
 </div>
 
 <ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" [text]="true" [rounded]="true" severity="success" />
-    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" />
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" size="small"/>
+    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" severity="danger" size="small" />
 </ng-template>
 
 <p-toast />

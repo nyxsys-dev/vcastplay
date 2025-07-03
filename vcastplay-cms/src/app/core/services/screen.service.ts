@@ -15,6 +15,11 @@ export class ScreenService {
 
   loadingSignal = signal<boolean>(false);
 
+  selectedScreen = signal<Screen | null>(null);
+  
+  rows = signal<number>(8);
+  totalRecords = signal<number>(0);
+
   screenForm: FormGroup = new FormGroup({
     id: new FormControl(0),
     code: new FormControl(''),
@@ -38,11 +43,8 @@ export class ScreenService {
       location: new FormControl(null, [ Validators.required ]),
       landmark: new FormControl(null, [ Validators.required ]),
     }),
-    caltonDatxSerialNo: new FormControl('', [ Validators.required ]),
     status: new FormControl(''),
   });
-
-  selectedScreen = signal<Screen | null>(null);
 
   groupData: any[] = [
     { label: 'Group 1', value: 'Group 1', subGroup: [{ label: 'Sub-Group 1', value: 'Sub-Group 1' }] },
@@ -96,136 +98,28 @@ export class ScreenService {
     /**Call GET roles API */
     this.screenSignal.set([
       { 
-        id: 1, 
-        code: 'NMS001',
-        name: "Main Screen", 
+        id: 1,
+        code: 'NYX001',
+        name: 'PLAYER-NYX001',
         type: 'desktop',
+        address: {
+          country: 'Philippines',
+          region: 'Manila',
+          city: 'Quezon City',
+          latitude: 14.6091,
+          longitude: 121.0223,
+          zipCode: '1100'
+        },
         displaySettings: {
-          orientation: "landscape",
-          resolution: "1920x1080", 
+          orientation: 'landscape',
+          resolution: '1920x1080'
         },
-        group: "Group 1",
-        subGroup: "Sub-Group 1",
-        layout: "Full Screen", 
-        status: "online", 
-        geolocation: { latitude: 14.6091, longitude: 121.0223 },
-        schedule: {
-          operation: "always",
-          hours: null,
-        },
-        geographicalLocation: {
-          location: "local",
-          landmark: "mountains",
-        },
-        caltonDatxSerialNo: '',
+        status: 'inactive',
         createdOn: new Date('2024-01-01'),
         updatedOn: new Date('2024-02-01'),
       },
-      { 
-        id: 2, 
-        code: 'NSS001',
-        name: "Split Screen", 
-        type: 'desktop',
-        displaySettings: {
-          orientation: "landscape",
-          resolution: "1920x1080", 
-        },
-        group: "Group 2",
-        subGroup: "Sub-Group 2",
-        layout: "2 Zones", 
-        status: "offline", 
-        geolocation: { latitude: 14.6760, longitude: 121.0437 },
-        schedule: {
-          operation: "always",
-          hours: null,
-        },
-        geographicalLocation: {
-          location: "local",
-          landmark: "mountains",
-        },
-        caltonDatxSerialNo: '',
-        createdOn: new Date('2024-01-01'),
-        updatedOn: new Date('2024-02-01'),
-      },
-      { 
-        id: 3, 
-        code: 'NVS001',
-        name: "Vertical Screen", 
-        type: 'mobile',
-        displaySettings: {
-          orientation: "portrait",
-          resolution: "1080x1920", 
-        },
-        group: "Group 1",
-        subGroup: "Sub-Group 1",
-        layout: "Single Zone", 
-        status: "online", 
-        geolocation: { latitude: 14.5515, longitude: 121.0207 },
-        schedule: {
-          operation: "always",
-          hours: null,
-        },
-        geographicalLocation: {
-          location: "local",
-          landmark: "mountains",
-        },
-        caltonDatxSerialNo: '',
-        createdOn: new Date('2024-01-01'),
-        updatedOn: new Date('2024-02-01'),
-      },
-      { 
-        id: 4, 
-        code: 'NQS001',
-        name: "Quad Screen", 
-        type: 'mobile',
-        displaySettings: {
-          orientation: "landscape",
-          resolution: "3840x2160", 
-        },
-        group: "Group 2",
-        subGroup: "Sub-Group 2",
-        layout: "4 Zones", 
-        status: "offline", 
-        geolocation: { latitude: 14.5896, longitude: 121.0647 },
-        schedule: {
-          operation: "always",
-          hours: null,
-        },
-        geographicalLocation: {
-          location: "local",
-          landmark: "mountains",
-        },
-        caltonDatxSerialNo: '',
-        createdOn: new Date('2024-01-01'),
-        updatedOn: new Date('2024-02-01'),
-      },
-      { 
-        id: 5, 
-        code: 'NCS001',
-        name: "Custom Screen", 
-        type: 'web',
-        displaySettings: {
-          orientation: "landscape",
-          resolution: "1280x720",
-        },
-        group: "Group 1",
-        subGroup: "Sub-Group 1",
-        layout: "Custom Grid", 
-        status: "online", 
-        geolocation: { latitude: 14.6096, longitude: 120.9870 },
-        schedule: {
-          operation: "always",
-          hours: null,
-        },
-        geographicalLocation: {
-          location: "local",
-          landmark: "mountains",
-        },
-        caltonDatxSerialNo: '',
-        createdOn: new Date('2024-01-01'),
-        updatedOn: new Date('2024-02-01'),
-      }
     ]);
+    this.totalRecords.set(this.screens().length);
   }
 
   onGetScreens() {
@@ -252,7 +146,7 @@ export class ScreenService {
     const { id, code, status, ...info } = screen;
     const index = tempScreens.findIndex(s => s.id === id);
     if (index !== -1) tempScreens[index] = { ...tempScreens[index], ...info };
-    else tempScreens.push({ id: tempScreens.length + 1, code: `NYX00${tempScreens.length + 1}`, status: 'offline', ...info, createdOn: new Date(), updatedOn: new Date() });
+    else tempScreens.push({ id: tempScreens.length + 1, code: `NYX00${tempScreens.length + 1}`, status: 'inactive', ...info, createdOn: new Date(), updatedOn: new Date() });
 
     this.screenSignal.set([...tempScreens]);
   }

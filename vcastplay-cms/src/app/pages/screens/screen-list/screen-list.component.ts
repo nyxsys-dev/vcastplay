@@ -28,12 +28,8 @@ export class ScreenListComponent {
     return this.screenService.screens();
   });
 
-  rows: number = 8;
-  totalRecords: number = 0;
-
   ngOnInit() {
     this.screenService.onGetScreens();
-    this.totalRecords = this.screenService.screens().length;
   }
 
   onClickAddNew() {
@@ -42,8 +38,8 @@ export class ScreenListComponent {
 
   onClickEdit(item: any) {
     this.isEditMode.set(true);
-    this.selectedScreen.set(item);
-    this.router.navigate([ '/screens/screen-details', item.code ]);
+    this.screenForm.patchValue(item);
+    this.router.navigate([ '/screens/screen-details' ]);
   }
 
   onClickDelete(item: any, event: Event) {
@@ -73,16 +69,11 @@ export class ScreenListComponent {
 
   onClickRefresh() { }
 
-  get selectedScreen() {
-    return this.screenService.selectedScreen;
-  }
-
-  get isEditMode() { 
-    return this.screenService.isEditMode; 
-  }
-
-  get isMobile() {
-    return this.utils.isMobile();
-  }
+  get rows() { return this.screenService.rows; }
+  get totalRecords() { return this.screenService.totalRecords; }
+  get screenForm() { return this.screenService.screenForm; }
+  get selectedScreen() { return this.screenService.selectedScreen; }
+  get isEditMode() { return this.screenService.isEditMode; }
+  get isMobile() { return this.utils.isMobile(); }
 
 }
