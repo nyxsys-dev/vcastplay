@@ -117,6 +117,12 @@ export class PlaylistListComponent {
     popup.hide();
   }
 
+  onClickGetContents() {
+    this.showContents.set(true);
+    this.activeStep.set(1);
+    this.playlistService.onStopPreview();
+  }
+
   get playlists() { return this.playlistService.playlists; }
   get playlistForm() { return this.playlistService.playListForm; }
   get isEditMode() { return this.playlistService.isEditMode; }
@@ -129,4 +135,6 @@ export class PlaylistListComponent {
   get getTransitionClasses() { return this.playlistService.getTransitionClasses; }
   get status() { return this.playlistForm.get('status'); }
   get approvedInfo() { return this.playlistForm.get('approvedInfo'); }
+  get showContents() { return this.playlistService.showContents; }
+  get activeStep() { return this.playlistService.activeStep; }
 }

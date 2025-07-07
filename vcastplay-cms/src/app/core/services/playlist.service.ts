@@ -27,6 +27,7 @@ export class PlaylistService {
   isPlaying = signal<boolean>(false);
   fadeIn = signal<boolean>(false);
   isLooping = signal<boolean>(false);
+  showContents = signal<boolean>(false);
   progress = signal<number>(0);
   timeoutId: any;
   intervalId: any;
@@ -48,7 +49,8 @@ export class PlaylistService {
       approvedBy: new FormControl('Admin'),
       approvedOn: new FormControl(new Date()),
       remarks: new FormControl(''),
-    })
+    }),
+    isAuto: new FormControl(false),
   })
 
   transitionTypes: any[] = [

@@ -105,7 +105,6 @@ export class AssetDetailsComponent {
     
     const result = await this.assetService.processFile(file);
     if (result) {
-      console.log(result);
       this.assetForm.patchValue(result);
     }
     

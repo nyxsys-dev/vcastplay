@@ -38,7 +38,6 @@ export class PlaylistDetailsComponent {
   filteredAssets = signal<Assets[]>([]);
   selectedAssets = signal<Assets[]>([]);
 
-  showContents = signal<boolean>(false);
   isExpanded = signal<boolean>(true);
   
   totalDuration = () => {
@@ -137,5 +136,6 @@ export class PlaylistDetailsComponent {
   get assetViewModeSignal() { return this.assetService.assetViewModeSignal; }
   get activeStep() { return this.playlistService.activeStep; }
   get isEditMode() { return this.playlistService.isEditMode; }
+  get showContents() { return this.playlistService.showContents; }
   get onTimeUpdate() { return this.playlistService.onTimeUpdate; }
 }

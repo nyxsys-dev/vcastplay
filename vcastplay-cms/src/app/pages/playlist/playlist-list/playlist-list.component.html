@@ -4,9 +4,13 @@
         <ng-template #title>
             <div class="flex gap-4 items-center mb-2">
                 <app-filters class="w-full md:w-[25rem]" />
-                <div class="flex gap-4 ml-auto">
-                    <p-button class="hidden md:block" (onClick)="onClickAddNew()" label="New Playlist" icon="pi pi-plus"></p-button>
-                    <p-button class="md:hidden" (onClick)="onClickAddNew()" label="" icon="pi pi-plus" />
+                <div class="gap-2 ml-auto hidden md:flex">
+                    <p-button label="Get Contents" icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" />
+                    <p-button (onClick)="onClickAddNew()" label="New Playlist" icon="pi pi-plus"></p-button>
+                </div>
+                <div class="flex gap-2 ml-auto md:hidden">
+                    <p-button icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" />
+                    <p-button (onClick)="onClickAddNew()" label="" icon="pi pi-plus" />
                 </div>
             </div>
         </ng-template>
