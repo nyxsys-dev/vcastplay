@@ -7,6 +7,7 @@ export interface Screen {
         country: string;
         region: string;
         city: string;
+        fullAddress: string;
         latitude: number;
         longitude: number;
         zipCode: string;
@@ -19,7 +20,8 @@ export interface Screen {
     }
     operation?: {
         alwaysOn: boolean;
-        hours: any;
+        weekdays: string[];
+        hours: string[];
     };
     geographic?: {
         location: string;

@@ -21,6 +21,7 @@ import { PlaylistPreviewComponent } from '../../../components/playlist/playlist-
 import { UserApprovalComponent } from '../../../components/users/user-approval/user-approval.component';
 import { SchedulesContentListComponent } from '../../../pages/schedules/schedules-content-list/schedules-content-list.component';
 import { ScheduleListItemComponent } from '../../../pages/schedules/schedule-list-item/schedule-list-item.component';
+import { ScreenScheduleComponent } from '../../../pages/screens/screen-schedule/screen-schedule.component';
 
 
 const COMPONENT_MODULES = [
@@ -58,6 +59,7 @@ const COMPONENT_MODULES = [
   // Schedule Components
   SchedulesContentListComponent,
   ScheduleListItemComponent,
+  ScreenScheduleComponent,
 ]
 
 @NgModule({

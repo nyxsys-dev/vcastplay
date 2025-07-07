@@ -6,6 +6,8 @@ import { DrawerMenu } from '../interfaces/drawer-menu';
 import { PrimeNG } from 'primeng/config';
 import { FormGroup } from '@angular/forms';
 import moment from 'moment';
+import { HttpClient } from '@angular/common/http';
+import { SelectOption } from '../interfaces/general';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +17,24 @@ export class UtilityService {
   filterValues = signal<any>({});
   drawerVisible = signal<boolean>(false);
   tableSkeletonRows = Array(5).fill({});
+  
+  orientations = signal<SelectOption[]>([
+    { label: 'Landscape', value: 'landscape' },
+    { label: 'Portrait', value: 'portrait' },
+  ]);
+  
+  resolutions = signal<SelectOption[]>([
+    { label: '1920x1080', value: '1920x1080' },
+    { label: '1366x768', value: '1366x768' },
+    { label: '1600x900', value: '1600x900' },
+    { label: '2560x1440', value: '2560x1440' },
+    { label: '3840x2160', value: '3840x2160' },
+    { label: '1920x1200', value: '1920x1200' },
+    { label: '1440x900', value: '1440x900' },
+    { label: '1280x800', value: '1280x800' },
+    { label: '1024x768', value: '1024x768' },
+    { label: '800x600', value: '800x600' },
+  ]);
 
   modules = signal<DrawerMenu[]>([
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
@@ -38,6 +58,14 @@ export class UtilityService {
       ]
     }
   ]);
+  
+  groups: any[] = [
+    { label: 'Group 1', value: 'Group 1', subGroup: [{ label: 'Sub-Group 1', value: 'Sub-Group 1' }] },
+    { label: 'Group 2', value: 'Group 2', subGroup: [{ label: 'Sub-Group 2', value: 'Sub-Group 2' }] },
+  ]
+  
+  filterGroup = computed(() => this.groups.map(group => ({ label: group.label, value: group.value })));
+  filterSubGroup = computed(() => this.groups.map(group => group.subGroup).flat().map(subGroup => ({ label: subGroup.label, value: subGroup.value })));
 
   private breakPointObserver = inject(BreakpointObserver);
   readonly isMobile = toSignal(
@@ -120,7 +148,7 @@ export class UtilityService {
     return times;
   }
 
-  constructor(private config: PrimeNG) { }
+  constructor(private config: PrimeNG, private http: HttpClient) { }
 
   formatDate(date: any, format: string, timeZone: string = 'Asia/Manila') {
     return moment(date).tz(timeZone);
@@ -186,5 +214,22 @@ export class UtilityService {
       default:
         return 'pi-question-circle';
     }
+  }
+
+  // Public API
+  getWeatherData(lat: number, lng: number) {
+    return this.http.get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`);
+  }
+  
+  getGeolocation(lat: number, lng: number) {
+    return this.http.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`)
+  }
+
+  getReverseGeolocation(lat: number, lng: number) {
+    return this.http.get(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=18`);
+  }
+
+  getAddressCoordinates(search: string) {
+    return this.http.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(search)}`);
   }
 }

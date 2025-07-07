@@ -9,12 +9,12 @@ export interface Assets {
     category: string;
     subCategory: string;
     fileDetails: AssestInfo;
-    dateRange: { 
+    dateRange?: { 
         start: Date | null;
         end: Date | null;
     };
-    hours: string[];
-    weekdays: string[];
+    hours?: string[];
+    weekdays?: string[];
     duration: number;
     audienceTag: AudienceTag;
     status: string;

@@ -5,6 +5,7 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { UtilityService } from '../../../core/services/utility.service';
 import { AssetsService } from '../../../core/services/assets.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-asset-details',
@@ -48,21 +49,13 @@ export class AssetDetailsComponent {
     return [ 'web', 'widget' ].includes(type);
   }
 
-  constructor() {
-    this.assetTypeControl.enable();
-
-    // Get screen code from url
-    const code = this.route.snapshot.paramMap.get('code');    
-    if (code) {
-      const assetData: any = this.assetService.selectedAsset();      
-      if (assetData) {      
-        this.assetForm.patchValue(assetData);
-        this.assetTypeControl.disable();
-      }
-    }
-  }
+  constructor() { }
   
-  ngOnInit() { }
+  ngOnInit() { 
+    if (!this.isEditMode()) this.assetTypeControl.enable();
+    const type = this.formControl('type').value;
+    this.assetTypeControl.patchValue([ 'web', 'widget' ].includes(type) ? type : 'file');
+  }
 
   ngOnDestroy() {
     this.onClickCancel();
@@ -71,8 +64,10 @@ export class AssetDetailsComponent {
   onChangeType(event: any) {
     const type = event.value;
     if (['web', 'widget'].includes(type)) {
+      this.formFileDetails('orientation').enable();
       this.assetForm.patchValue({ type, name: null, link: null })
     } else {
+      this.formFileDetails('orientation').disable();
       this.assetForm.reset();
     }
   }
@@ -110,6 +105,7 @@ export class AssetDetailsComponent {
     
     const result = await this.assetService.processFile(file);
     if (result) {
+      console.log(result);
       this.assetForm.patchValue(result);
     }
     
@@ -142,6 +138,7 @@ export class AssetDetailsComponent {
         this.assetService.onSaveAssets(this.assetForm.value);
         this.selectedAsset.set(null);
         this.assetForm.reset();
+        this.assetTypeControl.reset();
         this.isEditMode.set(false);
         this.router.navigate(['/assets/asset-library']);
       },
@@ -205,16 +202,21 @@ export class AssetDetailsComponent {
     return this.utils.getFormControl(this.assetForm, fieldName);
   }
 
+  formFileDetails(fieldName: string) {
+    return this.formControl('fileDetails').get(fieldName) as FormGroup;
+  }
+
   get isEditMode() { return this.assetService.isEditMode; }
   get selectedAsset() { return this.assetService.selectedAsset; }
   get assetForm() { return this.assetService.assetForm; }
-  get fileDetails() { return this.assetForm.get('fileDetails'); }
   get assetTypes() { return this.assetService.assetType; }
   get assetTypeControl() { return this.assetService.assetTypeControl; }
+  get fileDetails() { return this.assetForm.get('fileDetails'); }
   get type() { return this.assetForm.get('type'); }
   get availability() { return this.assetForm.get('availability'); }
   get dateRange() { return this.assetForm.get('dateRange'); }
   get weekdays() { return this.assetForm.get('weekdays'); }
   get hours() { return this.assetForm.get('hours'); }
+  get orientations() { return this.utils.orientations; }
 
 }

@@ -1,139 +1,131 @@
-<app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
-<p-card>
-    <ng-template #title>
-        <div class="flex items-center gap-4">
-            <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
-            <p class="text-xl font-semibold">Screen Details</p>
-        </div>
-    </ng-template>
-    <!-- <div class="flex flex-col md:flex-row gap-6 mt-4" [formGroup]="screenForm">
-        <div class="flex flex-col gap-4 w-full">
-            <p-divider [align]="'left'" type="solid"><b class="text-sm">Information</b></p-divider>
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div class="col-span-1 md:col-span-4">
-                    <p-floatlabel variant="in">
-                        <input id="code" pInputText formControlName="code" 
-                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('code').invalid && formControl('code').touched }" showClear fluid />
-                        <label for="code">Code</label>
-                    </p-floatlabel>
+<div class="flex flex-col gap-1 h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+    <p-card class="flex-1" styleClass="h-full">
+        <ng-template #title>
+            <div class="flex gap-2">
+                <div class="flex items-center gap-4">
+                    <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+                    <p class="text-xl font-semibold">Screen Details</p>
+                </div>
+                <div class="ml-auto">
+                    <p-button class="hidden md:block" icon="pi pi-save" label="Save" size="small" (onClick)="onClickSave($event)" />
+                </div>
+            </div>
+        </ng-template>
+        <div class="flex flex-col gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4" [formGroup]="screenForm">
+                <div class="col-span-1 md:col-span-2">
+                    <p-inputgroup>
+                        <p-floatlabel variant="on">
+                            <input id="code" pInputText formControlName="code"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('code').invalid && formControl('code').touched }" readonly fluid />
+                            <label for="code">Code</label>
+                        </p-floatlabel>
+                        <p-inputgroup-addon>
+                            <p-button icon="pi pi-copy" pTooltip="Copy" tooltipPosition="bottom" text />
+                        </p-inputgroup-addon>
+                    </p-inputgroup>
                 </div>
                 <div class="col-span-1 md:col-span-8">
-                    <p-floatlabel variant="in">
-                        <input id="name" pInputText formControlName="name" 
+                    <p-floatlabel variant="on">
+                        <input id="name" pInputText formControlName="name"
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
                         <label for="name">Name</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-4">
-                    <p-floatlabel variant="in">
-                        <p-select id="type" [options]="utils.platForms" optionLabel="label" optionValue="value" formControlName="type" showClear fluid />
+                <div class="col-span-1 md:col-span-2">
+                    <p-floatlabel variant="on">
+                        <p-select inputId="type" [options]="types()" optionLabel="label" optionValue="value" formControlName="type" appendTo="body" readonly fluid />
                         <label for="type">Type</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-4">
-                    <p-floatlabel variant="in">
-                        <p-select id="group" [options]="screenService.filterGroup()" optionLabel="label" optionValue="value" formControlName="group" showClear fluid />
+                <div class="col-span-1 md:col-span-12 flex flex-col gap-2" formGroupName="address">
+                    <p-floatlabel variant="on">
+                        <input id="fullAddress" type="text" pInputText formControlName="fullAddress" readonly fluid>
+                        <label for="fullAddress">Address</label>
+                    </p-floatlabel>
+                    <div class="w-full">
+                        @if (loadingAddressSignal()) { <p-progress-bar mode="indeterminate" /> }
+                        <app-mapmarkers [markers]="[ screenForm.value ]" (selectedScreen)="onGetLocation($event)" />
+                    </div>
+                </div>
+                <div class="col-span-1 md:col-span-6">
+                    <p-floatlabel variant="on">
+                        <p-select inputId="group" [options]="groups()" optionLabel="label" optionValue="value" formControlName="group" 
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('group').invalid && formControl('group').touched }" appendTo="body" showClear fluid />
                         <label for="group">Group</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-4">
-                    <p-floatlabel variant="in">
-                        <p-select id="subGroup" [options]="screenService.filterSubGroup()" optionLabel="label" optionValue="value" formControlName="subGroup" showClear fluid />
-                        <label for="subGroup">Subgroup</label>
+                <div class="col-span-1 md:col-span-6">
+                    <p-floatlabel variant="on">
+                        <p-select inputId="subGroup" [options]="subGroups()" optionLabel="label" optionValue="value" formControlName="subGroup"  
+                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('subGroup').invalid && formControl('subGroup').touched }" appendTo="body" showClear fluid />
+                        <label for="subGroup">Sub Group</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-12" formGroupName="displaySettings">
-                    <p-divider [align]="'left'" type="solid">
-                        <b class="text-sm">Display Settings <span class="italic font-normal text-red-500">(Auto Detect)</span></b>
-                    </p-divider>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                        <div class="col-span-1">
-                            <p-floatlabel variant="in">
-                                <p-select id="orientation" [options]="screenService.orientations()" optionLabel="label" optionValue="value" formControlName="orientation" showClear fluid />
-                                <label for="orientation">Orientation</label>
-                            </p-floatlabel>
-                        </div>
-                        <div class="col-span-1">
-                            <p-floatlabel variant="in">
-                                <p-select id="resolution" [options]="screenService.resolution()" optionLabel="label" optionValue="value" formControlName="resolution" filterBy="label" filter showClear fluid />
-                                <label for="resolution">Resolution</label>
-                            </p-floatlabel>
-                        </div>
+                <div class="col-span-1 md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4" formGroupName="displaySettings">
+                    <div class="col-span-1 md:col-span-6">
+                        <p-floatlabel variant="on">
+                            <p-select inputId="orientations" [options]="orientations()" optionLabel="label" optionValue="value" 
+                                formControlName="orientation" appendTo="body" showClear fluid />
+                            <label for="orientations">Orientations</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-span-1 md:col-span-6">
+                        <p-floatlabel variant="on">
+                            <p-select inputId="resolutions" [options]="resolutions()" optionLabel="label" optionValue="value" 
+                                formControlName="resolution" appendTo="body" showClear fluid />
+                            <label for="resolutions">Resolutions</label>
+                        </p-floatlabel>
                     </div>
                 </div>
-                <div class="col-span-1 md:col-span-12" formGroupName="geographicalLocation">
-                    <p-divider [align]="'left'" type="solid"><b class="text-sm">Geographical Location</b></p-divider>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                        <div class="col-span-1">
-                            <p-floatlabel variant="in">
-                                <p-select id="location" [options]="screenService.location()" optionLabel="label" optionValue="value" formControlName="location" showClear fluid />
-                                <label for="location">Location</label>
-                            </p-floatlabel>
-                        </div>
-                        <div class="col-span-1">
-                            <p-floatlabel variant="in">
-                                <p-select id="landmarks" [options]="screenService.landmarks()" optionLabel="label" optionValue="value" formControlName="landmark" showClear fluid />
-                                <label for="landmarks">Landmarks</label>
-                            </p-floatlabel>
-                        </div>
+                <div class="col-span-1 md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4" formGroupName="geograhic">
+                    <div class="col-span-1 md:col-span-6">
+                        <p-floatlabel variant="on">
+                            <p-select inputId="locations" [options]="locations()" optionLabel="label" optionValue="value" formControlName="locations" appendTo="body" 
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControlGeographic('locations').invalid && formControlGeographic('locations').touched }" showClear fluid />
+                            <label for="locations">Locations</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-span-1 md:col-span-6">
+                        <p-floatlabel variant="on">
+                            <p-select inputId="landmarks" [options]="landmarks()" optionLabel="label" optionValue="value" formControlName="landmarks" appendTo="body" 
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControlGeographic('landmarks').invalid && formControlGeographic('landmarks').touched }" showClear fluid />
+                            <label for="landmarks">Landmarks</label>
+                        </p-floatlabel>
                     </div>
                 </div>
-                <div class="col-span-1 md:col-span-12" formGroupName="schedule">
-                    <p-divider [align]="'left'" type="solid"><b class="text-sm">Operational Schedule</b></p-divider>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                        <div class="col-span-1">
-                            <p-floatlabel variant="in">
-                                <p-select id="operation" [options]="screenService.operationSchedule()" optionLabel="label" optionValue="value" formControlName="operation" showClear fluid />
-                                <label for="operation">Operational</label>
-                            </p-floatlabel>
-                        </div>
-                        <div class="col-span-1">
-                            <p-floatlabel variant="in">
-                                <p-datepicker id="hours" formControlName="hours" icon="pi pi-clock" showIcon showButtonBar timeOnly fluid />
-                                <label for="hours">Hours</label>
-                            </p-floatlabel>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="col-span-1 md:col-span-6">
+                    <app-screen-schedule [screenForm]="screenForm" />
+                </div>
+                <div class="col-span-1 md:col-span-6 flex flex-col gap-2">
+                    <p-inputgroup>
+                        <p-floatlabel variant="on">
+                            <input id="tag" type="text" pInputText [formControl]="tagControl" fluid>
+                            <label for="tag">Tag</label>
+                        </p-floatlabel>
+                        <p-inputgroup-addon>
+                            <p-button icon="pi pi-plus" [text]="false" pTooltip="Add" tooltipPosition="bottom" (onClick)="onClickAddTag()" />
+                        </p-inputgroup-addon>
+                    </p-inputgroup>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg mt-4 flex-1 p-2 relative">
+                        <div class="flex flex-wrap gap-2">
+                            @for (item of tags?.value; track $index) {
+                                <p-chip [label]="item" [removable]="true" (onRemove)="onClickRemoveTag($event, item)" />
+                            } @empty {
+                                <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                                    <p class="italic">No tag added</p>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="flex flex-col gap-4 w-full">
-            <p-divider [align]="'left'" type="solid"><b class="text-sm">Screen Address</b></p-divider>
-            <app-mapmarkers [markers]="markers" (selectedScreen)="onGetLocation($event)" />
-            <p-accordion [value]="0">
-                <p-accordion-panel value="0">
-                    <p-accordion-header><p class="text-sm">Software Information</p></p-accordion-header>
-                    <p-accordion-content>
-                        <div class="flex flex-col gap-4 text-sm px-10">
-                            <p>IP Address: 0.0.0.0</p>
-                            <p>CPU & Temp: Intel Core (i7) / 45°C</p>
-                            <p>Memory: 16GB / 80% </p>
-                            <p>Storage: 100GB / 80%</p>
-                            <p>OS: Windows 10</p>
-                            <p>Version: 1.0.0</p>
-                        </div>
-                    </p-accordion-content>
-                </p-accordion-panel>
-                <p-accordion-panel value="1">
-                    <p-accordion-header><p class="text-sm">Hardware Information</p></p-accordion-header>
-                    <p-accordion-content>
-                        <div class="flex flex-col gap-4 text-sm px-10">
-                            <div class="flex items-center gap-4"><p>Display Status:</p> <p-tag value="ON" severity="success" /></div>
-                            <div class="flex items-center gap-4"><p>HDMI Status:</p> <p-tag value="OFF" severity="danger" /></div>
-                            <p>UUID: 00000000-0000-0000-0000-000000000000</p>
-                        </div>
-                    </p-accordion-content>
-                </p-accordion-panel>
-            </p-accordion>
-        </div>
-    </div> -->
-    <!-- <ng-template #footer>
-        <div class="flex justify-start md:justify-end gap-3">
-            <p-button label="Cancel" severity="secondary" />
-            <p-button label="Register Screen" (onClick)="onClickSave($event)" />
-        </div>
-    </ng-template> -->
-</p-card>
+    </p-card>
+</div>
 
 <p-toast />
 <p-confirmdialog />

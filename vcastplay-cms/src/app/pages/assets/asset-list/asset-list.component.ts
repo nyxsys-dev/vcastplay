@@ -109,8 +109,8 @@ export class AssetListComponent {
 
   onClickEdit(asset: Assets) {
     this.isEditMode.set(true);
-    this.selectedAsset.set(asset);    
-    this.router.navigate([ '/assets/asset-details', asset.code ]);
+    this.assetForm.patchValue(asset);   
+    this.router.navigate([ '/assets/asset-details' ]);
   }
 
   onClickDuplicate(item: any, event: Event) {

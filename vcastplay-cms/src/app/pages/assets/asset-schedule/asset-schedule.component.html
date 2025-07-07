@@ -92,11 +92,3 @@
         }
     </div>
 </div>
-
-<div class="flex flex-col md:flex-row md:items-center gap-2 " [formGroup]="assetForm">
-    <p-floatlabel variant="on">
-        <p-inputnumber inputId="duration" formControlName="duration" [min]="0" [readonly]="typeControl?.value == 'video'" showButtons />
-        <label for="duration">Duration (seconds)</label>
-    </p-floatlabel>
-    <p class="italic text-sm text-red-400">* Duration can be set only for video asset</p>
-</div>

@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-screen-details',
@@ -18,8 +19,6 @@ export class ScreenDetailsComponent {
 
   pageInfo: MenuItem = [ {label: 'Screens'}, {label: 'Registration', routerLink: '/screens/screen-registration'}, {label: 'Details'} ];
 
-  markers: any[] = [];
-
   screenService = inject(ScreenService);
   utils = inject(UtilityService);
   confirmation = inject(ConfirmationService);
@@ -27,22 +26,29 @@ export class ScreenDetailsComponent {
   router = inject(Router);
   route = inject(ActivatedRoute);
 
-  ngOnInit() {
-    // Get screen code from url
-    const code = this.route.snapshot.paramMap.get('code');
-    if (code) {
-      const screenData: any = this.screenService.selectedScreen();    
-      if (screenData) {      
-        this.screenForm.patchValue(screenData);
-        this.markers.push({ geolocation: screenData.geolocation, name: screenData.name });
-      }
-    } 
-  }
+  markers = computed(() => {
+    return [ this.address?.value ]
+  })
+
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.selectedScreen.set(null);
     this.screenForm.reset();
     this.isEditMode.set(false);
+  }
+
+  onClickAddTag() {
+    const tags = this.tags?.value || [];
+    const tag = this.tagControl.value;
+    if (tags?.includes(tag)) {
+      this.message.add({ severity: 'error', summary: 'Error', detail: 'Tag already added' });
+      return;
+    }
+    if (tag) {
+      this.tags?.setValue([...tags, tag]);
+      this.tagControl.reset();
+    }
   }
 
   onClickSave(event: Event) {
@@ -67,11 +73,11 @@ export class ScreenDetailsComponent {
       acceptButtonProps: {
         label: 'Save',
       },
-      accept: () => {
+      accept: () => {        
         this.message.add({ severity:'success', summary: 'Success', detail: 'Screen registered successfully!' });
         this.screenService.onSaveScreen(this.screenForm.value);
-        // this.router.navigate([ '/screens/screen-registration' ]);
-        // this.screenForm.reset();
+        this.router.navigate([ '/screens/screen-registration' ]);
+        this.screenForm.reset();
       },
     })
   }
@@ -82,27 +88,47 @@ export class ScreenDetailsComponent {
     this.router.navigate([ '/screens/screen-registration' ]);
   }
 
-  onGetLocation(event: Event) {
-    this.screenForm.patchValue(event);    
+  onClickRemoveTag(event: Event, tag: string) {
+    this.screenService.onRemoveTag(tag)
+  }
+
+  onGetLocation(event: any) {
+    this.loadingAddressSignal.set(true);
+    this.utils.getReverseGeolocation(event.latitude, event.longitude).subscribe((result: any) => {
+      const { address, lat, lon, display_name } = result;
+      this.screenForm.patchValue({ address: { 
+        ...address, 
+        fullAddress: display_name,
+        latitude: parseFloat(lat), 
+        longitude: parseFloat(lon), 
+        zipCode: address.postcode 
+      }});  
+      this.loadingAddressSignal.set(false);    
+    })
   }
 
   formControl(fieldName: string) {
     return this.utils.getFormControl(this.screenForm, fieldName);
   }
-
-  get selectedScreen() {
-    return this.screenService.selectedScreen;
+  
+  formControlGeographic(fieldName: string) {
+    return this.formControl('geograhic')
   }
 
-  get screenForm() {
-    return this.screenService.screenForm;
-  }
+  get groups() { return this.utils.filterGroup; }
+  get subGroups() { return this.utils.filterSubGroup; }
+  get orientations() { return this.utils.orientations; }
+  get resolutions() { return this.utils.resolutions; }
 
-  get geolocation() {
-    return this.screenForm.get('geolocation');
-  }
-
-  get isEditMode() { 
-    return this.screenService.isEditMode; 
-  }
+  get locations () { return this.screenService.locations; }
+  get landmarks () { return this.screenService.landmarks; }
+  get selectedScreen() { return this.screenService.selectedScreen; }
+  get screenForm() { return this.screenService.screenForm; }
+  get isEditMode() { return this.screenService.isEditMode; }
+  get types() { return this.screenService.types; }
+  get tagControl() { return this.screenService.tagControl; }
+  get loadingAddressSignal() { return this.screenService.loadingAddressSignal; }
+  
+  get address() { return this.screenForm.get('address'); }
+  get tags() { return this.screenForm.get('tags'); }
 }

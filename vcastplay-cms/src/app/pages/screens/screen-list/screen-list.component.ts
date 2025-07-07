@@ -45,7 +45,7 @@ export class ScreenListComponent {
   onClickDelete(item: any, event: Event) {
     this.confirmation.confirm({
       target: event.target as EventTarget,
-      message: 'Do you want to delete this user?',
+      message: 'Do you want to delete this screen?',
       closable: true,
       closeOnEscape: true,
       header: 'Danger Zone',
@@ -61,7 +61,7 @@ export class ScreenListComponent {
       },
       accept: () => {
         this.screenService.onDeleteScreen(item);
-        this.message.add({ severity:'success', summary: 'Success', detail: 'User deleted successfully!' });
+        this.message.add({ severity:'success', summary: 'Success', detail: 'Screen deleted successfully!' });
       },
       reject: () => { }
     })

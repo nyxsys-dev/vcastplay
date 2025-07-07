@@ -1,7 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { AssestInfo, Assets, AssetType } from '../interfaces/assets';
-import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +26,7 @@ export class AssetsService {
     { label: 'Widgets', value: 'widget' },
   ]);
 
-  assetTypeControl: FormControl = new FormControl('file');
+  assetTypeControl: FormControl = new FormControl('file', { nonNullable: true });
   
   assetViewModeSignal = signal<string>('Grid');
   assetViewModeCtrl: FormControl = new FormControl('Grid');
@@ -103,12 +102,6 @@ export class AssetsService {
           },
           thumbnail: 'https://picsum.photos/id/237/200/300'
         },
-        dateRange: {
-          start: null,
-          end: null
-        },
-        weekdays: [],
-        hours: [],
         duration: 5,
         audienceTag: {
           genders: [ 'Male' ],

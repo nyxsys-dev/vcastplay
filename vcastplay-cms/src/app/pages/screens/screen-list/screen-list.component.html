@@ -2,14 +2,14 @@
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
     <div class="flex-1">
         <p-card styleClass="h-full">
-            <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between mb-8 md:mb-2">
-                <app-filters class="w-full md:w-[25rem]"></app-filters>
-                <div class="flex gap-2">
-                    <!-- <p-button (onClick)="onClickAddNew()" label="Register" icon="pi pi-plus"></p-button>
-                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh"></p-button> -->
-                    <p-button [label]="!isMobile ? 'Download' : ''" variant="outlined" icon="pi pi-download" [text]="isMobile" />
+            <ng-template #title>
+                <div class="flex gap-4 items-center mb-2">
+                    <app-filters class="w-full md:w-[25rem]"></app-filters>
+                    <div class="flex gap-2 ml-auto">
+                        <p-button icon="pi pi-download" [text]="false" pTooltip="Download" tooltipPosition="bottom" />
+                    </div>
                 </div>
-            </div>
+            </ng-template>
             <div class="flex-1 md:h-full">
                 <p-table
                     class="hidden lg:block" 
@@ -58,13 +58,15 @@
                                 <p class="text-sm">{{ item.displaySettings.resolution }}</p>
                             </td>
                             <td>
-                                @if (!item.category || !item.subCategory) {
-                                    <p class="text-sm text-red-500 italic">No category available</p>
-                                } @else {
-                                    {{ item.category }} & {{ item.subCategory }}
-                                }
+                                <div class="text-sm">
+                                    @if (!item.group || !item.subGroup) {
+                                        <p class="text-red-500 italic">No group available</p>
+                                    } @else {
+                                        <p>{{ item.group }} & {{ item.subGroup }}</p>
+                                    }
+                                </div>
                             </td>
-                            <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
+                            <td><p class="text-sm">{{ item.updatedOn | date: 'mediumDate' }}</p></td>
                             <td><p-tag [value]="item.status.toUpperCase()" [severity]="utils.getStatus(item.status)" /></td>
                             <td>
                                 <div class="flex flex-row justify-center gap-2">

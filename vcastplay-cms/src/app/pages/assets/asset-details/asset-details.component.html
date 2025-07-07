@@ -21,13 +21,12 @@
                 </div>
             </div>
         </ng-template>
-
-        <div class="flex flex-col gap-2 pt-4 h-200 md:h-full" [formGroup]="assetForm">
+        <div class="flex flex-col gap-4 pt-4 h-200 md:h-full" [formGroup]="assetForm">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-2">
                 <div class="col-span-1 md:col-span-2">
                     <p-floatlabel variant="on">
                         <p-select inputId="type" [options]="assetTypes()" optionLabel="label" optionValue="value" 
-                            (onChange)="onChangeType($event)" [formControl]="assetTypeControl" fluid />
+                            (onChange)="onChangeType($event)" [formControl]="assetTypeControl" [readonly]="isEditMode()" fluid />
                         <label for="type">Type</label>
                     </p-floatlabel>
                 </div>
@@ -90,7 +89,7 @@
                     }
                 </div>
                 
-                <div class="col-span-1 md:col-span-12">
+                <div class="col-span-1 md:col-span-6 lg:col-span-8">
                     @if (showLinkInput()) {
                         <p-floatlabel variant="on">
                             <input id="link" pInputText formControlName="link"
@@ -98,6 +97,19 @@
                             <label for="link">Link</label>
                         </p-floatlabel>
                     }
+                </div>
+                <div class="col-span-1 md:col-span-3 lg:col-span-2" formGroupName="fileDetails">
+                    <p-floatlabel variant="on">
+                        <p-select inputId="orientations" [options]="orientations()" optionLabel="label" [readonly]="!showLinkInput()"  optionValue="value" 
+                            formControlName="orientation" appendTo="body" fluid />
+                        <label for="orientations">Orientations</label>
+                    </p-floatlabel>
+                </div>
+                <div class="col-span-1 md:col-span-3 lg:col-span-2">
+                    <p-floatlabel variant="on">
+                        <p-inputnumber inputId="duration" formControlName="duration" [min]="0" [readonly]="type?.value == 'video'" showButtons fluid />
+                        <label for="duration">Duration (seconds)</label>
+                    </p-floatlabel>
                 </div>
             </div>
             
@@ -158,7 +170,7 @@
         </div>
         <p>File Duration: <span class="font-semibold">{{ utils.timeConversion(assetForm.value.duration, true) }}</span></p>
         <p>File Resolution: <span class="font-semibold">{{ fileDetails?.value.resolution?.width }} x {{ fileDetails?.value.resolution?.height }}</span></p>
-        <p>File Orientation: <span class="font-semibold">{{ fileDetails?.value.orientation?.toUpperCase() }}</span></p>
+        <p>File Orientation: <span class="font-semibold">{{ formFileDetails('orientation').value?.toUpperCase() }}</span></p>
     </div>
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="isShowInfo.set(false)" />

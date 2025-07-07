@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet';
 import 'leaflet.markercluster';
 import { Screen } from '../../core/interfaces/screen';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
+import { UtilityService } from '../../core/services/utility.service';
 
 @Component({
   selector: 'app-mapmarkers',
@@ -20,18 +21,16 @@ export class MapmarkersComponent {
 
   @Output() selectedScreen = new EventEmitter<Screen | any>();
 
+  utils = inject(UtilityService);
+
   private map!: L.Map;
-  private markerClusterGroup: any; 
-  private mapDivIcon: L.DivIcon = L.divIcon({
-    className: `custom-marker`,
-    html: `<div class="marker-dot flex flex-col justify-center items-center rounded-sm text-white p-3">
-            <div class="flex justify-center items-center gap-3 text-center text-sm w-full">
-              <i class="pi pi-desktop"></i>
-            </div> 
-          </div>`,
-    iconSize: [12, 12],
-    iconAnchor: [6, 6]
-  });
+  private markerClusterGroup: any;
+  private mapIcon: L.Icon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+    iconSize: [38, 38],
+    iconAnchor: [19, 38],
+    popupAnchor: [0, -38]
+  })
   tileLink: string = 'https://tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token=sWmX5SwjXmDHtQNDFmI7CyUgBqUvRzxpT6CM5sSbBLqxd3bpJxNNAZ2O4Rivf1Eo';
 
   ngOnInit() {
@@ -56,38 +55,39 @@ export class MapmarkersComponent {
     });
 
     this.map.addLayer(this.markerClusterGroup);
-    
-    if (this.markers.length > 0) this.onAddMarkers();
-    else this.map.on('click', (e: L.LeafletMouseEvent) => {
+
+    this.onAddMarkers();
+
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
       this.markerClusterGroup.clearLayers();
       const { lat, lng } = e.latlng;
-      this.selectedScreen.emit({ geolocation: { latitude: lat, longitude: lng } });
+      this.selectedScreen.emit({ latitude: lat, longitude: lng });
       const marker = L.marker([ lat, lng ], {
-        icon: this.mapDivIcon
+        icon: this.mapIcon
       });
 
       this.markerClusterGroup.addLayer(marker);
     });
   }
 
-  onAddMarkers(): void {    
-    this.markers.forEach(markerData => {      
-      const { geolocation, name }: any = markerData;
-      const marker = L.marker([ geolocation.latitude, geolocation.longitude ], {
-        icon: this.mapDivIcon
+  onAddMarkers(): void {   
+    this.markers.forEach(markerData => {       
+      const { address, name }: any = markerData;
+      const marker = L.marker([ address.latitude, address.longitude ], {
+        icon: this.mapIcon
       }).bindTooltip(name, {
         permanent: false,
         direction: 'top',
         opacity: 0.9
       });
 
-      this.map.setView([ geolocation.latitude, geolocation.longitude ], this.maxZoom - 2);
+      this.map.setView([ address.latitude, address.longitude ], this.maxZoom - 2);
 
       this.markerClusterGroup.addLayer(marker);
       
       marker.on('click', ({ latlng }: any) => {
         const { lat, lng } = latlng;
-        const screen: any = this.markers.find(marker => marker.geolocation.latitude === lat && marker.geolocation.longitude === lng);
+        const screen: any = this.markers.find(marker => marker.address.latitude === lat && marker.address.longitude === lng);
         this.selectedScreen.emit(screen);
       })
     });

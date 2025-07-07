@@ -37,17 +37,6 @@ export class AssetScheduleComponent {
     this.hoursControl?.patchValue(hours.filter((hour: any) => hour.id !== id));
   }
 
-  onCheckedWeekday(event: any, weekday: string) {
-    const checked = event.checked;
-    const weekdays = this.weekdaysControl?.value;
-
-    if (checked) {
-      this.weekdaysControl?.patchValue([...weekdays, weekday]);
-    } else {
-      this.weekdaysControl?.patchValue(weekdays.filter((item: string) => item !== weekday));
-    }    
-  }
-
   onCheckAllWeekdays(event: any) {
     const checked = event.checked;
     if (checked) {

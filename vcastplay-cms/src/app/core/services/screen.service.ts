@@ -14,6 +14,7 @@ export class ScreenService {
   screens = computed(() => this.screenSignal());
 
   loadingSignal = signal<boolean>(false);
+  loadingAddressSignal = signal<boolean>(false);
 
   selectedScreen = signal<Screen | null>(null);
   
@@ -22,36 +23,45 @@ export class ScreenService {
 
   screenForm: FormGroup = new FormGroup({
     id: new FormControl(0),
-    code: new FormControl(''),
-    name: new FormControl('', [ Validators.required ]),
+    code: new FormControl(null),
+    name: new FormControl(null, [ Validators.required ]),
     type: new FormControl(null, [ Validators.required ]),
+    address: new FormGroup({
+      country: new FormControl('Philippines', [ Validators.required ]),
+      region: new FormControl(null),
+      city: new FormControl(null),
+      fullAddress: new FormControl(null),
+      latitude: new FormControl(0, { nonNullable: true }),
+      longitude: new FormControl(0, { nonNullable: true }),
+      zipCode: new FormControl(null),
+    }),
     group: new FormControl(null, [ Validators.required ]),
     subGroup: new FormControl(null, [ Validators.required ]),
     displaySettings: new FormGroup({
       orientation: new FormControl(null, [ Validators.required ]),
       resolution: new FormControl(null, [ Validators.required ]),
     }),
-    geolocation: new FormGroup({
-      latitude: new FormControl(0),
-      longitude: new FormControl(0),
+    operation: new FormGroup({
+      alwaysOn: new FormControl(false),
+      weekdays: new FormControl([], { nonNullable: true }),
+      hours: new FormControl([], { nonNullable: true }),
     }),
-    schedule: new FormGroup({
-      operation: new FormControl(null, [ Validators.required ]),
-      hours: new FormControl(null, [ Validators.required ]),
+    geograhic: new FormGroup({
+      locations: new FormControl(null, [ Validators.required ]),
+      landmarks: new FormControl(null, [ Validators.required ]),
     }),
-    geographicalLocation: new FormGroup({
-      location: new FormControl(null, [ Validators.required ]),
-      landmark: new FormControl(null, [ Validators.required ]),
-    }),
-    status: new FormControl(''),
+    tags: new FormControl([], { nonNullable: true }),
   });
 
-  groupData: any[] = [
-    { label: 'Group 1', value: 'Group 1', subGroup: [{ label: 'Sub-Group 1', value: 'Sub-Group 1' }] },
-    { label: 'Group 2', value: 'Group 2', subGroup: [{ label: 'Sub-Group 2', value: 'Sub-Group 2' }] },
-  ]
+  tagControl: FormControl = new FormControl('');
 
-  location = signal<SelectOption[]>([
+  types = signal<SelectOption[]>([
+    { label: 'Desktop', value: 'desktop' },
+    { label: 'Android', value: 'android' },
+    { label: 'Web', value: 'web' },
+  ]);
+
+  locations = signal<SelectOption[]>([
     { label: 'Local', value: 'local' },
     { label: 'Global', value: 'global' },
     { label: 'National', value: 'national' },
@@ -67,31 +77,6 @@ export class ScreenService {
     { label: 'Skyscrapers', value: 'skyscrapers' },
   ]);
 
-  orientations = signal<SelectOption[]>([
-    { label: 'Landscape', value: 'landscape' },
-    { label: 'Portrait', value: 'portrait' },
-  ]);
-  resolution = signal<SelectOption[]>([
-    { label: '1920x1080', value: '1920x1080' },
-    { label: '1366x768', value: '1366x768' },
-    { label: '1600x900', value: '1600x900' },
-    { label: '2560x1440', value: '2560x1440' },
-    { label: '3840x2160', value: '3840x2160' },
-    { label: '1920x1200', value: '1920x1200' },
-    { label: '1440x900', value: '1440x900' },
-    { label: '1280x800', value: '1280x800' },
-    { label: '1024x768', value: '1024x768' },
-    { label: '800x600', value: '800x600' },
-  ]);
-
-  operationSchedule = signal<SelectOption[]>([
-    { label: 'Always On', value: 'always' },
-    { label: 'Week Days with Hours', value: 'weekdays' },
-  ]);
-
-  filterGroup = computed(() => this.groupData.map(group => ({ label: group.label, value: group.value })));
-  filterSubGroup = computed(() => this.groupData.map(group => group.subGroup).flat().map(subGroup => ({ label: subGroup.label, value: subGroup.value })));
-
   constructor() { }
 
   onLoadScreens() {
@@ -106,6 +91,7 @@ export class ScreenService {
           country: 'Philippines',
           region: 'Manila',
           city: 'Quezon City',
+          fullAddress: `Secret of God’s Child Learning Center, Inc., 176 12th Avenue corner Rosal Street,, A. Luna Street, Balong-Bato, San Juan, 1st District, Eastern Manila District, Metro Manila, 1132, Philippines`,
           latitude: 14.6091,
           longitude: 121.0223,
           zipCode: '1100'
@@ -140,20 +126,31 @@ export class ScreenService {
     this.onLoadScreens();
   }
 
+  onRemoveTag(tag: string) {
+    const tempData = this.tags?.value || [];
+    this.tags?.setValue(tempData.filter((t: any) => t !== tag));
+  }
+
   onSaveScreen(screen: Screen) {
     /**Call POST/PATCH role API */
     const tempScreens = this.screens();
     const { id, code, status, ...info } = screen;
     const index = tempScreens.findIndex(s => s.id === id);
-    if (index !== -1) tempScreens[index] = { ...tempScreens[index], ...info };
+    if (index !== -1) tempScreens[index] = { ...tempScreens[index], ...info, status: 'active', registeredOn: new Date(), updatedOn: new Date() };
     else tempScreens.push({ id: tempScreens.length + 1, code: `NYX00${tempScreens.length + 1}`, status: 'inactive', ...info, createdOn: new Date(), updatedOn: new Date() });
 
     this.screenSignal.set([...tempScreens]);
+
+    this.totalRecords.set(this.screens().length);
   }
 
   onDeleteScreen(screen: Screen) {
     /**Call DELETE role API */
     const tempScreens = this.screens().filter(s => s.id !== screen.id);
     this.screenSignal.set([...tempScreens]);
+
+    this.totalRecords.set(this.screens().length);
   }
+
+  get tags() { return this.screenForm.get('tags'); }
 }
