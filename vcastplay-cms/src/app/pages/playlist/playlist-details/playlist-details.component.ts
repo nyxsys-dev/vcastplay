@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { AssetsService } from '../../../core/services/assets.service';
@@ -34,16 +34,29 @@ export class PlaylistDetailsComponent {
 
   keywords: FormControl = new FormControl('');
   keywordSignal = signal<string>('');
-  
-  filteredAssets = signal<Assets[]>([]);
-  selectedAssets = signal<Assets[]>([]);
 
   isExpanded = signal<boolean>(true);
-  
-  totalDuration = () => {
-    const contents: any[] = this.formControl('contents').value;
-    return contents.reduce((acc: any, item: any) => acc + item.duration, 0);
-  }
+
+  assetFilters = signal<any>(this.assetFilterForm.valueChanges);
+  audienceTagSignal = signal<any>({});
+  filteredAssets = computed(() => {
+    const { category, subCategory, type, keywords, orientation }: any = this.assetFilters();
+    const assets = this.assetService.assets();
+    const filteredItems = this.utils.onFilterItems(assets, this.audienceTagSignal());
+    const data = Object.keys(this.audienceTagSignal()).length > 0 ? filteredItems : assets;    
+
+    const filteredAssets = data.filter(asset => {
+      const matchesCategory = category ? asset.category?.toLowerCase().includes(category.toLowerCase()) : true;
+      const matchesSubCategory = subCategory ? asset.subCategory?.toLowerCase().includes(subCategory.toLowerCase()) : true;
+      const matchesType = type ? asset.type?.toLowerCase().includes(type.toLowerCase()) : true;
+      const matchesKeywords = keywords ? asset.name?.toLowerCase().includes(keywords.toLowerCase()) : true;
+      const matchesOrientation = orientation ? asset.fileDetails.orientation?.toLowerCase().includes(orientation.toLowerCase()) : true;
+
+      return matchesCategory && matchesSubCategory && matchesType && matchesKeywords && matchesOrientation;
+    });
+
+    return filteredAssets;
+  });
 
   constructor() {
     this.keywords.valueChanges.subscribe(value => this.keywordSignal.set(value));
@@ -55,35 +68,21 @@ export class PlaylistDetailsComponent {
     })
   }
 
-  ngOnInit() { }
+  ngOnInit() {    
+    const assets = this.assetService.onGetAssets();
+    // this.filteredAssets.set(assets);
+  }
 
   ngOnDestroy() {
-    this.playListForm.reset();
     this.isEditMode.set(false);
+    // this.playListForm.setValue({ contents: [] });
+    this.playListForm.reset({ contents: [] });
     this.playlistService.onStopPreview();
   }
 
   onClickPlayPreview() {
     if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
     else this.playlistService.onPlayPreview();
-  }
-
-  onClickGetContents() {
-    this.showContents.set(true);
-    this.activeStep.set(1);
-    this.playlistService.onStopPreview();
-  }
-
-  onClickComplete(event: Event) {
-    const contents = this.selectedAssets();
-    if (contents.length === 0) {
-      this.message.add({ severity:'error', summary: 'Error', detail: 'No contents available' });
-      return;
-    };
-    this.filteredAssets.set(contents);
-    this.playListForm.patchValue({ contents });
-    this.showContents.set(false);
-    this.message.add({ severity:'success', summary: 'Success', detail: `Added ${contents.length} contents to playlist` });
   }
 
   async onClickSave(event: Event) {
@@ -112,7 +111,7 @@ export class PlaylistDetailsComponent {
   
   onClickCancel() {
     this.router.navigate([ '/playlist/playlist-library' ]);
-    this.playListForm.patchValue({ contents: []})
+    this.playListForm.reset({ contents: [] });
   }
 
   onClickClearAll() {
@@ -120,22 +119,26 @@ export class PlaylistDetailsComponent {
     this.playlistService.onStopPreview();
   }
 
+  onFilterChange(event: any) {
+    const { filters, audienceTag } = event    
+    this.assetFilters.set(filters);
+    this.audienceTagSignal.set(audienceTag);
+  }
+
   formControl(fieldName: string) {
     return this.utils.getFormControl(this.playListForm, fieldName);
   }
 
-  get currentContent() { return this.playlistService.currentContent(); }
+  get activeStep() { return this.playlistService.activeStep; }
+  get isEditMode() { return this.playlistService.isEditMode; }
   get playListForm() { return this.playlistService.playListForm; }
-  get isPlaying() { return this.playlistService.isPlaying; }
-  get isLooping() { return this.playlistService.isLooping; }
+  get totalDuration() { return this.playlistService.totalDuration; }
   get transitionTypes() { return this.playlistService.transitionTypes; }
-  get currentTransition() { return this.playlistService.currentTransition(); }
+
   get assets() { return this.assetService.assets; }
   get assetViewModes() { return this.assetService.assetViewModes; }
   get assetViewModeCtrl() { return this.assetService.assetViewModeCtrl; }
   get assetViewModeSignal() { return this.assetService.assetViewModeSignal; }
-  get activeStep() { return this.playlistService.activeStep; }
-  get isEditMode() { return this.playlistService.isEditMode; }
-  get showContents() { return this.playlistService.showContents; }
-  get onTimeUpdate() { return this.playlistService.onTimeUpdate; }
+  get assetFilterForm() { return this.assetService.assetFilterForm; }
+
 }

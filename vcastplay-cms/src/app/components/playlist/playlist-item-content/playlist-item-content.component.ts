@@ -13,7 +13,7 @@ import { PreviewContentComponent } from '../../preview-content/preview-content.c
 })
 export class PlaylistItemContentComponent {
   
-  @Input() asset!: Assets;
+  @Input() asset!: any;
 
   showConfig = signal<boolean>(false);
 
@@ -21,7 +21,7 @@ export class PlaylistItemContentComponent {
   playlistService = inject(PlaylistService);
 
   currentPlaying() {
-    return (this.asset.code == this.playlistService.currentContent()?.code) && this.playlistService.currentContent()
+    return (this.asset.contentId == this.currentContent()?.contentId) && this.currentContent()
   }
 
   onClickRemove(asset: Assets) {
@@ -34,11 +34,7 @@ export class PlaylistItemContentComponent {
     this.showConfig.set(!this.showConfig());
   }
 
-  get contents() {
-    return this.playlistService.contents;
-  }
-
-  get isPlaying() {
-    return this.playlistService.isPlaying;
-  }
+  get contents() { return this.playlistService.contents; }
+  get isPlaying() { return this.playlistService.isPlaying; }
+  get currentContent() { return this.playlistService.currentContent; }
 }

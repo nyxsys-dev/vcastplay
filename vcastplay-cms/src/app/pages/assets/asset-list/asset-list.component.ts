@@ -6,7 +6,7 @@ import { AssetsService } from '../../../core/services/assets.service';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { Assets } from '../../../core/interfaces/assets';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { Playlist } from '../../../core/interfaces/playlist';
 
@@ -44,9 +44,26 @@ export class AssetListComponent {
   isShowAddToPlaylist = signal<boolean>(false);
 
   assetViewModeCtrl: FormControl = new FormControl('Grid');
-  
+
+  assetFilters = signal<any>(this.assetFilterForm.valueChanges);
+  audienceTagSignal = signal<any>({});
   filteredAssets = computed(() => {
-    return this.assetService.assets();
+    const { category, subCategory, type, keywords, orientation }: any = this.assetFilters();
+    const assets = this.assetService.assets();
+    const filteredItems = this.utils.onFilterItems(assets, this.audienceTagSignal());
+    const data = Object.keys(this.audienceTagSignal()).length > 0 ? filteredItems : assets;  
+
+    const filteredAssets = data.filter(asset => {
+      const matchesCategory = category ? asset.category?.toLowerCase().includes(category.toLowerCase()) : true;
+      const matchesSubCategory = subCategory ? asset.subCategory?.toLowerCase().includes(subCategory.toLowerCase()) : true;
+      const matchesType = type ? asset.type?.toLowerCase().includes(type.toLowerCase()) : true;
+      const matchesKeywords = keywords ? asset.name?.toLowerCase().includes(keywords.toLowerCase()) : true;
+      const matchesOrientation = orientation ? asset.fileDetails.orientation?.toLowerCase().includes(orientation.toLowerCase()) : true;
+
+      return matchesCategory && matchesSubCategory && matchesType && matchesKeywords && matchesOrientation;
+    });
+
+    return filteredAssets;
   });
 
   constructor() {
@@ -54,7 +71,7 @@ export class AssetListComponent {
   }
 
   ngOnInit() {
-    this.assetService.onGetAssets();
+    this.assetService.onGetAssets()
   }
 
   async onFileSelect(event: Event) {
@@ -181,15 +198,24 @@ export class AssetListComponent {
     menu.toggle(event);
   }
 
+  onFilterChange(event: any) {
+    const { filters, audienceTag } = event
+    this.assetFilters.set(filters);
+    this.audienceTagSignal.set(audienceTag);
+  }
+
   get isMobile() { return this.utils.isMobile(); }
   get isTablet() { return this.utils.isTablet(); }
+
+  get rows() { return this.assetService.rows; }
+  get first() { return this.assetService.first; }
+  get assetForm() { return this.assetService.assetForm; }
   get isEditMode() { return this.assetService.isEditMode; }
+  get totalRecords() { return this.assetService.totalRecords; }
   get selectedAsset() { return this.assetService.selectedAsset; }
   get assetViewModes() { return this.assetService.assetViewModes; }
-  get assetForm() { return this.assetService.assetForm; }
-  get first() { return this.assetService.first; }
-  get rows() { return this.assetService.rows; }
-  get totalRecords() { return this.assetService.totalRecords; }
-  get selectedArrPlaylist() { return this.playlistService.selectedArrPlaylist; }
+  get assetFilterForm() { return this.assetService.assetFilterForm; }
   get selectedArrAssets() { return this.assetService.selectedArrAssets; }
+
+  get selectedArrPlaylist() { return this.playlistService.selectedArrPlaylist; }
 }

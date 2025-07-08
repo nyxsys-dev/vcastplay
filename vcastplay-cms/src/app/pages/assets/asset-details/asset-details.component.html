@@ -98,19 +98,21 @@
                         </p-floatlabel>
                     }
                 </div>
-                <div class="col-span-1 md:col-span-3 lg:col-span-2" formGroupName="fileDetails">
-                    <p-floatlabel variant="on">
-                        <p-select inputId="orientations" [options]="orientations()" optionLabel="label" [readonly]="!showLinkInput()"  optionValue="value" 
-                            formControlName="orientation" appendTo="body" fluid />
-                        <label for="orientations">Orientations</label>
-                    </p-floatlabel>
-                </div>
-                <div class="col-span-1 md:col-span-3 lg:col-span-2">
-                    <p-floatlabel variant="on">
-                        <p-inputnumber inputId="duration" formControlName="duration" [min]="0" [readonly]="type?.value == 'video'" showButtons fluid />
-                        <label for="duration">Duration (seconds)</label>
-                    </p-floatlabel>
-                </div>
+                <ng-container *ngIf="formControl('link').value as currentContent">
+                    <div class="col-span-1 md:col-span-3 lg:col-span-2" formGroupName="fileDetails">
+                        <p-floatlabel variant="on">
+                            <p-select inputId="orientations" [options]="orientations()" optionLabel="label" [readonly]="!showLinkInput()"  optionValue="value" 
+                                formControlName="orientation" appendTo="body" fluid />
+                            <label for="orientations">Orientations</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-span-1 md:col-span-3 lg:col-span-2">
+                        <p-floatlabel variant="on">
+                            <p-inputnumber inputId="duration" formControlName="duration" [min]="0" [readonly]="type?.value == 'video'" showButtons fluid />
+                            <label for="duration">Duration (seconds)</label>
+                        </p-floatlabel>
+                    </div>
+                </ng-container>
             </div>
             
             <div class="flex-1 border-2 border-dashed border-gray-400 rounded-lg relative overflow-y-auto relative" >

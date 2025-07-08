@@ -17,10 +17,20 @@ export class UtilityService {
   filterValues = signal<any>({});
   drawerVisible = signal<boolean>(false);
   tableSkeletonRows = Array(5).fill({});
+
+  fileTypes = signal<SelectOption[]>([
+    { label: 'Image', value: 'image' },
+    { label: 'Video', value: 'video' },
+    { label: 'Audio', value: 'audio' },
+    { label: 'File', value: 'file' },
+    { label: 'Web', value: 'web' },
+    { label: 'Widget', value: 'widget' },
+  ]);
   
   orientations = signal<SelectOption[]>([
     { label: 'Landscape', value: 'landscape' },
     { label: 'Portrait', value: 'portrait' },
+    { label: 'Square', value: 'square' },
   ]);
   
   resolutions = signal<SelectOption[]>([
@@ -214,6 +224,26 @@ export class UtilityService {
       default:
         return 'pi-question-circle';
     }
+  }
+  
+
+  onFilterItems(data: any[], filters: any) {
+    const activeKeys = Object.keys(filters).filter(key => filters[key]?.length);
+
+    return data.filter(item => {
+      const tag = item.audienceTag;
+
+      return activeKeys.some(key => {
+        const filterValues = filters[key];
+        const value = tag[key];
+
+        if (Array.isArray(value)) {
+          return value.some((v: any) => filterValues.includes(v));
+        }
+
+        return filterValues.includes(value);
+      });
+    });
   }
 
   // Public API

@@ -1,6 +1,3 @@
-import { User } from "./account-settings";
-import { Assets } from "./assets";
-
 export interface Playlist {
     id: number;
     name: string;
@@ -10,7 +7,7 @@ export interface Playlist {
         type: string;
         speed: number;
     },
-    contents: Assets[];
+    contents: any[];
     loop: boolean;
     status: string;
     duration?: number;

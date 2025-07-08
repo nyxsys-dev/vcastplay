@@ -6,6 +6,7 @@ import { AudienceTagFiltersComponent } from '../../audience-tag-filters/audience
 import { Assets } from '../../../core/interfaces/assets';
 import { AssetListItemComponent } from '../../../pages/assets/asset-list-item/asset-list-item.component';
 import { PlaylistService } from '../../../core/services/playlist.service';
+import { AudienceTagService } from '../../../core/services/audience-tag.service';
 
 @Component({
   selector: 'app-playlist-select-contents',
@@ -16,36 +17,47 @@ import { PlaylistService } from '../../../core/services/playlist.service';
 export class PlaylistSelectContentsComponent {
 
   @Input() playListForm!: FormGroup;
+  @Input() steps: number = 2;
+  @Input() showCategory: boolean = true;
   @Output() assetSelected = new EventEmitter<Assets[]>();
 
   assetService = inject(AssetsService);
   playListService = inject(PlaylistService);
-
-  filteredAssets = signal<Assets[]>([]);
-
-  audienceTagForm: FormGroup = new FormGroup({
-    audienceTag: new FormGroup({
-      genders: new FormControl([], { nonNullable: true }),
-      ageGroups: new FormControl([], { nonNullable: true }),
-      timeOfDays: new FormControl([], { nonNullable: true }),
-      seasonalities: new FormControl([], { nonNullable: true }),
-      locations: new FormControl([], { nonNullable: true }),
-      pointOfInterests: new FormControl([], { nonNullable: true }),
-      tags: new FormControl([], { nonNullable: true }),
-    })
-  });
+  audienceTagService = inject(AudienceTagService);
 
   constructor() {
     effect(() => {
       const activeStep = this.activeStep();      
-      if (activeStep === 2) this.onFilteredAssets();
+      if (activeStep === 2) this.onFilteredAssets();      
     })
   }
 
   onFilteredAssets() {
-    const assets = this.assetService.assets();
-    const audienceTag = this.audienceTagForm.value.audienceTag;    
-    const filtered = this.filterItems(assets, audienceTag);
+    const assets = this.assetService.onGetAssets();
+
+    // Category and Sub Category Filter
+    const filteredItems = assets.filter((item: Assets) => {
+      const { category, subCategory } = this.categoryForm.value;
+
+      const matchesCategory = category ? item.category?.toLowerCase().includes(category?.toLowerCase().trim()) : false;
+      const matchesSubCategory = subCategory ? item.subCategory?.toLowerCase().includes(subCategory?.toLowerCase().trim()) : false;
+
+      if (!category && !subCategory) return true;
+
+      return matchesCategory || matchesSubCategory;
+    });
+
+    const audienceTag = this.audienceTagForm.value.audienceTag;
+    const hasValues = Object.values(audienceTag).some((arr: any) => Array.isArray(arr) && arr.length > 0);
+    const filtered = this.filterItems(filteredItems, audienceTag);    
+    
+    // If audience tag is not selected
+    if (!hasValues) {
+      this.filteredAssets.set(filteredItems);
+      this.assetSelected.emit(this.filteredAssets());
+      return;
+    }
+
     this.filteredAssets.set(filtered);
     this.assetSelected.emit(this.filteredAssets());
   }
@@ -69,5 +81,16 @@ export class PlaylistSelectContentsComponent {
     });
   }
 
+  formControl(fieldName: string) {
+    return this.playListForm.get(fieldName) as FormGroup;
+  }
+
   get activeStep() { return this.playListService.activeStep; }
+  get filteredAssets() { return this.playListService.filteredAssets; }
+  get categoryForm() { return this.playListService.categoryForm; }
+
+  get audienceTagForm() { return this.audienceTagService.audienceTagForm; }
+
+  get filterCategory() { return this.assetService.filterCategory; }
+  get filterSubCategory() { return this.assetService.filterSubCategory; }
 }

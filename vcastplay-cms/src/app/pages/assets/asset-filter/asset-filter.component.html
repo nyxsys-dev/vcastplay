@@ -1,0 +1,41 @@
+<form [formGroup]="assetFilterForm" class="flex flex-row gap-4">
+    <p-input-group>
+        <input pInputText placeholder="Search" formControlName="keywords" (keydown.enter)="onClickApplyAudienceTag()" />
+        <p-inputgroup-addon>
+            <p-button (onClick)="onClickApplyAudienceTag()" icon="pi pi-search" />
+        </p-inputgroup-addon>
+    </p-input-group>
+    <p-button icon="pi pi-filter" pTooltip="More Filter" tooltipPosition="bottom" [text]="true" (onClick)="filter.toggle($event)" />
+    <p-popover title="Filter" #filter>
+        <div class="flex flex-col gap-5 w[25rem]">
+            <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
+            <p-select [options]="categories()" formControlName="category" optionLabel="label" optionValue="value" placeholder="Category" />
+            <p-select [options]="subCategories()" formControlName="subCategory" optionLabel="label" optionValue="value" placeholder="Sub Category" />
+            <p-select [options]="fileTypes()" formControlName="type" optionLabel="label" optionValue="value" placeholder="Types" />
+            <p-select [options]="orientations()" formControlName="orientation" optionLabel="label" optionValue="value" placeholder="Orientation" />
+            <!-- <p-select [options]="status" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
+            <p-select [options]="sortBy" formControlName="sortBy" optionLabel="label" optionValue="value" placeholder="Sort By" class="w-50" />
+            <div class="flex flex-row gap-4">
+                @for (item of [ 'asc', 'desc' ]; track $index) {
+                    <div>
+                        <p-radiobutton [inputId]="item" [value]="item" formControlName="sort"></p-radiobutton>
+                        <label [for]="item" class="ml-2">{{ item.toUpperCase() }}</label>
+                    </div>
+                }
+            </div> -->
+            <p-button label="Audience Tag" (onClick)="isShowAudienceTag.set(true)" outlined fluid />
+            <div class="flex gap-2 justify-center items-center">
+                <p-button severity="secondary" (onClick)="onClickClear(filter)" label="Clear" size="small" [text]="true" icon="pi pi-times"></p-button>
+                <p-button (onClick)="onClickApply(filter)" label="Apply" size="small" icon="pi pi-check"></p-button>
+            </div>
+        </div>
+    </p-popover>
+</form>
+
+<p-dialog header="Audience Tags" [(visible)]="isShowAudienceTag" [style]="{ width: '50rem', height: '400px' }" [draggable]="false" appendTo="body" modal>
+    <app-audience-tag-filters [audienceTagForm]="audienceTagForm" />
+    <ng-template #footer>
+        <p-button label="Close" severity="secondary" (onClick)="onClickCloseAudienceTag()" />
+        <p-button label="Apply" severity="success" (onClick)="onClickApplyAudienceTag()" />
+    </ng-template>
+</p-dialog>

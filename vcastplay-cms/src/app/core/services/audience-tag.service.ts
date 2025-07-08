@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,18 @@ export class AudienceTagService {
 
   // Tags
   tags = signal<any[]>([]);
+  
+  audienceTagForm: FormGroup = new FormGroup({
+    audienceTag: new FormGroup({
+      genders: new FormControl([], { nonNullable: true }),
+      ageGroups: new FormControl([], { nonNullable: true }),
+      timeOfDays: new FormControl([], { nonNullable: true }),
+      seasonalities: new FormControl([], { nonNullable: true }),
+      locations: new FormControl([], { nonNullable: true }),
+      pointOfInterests: new FormControl([], { nonNullable: true }),
+      tags: new FormControl([], { nonNullable: true }),
+    })
+  });
   
   audienceTagsLists = signal<any[]>([
     { id: 'genders', name: 'Genders', data: this.genders, formControlName: 'genders', showInSettings: false },

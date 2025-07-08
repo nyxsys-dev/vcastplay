@@ -29,6 +29,7 @@ export class PlaylistContainerComponent {
   }
 
   onDropped(event: CdkDragDrop<string[]>) {
+    const length = this.contents?.value?.length || 0;
     const contents = this.contents?.value || [];
     const { previousIndex, previousContainer, currentIndex, container, item: { data } } = event;
 
@@ -40,14 +41,14 @@ export class PlaylistContainerComponent {
     }
 
     // If it's from another container (adding)    
-    const isExists = contents.some((item: Assets) => item.id === data.id);
-    if (isExists) {
-      this.message.add({ severity: 'error', summary: 'Error', detail: `"${data.name}" is already exists` });
-      return;
-    }
+    // const isExists = contents.some((item: Assets) => item.id === data.id);
+    // if (isExists) {
+    //   this.message.add({ severity: 'error', summary: 'Error', detail: `"${data.name}" is already exists` });
+    //   return;
+    // }
 
     // Add item
-    contents.splice(currentIndex, 0, data);
+    contents.splice(currentIndex, 0, {...data, contentId: length + 1});
     this.contents?.setValue([...contents]);
   }
 

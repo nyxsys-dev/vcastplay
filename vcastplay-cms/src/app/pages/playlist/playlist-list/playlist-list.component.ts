@@ -123,18 +123,36 @@ export class PlaylistListComponent {
     this.playlistService.onStopPreview();
   }
 
-  get playlists() { return this.playlistService.playlists; }
-  get playlistForm() { return this.playlistService.playListForm; }
-  get isEditMode() { return this.playlistService.isEditMode; }
-  get selectedPlaylist() { return this.playlistService.selectedPlaylist; }
-  get first() { return this.playlistService.first; }
+  onClickComplete(event: Event) {
+    const contents = this.selectedAssets();
+    if (contents.length === 0) {
+      this.message.add({ severity:'error', summary: 'Error', detail: 'No contents available' });
+      return;
+    };
+    this.filteredAssets.set(contents);
+    this.playlistForm.patchValue({ contents });
+    this.showContents.set(false);
+    this.playlistService.onSavePlaylist({ ...this.playlistForm.value, duration: this.totalDuration(), isAuto: true });
+    this.message.add({ severity:'success', summary: 'Success', detail: `New playlist created with ${contents.length} contents` });
+  }
+
   get rows() { return this.playlistService.rows; }
-  get totalRecords() { return this.playlistService.totalRecords; }
-  get currentTransition() { return this.playlistService.currentTransition(); }
+  get first() { return this.playlistService.first; }
   get isPlaying() { return this.playlistService.isPlaying; }
+  get playlists() { return this.playlistService.playlists; }
+  get isEditMode() { return this.playlistService.isEditMode; }
+  get activeStep() { return this.playlistService.activeStep; }
+  get showContents() { return this.playlistService.showContents; }
+  get totalRecords() { return this.playlistService.totalRecords; }
+  get playlistForm() { return this.playlistService.playListForm; }
+  get categoryForm() { return this.playlistService.categoryForm; }
+  get totalDuration() { return this.playlistService.totalDuration; }
+  get selectedAssets() { return this.playlistService.selectedAssets; }
+  get filteredAssets() { return this.playlistService.filteredAssets; }
+  get selectedPlaylist() { return this.playlistService.selectedPlaylist; }
+  get currentTransition() { return this.playlistService.currentTransition(); }
   get getTransitionClasses() { return this.playlistService.getTransitionClasses; }
+  
   get status() { return this.playlistForm.get('status'); }
   get approvedInfo() { return this.playlistForm.get('approvedInfo'); }
-  get showContents() { return this.playlistService.showContents; }
-  get activeStep() { return this.playlistService.activeStep; }
 }

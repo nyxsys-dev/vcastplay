@@ -17,8 +17,8 @@ export class AudienceTagFiltersComponent {
 
   audienceTags: any[] = [];
   audienceTagInputForm: FormGroup = new FormGroup({
-    category: new FormControl('', [ Validators.required ]),
-    name: new FormControl('', [ Validators.required ]),
+    category: new FormControl(null, [ Validators.required ]),
+    name: new FormControl(null, [ Validators.required ]),
   });
 
   categoryLists = signal<any[]>([]);

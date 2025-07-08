@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Assets } from '../interfaces/assets';
 import { Playlist } from '../interfaces/playlist';
@@ -21,7 +21,7 @@ export class PlaylistService {
   isEditMode = signal<boolean>(false);
 
   currentIndex = signal<number>(0);
-  currentContent = signal<Assets | null>(null);
+  currentContent = signal<any | null>(null);
   currentTransition = signal<any>(null);
   duration = signal<number>(3000);
   isPlaying = signal<boolean>(false);
@@ -29,6 +29,10 @@ export class PlaylistService {
   isLooping = signal<boolean>(false);
   showContents = signal<boolean>(false);
   progress = signal<number>(0);
+  
+  filteredAssets = signal<Assets[]>([]);
+  selectedAssets = signal<Assets[]>([]);
+
   timeoutId: any;
   intervalId: any;
   gapTimeout: any;
@@ -42,7 +46,7 @@ export class PlaylistService {
       type: new FormControl(null),
       speed: new FormControl(5, { nonNullable: true }),
     }),
-    contents: new FormControl<Assets[]>([], { nonNullable: true, validators: [ Validators.required ] }),
+    contents: new FormControl<any[]>([], { nonNullable: true, validators: [ Validators.required ] }),
     status: new FormControl(''),
     loop: new FormControl(false),
     approvedInfo: new FormGroup({
@@ -51,6 +55,11 @@ export class PlaylistService {
       remarks: new FormControl(''),
     }),
     isAuto: new FormControl(false),
+  })
+
+  categoryForm: FormGroup = new FormGroup({
+    category: new FormControl(null),
+    subCategory: new FormControl(null),
   })
 
   transitionTypes: any[] = [
@@ -64,6 +73,11 @@ export class PlaylistService {
   videoElement = signal<HTMLVideoElement | null>(null);
 
   activeStep = signal<number>(1);
+
+  totalDuration = () => {
+    const contents: any[] = this.contents?.value;
+    return contents.reduce((acc: any, item: any) => acc + item.duration, 0);
+  }
 
   constructor() { }
 
@@ -207,6 +221,7 @@ export class PlaylistService {
         },
         contents: [
           {
+            contentId: 1,
             id: 1,
             code: 'NYX001',
             name: 'image (2).png',
@@ -319,15 +334,7 @@ export class PlaylistService {
     /**CALL POST API */
   }
 
-  get contents() {
-    return this.playListForm.get('contents');
-  }
-
-  get loop() {
-    return this.playListForm.get('loop');
-  }
-
-  get transition() {
-    return this.playListForm.get('transition');
-  }
+  get contents() { return this.playListForm.get('contents'); }
+  get loop() { return this.playListForm.get('loop'); }
+  get transition() { return this.playListForm.get('transition'); }
 }

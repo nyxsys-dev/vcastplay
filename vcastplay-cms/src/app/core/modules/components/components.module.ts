@@ -22,6 +22,7 @@ import { UserApprovalComponent } from '../../../components/users/user-approval/u
 import { SchedulesContentListComponent } from '../../../pages/schedules/schedules-content-list/schedules-content-list.component';
 import { ScheduleListItemComponent } from '../../../pages/schedules/schedule-list-item/schedule-list-item.component';
 import { ScreenScheduleComponent } from '../../../pages/screens/screen-schedule/screen-schedule.component';
+import { AssetFilterComponent } from '../../../pages/assets/asset-filter/asset-filter.component';
 
 
 const COMPONENT_MODULES = [
@@ -52,6 +53,7 @@ const COMPONENT_MODULES = [
   // Asset Components
   AssetListItemComponent,
   AssetScheduleComponent, 
+  AssetFilterComponent,
 
   // Audience Tag Components
   AudienceTagFiltersComponent,

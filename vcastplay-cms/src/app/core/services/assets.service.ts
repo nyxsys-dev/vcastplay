@@ -77,6 +77,14 @@ export class AssetsService {
     }),
   })
 
+  assetFilterForm: FormGroup = new FormGroup({
+    category: new FormControl(null),
+    subCategory: new FormControl(null),
+    type: new FormControl(null),
+    orientation: new FormControl(null),
+    keywords: new FormControl(null),
+  });
+
   constructor() { }
 
   onLoadAssets() {
@@ -95,7 +103,7 @@ export class AssetsService {
           name: 'image (2).png',
           size: 55782,
           type: 'image/png',
-          orientation: 'landscape',
+          orientation: 'portrait',
           resolution: {
             width: 326,
             height: 195
@@ -175,6 +183,10 @@ export class AssetsService {
     this.assetSignal.set([...tempData]);
     this.totalRecords.set(this.assets().length);
     /**CALL POST API */
+  }
+
+  onFilterChange(value: any) {
+    console.log(value);    
   }
 
   dateRangeValidator(): ValidatorFn {

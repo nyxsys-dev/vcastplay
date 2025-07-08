@@ -5,11 +5,11 @@
             <div class="flex gap-4 items-center mb-2">
                 <app-filters class="w-full md:w-[25rem]" />
                 <div class="gap-2 ml-auto hidden md:flex">
-                    <p-button label="Get Contents" icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" />
+                    <p-button label="Generate Playlist" icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" outlined />
                     <p-button (onClick)="onClickAddNew()" label="New Playlist" icon="pi pi-plus"></p-button>
                 </div>
                 <div class="flex gap-2 ml-auto md:hidden">
-                    <p-button icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" />
+                    <p-button icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" outlined />
                     <p-button (onClick)="onClickAddNew()" label="" icon="pi pi-plus" />
                 </div>
             </div>
@@ -96,6 +96,29 @@
         <app-playlist-preview class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
             [currentContent]="playlistService.currentContent()" />
     </div>
+</p-dialog>
+
+<p-dialog header="Select Contents" [(visible)]="showContents" [style]="{ width: '50rem', height: '520px' }" (onHide)="categoryForm.reset()"
+    [draggable]="false" closable modal>
+    <app-playlist-select-contents [playListForm]="playlistForm" (assetSelected)="selectedAssets.set($event)" [steps]="3" />
+    <ng-template #footer>
+        <div class="flex items-center w-full gap-2">
+            @switch (activeStep()) {
+                @case(2) {
+                    <p-button label="Back" severity="secondary" icon="pi pi-arrow-left" (onClick)="activeStep.set(1)" size="small" />
+                    <p-button class="ml-auto" label="Next" icon="pi pi-arrow-right" [disabled]="selectedAssets().length == 0" (onClick)="activeStep.set(3)" size="small" />
+                }
+                @case(3) {
+                    <p-button label="Back" severity="secondary" icon="pi pi-arrow-left" (onClick)="activeStep.set(2)" size="small" />
+                    <p-button class="ml-auto" label="Complete" severity="success"
+                        icon="pi pi-check" iconPos="right" (onClick)="onClickComplete($event)" size="small" />
+                }
+                @default {
+                    <p-button class="ml-auto" label="Next" icon="pi pi-arrow-right" (onClick)="activeStep.set(2)" size="small" />
+                }
+            }
+        </div>
+    </ng-template>
 </p-dialog>
 
 <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />

@@ -3,7 +3,7 @@
     <p-card styleClass="h-full" class="flex-1">
         <ng-template #title>
             <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between">
-                <app-filters class="w-full md:w-[25rem]"></app-filters>
+                <app-asset-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
                 <div class="flex items-center gap-4 block lg:hidden">
                     <p class="text-base font-normal">View:</p>
                     <p-selectbutton [options]="assetViewModes" [formControl]="assetViewModeCtrl" optionLabel="label" optionValue="label" [allowEmpty]="false">
@@ -13,9 +13,6 @@
                     </p-selectbutton>
                 </div>
                 <div class="flex items-center gap-4 hidden lg:block">
-                    <!-- @if (selectedArrAssets().length > 1) {
-                        <p-button (onClick)="onClickAddMultipleToPlaylist($event)" icon="pi pi-list" label="Add to Playlist" />
-                    } -->
                     <p-button (onClick)="onClickAddNew()" label="Upload" icon="pi pi-plus"></p-button>
                 </div>
             </div>
@@ -28,7 +25,7 @@
                 <input type="file" multiple (change)="onFileSelect($event)" hidden #fileInput />
             </div>
 
-            <div class="relative block lg:hidden px-3 gap-4 overflow-y-auto h-120" [ngClass]="{ 
+            <div class="relative block lg:hidden px-3 gap-4 overflow-y-auto" [ngClass]="{ 
                 'grid grid-cols-2 md:grid-cols-3 gap-4': assetViewModeSignal() == 'Grid',
                 'flex flex-col gap-2': assetViewModeSignal() == 'List'
             }">
