@@ -1,24 +1,24 @@
 import { Component, computed, inject } from '@angular/core';
-import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
-import { FormControl, Validators } from '@angular/forms';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { UtilityService } from '../../../core/services/utility.service';
-import { AudienceTagService } from '../../../core/services/audience-tag.service';
+import { FormControl, Validators } from '@angular/forms';
+import { TagService } from '../../../core/services/tag.service';
 
 @Component({
-  selector: 'app-audience-tag-list',
+  selector: 'app-tags',
   imports: [ PrimengUiModule, ComponentsModule ],
-  templateUrl: './audience-tag-list.component.html',
-  styleUrl: './audience-tag-list.component.scss',
+  templateUrl: './tags.component.html',
+  styleUrl: './tags.component.scss',
   providers: [ ConfirmationService, MessageService ]
 })
-export class AudienceTagListComponent {
+export class TagsComponent {
 
-  pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Audience Tags'} ];
+  pageInfo: MenuItem = [ {label: 'Settings'}, {label: 'Tags'} ];
 
   utils = inject(UtilityService);
-  audienceTagService = inject(AudienceTagService);
+  tagService = inject(TagService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
 
@@ -34,7 +34,7 @@ export class AudienceTagListComponent {
       this.message.add({ severity: 'error', summary: 'Error', detail: `Please input ${label}` });
       return
     };
-    this.audienceTagService.onSaveAudienceTags(item, type);
+    this.tagService.onSaveAudienceTags(item, type);
     this.audienceTagControl.reset();
   }
 
@@ -56,12 +56,12 @@ export class AudienceTagListComponent {
         severity: 'danger',
       },
       accept: () => {
-        this.audienceTagService.onDeleteAudienceTags(item, type);
+        this.tagService.onDeleteAudienceTags(item, type);
         this.message.add({ severity:'success', summary: 'Success', detail: 'Tag deleted successfully!' });
       },
       reject: () => { }
     })
   }
 
-  get audienceTagsLists() { return this.audienceTagService.audienceTagsLists; }
+  get audienceTagsLists() { return this.tagService.tagsLists; }
 }

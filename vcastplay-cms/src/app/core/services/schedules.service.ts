@@ -7,6 +7,7 @@ import { Schedule, ScheduleContentItem } from '../interfaces/schedules';
 import moment from 'moment-timezone';
 import { AssetsService } from './assets.service';
 import { PlaylistService } from './playlist.service';
+import { SelectOption } from '../interfaces/general';
 
 @Injectable({
   providedIn: 'root'
@@ -47,12 +48,23 @@ export class SchedulesService {
   rows = signal<number>(8);
   totalRecords = signal<number>(0);
 
+  scheduleStatus = signal<SelectOption[]>([
+    { label: 'Approved', value: 'approved' },
+    { label: 'Disapproved', value: 'disapproved' },
+    { label: 'Pending', value: 'pending' },
+  ])
+
   scheduleForm: FormGroup = new FormGroup({
     id: new FormControl(0),
     name: new FormControl('', [ Validators.required ]),
     description: new FormControl('', [ Validators.required ]),
     contents: new FormControl<any[]>([], { nonNullable: true, validators: Validators.required }),
     status: new FormControl(''),
+    approvedInfo: new FormGroup({
+      approvedBy: new FormControl('Admin', { nonNullable: true }),
+      approvedOn: new FormControl(new Date()),
+      remarks: new FormControl(''),
+    }),
   })
 
   contentItemForm: FormGroup = new FormGroup({
@@ -65,6 +77,12 @@ export class SchedulesService {
     allDay: new FormControl(false),
     overlap: new FormControl(false),
   }, { validators: this.onTimeRangeValidator })
+
+  
+  scheduleFilterForm: FormGroup = new FormGroup({
+    status: new FormControl(null),
+    keywords: new FormControl(null),
+  });
 
   onTimeRangeValidator(group: AbstractControl): ValidationErrors | null {
     const start = group.get('start')?.value;
@@ -223,7 +241,7 @@ export class SchedulesService {
     const index = tempData.findIndex(item => item.id === schedule.id);
 
     if (index !== -1) tempData[index] = { ...schedule, updatedOn: new Date() };
-    else tempData.push({ id: tempData.length + 1, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, createdOn: new Date(), updatedOn: new Date() });
 
     this.scheduleSignal.set([...tempData]);
     this.totalRecords.set(this.schedules().length);
@@ -239,11 +257,22 @@ export class SchedulesService {
 
   onDuplicateSchedule(schedule: Schedule) {
     const tempData = this.schedules();
-    tempData.push({ ...schedule, id: tempData.length + 1, name: `Copy of ${schedule.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
+    tempData.push({ ...schedule, id: tempData.length + 1, name: `Copy of ${schedule.name}`, approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' },
+      status: 'pending', createdOn: new Date(), updatedOn: new Date() });
     this.scheduleSignal.set([...tempData]);
     
     this.totalRecords.set(this.schedules().length);
     /**CALL POST API */
+  }
+
+  onApproveSchedule(schedule: Schedule, status: string) {
+    const tempData = this.schedules();
+    const index = tempData.findIndex(item => item.id === schedule.id);
+    tempData[index] = { ...schedule, status, updatedOn: new Date() };
+    this.scheduleSignal.set([...tempData]);
+    
+    this.totalRecords.set(this.schedules().length);
+    /**CALL PATCH API */
   }
 
 }

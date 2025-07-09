@@ -50,8 +50,11 @@ export class AssetListComponent {
   filteredAssets = computed(() => {
     const { category, subCategory, type, keywords, orientation }: any = this.assetFilters();
     const assets = this.assetService.assets();
+
+    const hasAnyValue = Object.values(this.audienceTagSignal()).some(arr => Array.isArray(arr) && arr.length > 0);
     const filteredItems = this.utils.onFilterItems(assets, this.audienceTagSignal());
-    const data = Object.keys(this.audienceTagSignal()).length > 0 ? filteredItems : assets;  
+
+    const data = hasAnyValue ? filteredItems : assets;    
 
     const filteredAssets = data.filter(asset => {
       const matchesCategory = category ? asset.category?.toLowerCase().includes(category.toLowerCase()) : true;

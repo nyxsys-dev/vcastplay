@@ -42,8 +42,9 @@ export class PlaylistDetailsComponent {
   filteredAssets = computed(() => {
     const { category, subCategory, type, keywords, orientation }: any = this.assetFilters();
     const assets = this.assetService.assets();
+    const hasAnyValue = Object.values(this.audienceTagSignal()).some(arr => Array.isArray(arr) && arr.length > 0);
     const filteredItems = this.utils.onFilterItems(assets, this.audienceTagSignal());
-    const data = Object.keys(this.audienceTagSignal()).length > 0 ? filteredItems : assets;    
+    const data = hasAnyValue ? filteredItems : assets;    
 
     const filteredAssets = data.filter(asset => {
       const matchesCategory = category ? asset.category?.toLowerCase().includes(category.toLowerCase()) : true;
@@ -68,14 +69,10 @@ export class PlaylistDetailsComponent {
     })
   }
 
-  ngOnInit() {    
-    const assets = this.assetService.onGetAssets();
-    // this.filteredAssets.set(assets);
-  }
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.isEditMode.set(false);
-    // this.playListForm.setValue({ contents: [] });
     this.playListForm.reset({ contents: [] });
     this.playlistService.onStopPreview();
   }

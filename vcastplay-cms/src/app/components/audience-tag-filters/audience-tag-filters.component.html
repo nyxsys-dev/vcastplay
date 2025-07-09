@@ -2,7 +2,7 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
         <div class="col-span-1 md:col-span-5">
             <p-floatlabel variant="on">
-                <p-select [options]="audienceTagsLists()" optionLabel="name" optionValue="name" formControlName="category" appendTo="body" fluid />
+                <p-select [options]="filteredTagLists()" optionLabel="name" optionValue="name" formControlName="category" appendTo="body" fluid />
                 <label for="category">Tags</label>
             </p-floatlabel>
         </div>

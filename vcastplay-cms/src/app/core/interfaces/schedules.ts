@@ -1,11 +1,16 @@
 export interface Schedule {
-    id: number,
-    name: string,
-    description: string,
+    id: number;
+    name: string;
+    description: string;
     contents: ScheduleContentItem[];
     status: string;
-    createdOn: Date,
-    updatedOn: Date
+    approvedInfo?: {
+        approvedBy: string,
+        approvedOn: Date | null,
+        remarks: string,
+    },
+    createdOn: Date;
+    updatedOn: Date;
 }
 
 export interface ScheduleContentItem {

@@ -6,6 +6,7 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { AssetsService } from '../../../core/services/assets.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
+import { TagService } from '../../../core/services/tag.service';
 
 @Component({
   selector: 'app-asset-details',
@@ -28,6 +29,7 @@ export class AssetDetailsComponent {
   ]
 
   utils = inject(UtilityService);
+  tagService = inject(TagService);
   assetService = inject(AssetsService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
@@ -43,6 +45,14 @@ export class AssetDetailsComponent {
   isShowSchedule = signal<boolean>(false);
   isShowAudienceTag = signal<boolean>(false);
   isShowInfo = signal<boolean>(false);
+
+  filterCategory = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('categories')).data();
+  })
+
+  filterSubCategory = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('subCategories')).data();
+  })
 
   showLinkInput = () => {
     const type = this.assetTypeControl.value;
@@ -217,5 +227,6 @@ export class AssetDetailsComponent {
   get weekdays() { return this.assetForm.get('weekdays'); }
   get hours() { return this.assetForm.get('hours'); }
   get orientations() { return this.utils.orientations; }
-
+  
+  get tagsLists() { return this.tagService.tagsLists; }
 }

@@ -1,7 +1,7 @@
 import { Component, computed, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
-import { AudienceTagService } from '../../core/services/audience-tag.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { TagService } from '../../core/services/tag.service';
 
 @Component({
   selector: 'app-audience-tag-filters',
@@ -13,7 +13,7 @@ export class AudienceTagFiltersComponent {
 
   @Input() audienceTagForm!: FormGroup;
 
-  audienceTagService = inject(AudienceTagService);
+  tagService = inject(TagService);
 
   audienceTags: any[] = [];
   audienceTagInputForm: FormGroup = new FormGroup({
@@ -23,15 +23,19 @@ export class AudienceTagFiltersComponent {
 
   categoryLists = signal<any[]>([]);
 
+  filteredTagLists = computed(() => {
+    return this.tagsLists().filter(tags => !['groups', 'subGroups', 'categories', 'subCategories'].includes(tags.id));
+  })
+
   constructor() {
     this.category?.valueChanges.subscribe(value => {
-      const lists = this.audienceTagsLists().find((audienceTag: any) => audienceTag.name === value)
+      const lists = this.tagsLists().find((audienceTag: any) => audienceTag.name === value)
       this.categoryLists.set(lists?.data() || []);
     })
   }
 
   ngOnInit() {    
-    this.audienceTags = this.audienceTagService.onGetFilteres(this.audienceTag?.value);
+    this.audienceTags = this.tagService.onGetFilteres(this.audienceTag?.value);
   }
 
   onClickAddTag() {
@@ -43,7 +47,7 @@ export class AudienceTagFiltersComponent {
     this.audienceTags = [...tempData];
     this.audienceTagInputForm.reset();
 
-    const newFilters = this.audienceTagService.onGenerateFilters(this.audienceTags);
+    const newFilters = this.tagService.onGenerateFilters(this.audienceTags);
     this.audienceTagForm.patchValue({ audienceTag: newFilters });
   }
 
@@ -52,7 +56,7 @@ export class AudienceTagFiltersComponent {
     tempData.splice(index, 1);
     this.audienceTags = [...tempData];
 
-    const newFilters = this.audienceTagService.onGenerateFilters(this.audienceTags);
+    const newFilters = this.tagService.onGenerateFilters(this.audienceTags);
     this.audienceTagForm.patchValue({ audienceTag: newFilters });
   }
 
@@ -60,8 +64,8 @@ export class AudienceTagFiltersComponent {
     return this.audienceTagInputForm.get('category');
   }
 
-  get audienceTagsLists() { return this.audienceTagService.audienceTagsLists; }
-  get ageGroups() { return this.audienceTagService.ageGroups; }
-  get genders() { return this.audienceTagService.genders; }
+  get tagsLists() { return this.tagService.tagsLists; }
+  get ageGroups() { return this.tagService.ageGroups; }
+  get genders() { return this.tagService.genders; }
   get audienceTag() { return this.audienceTagForm.get('audienceTag'); }
 }

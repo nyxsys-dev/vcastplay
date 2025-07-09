@@ -2,6 +2,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Assets } from '../interfaces/assets';
 import { Playlist } from '../interfaces/playlist';
+import { SelectOption } from '../interfaces/general';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,12 @@ export class PlaylistService {
   
   filteredAssets = signal<Assets[]>([]);
   selectedAssets = signal<Assets[]>([]);
+  
+  playlistStatus = signal<SelectOption[]>([
+    { label: 'Approved', value: 'approved' },
+    { label: 'Disapproved', value: 'disapproved' },
+    { label: 'Pending', value: 'pending' },
+  ])
 
   timeoutId: any;
   intervalId: any;
@@ -55,7 +62,13 @@ export class PlaylistService {
       remarks: new FormControl(''),
     }),
     isAuto: new FormControl(false),
+    duration: new FormControl(0),
   })
+  
+  playlistFilterForm: FormGroup = new FormGroup({
+    status: new FormControl(null),
+    keywords: new FormControl(null),
+  });
 
   categoryForm: FormGroup = new FormGroup({
     category: new FormControl(null),
@@ -74,8 +87,8 @@ export class PlaylistService {
 
   activeStep = signal<number>(1);
 
-  totalDuration = () => {
-    const contents: any[] = this.contents?.value;
+  totalDuration = (data?: any) => {
+    const contents: any[] = data ?? this.contents?.value;
     return contents.reduce((acc: any, item: any) => acc + item.duration, 0);
   }
 
@@ -261,7 +274,7 @@ export class PlaylistService {
             updatedOn: new Date()
           }
         ],
-        status: 'Pending',
+        status: 'pending',
         loop: false,
         duration: 5,
         createdOn: new Date(),
@@ -299,7 +312,7 @@ export class PlaylistService {
     const index = tempData.findIndex(item => item.id === playlist.id);
 
     if (index !== -1) tempData[index] = { ...playlist, updatedOn: new Date() };
-    else tempData.push({ id: tempData.length + 1, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, createdOn: new Date(), updatedOn: new Date() });
     
     this.playlistSignal.set([...tempData]); 
 
@@ -317,7 +330,7 @@ export class PlaylistService {
 
   onDuplicatePlaylist(playlist: Playlist) {
     const tempData = this.playlists();
-    tempData.push({ ...playlist, id: tempData.length + 1, name: `Copy of ${playlist.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
+    tempData.push({ ...playlist, id: tempData.length + 1, name: `Copy of ${playlist.name}`, status: 'pending', createdOn: new Date(), updatedOn: new Date() });
     this.playlistSignal.set([...tempData]);
     
     this.totalRecords.set(this.playlists().length);
@@ -326,8 +339,8 @@ export class PlaylistService {
 
   onApprovePlaylist(playlist: Playlist, status: string) {
     const tempData = this.playlists();
-    const index = tempData.findIndex(item => item.id === playlist.id);
-    tempData[index] = { ...playlist, status, updatedOn: new Date() };
+    const index = tempData.findIndex(item => item.id == playlist.id);
+    tempData[index] = { ...playlist, status, updatedOn: new Date() };    
     this.playlistSignal.set([...tempData]);
     
     this.totalRecords.set(this.playlists().length);

@@ -16,10 +16,34 @@ export class ScreenService {
   loadingSignal = signal<boolean>(false);
   loadingAddressSignal = signal<boolean>(false);
 
+  showDownload = signal<boolean>(false);
+
   selectedScreen = signal<Screen | null>(null);
   
   rows = signal<number>(8);
   totalRecords = signal<number>(0);
+
+  types = signal<SelectOption[]>([
+    { label: 'Desktop', value: 'desktop' },
+    { label: 'Android', value: 'android' },
+    // { label: 'Web', value: 'web' },
+  ]);
+
+  locations = signal<SelectOption[]>([
+    { label: 'Local', value: 'local' },
+    { label: 'Global', value: 'global' },
+    { label: 'National', value: 'national' },
+    { label: 'International', value: 'iInternational' },
+    { label: 'Regional', value: 'regional' },
+  ]);
+
+  landmarks = signal<SelectOption[]>([
+    { label: 'Mountains', value: 'mountains' },
+    { label: 'Rivers', value: 'rivers' },
+    { label: 'Ancient Ruins', value: 'ancient Ruins' },
+    { label: 'Castles', value: 'castles' },
+    { label: 'Skyscrapers', value: 'skyscrapers' },
+  ]);
 
   screenForm: FormGroup = new FormGroup({
     id: new FormControl(0),
@@ -53,29 +77,16 @@ export class ScreenService {
     tags: new FormControl([], { nonNullable: true }),
   });
 
-  tagControl: FormControl = new FormControl('');
+  screenFilterForm: FormGroup = new FormGroup({
+    type: new FormControl(null),
+    group: new FormControl(null),
+    subGroup: new FormControl(null),
+    orientation: new FormControl(null),
+    status: new FormControl(null),
+    keywords: new FormControl(null),
+  });
 
-  types = signal<SelectOption[]>([
-    { label: 'Desktop', value: 'desktop' },
-    { label: 'Android', value: 'android' },
-    { label: 'Web', value: 'web' },
-  ]);
-
-  locations = signal<SelectOption[]>([
-    { label: 'Local', value: 'local' },
-    { label: 'Global', value: 'global' },
-    { label: 'National', value: 'national' },
-    { label: 'International', value: 'iInternational' },
-    { label: 'Regional', value: 'regional' },
-  ]);
-
-  landmarks = signal<SelectOption[]>([
-    { label: 'Mountains', value: 'mountains' },
-    { label: 'Rivers', value: 'rivers' },
-    { label: 'Ancient Ruins', value: 'ancient Ruins' },
-    { label: 'Castles', value: 'castles' },
-    { label: 'Skyscrapers', value: 'skyscrapers' },
-  ]);
+  tagControl: FormControl = new FormControl(null);
 
   constructor() { }
 
@@ -99,6 +110,28 @@ export class ScreenService {
         displaySettings: {
           orientation: 'landscape',
           resolution: '1920x1080'
+        },
+        status: 'inactive',
+        createdOn: new Date('2024-01-01'),
+        updatedOn: new Date('2024-02-01'),
+      },
+      { 
+        id: 2,
+        code: 'NYX002',
+        name: 'PLAYER-NYX002',
+        type: 'android',
+        address: {
+          country: 'Philippines',
+          region: 'Manila',
+          city: 'Mandaluyong',
+          fullAddress: '',
+          latitude: 14.7611,
+          longitude: 121.2023,
+          zipCode: '1100'
+        },
+        displaySettings: {
+          orientation: 'portrait',
+          resolution: '757x1062'
         },
         status: 'inactive',
         createdOn: new Date('2024-01-01'),

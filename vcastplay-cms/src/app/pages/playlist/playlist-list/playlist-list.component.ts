@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
@@ -37,6 +37,17 @@ export class PlaylistListComponent {
 
   showPreview = signal<boolean>(false);
   showApprove = signal<boolean>(false);
+
+  playlistFilters = signal<any>(this.playlistFilterForm.valueChanges);
+  filterPlaylist = computed(() => {
+    const { status, keywords } = this.playlistFilters();
+    const playlists = this.playlistService.playlists();
+    return playlists.filter(playlist => {
+      const matchStatus = !status || playlist.status == status;
+      const matchKeywords = !keywords || playlist.name.toLowerCase().includes(keywords.toLowerCase()) || playlist.description.toLowerCase().includes(keywords.toLowerCase());
+      return matchStatus && matchKeywords;
+    })
+  })
 
   ngOnInit() {
     this.playlistService.onGetPlaylists();
@@ -136,6 +147,10 @@ export class PlaylistListComponent {
     this.message.add({ severity:'success', summary: 'Success', detail: `New playlist created with ${contents.length} contents` });
   }
 
+  onFilterChange(event: any) { 
+    this.playlistFilters.set(event.filters);
+  }
+
   get rows() { return this.playlistService.rows; }
   get first() { return this.playlistService.first; }
   get isPlaying() { return this.playlistService.isPlaying; }
@@ -155,4 +170,6 @@ export class PlaylistListComponent {
   
   get status() { return this.playlistForm.get('status'); }
   get approvedInfo() { return this.playlistForm.get('approvedInfo'); }
+
+  get playlistFilterForm() { return this.playlistService.playlistFilterForm; }
 }

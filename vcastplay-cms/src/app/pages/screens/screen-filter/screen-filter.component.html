@@ -1,0 +1,29 @@
+<form [formGroup]="screenFilterForm" class="flex flex-row gap-4">
+    <p-input-group>
+        <input pInputText placeholder="Search" formControlName="keywords" (keydown.enter)="onClickApply(filter)" />
+        <p-inputgroup-addon>
+            <p-button (onClick)="onClickApply(filter)" icon="pi pi-search" />
+        </p-inputgroup-addon>
+    </p-input-group>
+    <p-button pTooltip="More Filter" tooltipPosition="bottom" [text]="true" (onClick)="filter.toggle($event)">
+        <ng-template #icon>
+            <p-overlaybadge severity="danger" badgeSize="small" [badgeDisabled]="!useFilter()">
+                <i class="pi pi-filter"></i>
+            </p-overlaybadge>
+        </ng-template>
+    </p-button>
+    <p-popover title="Filter" #filter>
+        <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
+        <div class="grid grid-cols-2 gap-5 w[25rem] my-3">
+            <p-select [options]="types()" formControlName="type" optionLabel="label" optionValue="value" placeholder="Type" />
+            <p-select [options]="filterGroup()" formControlName="group" placeholder="Group" />
+            <p-select [options]="filterSubGroup()" formControlName="subGroup" placeholder="Sub Group" />
+            <p-select [options]="orientations()" formControlName="orientation" optionLabel="label" optionValue="value" placeholder="Orientation" />
+            <p-select [options]="status" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
+        </div>
+        <div class="flex gap-2 justify-end items-center">
+            <p-button severity="secondary" (onClick)="onClickClear(filter)" label="Clear" size="small" [text]="true" icon="pi pi-times"></p-button>
+            <p-button (onClick)="onClickApply(filter)" label="Apply" size="small" icon="pi pi-check"></p-button>
+        </div>
+    </p-popover>
+</form>

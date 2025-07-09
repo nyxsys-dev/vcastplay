@@ -4,7 +4,19 @@ import { FormControl, FormGroup } from '@angular/forms';
 @Injectable({
   providedIn: 'root'
 })
-export class AudienceTagService {
+export class TagService {
+
+  // Groups
+  groups = signal<any[]>([]);
+
+  // Sub Group
+  subGroups = signal<any[]>([]);
+
+  // Category
+  categories = signal<any[]>([]);
+
+  // Sub Category
+  subCategories = signal<any[]>([]);
 
   // Demographics
   ageGroups = signal<any[]>([ "Child", "Teen", "Young Adult", "Adult", "Middle Age", "Senior" ]);
@@ -33,7 +45,7 @@ export class AudienceTagService {
     })
   });
   
-  audienceTagsLists = signal<any[]>([
+  tagsLists = signal<any[]>([
     { id: 'genders', name: 'Genders', data: this.genders, formControlName: 'genders', showInSettings: false },
     { id: 'ageGroups', name: 'Age Groups', data: this.ageGroups, formControlName: 'ageGroups', showInSettings: false },
     { id: 'timeOfDays', name: 'Time of Days', data: this.timeOfDays, formControlName: 'timeOfDays', showInSettings: true },
@@ -41,15 +53,17 @@ export class AudienceTagService {
     { id: 'locations', name: 'Locations', data: this.locations, formControlName: 'locations', showInSettings: true },
     { id: 'pointOfInterests', name: 'Point of Interests', data: this.pointOfInterests, formControlName: 'pointOfInterests', showInSettings: true },
     { id: 'tags', name: 'Tags', data: this.tags, formControlName: 'tags', showInSettings: true },
+    { id: 'groups', name: 'Groups', data: this.groups, formControlName: 'groups', showInSettings: true },
+    { id: 'subGroups', name: 'Sub Groups', data: this.subGroups, formControlName: 'subGroups', showInSettings: true },
+    { id: 'categories', name: 'Categories', data: this.categories, formControlName: 'categories', showInSettings: true },
+    { id: 'subCategories', name: 'Sub Categories', data: this.subCategories, formControlName: 'subCategories', showInSettings: true },
   ]);
 
-  onLoadAudienceTags() {
-    
-  }
+  onLoadAudienceTags() { }
 
   // From table to object
   onGenerateFilters(selectedItems: any[]) {
-    const tagDefs = this.audienceTagsLists();
+    const tagDefs = this.tagsLists();
     
     // Build initial filter object with all formControlNames
     const filters = tagDefs.reduce((acc: any, def: any) => {
@@ -73,7 +87,7 @@ export class AudienceTagService {
 
   // From object to table
   onGetFilteres(filters: any) {
-    const tagDefs = this.audienceTagsLists(); // get the signal value
+    const tagDefs = this.tagsLists(); // get the signal value
 
     const selectedItems = Object.entries(filters).flatMap(([key, values]) => {
       if (!Array.isArray(values) || values.length === 0) return [];
@@ -87,82 +101,59 @@ export class AudienceTagService {
     return selectedItems;
   }
 
-  onSaveAudienceTags(item: any, type: string) {
-    let tempData = [];
-    let index: number = 0;
-    switch(type) {
+  onSaveAudienceTags(item: string, type: string) {
+    const tagData = this.tagsLists().find(tag => tag.id.includes(type)).data();
+    const existingIndex = tagData.findIndex((existingItem: any) => existingItem === item);
+
+    if (existingIndex !== -1) {
+      tagData[existingIndex] = item;
+    } else {
+      tagData.push(item);
+    }
+
+    this.setTagData(type, [...tagData]);
+  }
+  
+  onDeleteAudienceTags(item: string, type: string) {
+    const tagData = this.tagsLists().find(tag => tag.id.includes(type)).data();
+    const index = tagData.findIndex((data: any) => data === item);
+
+    if (index !== -1) {
+      tagData.splice(index, 1);
+      this.setTagData(type, [...tagData]);
+    }
+  }
+
+  private setTagData(type: string, data: string[]) {
+    switch (type) {
+      case 'groups':
+        this.groups.set(data);
+        break;
+      case 'subGroups':
+        this.subGroups.set(data);
+        break;
+      case 'categories':
+        this.categories.set(data);
+        break;
+      case 'subCategories':
+        this.subCategories.set(data);
+        break;
       case 'timeOfDays':
-        tempData = this.timeOfDays();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData[index] = item;
-        else tempData.push(item);
-        this.timeOfDays.set([...tempData]);
+        this.timeOfDays.set(data);
         break;
       case 'sesonalities':
-        tempData = this.sesonalities();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData[index] = item;
-        else tempData.push(item);
-        this.sesonalities.set([...tempData]);
+        this.sesonalities.set(data);
         break;
       case 'locations':
-        tempData = this.locations();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData[index] = item;
-        else tempData.push(item);
-        this.locations.set([...tempData]);
+        this.locations.set(data);
         break;
       case 'pointOfInterests':
-        tempData = this.pointOfInterests();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData[index] = item;
-        else tempData.push(item);
-        this.pointOfInterests.set([...tempData]);
+        this.pointOfInterests.set(data);
         break;
       default:
-        tempData = this.tags();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData[index] = item;
-        else tempData.push(item);
-        this.tags.set([...tempData]);
+        this.tags.set(data);
         break;
     }
   }
   
-  onDeleteAudienceTags(item: any, type: string) {
-    let tempData = [];
-    let index: number = 0;
-    switch(type) {
-      case 'timeOfDays':
-        tempData = this.timeOfDays();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData.splice(index, 1);
-        this.timeOfDays.set([...tempData]);
-        break;
-      case 'sesonalities':
-        tempData = this.sesonalities();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData.splice(index, 1);
-        this.sesonalities.set([...tempData]);
-        break;
-      case 'locations':
-        tempData = this.locations();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData.splice(index, 1);
-        this.locations.set([...tempData]);
-        break;
-      case 'pointOfInterests':
-        tempData = this.pointOfInterests();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData.splice(index, 1);
-        this.pointOfInterests.set([...tempData]);
-        break;
-      default:
-        tempData = this.tags();
-        index = tempData.findIndex(data => data == item);
-        if (index !== -1) tempData.splice(index, 1);
-        this.tags.set([...tempData]);
-        break;
-    }
-  }
 }

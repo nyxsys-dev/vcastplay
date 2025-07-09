@@ -8,6 +8,7 @@ import { FormGroup } from '@angular/forms';
 import moment from 'moment';
 import { HttpClient } from '@angular/common/http';
 import { SelectOption } from '../interfaces/general';
+import _ from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -64,18 +65,17 @@ export class UtilityService {
         { label: 'Users', icon: 'pi pi-users', routerLink: ['/settings/user-management'], },
         { label: 'Roles', icon: 'pi pi-lock', routerLink: ['/settings/role-management'], },
         { separator: true },
-        { label: 'Audience Tag', icon: 'pi pi-users', routerLink: ['/settings/audience-tag'], },
+        { label: 'Tags', icon: 'pi pi-tag', routerLink: ['/settings/tag'], },
       ]
     }
   ]);
   
-  groups: any[] = [
-    { label: 'Group 1', value: 'Group 1', subGroup: [{ label: 'Sub-Group 1', value: 'Sub-Group 1' }] },
-    { label: 'Group 2', value: 'Group 2', subGroup: [{ label: 'Sub-Group 2', value: 'Sub-Group 2' }] },
+  status: any[] = [
+    { label: 'Active', value: 'active' },
+    { label: 'Inactive', value: 'inactive' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Suspended', value: 'suspended' }
   ]
-  
-  filterGroup = computed(() => this.groups.map(group => ({ label: group.label, value: group.value })));
-  filterSubGroup = computed(() => this.groups.map(group => group.subGroup).flat().map(subGroup => ({ label: subGroup.label, value: subGroup.value })));
 
   private breakPointObserver = inject(BreakpointObserver);
   readonly isMobile = toSignal(
@@ -103,13 +103,6 @@ export class UtilityService {
     { label: 'Administrator', value: 'admin' },
     { label: 'User', value: 'user' },
     { label: 'Guest', value: 'guest' },
-  ]
-  
-  status: any[] = [
-    { label: 'Active', value: 'active' },
-    { label: 'Inactive', value: 'inactive' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Suspended', value: 'suspended' }
   ]
 
   colors: any[] = [
@@ -212,18 +205,24 @@ export class UtilityService {
   getIcon(status: string) {
     switch (status.toLowerCase()) {
       case 'approved':
+        return 'pi-thumbs-up-fill'
       case 'active':
       case 'online':
         return 'pi-check-circle';
       case 'inactive':
         return 'pi-pause-circle';
       case 'disapproved':
+        return 'pi-thumbs-down-fill'
       case 'suspended':
       case 'offline':
         return 'pi-times-circle';
       default:
         return 'pi-question-circle';
     }
+  }
+
+  toTitleCase(value: string) {
+    return _.startCase(value);
   }
   
 

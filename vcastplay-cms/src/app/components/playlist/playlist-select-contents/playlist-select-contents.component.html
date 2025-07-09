@@ -3,7 +3,7 @@
         <p-step [value]="1">Tags & Filters</p-step>
         <p-step [value]="2">Contents</p-step>
         @if (steps > 2) {
-            <p-step [value]="3">Playlist</p-step>
+            <p-step [value]="3">Playlist Information</p-step>
         }
     </p-step-list>
     <p-step-panels>
@@ -14,15 +14,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-12 gap-2" [formGroup]="categoryForm">
                             <div class="col-span-1 md:col-span-5">
                                 <p-floatlabel variant="on">
-                                    <p-select inputId="category" [options]="filterCategory()" optionLabel="label" optionValue="value" 
-                                        formControlName="category" appendTo="body" showClear fluid />
+                                    <p-select inputId="category" [options]="filterCategory()" formControlName="category" appendTo="body" showClear fluid />
                                     <label for="category">Category</label>
                                 </p-floatlabel>
                             </div>
                             <div class="col-span-1 md:col-span-5">
                                 <p-floatlabel variant="on">
-                                    <p-select inputId="subCategory" [options]="filterSubCategory()" optionLabel="label" optionValue="value" 
-                                        formControlName="subCategory" appendTo="body" showClear fluid />
+                                    <p-select inputId="subCategory" [options]="filterSubCategory()" formControlName="subCategory" appendTo="body" showClear fluid />
                                     <label for="subCategory">Sub Category</label>
                                 </p-floatlabel>
                             </div>
@@ -57,7 +55,8 @@
                             <label for="name">Name</label>
                         </p-floatlabel>
                         <p-floatlabel variant="on">
-                            <textarea id="description" rows="10" cols="30" pTextarea formControlName="description" fluid></textarea>
+                            <textarea id="description" rows="10" cols="30" pTextarea formControlName="description"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" fluid></textarea>
                             <label for="description">Description</label>
                         </p-floatlabel>
                     </div>

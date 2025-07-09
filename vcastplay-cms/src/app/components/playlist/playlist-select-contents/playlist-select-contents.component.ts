@@ -1,4 +1,4 @@
-import { Component, effect, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Component, computed, effect, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { AssetsService } from '../../../core/services/assets.service';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -6,7 +6,7 @@ import { AudienceTagFiltersComponent } from '../../audience-tag-filters/audience
 import { Assets } from '../../../core/interfaces/assets';
 import { AssetListItemComponent } from '../../../pages/assets/asset-list-item/asset-list-item.component';
 import { PlaylistService } from '../../../core/services/playlist.service';
-import { AudienceTagService } from '../../../core/services/audience-tag.service';
+import { TagService } from '../../../core/services/tag.service';
 
 @Component({
   selector: 'app-playlist-select-contents',
@@ -23,7 +23,15 @@ export class PlaylistSelectContentsComponent {
 
   assetService = inject(AssetsService);
   playListService = inject(PlaylistService);
-  audienceTagService = inject(AudienceTagService);
+  tagService = inject(TagService);
+  
+  filterCategory = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('categories')).data();
+  })
+
+  filterSubCategory = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('subCategories')).data();
+  })
 
   constructor() {
     effect(() => {
@@ -89,8 +97,7 @@ export class PlaylistSelectContentsComponent {
   get filteredAssets() { return this.playListService.filteredAssets; }
   get categoryForm() { return this.playListService.categoryForm; }
 
-  get audienceTagForm() { return this.audienceTagService.audienceTagForm; }
+  get audienceTagForm() { return this.tagService.audienceTagForm; }
 
-  get filterCategory() { return this.assetService.filterCategory; }
-  get filterSubCategory() { return this.assetService.filterSubCategory; }
+  get tagsLists() { return this.tagService.tagsLists; }
 }

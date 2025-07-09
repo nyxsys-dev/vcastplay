@@ -6,8 +6,8 @@ export interface Assets {
     name: string;
     type: string;
     link: string;
-    category: string;
-    subCategory: string;
+    category?: string;
+    subCategory?: string;
     fileDetails: AssestInfo;
     dateRange?: { 
         start: Date | null;

@@ -3,7 +3,7 @@
     <p-card styleClass="h-full" class="flex-1">
         <ng-template #title>
             <div class="flex gap-4 items-center mb-2">
-                <app-filters class="w-full md:w-[25rem]" />
+                <app-schedule-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
                 <div class="flex gap-4 ml-auto">
                     <p-button class="hidden md:block" (onClick)="onClickAddNew()" label="Add Schedule" icon="pi pi-plus"></p-button>
                     <p-button class="md:hidden" (onClick)="onClickAddNew()" label="" icon="pi pi-plus" />
@@ -14,7 +14,7 @@
         <div class="flex-1">
             <p-table
                 class="hidden lg:block" 
-                [value]="scheduleServices.loadingSignal() ? utils.tableSkeletonRows : schedules()" 
+                [value]="scheduleServices.loadingSignal() ? utils.tableSkeletonRows : filterSchedules()" 
                 selectionMode="single"
                 [scrollable]="true" 
                 [rows]="rows()"
@@ -41,7 +41,8 @@
                         <td>{{ item.name }}</td>
                         <td>{{ item.description }}</td>
                         <td><p class="text-sm">{{ item.updatedOn | date: 'medium' }}</p></td>
-                        <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" [icon]="'pi ' + utils.getIcon(item.status)"></p-tag></td>
+                        <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
+                            [severity]="utils.getStatus(item.status)" /></td>
                         <td>
                             <div class="flex flex-row justify-center gap-2">
                                 <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
@@ -60,7 +61,7 @@
                 
             <div class="block lg:hidden flex flex-col gap-4">
                 @if (!scheduleServices.loadingSignal()) {
-                    @for (item of schedules(); track $index) {
+                    @for (item of filterSchedules(); track $index) {
                         <app-schedule-list-item [schedule]="item" [actionBtn]="actionBtn" />
                     } @empty {
                         <div class="flex justify-center items-center p-5 h-100">
@@ -79,13 +80,41 @@
 
 <ng-template #actionBtn let-item>
     <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" severity="success" size="small" />
-    <p-button icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" size="small" />
+    <p-button icon="pi pi-check-circle" (onClick)="onClickShowApproved($event, item, approved)" pTooltip="Approval" tooltipPosition="bottom"  severity="info" size="small" />
     <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" size="small" [disabled]="item.status == 'Pending'" />
     <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" size="small" [disabled]="item.status == 'Pending'" />
     <p-button (onClick)="onClickOpenOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
 </ng-template>
 
 <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
+<p-popover #approved (onHide)="scheduleForm.reset()" appendTo="body" (onHide)="scheduleForm.reset()">
+    <ng-template #content>
+        <div class="flex flex-col gap-3" [formGroup]="scheduleForm">
+            @if (!['Approved', 'Disapproved'].includes(status?.value)) {
+                <p class="text-sm font-semibold">Approve this playlist?</p>
+                <div formGroupName="approvedInfo">
+                    <p-floatlabel variant="on">
+                        <textarea pTextarea id="remarks" formControlName="remarks" rows="5" cols="2" style="resize: none" class="h-full" fluid></textarea>
+                        <label for="remarks">Remarks</label>
+                    </p-floatlabel>
+                </div>
+                <div class="flex gap-2 justify-end">
+                    <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApproved($event, approved, 'disapproved')" size="small" outlined />
+                    <p-button label="Approve" (onClick)="onClickConfirmApproved($event, approved, 'approved')" size="small" />
+                </div>
+            } @else {
+                <p class="text-sm font-semibold">Approval Info:</p>
+                <div class="flex flex-col gap-2 w-50">
+                    <p>User: {{ approvedInfo?.value.approvedBy }}</p>
+                    <p>Remarks: {{ approvedInfo?.value.remarks }}</p>
+                </div>
+                <div class="flex gap-2 justify-end">
+                    <p-button label="Close" (onClick)="onClickCloseApproved($event, approved)" size="small" text />
+                </div>
+            }
+        </div>
+    </ng-template>
+</p-popover>
 
 <p-toast />
 <p-confirmdialog />

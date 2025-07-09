@@ -6,6 +6,7 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
+import { TagService } from '../../../core/services/tag.service';
 
 @Component({
   selector: 'app-screen-details',
@@ -20,6 +21,7 @@ export class ScreenDetailsComponent {
   pageInfo: MenuItem = [ {label: 'Screens'}, {label: 'Registration', routerLink: '/screens/screen-registration'}, {label: 'Details'} ];
 
   screenService = inject(ScreenService);
+  tagService = inject(TagService);
   utils = inject(UtilityService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
@@ -28,6 +30,18 @@ export class ScreenDetailsComponent {
 
   markers = computed(() => {
     return [ this.address?.value ]
+  })
+
+  tagsFilter = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('tags')).data();
+  })
+
+  filterGroups = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('groups')).data();
+  })
+
+  filterSubGroups = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('subGroups')).data();
   })
 
   ngOnInit() { }
@@ -112,11 +126,9 @@ export class ScreenDetailsComponent {
   }
   
   formControlGeographic(fieldName: string) {
-    return this.formControl('geograhic')
+    return this.formControl('geograhic').get(fieldName) as FormControl;
   }
 
-  get groups() { return this.utils.filterGroup; }
-  get subGroups() { return this.utils.filterSubGroup; }
   get orientations() { return this.utils.orientations; }
   get resolutions() { return this.utils.resolutions; }
 
@@ -131,4 +143,6 @@ export class ScreenDetailsComponent {
   
   get address() { return this.screenForm.get('address'); }
   get tags() { return this.screenForm.get('tags'); }
+
+  get tagsLists() { return this.tagService.tagsLists; }
 }

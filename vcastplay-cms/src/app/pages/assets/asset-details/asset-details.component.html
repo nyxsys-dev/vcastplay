@@ -48,7 +48,7 @@
                 </div>
                 <div class="col-span-1 md:col-span-3 lg:col-span-2">
                     <p-floatlabel variant="on">
-                        <p-select inputId="category" [options]="assetService.filterCategory()" optionLabel="label" optionValue="value" formControlName="category" 
+                        <p-select inputId="category" [options]="filterCategory()" formControlName="category" 
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('category').invalid && formControl('category').touched }" showClear fluid>
                             <ng-template #footer>
                                 <div class="p-3">
@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-span-1 md:col-span-3 lg:col-span-2">
                     <p-floatlabel variant="on">
-                        <p-select inputId="subCategory" [options]="assetService.filterSubCategory()" optionLabel="label" optionValue="value" formControlName="subCategory" 
+                        <p-select inputId="subCategory" [options]="filterSubCategory()" formControlName="subCategory" 
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('subCategory').invalid && formControl('subCategory').touched }" showClear fluid>
                             <ng-template #footer>
                                 <div class="p-3">

@@ -23,6 +23,9 @@ import { SchedulesContentListComponent } from '../../../pages/schedules/schedule
 import { ScheduleListItemComponent } from '../../../pages/schedules/schedule-list-item/schedule-list-item.component';
 import { ScreenScheduleComponent } from '../../../pages/screens/screen-schedule/screen-schedule.component';
 import { AssetFilterComponent } from '../../../pages/assets/asset-filter/asset-filter.component';
+import { ScreenFilterComponent } from '../../../pages/screens/screen-filter/screen-filter.component';
+import { PlaylistFilterComponent } from '../../../pages/playlist/playlist-filter/playlist-filter.component';
+import { ScheduleFilterComponent } from '../../../pages/schedules/schedule-filter/schedule-filter.component';
 
 
 const COMPONENT_MODULES = [
@@ -43,12 +46,17 @@ const COMPONENT_MODULES = [
   RoleListItemComponent,
   RoleDetailsComponent,
 
+  //Screen Components
+  ScreenScheduleComponent,
+  ScreenFilterComponent,
+
   // Playlist Components
   AddToPlaylistComponent,
   PlaylistContainerComponent, 
   PlaylistSelectContentsComponent, 
   PlaylistListItemComponent,
   PlaylistPreviewComponent,
+  PlaylistFilterComponent,
 
   // Asset Components
   AssetListItemComponent,
@@ -61,7 +69,7 @@ const COMPONENT_MODULES = [
   // Schedule Components
   SchedulesContentListComponent,
   ScheduleListItemComponent,
-  ScreenScheduleComponent,
+  ScheduleFilterComponent,
 ]
 
 @NgModule({

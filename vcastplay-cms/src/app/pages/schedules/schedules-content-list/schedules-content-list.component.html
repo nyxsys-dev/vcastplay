@@ -26,15 +26,14 @@
         </div>
     </div>
     <p>Add Content:</p>
-    <p-inputgroup>
-        <p-inputgroup-addon>
-            <i class="pi pi-search"></i>
-        </p-inputgroup-addon>
-        <input pInputText type="text" [(ngModel)]="keywords" placeholder="Search keyword" fluid />
-        <p-inputgroup-addon>
-            <p-button icon="pi pi-filter" [text]="false" pTooltip="Filter" tooltipPosition="bottom" />
-        </p-inputgroup-addon>
-    </p-inputgroup>
+    @switch (type?.value) {
+        @case ('asset') {
+            <app-asset-filter (filterChange)="onFilterChange($event)" />
+        }
+        @case ('playlist') {
+            <app-playlist-filter (filterChange)="onFilterChange($event)" />
+        }
+    }
     <div class="border border-[var(--p-surface-300)] rounded-lg h-[250px]">
         <p-table
             #contentTable

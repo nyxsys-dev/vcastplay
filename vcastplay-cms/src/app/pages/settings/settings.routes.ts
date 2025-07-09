@@ -19,8 +19,8 @@ export default [
         title: `Profile • ${appTitle}`,
     },
     {
-        path: 'audience-tag',
-        loadComponent: () => import('./audience-tag-list/audience-tag-list.component').then(m => m.AudienceTagListComponent),
-        title: `Audience Tag • ${appTitle}`,
+        path: 'tag',
+        loadComponent: () => import('./tags/tags.component').then(m => m.TagsComponent),
+        title: `Tags • ${appTitle}`,
     }
 ] as Routes

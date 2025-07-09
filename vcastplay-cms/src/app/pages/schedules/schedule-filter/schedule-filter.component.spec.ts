@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AudienceTagListComponent } from './audience-tag-list.component';
+import { ScheduleFilterComponent } from './schedule-filter.component';
 
-describe('AudienceTagListComponent', () => {
-  let component: AudienceTagListComponent;
-  let fixture: ComponentFixture<AudienceTagListComponent>;
+describe('ScheduleFilterComponent', () => {
+  let component: ScheduleFilterComponent;
+  let fixture: ComponentFixture<ScheduleFilterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AudienceTagListComponent]
+      imports: [ScheduleFilterComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AudienceTagListComponent);
+    fixture = TestBed.createComponent(ScheduleFilterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

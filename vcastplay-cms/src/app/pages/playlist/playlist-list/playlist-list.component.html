@@ -3,7 +3,7 @@
     <p-card styleClass="h-full" class="flex-1">
         <ng-template #title>
             <div class="flex gap-4 items-center mb-2">
-                <app-filters class="w-full md:w-[25rem]" />
+                <app-playlist-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
                 <div class="gap-2 ml-auto hidden md:flex">
                     <p-button label="Generate Playlist" icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" outlined />
                     <p-button (onClick)="onClickAddNew()" label="New Playlist" icon="pi pi-plus"></p-button>
@@ -17,7 +17,7 @@
         <div class="flex-1">
             <p-table
                 class="hidden lg:block" 
-                [value]="playlistService.loadingSignal() ? utils.tableSkeletonRows : playlists()" 
+                [value]="playlistService.loadingSignal() ? utils.tableSkeletonRows : filterPlaylist()" 
                 selectionMode="single"
                 [scrollable]="true" 
                 [rows]="rows()"
@@ -43,7 +43,8 @@
                     <tr class="text-sm">
                         <td>{{ item.name }}</td>
                         <td>{{ item.description }}</td>
-                        <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" [icon]="'pi ' + utils.getIcon(item.status)"></p-tag></td>
+                        <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
+                            [severity]="utils.getStatus(item.status)" /></td>
                         <td><p class="text-sm">{{ item.updatedOn | date: 'medium' }}</p></td>
                         <td>
                             <div class="flex flex-row justify-center gap-2">
@@ -63,7 +64,7 @@
 
             <div class="block lg:hidden flex flex-col gap-4">
                 @if (!playlistService.loadingSignal()) {
-                    @for (item of playlists(); track $index) {
+                    @for (item of filterPlaylist(); track $index) {
                         <app-playlist-list-item [playlist]="item" [actionBtn]="actionBtn" />
                     } @empty {
                         <div class="flex justify-center items-center p-5 h-100">
@@ -98,7 +99,7 @@
     </div>
 </p-dialog>
 
-<p-dialog header="Select Contents" [(visible)]="showContents" [style]="{ width: '50rem', height: '520px' }" (onHide)="categoryForm.reset()"
+<p-dialog header="Generate Playlist" [(visible)]="showContents" [style]="{ width: '50rem', height: '520px' }" (onHide)="categoryForm.reset()"
     [draggable]="false" closable modal>
     <app-playlist-select-contents [playListForm]="playlistForm" (assetSelected)="selectedAssets.set($event)" [steps]="3" />
     <ng-template #footer>
@@ -111,7 +112,7 @@
                 @case(3) {
                     <p-button label="Back" severity="secondary" icon="pi pi-arrow-left" (onClick)="activeStep.set(2)" size="small" />
                     <p-button class="ml-auto" label="Complete" severity="success"
-                        icon="pi pi-check" iconPos="right" (onClick)="onClickComplete($event)" size="small" />
+                        icon="pi pi-check" iconPos="right" (onClick)="onClickComplete($event)" [disabled]="playlistForm.invalid" size="small" />
                 }
                 @default {
                     <p-button class="ml-auto" label="Next" icon="pi pi-arrow-right" (onClick)="activeStep.set(2)" size="small" />
@@ -134,8 +135,8 @@
                     </p-floatlabel>
                 </div>
                 <div class="flex gap-2 justify-end">
-                    <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApproved($event, approved, 'Disapproved')" size="small" outlined />
-                    <p-button label="Approve" (onClick)="onClickConfirmApproved($event, approved, 'Approved')" size="small" />
+                    <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApproved($event, approved, 'disapproved')" size="small" outlined />
+                    <p-button label="Approve" (onClick)="onClickConfirmApproved($event, approved, 'approved')" size="small" />
                 </div>
             } @else {
                 <p class="text-sm font-semibold">Approval Info:</p>

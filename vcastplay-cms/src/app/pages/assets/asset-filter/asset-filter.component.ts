@@ -1,9 +1,9 @@
-import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Output, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { AssetsService } from '../../../core/services/assets.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
-import { AudienceTagService } from '../../../core/services/audience-tag.service';
+import { TagService } from '../../../core/services/tag.service';
 
 @Component({
   selector: 'app-asset-filter',
@@ -17,28 +17,33 @@ export class AssetFilterComponent {
 
   utils = inject(UtilityService);
   assetService = inject(AssetsService);
-  audienceTagService = inject(AudienceTagService);
+  tagService = inject(TagService);
 
   isShowAudienceTag = signal<boolean>(false);
 
-  constructor() {
-    this.keywords?.valueChanges.subscribe(value => {
-      console.log(value);
-      
-    });
-  }
+  useFilter = signal<boolean>(false);
+
+  filterCategory = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('categories')).data();
+  })
+
+  filterSubCategory = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('subCategories')).data();
+  })
 
   onClickApply(filter: any) {
     const filters = this.assetFilterForm.value;
     const audienceTag = this.audienceTagForm.value.audienceTag;  
     this.filterChange.emit({ filters, audienceTag });
+    this.useFilter.set(true);
     filter.hide();
   }
 
   onClickClear(filter: any) {
     this.assetFilterForm.reset();
     this.audienceTagForm.reset();
-    this.filterChange.emit({ filters: this.assetFilterForm.value, audienceTag: this.audienceTagForm.value.audienceTag });
+    this.filterChange.emit({ filters: this.assetFilterForm.value, audienceTag: {} });
+    this.useFilter.set(false);
     filter.hide();
   }
 
@@ -55,12 +60,11 @@ export class AssetFilterComponent {
 
   get keywords() { return this.assetFilterForm.get('keyword'); }
   
-  get categories() { return this.assetService.filterCategory; }
-  get subCategories() { return this.assetService.filterSubCategory; }
   get assetFilterForm() { return this.assetService.assetFilterForm; }
 
   get fileTypes() { return this.utils.fileTypes; }
   get orientations() { return this.utils.orientations; }
   
-  get audienceTagForm() { return this.audienceTagService.audienceTagForm; }
+  get tagsLists() { return this.tagService.tagsLists; }
+  get audienceTagForm() { return this.tagService.audienceTagForm; }
 }

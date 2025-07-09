@@ -34,15 +34,7 @@ export class AssetsService {
     { icon: 'pi pi-table', label: 'Grid' },
     { icon: 'pi pi-list', label: 'List' },
   ]
-
-  categories: any[] = [
-    { label: 'Category 1', value: 'Category 1', subCategory: [{ label: 'Sub-Category 1', value: 'Sub-Category 1' }] },
-    { label: 'Category 2', value: 'Category 2', subCategory: [{ label: 'Sub-Category 2', value: 'Sub-Category 2' }] },
-  ]
   
-  filterCategory = computed(() => this.categories.map(category => ({ label: category.label, value: category.value })));
-  filterSubCategory = computed(() => this.categories.map(category => category.subCategory).flat().map(subCategory => ({ label: subCategory.label, value: subCategory.value })));
-
   assetForm: FormGroup = new FormGroup({
     id: new FormControl(''),
     code: new FormControl(''),
@@ -97,8 +89,6 @@ export class AssetsService {
         name: 'image (2).png',
         type: 'image',
         link: 'https://picsum.photos/id/237/200/300',
-        category: 'Category 1',
-        subCategory: 'Sub-Category 1',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,

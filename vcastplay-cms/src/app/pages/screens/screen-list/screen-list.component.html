@@ -4,9 +4,9 @@
         <p-card styleClass="h-full">
             <ng-template #title>
                 <div class="flex gap-4 items-center mb-2">
-                    <app-filters class="w-full md:w-[25rem]"></app-filters>
+                    <app-screen-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
                     <div class="flex gap-2 ml-auto">
-                        <p-button icon="pi pi-download" [text]="false" pTooltip="Download" tooltipPosition="bottom" />
+                        <p-button (onClick)="showDownload.set(true)" icon="pi pi-download" [text]="false" pTooltip="Download" tooltipPosition="bottom" />
                     </div>
                 </div>
             </ng-template>
@@ -37,10 +37,10 @@
                             <td>
                                 <div class="flex items-center gap-4">
                                     <div class="flex items-center gap-4 bg-[var(--p-primary-500)] 
-                                        text-white rounded-full p-3" [pTooltip]="item.type.toUpperCase()" tooltipPosition="bottom">
+                                        text-white rounded-full p-3" [pTooltip]="utils.toTitleCase(item.type)" tooltipPosition="bottom">
                                         @switch (item.type) {
                                             @case('desktop') { <i class="pi pi-desktop"></i> }
-                                            @case('mobile') { <i class="pi pi-mobile"></i> }
+                                            @case('android') { <i class="pi pi-android"></i> }
                                             @default { <i class="pi pi-globe"></i> }
                                         }
                                     </div>
@@ -67,7 +67,8 @@
                                 </div>
                             </td>
                             <td><p class="text-sm">{{ item.updatedOn | date: 'mediumDate' }}</p></td>
-                            <td><p-tag [value]="item.status.toUpperCase()" [severity]="utils.getStatus(item.status)" /></td>
+                            <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
+                                [severity]="utils.getStatus(item.status)" /></td>
                             <td>
                                 <div class="flex flex-row justify-center gap-2">
                                     <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
@@ -110,6 +111,24 @@
     <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" size="small"/>
     <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" severity="danger" size="small" />
 </ng-template>
+
+<p-dialog [(visible)]="showDownload" styleClass="w-[20rem] md:w-[40rem] h-auto" [closable]="false" modal>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 justify-center items-center">
+        <div class="col-span-1 md:col-span-2 text-center text-xl font-semibold">Choose your device</div>
+        <p-card class="hover:shadow-2xl">
+            <div class="flex flex-col gap-6 items-center justify-center p-6 hover:cursor-pointer" (click)="onClickDownload('desktop')">
+                <i class="pi pi-desktop text-zinc-500" style="font-size: 5rem;"></i>
+                <p class="font-semibold">Desktop</p>
+            </div>
+        </p-card>
+        <p-card class="hover:shadow-2xl">
+            <div class="flex flex-col gap-6 items-center justify-center p-6 hover:cursor-pointer" (click)="onClickDownload('android')">
+                <i class="pi pi-android text-lime-500" style="font-size: 5rem;"></i>
+                <p class="font-semibold">Android</p>
+            </div>
+        </p-card>
+    </div>
+</p-dialog>
 
 <p-toast />
 <p-confirmdialog />
