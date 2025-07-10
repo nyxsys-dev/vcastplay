@@ -1,11 +1,11 @@
-<form [formGroup]="playlistFilterForm" class="flex flex-row gap-4">
+<form [formGroup]="playlistFilterForm" class="flex items-center gap-2">
     <p-input-group>
         <input pInputText placeholder="Search" formControlName="keywords" (keydown.enter)="onClickApply(filter)" />
         <p-inputgroup-addon>
             <p-button (onClick)="onClickApply(filter)" icon="pi pi-search" />
         </p-inputgroup-addon>
     </p-input-group>
-    <p-button pTooltip="More Filter" tooltipPosition="bottom" [text]="true" (onClick)="filter.toggle($event)">
+    <p-button pTooltip="More Filter" tooltipPosition="bottom" (onClick)="filter.toggle($event)" text>
         <ng-template #icon>
             <p-overlaybadge severity="danger" badgeSize="small" [badgeDisabled]="!useFilter()">
                 <i class="pi pi-filter"></i>
@@ -13,13 +13,24 @@
         </ng-template>
     </p-button>
     <p-popover title="Filter" #filter>
-        <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
-        <div class="grid grid-cols-1 gap-5 w[25rem] my-3">
-            <p-select [options]="playlistStatus()" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
-        </div>
-        <div class="flex gap-2 justify-end items-center">
-            <p-button severity="secondary" (onClick)="onClickClear(filter)" label="Clear" size="small" [text]="true" icon="pi pi-times"></p-button>
-            <p-button (onClick)="onClickApply(filter)" label="Apply" size="small" icon="pi pi-check"></p-button>
+        <div class="flex flex-col gap-4 w-[18rem]">
+            <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
+            <div class="grid grid-cols-2 md:grid-cols-1 gap-3 w[25rem]">
+                <p-datepicker formControlName="dateRange" selectionMode="range" placeholder="Date Range" readonlyInput showIcon fluid />
+                <p-select [options]="playlistStatus()" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
+                <div class="flex gap-2">
+                    @for (item of playListTypes(); track $index) {
+                        <div class="flex gap-2">
+                            <p-radiobutton [value]="item.value" formControlName="isAuto" />
+                            <span>{{ item.label }}</span>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="flex gap-2 justify-end items-center">
+                <p-button severity="secondary" (onClick)="onClickClear(filter)" label="Clear" size="small" [text]="true" icon="pi pi-times"></p-button>
+                <p-button (onClick)="onClickApply(filter)" label="Apply" size="small" icon="pi pi-check"></p-button>
+            </div>
         </div>
     </p-popover>
 </form>

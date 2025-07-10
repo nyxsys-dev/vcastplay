@@ -44,15 +44,11 @@ export class ScreenMapComponent {
   });
 
   onCreateDivIcon(screen: Screen) {
-    return L.divIcon({
-      className: `custom-marker`,
-      html: `<div class="marker-dot flex flex-col justify-center items-center rounded-sm text-white p-3">
-              <div class="flex justify-center items-center gap-3 text-center text-sm w-full">
-                <i class="pi pi-desktop"></i>
-              </div> 
-            </div>`,
-      iconSize: [12, 12],
-      iconAnchor: [6, 6]
+    return new L.Icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+      iconSize: [38, 38],
+      iconAnchor: [19, 38],
+      popupAnchor: [0, -38]
     });
   }
 

@@ -7,6 +7,7 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { Playlist } from '../../../core/interfaces/playlist';
 import { Router } from '@angular/router';
 import { Menu } from 'primeng/menu';
+import { isNull } from 'lodash';
 
 @Component({
   selector: 'app-playlist-list',
@@ -40,12 +41,13 @@ export class PlaylistListComponent {
 
   playlistFilters = signal<any>(this.playlistFilterForm.valueChanges);
   filterPlaylist = computed(() => {
-    const { status, keywords } = this.playlistFilters();
+    const { status, keywords, isAuto } = this.playlistFilters();
     const playlists = this.playlistService.playlists();
     return playlists.filter(playlist => {
       const matchStatus = !status || playlist.status == status;
+      const matchIsAuto = isAuto == null || playlist.isAuto == isAuto;
       const matchKeywords = !keywords || playlist.name.toLowerCase().includes(keywords.toLowerCase()) || playlist.description.toLowerCase().includes(keywords.toLowerCase());
-      return matchStatus && matchKeywords;
+      return matchStatus && matchKeywords && matchIsAuto;
     })
   })
 

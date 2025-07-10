@@ -13,7 +13,7 @@
                     </p-selectbutton>
                 </div>
                 <div class="flex items-center gap-4 hidden lg:block">
-                    <p-button (onClick)="onClickAddNew()" label="Upload" icon="pi pi-plus"></p-button>
+                    <p-button (onClick)="onClickAddNew()" label="Upload" icon="pi pi-upload"></p-button>
                 </div>
             </div>
         </ng-template>
@@ -104,7 +104,7 @@
                                 }
                             </td>
                             <td>{{ utils.timeConversion(item.duration) }}</td>
-                            <td>{{ item.updatedOn | date: 'mediumDate' }}</td>
+                            <td>{{ utils.onGetLastUpdatedLabel(item.updatedOn) }}</td>
                             <td>
                                 <div class="flex flex-row gap-2 items-center justify-center">
                                     <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>

@@ -7,16 +7,16 @@ import { FormControl, FormGroup } from '@angular/forms';
 export class TagService {
 
   // Groups
-  groups = signal<any[]>([]);
+  groups = signal<any[]>([ 'Group 1', 'Group 2', 'Group 3' ]);
 
   // Sub Group
-  subGroups = signal<any[]>([]);
+  subGroups = signal<any[]>([ 'Sub Group 1', 'Sub Group 2', 'Sub Group 3' ]);
 
   // Category
-  categories = signal<any[]>([]);
+  categories = signal<any[]>([ 'Category 1', 'Category 2', 'Category 3' ]);
 
   // Sub Category
-  subCategories = signal<any[]>([]);
+  subCategories = signal<any[]>([ 'Sub Category 1', 'Sub Category 2', 'Sub Category 3' ]);
 
   // Demographics
   ageGroups = signal<any[]>([ "Child", "Teen", "Young Adult", "Adult", "Middle Age", "Senior" ]);
@@ -31,7 +31,7 @@ export class TagService {
   pointOfInterests = signal<any[]>(['Malls', 'Parks', 'Airport']);
 
   // Tags
-  tags = signal<any[]>([]);
+  tags = signal<any[]>([ 'Tag 1', 'Tag 2', 'Tag 3' ]);
   
   audienceTagForm: FormGroup = new FormGroup({
     audienceTag: new FormGroup({
@@ -46,6 +46,10 @@ export class TagService {
   });
   
   tagsLists = signal<any[]>([
+    { id: 'groups', name: 'Groups', data: this.groups, formControlName: 'groups', showInSettings: true },
+    { id: 'subGroups', name: 'Sub Groups', data: this.subGroups, formControlName: 'subGroups', showInSettings: true },
+    { id: 'categories', name: 'Categories', data: this.categories, formControlName: 'categories', showInSettings: true },
+    { id: 'subCategories', name: 'Sub Categories', data: this.subCategories, formControlName: 'subCategories', showInSettings: true },
     { id: 'genders', name: 'Genders', data: this.genders, formControlName: 'genders', showInSettings: false },
     { id: 'ageGroups', name: 'Age Groups', data: this.ageGroups, formControlName: 'ageGroups', showInSettings: false },
     { id: 'timeOfDays', name: 'Time of Days', data: this.timeOfDays, formControlName: 'timeOfDays', showInSettings: true },
@@ -53,10 +57,6 @@ export class TagService {
     { id: 'locations', name: 'Locations', data: this.locations, formControlName: 'locations', showInSettings: true },
     { id: 'pointOfInterests', name: 'Point of Interests', data: this.pointOfInterests, formControlName: 'pointOfInterests', showInSettings: true },
     { id: 'tags', name: 'Tags', data: this.tags, formControlName: 'tags', showInSettings: true },
-    { id: 'groups', name: 'Groups', data: this.groups, formControlName: 'groups', showInSettings: true },
-    { id: 'subGroups', name: 'Sub Groups', data: this.subGroups, formControlName: 'subGroups', showInSettings: true },
-    { id: 'categories', name: 'Categories', data: this.categories, formControlName: 'categories', showInSettings: true },
-    { id: 'subCategories', name: 'Sub Categories', data: this.subCategories, formControlName: 'subCategories', showInSettings: true },
   ]);
 
   onLoadAudienceTags() { }

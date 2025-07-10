@@ -1,0 +1,34 @@
+<div class="flex flex-col rounded bg-gray-200 m-2 p-3 gap-3 transition-all duration-300 ease-in-out shadow-lg"
+    [ngClass]="{ 'translate-x-0 opacity-100 pointer-events-auto': toggleControls(), 'translate-x-full opacity-0 pointer-events-none': !toggleControls() }">
+    <div class="flex gap-2 items-center w-full">
+        <p class="text-base font-semibold">Controls</p>
+        <p-button class="ml-auto" icon="pi pi-times" (onClick)="onClickToggleControls()" size="small" text />
+    </div>
+    <ng-container *ngTemplateOutlet="controls"></ng-container>
+</div>
+
+<ng-template #controls>
+    <p class="text-sm">Settings:</p>
+    <div class="grid grid-cols-4 gap-2">
+        <p-button icon="pi pi-desktop" pTooltip="Display" />
+        <p-button icon="pi pi-volume-up" pTooltip="Audio On" />
+        <p-button icon="pi pi-volume-off" pTooltip="Audio Off" />
+        <p-button icon="pi pi-window-maximize" pTooltip="Fullscreen" />
+        <p-button icon="pi pi-sync" pTooltip="Sync Time" />
+        <p-button icon="pi pi-file-edit" pTooltip="Playback" />
+        <p-button icon="pi pi-trash" pTooltip="Clear" />
+    </div>
+    <p class="text-sm">Player:</p>
+    <div class="flex gap-2">
+        <p-button icon="pi pi-play-circle" pTooltip="Open Screen" />
+        <p-button icon="pi pi-times-circle" pTooltip="Close Screen" />
+        <p-button icon="pi pi-refresh" pTooltip="Restart" />
+        <p-button icon="pi pi-power-off" pTooltip="Shutdown" />
+    </div>
+    
+    <p class="text-sm">Others:</p>
+    <div class="flex gap-2">
+        <p-button icon="pi pi-megaphone" pTooltip="Broadcast" />
+        <p-button icon="pi pi-images" pTooltip="Contents" />
+    </div>
+</ng-template>

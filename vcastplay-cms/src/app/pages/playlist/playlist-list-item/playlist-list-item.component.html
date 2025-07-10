@@ -15,7 +15,7 @@
             <p class="font-semibold">Last Update:</p>
             <div class="flex gap-2 items-center ml-auto">
                 <i class="pi pi-clock" [style]="{ 'font-size': '0.75rem'}"></i>
-                <p class="text-sm italic">{{ playlist.updatedOn | date: 'mediumDate' }}</p>
+                <p class="text-sm italic">{{ utils.onGetLastUpdatedLabel(playlist.updatedOn) }}</p>
             </div>
         </div>
     </div>

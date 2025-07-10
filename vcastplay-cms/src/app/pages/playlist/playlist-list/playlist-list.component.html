@@ -5,8 +5,8 @@
             <div class="flex gap-4 items-center mb-2">
                 <app-playlist-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
                 <div class="gap-2 ml-auto hidden md:flex">
-                    <p-button label="Generate Playlist" icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" outlined />
-                    <p-button (onClick)="onClickAddNew()" label="New Playlist" icon="pi pi-plus"></p-button>
+                    <p-button label="Generate" icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" outlined />
+                    <p-button (onClick)="onClickAddNew()" label="New" icon="pi pi-plus"></p-button>
                 </div>
                 <div class="flex gap-2 ml-auto md:hidden">
                     <p-button icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" outlined />
@@ -26,12 +26,12 @@
                 size="small"
                 (onPage)="playlistService.onPageChange($event)"
                 stripedRows
-                paginator
             >
                 <ng-template #header>
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
+                        <th>Type</th>
                         <th>Status</th>
                         <th>Last Update</th>
                         <th>
@@ -43,9 +43,10 @@
                     <tr class="text-sm">
                         <td>{{ item.name }}</td>
                         <td>{{ item.description }}</td>
+                        <td><p-tag [value]="item.isAuto ? 'Auto' : 'Manual'" [severity]="item.isAuto ? 'warn' : 'info'" /></td>
                         <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
                             [severity]="utils.getStatus(item.status)" /></td>
-                        <td><p class="text-sm">{{ item.updatedOn | date: 'medium' }}</p></td>
+                        <td><p class="text-sm">{{ utils.onGetLastUpdatedLabel(item.updatedOn) }}</p></td>
                         <td>
                             <div class="flex flex-row justify-center gap-2">
                                 <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
@@ -78,17 +79,17 @@
                 }
             </div>
         </div>
-        <!-- <ng-template #footer>
-            <p-paginator [first]="first" [rows]="rows()" [totalRecords]="totalRecords()"></p-paginator>
-        </ng-template> -->
+        <ng-template #footer>
+            <p-paginator [first]="first()" [rows]="rows()" [totalRecords]="totalRecords()"></p-paginator>
+        </ng-template>
     </p-card>
 </div>
 
 <ng-template #actionBtn let-item>
     <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" severity="success" size="small" />
     <p-button (onClick)="onClickShowApproved($event, item, approved)" icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" size="small" />
-    <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" size="small" [disabled]="item.status == 'Pending'" />
-    <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" size="small" [disabled]="item.status == 'Pending'" />
+    <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" size="small" [disabled]="item.status == 'pending'" />
+    <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" size="small" [disabled]="item.status == 'pending'" />
     <p-button (onClick)="onClickOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
 </ng-template>
 
@@ -99,7 +100,7 @@
     </div>
 </p-dialog>
 
-<p-dialog header="Generate Playlist" [(visible)]="showContents" [style]="{ width: '50rem', height: '520px' }" (onHide)="categoryForm.reset()"
+<p-dialog header="Generate Playlist" [(visible)]="showContents" [style]="{ width: '50rem', height: '560px' }" (onHide)="categoryForm.reset()"
     [draggable]="false" closable modal>
     <app-playlist-select-contents [playListForm]="playlistForm" (assetSelected)="selectedAssets.set($event)" [steps]="3" />
     <ng-template #footer>

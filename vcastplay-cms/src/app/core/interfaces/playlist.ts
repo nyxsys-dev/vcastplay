@@ -11,9 +11,10 @@ export interface Playlist {
     loop: boolean;
     status: string;
     duration?: number;
+    isAuto: boolean;
     approvedInfo?: {
         approvedBy: string;
-        approvedOn: Date;
+        approvedOn: Date | string | null;
         remarks: string;
     };
     createdOn: Date;

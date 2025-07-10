@@ -70,6 +70,7 @@ export class AssetsService {
   })
 
   assetFilterForm: FormGroup = new FormGroup({
+    dateRange: new FormControl(null),
     category: new FormControl(null),
     subCategory: new FormControl(null),
     type: new FormControl(null),

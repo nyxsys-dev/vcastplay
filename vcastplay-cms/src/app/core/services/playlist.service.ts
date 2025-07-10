@@ -40,6 +40,11 @@ export class PlaylistService {
     { label: 'Pending', value: 'pending' },
   ])
 
+  playListTypes = signal<SelectOption[]>([
+    { label: 'Manual', value: false },
+    { label: 'Auto', value: true },
+  ])
+
   timeoutId: any;
   intervalId: any;
   gapTimeout: any;
@@ -53,7 +58,7 @@ export class PlaylistService {
       type: new FormControl(null),
       speed: new FormControl(5, { nonNullable: true }),
     }),
-    contents: new FormControl<any[]>([], { nonNullable: true, validators: [ Validators.required ] }),
+    contents: new FormControl<any[]>([], { nonNullable: true }),
     status: new FormControl(''),
     loop: new FormControl(false),
     approvedInfo: new FormGroup({
@@ -66,7 +71,9 @@ export class PlaylistService {
   })
   
   playlistFilterForm: FormGroup = new FormGroup({
+    dateRange: new FormControl(null),
     status: new FormControl(null),
+    isAuto: new FormControl(null),
     keywords: new FormControl(null),
   });
 
@@ -277,6 +284,7 @@ export class PlaylistService {
         status: 'pending',
         loop: false,
         duration: 5,
+        isAuto: false,
         createdOn: new Date(),
         updatedOn: new Date()
       }
@@ -312,7 +320,8 @@ export class PlaylistService {
     const index = tempData.findIndex(item => item.id === playlist.id);
 
     if (index !== -1) tempData[index] = { ...playlist, updatedOn: new Date() };
-    else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, 
+      createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
     
     this.playlistSignal.set([...tempData]); 
 
@@ -330,7 +339,8 @@ export class PlaylistService {
 
   onDuplicatePlaylist(playlist: Playlist) {
     const tempData = this.playlists();
-    tempData.push({ ...playlist, id: tempData.length + 1, name: `Copy of ${playlist.name}`, status: 'pending', createdOn: new Date(), updatedOn: new Date() });
+    tempData.push({ ...playlist, id: tempData.length + 1, name: `Copy of ${playlist.name}`, status: 'pending', 
+      createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
     this.playlistSignal.set([...tempData]);
     
     this.totalRecords.set(this.playlists().length);

@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, inject, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ScreenService } from '../../../core/services/screen.service';
 import { TagService } from '../../../core/services/tag.service';
@@ -12,6 +12,10 @@ import { UtilityService } from '../../../core/services/utility.service';
 })
 export class ScreenFilterComponent {
   
+  @Input() showOrientation: boolean = false;
+  @Input() showLocation: boolean = false;
+  @Input() showScreenStatus: boolean = false;
+
   @Output() filterChange = new EventEmitter<any>();
 
   screenService = inject(ScreenService);
@@ -26,6 +30,10 @@ export class ScreenFilterComponent {
 
   filterSubGroup = computed(() => {
     return this.tagsLists().find(tag => tag.id.includes('subGroups')).data();
+  })
+
+  filterLocation = computed(() => {
+    return this.tagsLists().find(tag => tag.id.includes('locations')).data();
   })
 
   onClickApply(filter: any) {
@@ -48,5 +56,7 @@ export class ScreenFilterComponent {
   get tagsLists() { return this.tagService.tagsLists; }
   
   get types() { return this.screenService.types; }
+  get screenStatus() { return this.screenService.screenStatus; }
+  get contentStatus() { return this.screenService.contentStatus; }
   get screenFilterForm() { return this.screenService.screenFilterForm; }
 }

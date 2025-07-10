@@ -14,9 +14,4 @@ export default [
         loadComponent: () => import('./screen-details/screen-details.component').then(m => m.ScreenDetailsComponent),
         title: `Screen Details • ${appTitle}`,
     },
-    {
-        path: 'screen-management', 
-        loadComponent: () => import('./screen-monitoring/screen-monitoring.component').then(m => m.ScreenMonitoringComponent),
-        title: `Screen Management • ${appTitle}`,
-    },
 ] as Routes

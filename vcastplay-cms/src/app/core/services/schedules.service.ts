@@ -8,6 +8,7 @@ import moment from 'moment-timezone';
 import { AssetsService } from './assets.service';
 import { PlaylistService } from './playlist.service';
 import { SelectOption } from '../interfaces/general';
+import _ from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +81,7 @@ export class SchedulesService {
 
   
   scheduleFilterForm: FormGroup = new FormGroup({
+    dateRange: new FormControl(null),
     status: new FormControl(null),
     keywords: new FormControl(null),
   });
@@ -101,6 +103,89 @@ export class SchedulesService {
 
   onLoadSchedules() {
     /**Call GET API */
+    this.scheduleSignal.set([
+      {
+        id: 1,
+        name: 'New Schedule',
+        description: 'This is a sample description of a new schedule',
+        contents: [
+          {
+            eventId: 1,
+            id: 'NYX001',
+            title: 'image (2).png',
+            start: '2025-07-10T06:15:00',
+            end: '2025-07-10T06:20:00',
+            color: '#FF6384',
+            allDay: false,
+            type: 'asset'
+          },
+          {
+            eventId: 2,
+            id: 'NYX001',
+            title: 'image (2).png',
+            start: '2025-07-11T06:15:00',
+            end: '2025-07-11T06:20:00',
+            color: '#FF6384',
+            allDay: false,
+            type: 'asset'
+          },
+          {
+            eventId: 3,
+            id: 'NYX001',
+            title: 'image (2).png',
+            start: '2025-07-12T06:15:00',
+            end: '2025-07-12T06:20:00',
+            color: '#FF6384',
+            allDay: false,
+            type: 'asset'
+          },
+          {
+            eventId: 4,
+            id: 'NYX001',
+            title: 'image (2).png',
+            start: '2025-07-13T06:15:00',
+            end: '2025-07-13T06:20:00',
+            color: '#FF6384',
+            allDay: false,
+            type: 'asset'
+          },
+          {
+            eventId: 5,
+            id: 'NYX001',
+            title: 'image (2).png',
+            start: '2025-07-14T06:15:00',
+            end: '2025-07-14T06:20:00',
+            color: '#FF6384',
+            allDay: false,
+            type: 'asset'
+          },
+          {
+            eventId: 6,
+            id: 'NYX001',
+            title: 'image (2).png',
+            start: '2025-07-15T06:15:00',
+            end: '2025-07-15T06:20:00',
+            color: '#FF6384',
+            allDay: false,
+            type: 'asset'
+          },
+          {
+            eventId: 7,
+            id: 'NYX001',
+            title: 'image (2).png',
+            start: '2025-07-16T06:15:00',
+            end: '2025-07-16T06:20:00',
+            color: '#FF6384',
+            allDay: false,
+            type: 'asset'
+          }
+        ],
+        status: 'pending',
+        createdOn: new Date('2025-07-10T00:42:28.042Z'),
+        updatedOn: new Date('2025-07-10T00:42:28.042Z')
+    }
+    ])
+    this.totalRecords.set(this.schedules().length);
   }
 
   onGetSchedule() {
@@ -154,7 +239,7 @@ export class SchedulesService {
   onUpdateContent(event: any, fullcalendar: FullCalendarComponent) {
     const { start, end, allDay, ...info } = event.extendedProps;    
     
-    const tempContents = this.scheduleForm.value.contents || [];
+    const tempContents = [ ...this.scheduleForm.value.contents || [] ];
     const index = tempContents.findIndex((item: any) => item.eventId == event.id);
     
     tempContents[index] = { 
@@ -238,12 +323,13 @@ export class SchedulesService {
   onSaveSchedule(schedule: Schedule) {
     const tempData = this.schedules();
     const { id, status, ...info } = schedule;
-    const index = tempData.findIndex(item => item.id === schedule.id);
+    const index = tempData.findIndex(item => item.id == schedule.id);
 
     if (index !== -1) tempData[index] = { ...schedule, updatedOn: new Date() };
-    else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, 
+      createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
 
-    this.scheduleSignal.set([...tempData]);
+    this.scheduleSignal.set([ ...tempData ]);
     this.totalRecords.set(this.schedules().length);
     /**Call POST/PATCH API */
   }

@@ -19,6 +19,11 @@ export const routes: Routes = [
             { path: 'playlist', loadChildren: () => import('./pages/playlist/playlist.routes') },
             { path: 'layout', loadChildren: () => import('./pages/design-layout/design-layout.route') },
             { path: 'schedule', loadChildren: () => import('./pages/schedules/schedules.route') },
+            { 
+                path: 'screen-management', 
+                loadComponent: () => import('./pages/screen-management/screen-management-list/screen-management-list.component').then(m => m.ScreenManagementListComponent), 
+                title: `Screen Management • ${appTitle}`, 
+            },
             { path: 'reports', loadComponent: () => import('./pages/reports/reports.component').then(m => m.ReportsComponent), title: `Reports • ${appTitle}`, },
             { path: 'settings', loadChildren: () => import('./pages/settings/settings.routes') }
         ]

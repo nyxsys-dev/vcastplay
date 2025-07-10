@@ -1,6 +1,6 @@
 export interface SelectOption {
     label: string;
-    value: string;
+    value: any;
 }
 
 export interface AudienceTag {

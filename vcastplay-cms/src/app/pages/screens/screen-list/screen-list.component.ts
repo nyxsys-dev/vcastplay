@@ -32,9 +32,9 @@ export class ScreenListComponent {
 
     return screens.filter((screen: any) => {
       const matchesType = !type || screen.type.includes(type);
-      const matchesGroup = !group || screen.group.includes(group);
-      const matchesSubGroup = !subGroup || screen.subGroup.includes(subGroup);
-      const matchesOrientation = !orientation || screen.displaySettings.orientation.includes(orientation);
+      const matchesGroup = !group || screen.group?.includes(group);
+      const matchesSubGroup = !subGroup || screen.subGroup?.includes(subGroup);
+      const matchesOrientation = !orientation || screen.displaySettings.orientation?.includes(orientation);
       const matchesStatus = !status || (screen.status == status);
       const matchesKeywords = !keywords || _.includes(screen.name.toLowerCase(), keywords.toLowerCase()) || _.includes(screen.code, keywords);
 

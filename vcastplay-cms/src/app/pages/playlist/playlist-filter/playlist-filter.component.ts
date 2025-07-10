@@ -32,5 +32,6 @@ export class PlaylistFilterComponent {
   }
 
   get playlistStatus() { return this.playlistService.playlistStatus; }
+  get playListTypes() { return this.playlistService.playListTypes; }
   get playlistFilterForm() { return this.playlistService.playlistFilterForm; }
 }

@@ -75,6 +75,7 @@ export class ScheduleDetailsComponent {
   }
 
   onClickSave(event: Event) {
+    const calendarApi = this.scheduleCalendar.getApi();
     if (this.scheduleForm.invalid) {
       this.scheduleForm.markAllAsTouched();
       this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
@@ -100,7 +101,9 @@ export class ScheduleDetailsComponent {
         this.scheduleServices.onSaveSchedule(this.scheduleForm.value);
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Schedule saved successfully!' });
         this.scheduleForm.reset();
-        this.router.navigate([ '/schedule/schedule-library' ]);
+        this.contentItemForm.reset();
+        calendarApi.removeAllEvents();
+        this.router.navigate([ '/schedule/schedule-library' ]);        
       },
       reject: () => { }
     })
@@ -173,7 +176,7 @@ export class ScheduleDetailsComponent {
 
   onAddCalendarEvents() {    
     const calendar = this.scheduleCalendar.getApi();
-    const contents = this.scheduleForm.value.contents || [];  
+    const contents = this.contents?.value || [];
     calendar.addEventSource(contents.map((content: any) => ({
       id: content.eventId,
       title: content.title,
@@ -191,8 +194,8 @@ export class ScheduleDetailsComponent {
     calendar.changeView(event.value);
   }
 
-  onEventUpdate(event: any) {
-    this.scheduleServices.onUpdateContent(event.event, this.scheduleCalendar);
+  onEventUpdate(data: any) {
+    this.scheduleServices.onUpdateContent(data.event, this.scheduleCalendar);
   }
 
   onSelectAllow(info: any) {
@@ -223,6 +226,7 @@ export class ScheduleDetailsComponent {
   get calendarTitle() { return this.scheduleServices.calendarTitle; }
   get calendarViewSignal() { return this.scheduleServices.calendarViewSignal; }
   get calendarViews() { return this.scheduleServices.calendarViews; }
+  get contents() { return this.scheduleForm.get('contents'); }
   get type() { return this.contentItemForm.get('type'); }
   get start() { return this.contentItemForm.get('start'); }
   get end() { return this.contentItemForm.get('end'); }

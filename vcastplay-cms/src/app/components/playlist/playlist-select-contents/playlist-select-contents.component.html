@@ -1,9 +1,30 @@
 <p-stepper [value]="activeStep()" [linear]="true">
     <p-step-list>
-        <p-step [value]="1">Tags & Filters</p-step>
-        <p-step [value]="2">Contents</p-step>
+        <p-step [value]="1">
+            <ng-template #content>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="flex items-center justify-center rounded-full bg-[var(--p-primary-500)] text-white h-12 w-12"><i class="pi pi-tag"></i></div>
+                    <p class="text-sm">Tags & Filters</p>
+                </div>
+            </ng-template>
+        </p-step>
+        <p-step [value]="2">
+            <ng-template #content>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="flex items-center justify-center rounded-full bg-[var(--p-primary-500)] text-white h-12 w-12"><i class="pi pi-images"></i></div>
+                    <p class="text-sm">Contents</p>
+                </div>
+            </ng-template>
+        </p-step>
         @if (steps > 2) {
-            <p-step [value]="3">Playlist Information</p-step>
+            <p-step [value]="3">
+            <ng-template #content>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="flex items-center justify-center rounded-full bg-[var(--p-primary-500)] text-white h-12 w-12"><i class="pi pi-info-circle"></i></div>
+                    <p class="text-sm">Playlist Information</p>
+                </div>
+            </ng-template>
+        </p-step>
         }
     </p-step-list>
     <p-step-panels>

@@ -54,7 +54,7 @@ export class UtilityService {
     { label: 'Playlists', icon: 'pi pi-list', routerLink: '/playlist/playlist-library' },
     { label: 'Layouts', icon: 'pi pi-th-large', routerLink: '/layout/design-layout-library' },
     { label: 'Schedules', icon: 'pi pi-calendar', routerLink: '/schedule/schedule-library' },
-    { label: 'Screen Mangement', icon: 'pi pi-cloud', routerLink: '/screens/screen-management' },
+    { label: 'Screen Mangement', icon: 'pi pi-cloud', routerLink: '/screen-management' },
     { label: 'Reports', icon: 'pi pi-chart-bar', routerLink: '/reports' },
     {
       label: 'Settings',
@@ -190,12 +190,18 @@ export class UtilityService {
       case 'approved':
       case 'active':
       case 'online':
+      case 'playing' :
+      case 'connected':
+      case 'on':
         return 'success';
       case 'inactive':
+      case 'standby':
         return 'warn';
       case 'disapproved':
       case 'suspended':
       case 'offline':
+      case 'disconnected':
+      case 'off':
         return 'danger';
       default:
         return 'secondary';
@@ -204,17 +210,24 @@ export class UtilityService {
 
   getIcon(status: string) {
     switch (status.toLowerCase()) {
-      case 'approved':
-        return 'pi-thumbs-up-fill'
+      case 'playing' :
+        return 'pi-play-circle';
       case 'active':
       case 'online':
+      case 'connected':
+      case 'on':
         return 'pi-check-circle';
       case 'inactive':
+      case 'standby':
         return 'pi-pause-circle';
       case 'disapproved':
         return 'pi-thumbs-down-fill'
+      case 'approved':
+        return 'pi-thumbs-up-fill'
       case 'suspended':
       case 'offline':
+      case 'disconnected':
+      case 'off':
         return 'pi-times-circle';
       default:
         return 'pi-question-circle';
@@ -244,6 +257,27 @@ export class UtilityService {
       });
     });
   }
+  onGetLastUpdatedLabel(dateInput: Date | string): string {
+    const date = moment(dateInput);
+    const now = moment();
+
+    if (!dateInput || !moment(dateInput).isValid()) return '-';
+
+    const diffSeconds = now.diff(date, 'seconds');
+    const diffMinutes = now.diff(date, 'minutes');
+    const diffHours = now.diff(date, 'hours');
+    const diffDays = now.diff(date, 'days');
+    const diffWeeks = now.diff(date, 'weeks');
+
+    if (diffSeconds < 60) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    if (diffWeeks < 4) return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
+
+    return date.format('MMM D, YYYY');
+  }
+
 
   // Public API
   getWeatherData(lat: number, lng: number) {

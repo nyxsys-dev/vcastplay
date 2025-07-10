@@ -27,7 +27,7 @@ export class SchedulesContentListComponent {
   audienceTagSignal = signal<any>({});
   filteredContentLists = computed(() => {
     const contents = this.contentLists();
-    const { keywords, status, category, subCategory, type, orientation  } = this.filterSignal();
+    const { keywords, status, category, subCategory, type, orientation, isAuto } = this.filterSignal();
 
     // Check if any audience tag is selected
     const hasAnyValue = Object.values(this.audienceTagSignal()).some(arr => Array.isArray(arr) && arr.length > 0);
@@ -42,8 +42,9 @@ export class SchedulesContentListComponent {
       const matchSubCategory = !subCategory || content.subCategory?.toLowerCase().includes(subCategory.toLowerCase());
       const matchType = !type || content.type?.toLowerCase().includes(type.toLowerCase());
       const matchOrientation = !orientation || content.displaySettings.orientation?.toLowerCase().includes(orientation.toLowerCase());
+      const matchIsAuto = isAuto == null || content.isAuto == isAuto;
 
-      return matchKeywords && matchStatus && matchCategory && matchSubCategory && matchType && matchOrientation;
+      return matchKeywords && matchStatus && matchCategory && matchSubCategory && matchType && matchOrientation && matchIsAuto;
     })
 
     return filteredContents;

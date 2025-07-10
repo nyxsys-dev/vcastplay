@@ -125,11 +125,11 @@ export class ScheduleListComponent {
     this.scheduleFilters.set(event.filters);
   }
 
-  get isEditMode() { return this.scheduleServices.isEditMode; }
-  get scheduleForm() { return this.scheduleServices.scheduleForm; }
-  get schedules() { return this.scheduleServices.schedules; }
   get rows() { return this.scheduleServices.rows; }
   get first() { return this.scheduleServices.first; }
+  get schedules() { return this.scheduleServices.schedules; }
+  get isEditMode() { return this.scheduleServices.isEditMode; }
+  get scheduleForm() { return this.scheduleServices.scheduleForm; }
   get totalRecords() { return this.scheduleServices.totalRecords; }
   get selectedSchedule() { return this.scheduleServices.selectedSchedule; }
   get scheduleFilterForm() { return this.scheduleServices.scheduleFilterForm; }

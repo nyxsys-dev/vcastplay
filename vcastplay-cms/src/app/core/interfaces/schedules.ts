@@ -6,7 +6,7 @@ export interface Schedule {
     status: string;
     approvedInfo?: {
         approvedBy: string,
-        approvedOn: Date | null,
+        approvedOn: Date | string | null,
         remarks: string,
     },
     createdOn: Date;
@@ -15,11 +15,12 @@ export interface Schedule {
 
 export interface ScheduleContentItem {
     type: 'asset' | 'playlist' | 'layout';
+    eventId: any;
     id: string;
     title: string;
     start: string;
     end: string;
     color: string;
-    extendedProps: any;
     allDay: boolean;
+    extendedProps?: any;
 }

@@ -1,0 +1,110 @@
+<div class="flex flex-col gap-1 h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+    <div class="flex-1">
+        <p-card styleClass="h-full">
+            <ng-template #title>
+                <div class="flex gap-4 items-center mb-2">
+                    <app-screen-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" [showLocation]="true" [showScreenStatus]="true" />
+                </div>
+            </ng-template>
+            <div class="flex-1 md:h-full">
+                <p-table
+                    class="hidden lg:block" 
+                    [value]="screenService.loadingSignal() ? utils.tableSkeletonRows : filteredScreen()" 
+                    selectionMode="single"
+                    [scrollable]="true" 
+                    size="small"
+                    dataKey="id"
+                    stripedRows
+                >
+                    <ng-template #header>
+                        <tr>
+                            <th style="width: 2rem"><p-tableHeaderCheckbox /></th>
+                            <th>Status</th>
+                            <th>Name</th>
+                            <th>Display</th>
+                            <th>Content</th>
+                            <th>Response</th>
+                            <th>Last Seen</th>
+                            <th>Last Screenshot</th>
+                            <th>
+                                <div class="text-center">Actions</div>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-item>
+                        <tr class="text-sm">
+                            <td><p-tableCheckbox [value]="item" /></td>
+                            <td>
+                                <p-tag [value]="item?.screenStatus?.toUpperCase()" [icon]="'pi ' + utils.getIcon(item?.screenStatus ?? '')" 
+                                    [severity]="utils.getStatus(item?.screenStatus ?? '')" />
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center" [pTooltip]="utils.toTitleCase(item.type)" tooltipPosition="bottom">
+                                        @switch (item.type) {
+                                            @case('desktop') { <i class="pi pi-desktop !font-black !text-2xl !text-blue-500"></i> }
+                                            @case('android') { <i class="pi pi-android !text-2xl !text-lime-500"></i> }
+                                            @default { <i class="pi pi-globe"></i> }
+                                        }
+                                    </div>
+                                    <p class="text-base font-semibold">{{ item.name }}</p>
+                                </div>
+                            </td>
+                            <td><p-tag [value]="item?.displayStatus?.toUpperCase()" [severity]="utils.getStatus(item?.displayStatus ?? '')" /></td>
+                            <td>
+                                <div class="flex gap-2">
+                                    @if (item?.content) {
+                                        <div class="flex flex-col">
+                                            <p>{{ item.content?.name }}</p>
+                                            <p>{{ utils.onGetLastUpdatedLabel(item.content?.updatedOn) }}</p>
+                                        </div>
+                                        <p-tag [value]="item?.content?.status?.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.content?.status ?? '')" 
+                                            [severity]="utils.getStatus(item.content?.status  ?? '')" />
+                                    } @else {
+                                        <p class="italic">No Content</p>
+                                    }
+                                </div>
+                            </td>
+                            <td><p>{{ item.Response ?? '-' }}</p></td>
+                            <td><p>{{ utils.onGetLastUpdatedLabel(item.onlineOn) }}</p></td>
+                            <td><p>{{ utils.onGetLastUpdatedLabel(item.screenshotOn) }}</p></td>
+                            <td>
+                                <div class="flex flex-row justify-center gap-2">
+                                    <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                                </div> 
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template #emptymessage>
+                        <tr>
+                            <td colspan="9" [height]="20">
+                                <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <ng-template #footer>
+                Legends 
+            </ng-template>
+        </p-card>
+    </div>
+</div>
+
+<p-button class="fixed top-100 right-0 z-10 transition-all duration-300 ease-out animate-fade-in" size="large" styleClass="!rounded-none !rounded-s-lg"
+    [ngClass]="{ 'opacity-0 translate-x-full': toggleControls(), 'opacity-100 translate-x-0': !toggleControls() }" severity="info" 
+        (onClick)="onClickToggleControls()" pTooltip="Controls" tooltipPosition="left">
+    <div class="flex items-center justify-center w-6 h-6">
+        <i class="pi pi-cog" style="font-size: 1.5rem;"></i>
+    </div>
+</p-button>
+<div class="absolute top-0 right-0 h-full flex items-center justify-end overflow-hidden" [ngClass]="{ 'z-10': toggleControls(), 'z-[-999]': !toggleControls() }">
+    <app-screen-controls />
+</div>
+
+
+<ng-template #actionBtn let-item>
+    <!-- <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" size="small"/>
+    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" severity="danger" size="small" /> -->
+</ng-template>

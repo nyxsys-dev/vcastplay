@@ -17,8 +17,10 @@ export class ScreenService {
   loadingAddressSignal = signal<boolean>(false);
 
   showDownload = signal<boolean>(false);
+  toggleControls = signal<boolean>(false);
 
   selectedScreen = signal<Screen | null>(null);
+  selectMultipleScreen = signal<Screen[]>([]);
   
   rows = signal<number>(8);
   totalRecords = signal<number>(0);
@@ -28,6 +30,18 @@ export class ScreenService {
     { label: 'Android', value: 'android' },
     // { label: 'Web', value: 'web' },
   ]);
+
+  screenStatus = signal<SelectOption[]>([
+    { label: 'Playing', value: 'playing' },
+    { label: 'Standby', value: 'Standby' },
+    { label: 'Disconnected', value: 'disconnected' },
+  ]);
+  
+  contentStatus = signal<SelectOption[]>([
+    { label: 'Approved', value: 'approved' },
+    { label: 'Disapproved', value: 'disapproved' },
+    { label: 'Pending', value: 'pending' },
+  ])
 
   locations = signal<SelectOption[]>([
     { label: 'Local', value: 'local' },
@@ -75,20 +89,25 @@ export class ScreenService {
       landmarks: new FormControl(null, [ Validators.required ]),
     }),
     tags: new FormControl([], { nonNullable: true }),
+    screenStatus: new FormControl(null),
+    displayStatus: new FormControl(null),
+    registeredOn: new FormControl(null),
   });
 
   screenFilterForm: FormGroup = new FormGroup({
+    dateRange: new FormControl(null),
     type: new FormControl(null),
     group: new FormControl(null),
     subGroup: new FormControl(null),
     orientation: new FormControl(null),
     status: new FormControl(null),
+    location: new FormControl(null),
+    screenStatus: new FormControl(null),
+    contentStatus: new FormControl(null),
     keywords: new FormControl(null),
   });
 
   tagControl: FormControl = new FormControl(null);
-
-  constructor() { }
 
   onLoadScreens() {
     /**Call GET roles API */
@@ -112,6 +131,8 @@ export class ScreenService {
           resolution: '1920x1080'
         },
         status: 'inactive',
+        screenStatus: 'standby',
+        displayStatus: 'on',
         createdOn: new Date('2024-01-01'),
         updatedOn: new Date('2024-02-01'),
       },
@@ -134,6 +155,8 @@ export class ScreenService {
           resolution: '757x1062'
         },
         status: 'inactive',
+        screenStatus: 'standby',
+        displayStatus: 'on',
         createdOn: new Date('2024-01-01'),
         updatedOn: new Date('2024-02-01'),
       },

@@ -3,7 +3,7 @@
         @for (menu of menuItems; track $index) {
             <li (click)="onToggleMenu(menu, $event)" class="relative list-none">
                 <div class="hover:bg-[var(--p-primary-600)] flex flex-col items-center justify-center cursor-pointer text-center p-2" 
-                    [ngClass]="{ 'bg-[var(--p-primary-600)]': menu.routerLink === router.url }">
+                    [ngClass]="{ 'bg-[var(--p-primary-600)] border-l-4 border-[var(--p-surface-500)]': menu.routerLink === router.url }">
                     <i style="font-size: 1.2rem;" class="mb-2 text-white" [class]="menu.icon"></i>
                     <p class="text-sm text-white !select-none">{{ menu.label }}</p>
 

@@ -4,9 +4,11 @@
         <p-card styleClass="h-full">
             <ng-template #title>
                 <div class="flex gap-4 items-center mb-2">
-                    <app-screen-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
+                    <app-screen-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" [showOrientation]="true" />
                     <div class="flex gap-2 ml-auto">
-                        <p-button (onClick)="showDownload.set(true)" icon="pi pi-download" [text]="false" pTooltip="Download" tooltipPosition="bottom" />
+                        <p-button class="hidden md:block" (onClick)="showDownload.set(true)" label="Download" icon="pi pi-download" [text]="false" />
+                        <p-button class="md:hidden" (onClick)="showDownload.set(true)" icon="pi pi-download" 
+                            [text]="false" pTooltip="Download" tooltipPosition="bottom" />
                     </div>
                 </div>
             </ng-template>
@@ -25,6 +27,7 @@
                             <th>Orientation</th>
                             <th>Resolution</th>
                             <th>Groups</th>
+                            <th>Registered On</th>
                             <th>Last Update</th>
                             <th>Status</th>
                             <th>
@@ -36,11 +39,10 @@
                         <tr>
                             <td>
                                 <div class="flex items-center gap-4">
-                                    <div class="flex items-center gap-4 bg-[var(--p-primary-500)] 
-                                        text-white rounded-full p-3" [pTooltip]="utils.toTitleCase(item.type)" tooltipPosition="bottom">
+                                    <div class="flex items-center" [pTooltip]="utils.toTitleCase(item.type)" tooltipPosition="bottom">
                                         @switch (item.type) {
-                                            @case('desktop') { <i class="pi pi-desktop"></i> }
-                                            @case('android') { <i class="pi pi-android"></i> }
+                                            @case('desktop') { <i class="pi pi-desktop !font-black !text-2xl !text-blue-500"></i> }
+                                            @case('android') { <i class="pi pi-android !text-2xl !text-lime-500"></i> }
                                             @default { <i class="pi pi-globe"></i> }
                                         }
                                     </div>
@@ -51,12 +53,8 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <p class="text-sm font-semibold">{{ item.displaySettings.orientation.toUpperCase() ?? '-' }}</p>
-                            </td>
-                            <td>
-                                <p class="text-sm">{{ item.displaySettings.resolution }}</p>
-                            </td>
+                            <td><p class="text-sm font-semibold">{{ item.displaySettings.orientation.toUpperCase() ?? '-' }}</p></td>
+                            <td><p class="text-sm">{{ item.displaySettings.resolution }}</p></td>
                             <td>
                                 <div class="text-sm">
                                     @if (!item.group || !item.subGroup) {
@@ -66,7 +64,14 @@
                                     }
                                 </div>
                             </td>
-                            <td><p class="text-sm">{{ item.updatedOn | date: 'mediumDate' }}</p></td>
+                            <td>
+                                @if (item.registeredOn) {
+                                    <p class="text-sm">{{ utils.onGetLastUpdatedLabel(item.registeredOn) }}</p>
+                                } @else {
+                                    <p class="text-sm text-red-500 italic">Not Registered</p>
+                                }
+                            </td>
+                            <td><p class="text-sm">{{ utils.onGetLastUpdatedLabel(item.updatedOn) }}</p></td>
                             <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
                                 [severity]="utils.getStatus(item.status)" /></td>
                             <td>
