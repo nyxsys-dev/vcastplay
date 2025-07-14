@@ -80,4 +80,6 @@ export class MainDisplayComponent {
   get onTimeUpdate() { return this.player.onTimeUpdate; }
   get currentContent() { return this.player.currentContent; }
   get currentTransition() { return this.player.currentTransition; }
+  get onMouseMove() { return this.player.onMouseMove; }
+  get hideCursor() { return this.player.hideCursor; }
 }

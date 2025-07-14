@@ -68,7 +68,8 @@ export class UtilsService {
     window.system.getSystemInfo()
       .then(response => {        
         this.systemInfo.set(response); 
-        this.requestLocation();       
+        console.log(response);
+        // this.requestLocation();
       })
       .catch(err => console.error(err));
   }

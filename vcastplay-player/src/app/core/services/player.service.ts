@@ -24,6 +24,9 @@ export class PlayerService {
 
   videoElement = signal<HTMLVideoElement | null>(null);
 
+  hideCursor = signal<boolean>(false);
+  private hideCursorTimeout: any;
+
   constructor() { }
 
   onLoadContents() { 
@@ -168,6 +171,17 @@ export class PlayerService {
   onUpdateProgress(currentSeconds: number, duration: number) {
     const percent = (currentSeconds / duration) * 100;
     this.progress.set(Math.min(percent, 100));
+  }
+
+  onMouseMove() {
+    this.hideCursor.set(false);
+    clearTimeout(this.hideCursorTimeout);
+
+    this.hideCursorTimeout = setTimeout(() => {
+      console.log('Hide cursor');
+      
+      this.hideCursor.set(true);
+    }, 3000);
   }
   
 }

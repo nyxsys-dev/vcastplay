@@ -1,43 +1,23 @@
-<div class="relative flex flex-col gap-4 justify-center items-center h-screen relative bg-[var(--p-primary-500)]" [formGroup]="authForm">
-  @if (loading()) { <p-progress-bar mode="indeterminate" [style]="{ height: '6px' }" /> }
-  <!-- <div class="flex flex-col gap-3 justify-center items-center text-white h-full w-full"> -->
-    <!-- <img class="w-[15rem] md:w-[30rem]" src="assets/vcastplay.png" alt="vcastplay 2.0 logo"> -->
-     <!-- <div class="relative flex h-full w-full justify-center items-center">
-        <ng-container *ngIf="currentContent">
-            <app-content-container class="absolute h-full w-full flex items-center justify-center" 
-                [currentContent]="currentContent()" [isPlaying]="isPlaying()" (timeUpdate)="onTimeUpdate($event)" [autoPlay]="true" />
-        </ng-container>
-    </div> -->
-  <!-- </div> -->
+<div class="relative flex flex-col gap-4 justify-center items-center h-screen relative bg-[var(--p-primary-500)] group overflow-hidden" [formGroup]="authForm">
+
   <ng-container *ngIf="currentContent()">
-    <app-content-container class="absolute h-full w-full flex items-center justify-center" 
+    <app-content-container class="absolute h-full w-full flex items-center justify-center" (mousemove)="onMouseMove()" [ngClass]="{ 'cursor-none': hideCursor() }"
         [currentContent]="currentContent()" [isPlaying]="isPlaying()" (timeUpdate)="onTimeUpdate($event)" [autoPlay]="true" />
+
   </ng-container>
+
+  <!-- <div class="absolute bottom-0 z-50 w-full opacity-0 translate-y-2 transition-all duration-300 
+    group-hover:opacity-100 group-hover:translate-y-0" >
+    <div class="w-full flex flex-col justify-center gap-2">
+      <p-progressbar styleClass="!rounded-none" [value]="player.progress()" [style]="{ height: '0.5rem' }" [showValue]="false"></p-progressbar>
+    </div>
+  </div> -->
 
   <ng-container *ngIf="!currentContent() && !isPlaying()">
     <div class="absolute h-full w-full flex items-center justify-center">
       <img class="w-[15rem] md:w-[30rem]" src="assets/vcastplay.png" alt="vcastplay 2.0 logo">
     </div>
   </ng-container>
-
-  <!-- @if (isElectron) {
-    <div class="absolute bottom-3 left-3 p-2 text-gray-500">
-      <p>System Information</p>
-      <div class="text-xs flex flex-col gap-3 mt-3">
-        @if (loading()) {
-          @for (item of [1, 2, 3, 4, 5]; track $index) { <p-skeleton width="2rem" styleClass="mb-2" /> }
-        } @else {
-          <p>IP Address: <span>{{ systemInfo()?.ip ?? 'Unknown' }}</span></p>
-          <p>CPU: <span>{{ systemInfo()?.cpu ?? 'Unknown' }}</span> ({{ systemInfo()?.cpuTemp ?? 0 }})</p>
-          <p>RAM: <span>{{ systemInfo()?.ram ?? 'Unknown' }}</span></p>
-          <p>OS: <span>{{ systemInfo()?.os ?? 'Unknown' }}</span></p>
-          <p>UUID: <span>{{ systemInfo()?.serial ?? 'Unknown' }}</span></p>
-          <p>Browser: <span>{{ systemInfo()?.browserVersion ?? 'Unknown' }}</span></p>
-          <p>Location: <span>{{ systemInfo()?.coords?.city  + ', ' + systemInfo()?.coords?.region + ', ' + systemInfo()?.coords?.country }}</span></p>
-        }
-      </div>
-    </div>
-  } -->
 
   <div class="absolute bottom-3 right-3 flex items-center gap-1 m-2">
     <p class="text-xs text-zinc-300">{{ systemInfo()?.appVersion ?? '0.0.0' }}</p>
