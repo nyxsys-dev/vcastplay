@@ -10,22 +10,24 @@
     <p-tag [value]="systemInfo?.appVersion ?? '0.0.0'" severity="info" />
   </div>
 
-  <div class="absolute bottom-3 left-3 p-2 text-gray-500">
-    <p>System Information</p>
-    <div class="text-xs flex flex-col gap-3 mt-3">
-      @if (loading()) {
-        @for (item of [1, 2, 3, 4, 5]; track $index) { <p-skeleton width="2rem" styleClass="mb-2" /> }
-      } @else {
-        <p>IP Address: <span>{{ systemInfo?.ip ?? 'Unknown' }}</span></p>
-        <p>CPU: <span>{{ systemInfo?.cpu ?? 'Unknown' }}</span> ({{ systemInfo.cpuTemp ?? 0 }})</p>
-        <p>RAM: <span>{{ systemInfo?.ram ?? 'Unknown' }}</span></p>
-        <p>OS: <span>{{ systemInfo?.os ?? 'Unknown' }}</span></p>
-        <p>UUID: <span>{{ systemInfo?.serial ?? 'Unknown' }}</span></p>
-        <p>Browser: <span>{{ systemInfo?.browserVersion ?? 'Unknown' }}</span></p>
-        <p>Location: <span>{{ systemInfo?.coords?.city  + ', ' + systemInfo?.coords?.region + ', ' + systemInfo?.coords?.country }}</span></p>
-      }
+  @if (isElectron) {
+    <div class="absolute bottom-3 left-3 p-2 text-gray-500">
+      <p>System Information</p>
+      <div class="text-xs flex flex-col gap-3 mt-3">
+        @if (loading()) {
+          @for (item of [1, 2, 3, 4, 5]; track $index) { <p-skeleton width="2rem" styleClass="mb-2" /> }
+        } @else {
+          <p>IP Address: <span>{{ systemInfo?.ip ?? 'Unknown' }}</span></p>
+          <p>CPU: <span>{{ systemInfo?.cpu ?? 'Unknown' }}</span> ({{ systemInfo.cpuTemp ?? 0 }})</p>
+          <p>RAM: <span>{{ systemInfo?.ram ?? 'Unknown' }}</span></p>
+          <p>OS: <span>{{ systemInfo?.os ?? 'Unknown' }}</span></p>
+          <p>UUID: <span>{{ systemInfo?.serial ?? 'Unknown' }}</span></p>
+          <p>Browser: <span>{{ systemInfo?.browserVersion ?? 'Unknown' }}</span></p>
+          <p>Location: <span>{{ systemInfo?.coords?.city  + ', ' + systemInfo?.coords?.region + ', ' + systemInfo?.coords?.country }}</span></p>
+        }
+      </div>
     </div>
-  </div>
+  }
 
   <div class="absolute top-3 right-3 p-2 flex flex-col items-center gap-3">
      @if (networkService.isOnline()) {

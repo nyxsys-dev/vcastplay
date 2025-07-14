@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class UtilsService {
 
   geoAPI: string = environment.geoAPI;
+  isElectron = signal<boolean>(false);
   location = signal<Location>({ 
     country: '',
     region: '',

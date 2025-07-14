@@ -12,7 +12,8 @@ declare global {
       // onUpdateAvailable: (callback: () => void) => void;
       // onUpdateDownloaded: (callback: () => void) => void;
       restartApp: () => void;
-    };
+      isElectron: boolean
+    },
   }
 }
 @Component({
@@ -35,15 +36,19 @@ export class MainDisplayComponent {
   systemInfo: any;
 
   constructor() {
+    window.addEventListener('online', () => this.networkStat.set(true));
+    window.addEventListener('offline', () => this.networkStat.set(false));
+
     effect(() => {
+      console.log('🧭 Network status changed:', this.networkStat());
       this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
   }
 
   ngOnInit() {
-    this.loadSystemInfo();
-    const code = this.utils.genereteScreenCode(6);
-    this.authForm.patchValue({ code });
+    console.log(this.isElectron ? 'Running in Electron' : 'Running in Browser');
+    
+    if (this.isElectron) this.loadSystemInfo();
   }
 
   onClickCheckUpdates() {
@@ -77,7 +82,7 @@ export class MainDisplayComponent {
       .catch(err => console.error(err));
   }
 
-  get playerCode() {
-    return this.authForm.get('code');
-  }
+  get playerCode() { return this.authForm.get('code'); }
+  get isElectron() { return window.system?.isElectron; }
+  get networkStat() { return this.networkService.networkStat; }
 }

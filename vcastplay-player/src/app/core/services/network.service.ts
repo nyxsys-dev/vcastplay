@@ -7,14 +7,7 @@ export class NetworkService {
 
   networkStat = signal<boolean>(navigator.onLine);
 
-  constructor() {
-    window.addEventListener('online', () => this.networkStat.set(true));
-    window.addEventListener('offline', () => this.networkStat.set(false));
-
-    effect(() => {
-      console.log('🧭 Network status changed:', this.networkStat());
-    })
-  }
+  constructor() { }
 
   isOnline() {
     return this.networkStat();

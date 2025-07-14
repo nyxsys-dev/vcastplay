@@ -19,10 +19,12 @@ let win;
 
 function createWindow() {
   win = new BrowserWindow({
-    fullscreen: true,
+    fullscreen: !isDev,
+    contextIsolation: true,
     autoHideMenuBar: true,
     icon: path.join(__dirname, 'assets/favicon.png'),
     webPreferences: {
+      nodeIntegration: true,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     }
