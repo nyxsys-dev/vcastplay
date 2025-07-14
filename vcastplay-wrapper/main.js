@@ -1,5 +1,5 @@
 const si = require('systeminformation');
-const { app, BrowserWindow, ipcMain, screen, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, Menu, nativeImage, Tray } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 const { exec } = require('child_process');
@@ -9,6 +9,7 @@ const os = require('os');
 const isDev = !app.isPackaged;
 
 let win;
+let tray;
 
 /**
  * Creates a new browser window with the specified configuration.
@@ -48,6 +49,15 @@ function createWindow() {
 
     setupAutoUpdater();
   }
+
+  win.on('close', (event) => {
+    if (!app.isQuiting) {
+      event.preventDefault();
+      win.hide();
+    }
+  })
+
+  createTray();
 }
 
 ipcMain.handle('control', async (_event, action, appName) => {
@@ -106,6 +116,35 @@ ipcMain.on('check-for-updates', () => {
   log.info('Manual update check triggered');
   autoUpdater.checkForUpdatesAndNotify();
 });
+
+function createTray() {
+  const icon = path.join(__dirname, 'assets/favicon.png');
+  const trayIcon = nativeImage.createFromPath(icon);
+  tray = new Tray(trayIcon);
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show App',
+      click: () => win.show()
+    },
+    {
+      label: 'Exit App',
+      click: () => {
+        app.isQuiting = true;
+        tray.destroy();
+        app.quit();
+      }
+    }
+  ])
+
+  tray.setToolTip('VCastPlay');
+  tray.setContextMenu(contextMenu);
+  
+  // Optional: click to toggle window
+  tray.on('double-click', () => {
+    win.isVisible() ? win.hide() : win.show();
+  });
+}
 
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => app.quit());

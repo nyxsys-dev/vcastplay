@@ -1,45 +1,61 @@
-<div class="flex flex-col gap-4 justify-center items-center h-screen relative bg-[var(--p-primary-500)]" [formGroup]="authForm">
+<div class="relative flex flex-col gap-4 justify-center items-center h-screen relative bg-[var(--p-primary-500)]" [formGroup]="authForm">
   @if (loading()) { <p-progress-bar mode="indeterminate" [style]="{ height: '6px' }" /> }
-  <div class="flex flex-col gap-3 justify-center items-center text-white">
-    <div class="font-bold text-5xl md:text-8xl mb-2 tracking-widest">{{ playerCode?.value }}</div>
-    <p class="text-muted-color block mb-8">Player code.</p>
-  </div>
+  <!-- <div class="flex flex-col gap-3 justify-center items-center text-white h-full w-full"> -->
+    <!-- <img class="w-[15rem] md:w-[30rem]" src="assets/vcastplay.png" alt="vcastplay 2.0 logo"> -->
+     <!-- <div class="relative flex h-full w-full justify-center items-center">
+        <ng-container *ngIf="currentContent">
+            <app-content-container class="absolute h-full w-full flex items-center justify-center" 
+                [currentContent]="currentContent()" [isPlaying]="isPlaying()" (timeUpdate)="onTimeUpdate($event)" [autoPlay]="true" />
+        </ng-container>
+    </div> -->
+  <!-- </div> -->
+  <ng-container *ngIf="currentContent()">
+    <app-content-container class="absolute h-full w-full flex items-center justify-center" 
+        [currentContent]="currentContent()" [isPlaying]="isPlaying()" (timeUpdate)="onTimeUpdate($event)" [autoPlay]="true" />
+  </ng-container>
 
-  <div class="absolute top-3 left-3 flex gap-3 m-2">
-    <img src="assets/vcast-logo.png" alt="app logo">
-    <p-tag [value]="systemInfo?.appVersion ?? '0.0.0'" severity="info" />
-  </div>
+  <ng-container *ngIf="!currentContent() && !isPlaying()">
+    <div class="absolute h-full w-full flex items-center justify-center">
+      <img class="w-[15rem] md:w-[30rem]" src="assets/vcastplay.png" alt="vcastplay 2.0 logo">
+    </div>
+  </ng-container>
 
-  @if (isElectron) {
+  <!-- @if (isElectron) {
     <div class="absolute bottom-3 left-3 p-2 text-gray-500">
       <p>System Information</p>
       <div class="text-xs flex flex-col gap-3 mt-3">
         @if (loading()) {
           @for (item of [1, 2, 3, 4, 5]; track $index) { <p-skeleton width="2rem" styleClass="mb-2" /> }
         } @else {
-          <p>IP Address: <span>{{ systemInfo?.ip ?? 'Unknown' }}</span></p>
-          <p>CPU: <span>{{ systemInfo?.cpu ?? 'Unknown' }}</span> ({{ systemInfo.cpuTemp ?? 0 }})</p>
-          <p>RAM: <span>{{ systemInfo?.ram ?? 'Unknown' }}</span></p>
-          <p>OS: <span>{{ systemInfo?.os ?? 'Unknown' }}</span></p>
-          <p>UUID: <span>{{ systemInfo?.serial ?? 'Unknown' }}</span></p>
-          <p>Browser: <span>{{ systemInfo?.browserVersion ?? 'Unknown' }}</span></p>
-          <p>Location: <span>{{ systemInfo?.coords?.city  + ', ' + systemInfo?.coords?.region + ', ' + systemInfo?.coords?.country }}</span></p>
+          <p>IP Address: <span>{{ systemInfo()?.ip ?? 'Unknown' }}</span></p>
+          <p>CPU: <span>{{ systemInfo()?.cpu ?? 'Unknown' }}</span> ({{ systemInfo()?.cpuTemp ?? 0 }})</p>
+          <p>RAM: <span>{{ systemInfo()?.ram ?? 'Unknown' }}</span></p>
+          <p>OS: <span>{{ systemInfo()?.os ?? 'Unknown' }}</span></p>
+          <p>UUID: <span>{{ systemInfo()?.serial ?? 'Unknown' }}</span></p>
+          <p>Browser: <span>{{ systemInfo()?.browserVersion ?? 'Unknown' }}</span></p>
+          <p>Location: <span>{{ systemInfo()?.coords?.city  + ', ' + systemInfo()?.coords?.region + ', ' + systemInfo()?.coords?.country }}</span></p>
         }
       </div>
     </div>
-  }
+  } -->
 
-  <div class="absolute top-3 right-3 p-2 flex flex-col items-center gap-3">
-     @if (networkService.isOnline()) {
-      <p-chip class="text-xs" [style]="{ 'background-color': 'var(--color-green-200)' }">
-        <div class="h-2 w-2 rounded-xl bg-green-600"></div>
-        <p class="text-green-600 font-semibold">ONLINE</p>
-      </p-chip>
-     } @else {
-      <p-chip class="text-xs" [style]="{ 'background-color': 'var(--color-red-200)' }">
-        <div class="h-2 w-2 rounded-xl bg-red-600"></div>
-        <p class="text-red-600 font-semibold">OFFLINE</p>
-      </p-chip>
-     }
+  <div class="absolute bottom-3 right-3 flex items-center gap-1 m-2">
+    <p class="text-xs text-zinc-300">{{ systemInfo()?.appVersion ?? '0.0.0' }}</p>
   </div>
+
+  @if (isDev()) {
+    <div class="absolute top-3 right-3 p-2 flex flex-col items-center gap-3">
+      @if (networkService.isOnline()) {
+        <p-chip class="text-xs" [style]="{ 'background-color': 'var(--color-green-200)' }">
+          <div class="h-2 w-2 rounded-xl bg-green-600"></div>
+          <p class="text-green-600 font-semibold">ONLINE</p>
+        </p-chip>
+      } @else {
+        <p-chip class="text-xs" [style]="{ 'background-color': 'var(--color-red-200)' }">
+          <div class="h-2 w-2 rounded-xl bg-red-600"></div>
+          <p class="text-red-600 font-semibold">OFFLINE</p>
+        </p-chip>
+      }
+    </div>
+  }
 </div>

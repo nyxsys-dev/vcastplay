@@ -1,30 +1,24 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, HostListener, inject, signal } from '@angular/core';
 import { PrimengModule } from '../core/modules/primeng/primeng.module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NetworkService } from '../core/services/network.service';
 import { UtilsService } from '../core/services/utils.service';
-declare global {
-  interface Window {
-    system: {
-      control: (action: string, app?: string) => Promise<string>;
-      getSystemInfo: () => Promise<string>;
-      checkForUpdates: () => void;
-      // onUpdateAvailable: (callback: () => void) => void;
-      // onUpdateDownloaded: (callback: () => void) => void;
-      restartApp: () => void;
-      isElectron: boolean
-    },
-  }
-}
+import { PlayerService } from '../core/services/player.service';
+import { IndexedDbService } from '../core/services/indexed-db.service';
+import { Playlist } from '../core/interfaces/playlist';
+import { ComponentsModule } from '../core/modules/components/components.module';
+
 @Component({
   selector: 'app-main-display',
-  imports: [ PrimengModule ],
+  imports: [ PrimengModule, ComponentsModule ],
   templateUrl: './main-display.component.html',
   styleUrl: './main-display.component.scss'
 })
 export class MainDisplayComponent {
 
   networkService = inject(NetworkService);
+  indexedDB = inject(IndexedDbService);
+  player = inject(PlayerService);
   utils = inject(UtilsService);
 
   loading = signal<boolean>(false);
@@ -33,7 +27,11 @@ export class MainDisplayComponent {
     code: new FormControl('', [ Validators.required ])
   });
 
-  systemInfo: any;
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') this.player.onStopPreview();
+    if (event.key === 'Enter') this.onClickPlayPreview();
+  }
 
   constructor() {
     window.addEventListener('online', () => this.networkStat.set(true));
@@ -41,48 +39,45 @@ export class MainDisplayComponent {
 
     effect(() => {
       console.log('🧭 Network status changed:', this.networkStat());
-      this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
+      // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
   }
 
-  ngOnInit() {
-    console.log(this.isElectron ? 'Running in Electron' : 'Running in Browser');
-    
-    if (this.isElectron) this.loadSystemInfo();
+  async ngOnInit() {
+    this.indexedDB.clearItems();
+    this.player.onLoadContents();
+  }
+
+  async ngAfterViewInit() {
+    const contents = this.player.onGetContents();
+    contents.forEach(async (content: Playlist) => {
+      await this.indexedDB.addItem(content)
+    })
+
+    await this.indexedDB.getAllItems();
+    // this.player.onPlayPreview();
+  }
+
+  onClickPlayPreview() {
+    if (this.isPlaying()) this.player.onStopPreview();
+    else this.player.onPlayPreview();
   }
 
   onClickCheckUpdates() {
     window.system.checkForUpdates();
   }
-  
-  send(action: string) {
-    window.system.control(action)
-      .then(response => console.log(response))
-      .catch(err => console.error(err));
-  }
-
-  sendApp(app: string) {
-    window.system.control("open", app)
-      .then(response => console.log(response));
-  }
-
-  closeApp(app: string) {
-    window.system.control("close", app)
-      .then(response => console.log(response));
-  }
-
-  loadSystemInfo() {
-    this.loading.set(true);
-    window.system.getSystemInfo()
-      .then(response => {        
-        this.systemInfo = response; 
-        this.utils.requestLocation();        
-        this.loading.set(false);
-      })
-      .catch(err => console.error(err));
-  }
 
   get playerCode() { return this.authForm.get('code'); }
+
+  get isDev() { return this.utils.isDev; }
+  get systemInfo() { return this.utils.systemInfo; }
+
   get isElectron() { return window.system?.isElectron; }
+  
   get networkStat() { return this.networkService.networkStat; }
+
+  get isPlaying() { return this.player.isPlaying; }
+  get onTimeUpdate() { return this.player.onTimeUpdate; }
+  get currentContent() { return this.player.currentContent; }
+  get currentTransition() { return this.player.currentTransition; }
 }
