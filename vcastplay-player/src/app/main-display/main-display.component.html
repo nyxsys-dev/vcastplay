@@ -1,4 +1,5 @@
-<div class="relative flex flex-col gap-4 justify-center items-center h-screen relative bg-[var(--p-primary-500)] group overflow-hidden" [formGroup]="authForm">
+<div class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden" 
+  [formGroup]="authForm" [ngClass]="{ 'bg-[var(--p-primary-500)]': !isPlaying(), 'bg-zinc-900': isPlaying() }">
 
   <ng-container *ngIf="currentContent()">
     <app-content-container class="absolute h-full w-full flex items-center justify-center" (mousemove)="onMouseMove()" [ngClass]="{ 'cursor-none': hideCursor() }"
@@ -20,7 +21,7 @@
   </ng-container>
 
   <div class="absolute bottom-3 right-3 flex items-center gap-1 m-2">
-    <p class="text-xs text-zinc-300">{{ systemInfo()?.appVersion ?? '0.0.0' }}</p>
+    <p class="text-sm text-zinc-300">{{ systemInfo()?.code ?? '000000000' }}: {{ systemInfo()?.appVersion ?? '0.0.0' }}</p>
   </div>
 
   @if (isDev()) {

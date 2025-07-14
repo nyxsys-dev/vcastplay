@@ -1,4 +1,5 @@
 export const environment = {
     geoAPI: 'https://ipapi.co/json',
-    production: false
+    version: '2.0.0',
+    production: false,
 };

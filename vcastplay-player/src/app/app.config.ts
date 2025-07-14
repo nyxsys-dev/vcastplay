@@ -8,7 +8,6 @@ import { provideHttpClient } from '@angular/common/http';
 import myPreset from '../../public/assets/myPresets';
 import { provideServiceWorker } from '@angular/service-worker';
 
-import { IndexedDbService } from './core/services/indexed-db.service';
 import { initializeApp } from './core/interfaces/app-initializer';
 
 // Use window.system to call functions from preload.js
