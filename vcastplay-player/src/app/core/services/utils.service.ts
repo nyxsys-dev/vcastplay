@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { Location } from '../interfaces/player';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
+import { v7 as uuidv7 } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 export class UtilsService {
 
   geoAPI: string = environment.geoAPI;
+  appVersion = environment.version;
   isDev = signal<boolean>(!environment.production);
   systemInfo = signal<any>(null);
   isLoading = signal<boolean>(false);
@@ -66,9 +68,9 @@ export class UtilsService {
 
   loadSystemInfo() {
     window.system.getSystemInfo()
-      .then(response => {        
-        this.systemInfo.set(response); 
-        console.log(response);
+      .then((response: any) => {        
+        this.systemInfo.set({ appVersion: this.appVersion, uuid: uuidv7(), ...response }); 
+        console.log(this.systemInfo());
         // this.requestLocation();
       })
       .catch(err => console.error(err));

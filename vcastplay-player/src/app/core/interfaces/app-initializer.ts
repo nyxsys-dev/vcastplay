@@ -3,6 +3,7 @@ import { IndexedDbService } from "../services/indexed-db.service";
 import { UtilsService } from "../services/utils.service";
 import { environment } from "../../../environments/environment.development";
 import { StorageService } from "../services/storage.service";
+import { v7 as uuidv7 } from 'uuid';
 
 // Initialization of the system
 export function initializeApp() {
@@ -14,7 +15,7 @@ export function initializeApp() {
 
     // Generate player unique code
     if (!storage.hasKey('code')) {
-      storage.set('code', utils.genereteScreenCode(9));
+      storage.set('code', uuidv7());
     }
 
     const playerCode = storage.get('code');
@@ -23,7 +24,7 @@ export function initializeApp() {
     const indexedDbService = inject(IndexedDbService);
 
     if (isElectron) utils.loadSystemInfo();
-    else utils.systemInfo.set({ appVersion, code: playerCode });
+    else utils.systemInfo.set({ appVersion, uuid: playerCode });
 
     console.log(isElectron ? 'Running in Electron' : 'Running in Browser');
     return await indexedDbService.database();

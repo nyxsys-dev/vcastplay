@@ -18,5 +18,54 @@ export class ScreenControlsComponent {
     this.screenService.toggleControls.set(!this.screenService.toggleControls()); 
   }
 
+  onClickDisplayScreen() {
+    this.screenService.onDisplayScreen();
+  }
+
+  onClickToggleAudio(value: boolean) {
+    this.screenService.onToggleAudio(value);
+  }
+
+  onClickToggleFullscreen(value: boolean) {
+    this.screenService.onToggleFullscreen(value);
+  }
+
+  onClickSyncTime() {
+    this.screenService.onSyncTime();
+  }
+
+  onClickPlaybackContent() {
+    this.screenService.onGetPlaybackContentLogs(true);
+  }
+
+  onClickClear(value: boolean) {
+    this.screenService.onClickClear(value);
+  }
+
+  onClickOpenScreen() {
+    this.screenService.onClickOpenScreen();
+  }
+
+  onClickCloseScreen() {
+    this.screenService.onCloseScreen();
+  }
+
+  onClickRestartScreen() {
+    this.screenService.onRestartScreen();
+  }
+
+  onClickShutdownScreen() {
+    this.screenService.onShutdownScreen();
+  }
+
+  onClickBroadCastMessage() {
+    this.screenService.onBroadCastMessage();
+  }
+
+  onClickAssignContents() {
+    this.screenService.onAssignContents();
+  }
+
+  get isMobile() { return this.utils.isMobile(); }
   get toggleControls() { return this.screenService.toggleControls; }
 }

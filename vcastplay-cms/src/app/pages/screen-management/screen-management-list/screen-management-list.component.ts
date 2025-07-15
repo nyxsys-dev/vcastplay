@@ -26,7 +26,7 @@ export class ScreenManagementListComponent {
     const screens = this.screenService.screens();
 
     return screens.filter((screen: Screen) => {
-      const matchesStatus = screen.status == 'active'; 
+      const matchesStatus = screen.status;// == 'active'; 
       const matchesType = !type || screen.type.includes(type);
       const matchesGroup = !group || screen.group?.includes(group);
       const matchesSubGroup = !subGroup || screen.subGroup?.includes(subGroup);
@@ -43,6 +43,14 @@ export class ScreenManagementListComponent {
     this.screenService.onGetScreens();
   }
 
+  isAllChecked(): boolean {
+    return this.selectMultipleScreens().length == this.filteredScreen().length;
+  }
+
+  onClickCheckAll(checked: boolean) {
+    checked ? this.selectMultipleScreens.set(this.filteredScreen()) : this.selectMultipleScreens.set([]);
+  }
+
   onClickToggleControls() {
     this.toggleControls.set(!this.toggleControls());
   }
@@ -53,4 +61,5 @@ export class ScreenManagementListComponent {
 
   get screenFilterForm() { return this.screenService.screenFilterForm; }
   get toggleControls() { return this.screenService.toggleControls; }
+  get selectMultipleScreens() { return this.screenService.selectMultipleScreens; }
 }

@@ -148,12 +148,6 @@ export class PlayerService {
     clearTimeout(this.gapTimeout);
   }
   
-  
-  onTimeUpdate(event: any) {    
-    const { currentTime, duration } = event;
-    this.onUpdateProgress(currentTime, duration);
-  }
-
   onTriggerInterval(duration: number) {
     let startTime = Date.now();
     this.intervalId = setInterval(() => {
@@ -166,6 +160,11 @@ export class PlayerService {
         // this.onStopPreview();
       }
     }, 500);
+  }
+
+  onTimeUpdate(event: any) {    
+    const { currentTime, duration } = event;
+    this.onUpdateProgress(currentTime, duration);
   }
 
   onUpdateProgress(currentSeconds: number, duration: number) {

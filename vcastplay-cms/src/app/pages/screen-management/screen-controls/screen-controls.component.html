@@ -1,4 +1,4 @@
-<div class="flex flex-col rounded bg-gray-200 m-2 p-3 gap-3 transition-all duration-300 ease-in-out shadow-lg"
+<div class="hidden md:flex flex-col rounded bg-gray-200 m-2 p-3 gap-3 transition-all duration-300 ease-in-out shadow-lg"
     [ngClass]="{ 'translate-x-0 opacity-100 pointer-events-auto': toggleControls(), 'translate-x-full opacity-0 pointer-events-none': !toggleControls() }">
     <div class="flex gap-2 items-center w-full">
         <p class="text-base font-semibold">Controls</p>
@@ -8,27 +8,42 @@
 </div>
 
 <ng-template #controls>
-    <p class="text-sm">Settings:</p>
-    <div class="grid grid-cols-4 gap-2">
-        <p-button icon="pi pi-desktop" pTooltip="Display" />
-        <p-button icon="pi pi-volume-up" pTooltip="Audio On" />
-        <p-button icon="pi pi-volume-off" pTooltip="Audio Off" />
-        <p-button icon="pi pi-window-maximize" pTooltip="Fullscreen" />
-        <p-button icon="pi pi-sync" pTooltip="Sync Time" />
-        <p-button icon="pi pi-file-edit" pTooltip="Playback" />
-        <p-button icon="pi pi-trash" pTooltip="Clear" />
-    </div>
-    <p class="text-sm">Player:</p>
-    <div class="flex gap-2">
-        <p-button icon="pi pi-play-circle" pTooltip="Open Screen" />
-        <p-button icon="pi pi-times-circle" pTooltip="Close Screen" />
-        <p-button icon="pi pi-refresh" pTooltip="Restart" />
-        <p-button icon="pi pi-power-off" pTooltip="Shutdown" />
-    </div>
-    
-    <p class="text-sm">Others:</p>
-    <div class="flex gap-2">
-        <p-button icon="pi pi-megaphone" pTooltip="Broadcast" />
-        <p-button icon="pi pi-images" pTooltip="Contents" />
+    <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-3">
+            <p class="text-sm">Settings:</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <p-button (onClick)="onClickDisplayScreen()" icon="pi pi-desktop" pTooltip="Display" [label]="isMobile ? 'Display' : ''" fluid />
+                <p-button (onClick)="onClickToggleAudio(true)" icon="pi pi-volume-up" pTooltip="Audio On" [label]="isMobile ? 'Audio On' : ''" fluid />
+                <p-button (onClick)="onClickToggleAudio(false)" icon="pi pi-volume-off" pTooltip="Audio Off" [label]="isMobile ? 'Audio Off' : ''" fluid />
+                <p-button (onClick)="onClickToggleFullscreen(true)" icon="pi pi-window-maximize" pTooltip="Fullscreen" [label]="isMobile ? 'Fullscreen' : ''" fluid />
+                <p-button (onClick)="onClickSyncTime()" icon="pi pi-sync" pTooltip="Sync Time" [label]="isMobile ? 'Sync Time' : ''" fluid />
+                <p-button (onClick)="onClickPlaybackContent()" icon="pi pi-file-edit" pTooltip="Playback" [label]="isMobile ? 'Playback Content' : ''" fluid />
+                <p-button (onClick)="onClickClear(true)" icon="pi pi-trash" pTooltip="Clear" [label]="isMobile ? 'Clear' : ''" fluid />
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <p class="text-sm">Player:</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <p-button (onClick)="onClickOpenScreen()" icon="pi pi-play-circle" pTooltip="Open Screen" [label]="isMobile ? 'Open Screen' : ''" fluid />
+                <p-button (onClick)="onClickCloseScreen()" icon="pi pi-times-circle" pTooltip="Close Screen" [label]="isMobile ? 'Close Screen' : ''" fluid />
+                <p-button (onClick)="onClickRestartScreen()" icon="pi pi-refresh" pTooltip="Restart" [label]="isMobile ? 'Restart' : ''" fluid />
+                <p-button (onClick)="onClickShutdownScreen()" icon="pi pi-power-off" pTooltip="Shutdown" [label]="isMobile ? 'Shutdown' : ''" fluid />
+            </div>
+        </div>
+        
+        <div class="flex flex-col gap-3">
+            <p class="text-sm">Others:</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <p-button (onClick)="onClickBroadCastMessage()" icon="pi pi-megaphone" pTooltip="Broadcast" [label]="isMobile ? 'Broadcast Message' : ''" fluid />
+                <p-button (onClick)="onClickAssignContents()" icon="pi pi-images" pTooltip="Contents" [label]="isMobile ? 'Assign Contents' : ''" fluid />
+            </div>
+        </div>
     </div>
 </ng-template>
+
+<ng-container *ngIf="utils.isMobile()">
+    <p-drawer header="Screen Controls" [(visible)]="toggleControls" styleClass="!h-auto max-h-100" position="bottom">
+        <ng-container *ngTemplateOutlet="controls"></ng-container>
+    </p-drawer>
+</ng-container>

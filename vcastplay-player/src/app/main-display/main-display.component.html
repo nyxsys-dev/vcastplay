@@ -23,7 +23,7 @@
     <p class="text-sm text-zinc-300">{{ systemInfo()?.code ?? '000000000' }}: {{ systemInfo()?.appVersion ?? '0.0.0' }}</p>
   </div>
 
-  @if (isDev()) {
+  <!-- @if (isDev()) {
     <div class="absolute top-3 right-3 p-2 flex flex-col items-center gap-3">
       @if (networkService.isOnline()) {
         <p-chip class="text-xs" [style]="{ 'background-color': 'var(--color-green-200)' }">
@@ -37,5 +37,5 @@
         </p-chip>
       }
     </div>
-  }
+  } -->
 </div>

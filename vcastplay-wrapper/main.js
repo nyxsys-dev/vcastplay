@@ -76,6 +76,7 @@ ipcMain.handle('control', async (_event, action, appName) => {
 });
 
 ipcMain.handle('getSystemInfo', async () => {
+  const hostname = os.hostname();
   const net = os.networkInterfaces();
   const cpu = await si.cpu();
   const temp = await si.cpuTemperature();
@@ -87,6 +88,7 @@ ipcMain.handle('getSystemInfo', async () => {
   const graphics = await si.graphics();
 
   return {
+    hostname,
     ip: Object.values(net)
       .flat()
       .filter(i => i.family === 'IPv4' && !i.internal)[0]?.address || 'N/A',

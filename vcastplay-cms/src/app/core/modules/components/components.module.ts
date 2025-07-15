@@ -27,6 +27,7 @@ import { ScreenFilterComponent } from '../../../pages/screens/screen-filter/scre
 import { PlaylistFilterComponent } from '../../../pages/playlist/playlist-filter/playlist-filter.component';
 import { ScheduleFilterComponent } from '../../../pages/schedules/schedule-filter/schedule-filter.component';
 import { ScreenControlsComponent } from '../../../pages/screen-management/screen-controls/screen-controls.component';
+import { ScreenManagementListItemComponent } from '../../../pages/screen-management/screen-management-list-item/screen-management-list-item.component';
 
 
 const COMPONENT_MODULES = [
@@ -51,6 +52,7 @@ const COMPONENT_MODULES = [
   ScreenScheduleComponent,
   ScreenFilterComponent,
   ScreenControlsComponent,
+  ScreenManagementListItemComponent,
 
   // Playlist Components
   AddToPlaylistComponent,

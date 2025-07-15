@@ -1,11 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject, Input, TemplateRef } from '@angular/core';
+import { UtilityService } from '../../../core/services/utility.service';
+import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
+import { Screen } from '../../../core/interfaces/screen';
+import { ScreenService } from '../../../core/services/screen.service';
 
 @Component({
   selector: 'app-screen-management-list-item',
-  imports: [],
+  imports: [ PrimengUiModule ],
   templateUrl: './screen-management-list-item.component.html',
   styleUrl: './screen-management-list-item.component.scss'
 })
 export class ScreenManagementListItemComponent {
 
+  @Input() screen!: Screen;
+  @Input() actionBtn!: TemplateRef<any>;
+
+  screenService = inject(ScreenService);
+  utils = inject(UtilityService);
+  
+  get selectMultipleScreens() { return this.screenService.selectMultipleScreens; }
 }

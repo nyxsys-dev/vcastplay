@@ -20,7 +20,7 @@ export class ScreenService {
   toggleControls = signal<boolean>(false);
 
   selectedScreen = signal<Screen | null>(null);
-  selectMultipleScreen = signal<Screen[]>([]);
+  selectMultipleScreens = signal<Screen[]>([]);
   
   rows = signal<number>(8);
   totalRecords = signal<number>(0);
@@ -206,6 +206,67 @@ export class ScreenService {
     this.screenSignal.set([...tempScreens]);
 
     this.totalRecords.set(this.screens().length);
+  }
+
+  /** Screen Controls */
+  onDisplayScreen() {
+    /**Call POST display screen API */
+    console.log('Display screen');
+  }
+
+  onToggleAudio(value: boolean) {
+    /**Call POST toggle audio API */
+    console.log('Toggle audio', value); 
+  }
+
+  onToggleFullscreen(value: boolean) {
+    /**Call POST toggle fullscreen API */
+    console.log('Toggle fullscreen', value); 
+  }
+
+  onSyncTime() {
+    /**Call POST sync time API */
+    console.log('Sync time'); 
+  }
+
+  onGetPlaybackContentLogs(value: boolean) {
+    /**Call POST playback content API */
+    console.log('Playback content', value); 
+  }
+
+  onClickClear(value: boolean) {
+    /**Call POST clear API */
+    console.log('Clear All / Reset', value); 
+  }
+
+  onClickOpenScreen() {
+    /**Call POST open screen API */
+    console.log('Open screen');
+  }
+
+  onCloseScreen() {
+    /**Call POST close screen API */
+    console.log('Close screen');
+  }
+
+  onRestartScreen() {
+    /**Call POST restart API */
+    console.log('Restart screen');
+  }
+
+  onShutdownScreen() {
+    /**Call POST shutdown API */
+    console.log('Shutdown screen');
+  }
+
+  onBroadCastMessage() {
+    /**Call POST broadcast message API */
+    console.log('Broadcast message');
+  }
+
+  onAssignContents() {
+    /**Call POST assign contents API */
+    console.log('Assign contents', this.selectMultipleScreens());
   }
 
   get tags() { return this.screenForm.get('tags'); }
