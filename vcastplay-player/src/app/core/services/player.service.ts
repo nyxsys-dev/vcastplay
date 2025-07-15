@@ -33,7 +33,7 @@ export class PlayerService {
     this.contentSignal.set([
       {
         id: 1,
-        link: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+        link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
         type: 'video',
         duration: 60
       },
