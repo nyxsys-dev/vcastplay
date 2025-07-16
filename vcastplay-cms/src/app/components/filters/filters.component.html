@@ -9,8 +9,8 @@
         <p-button icon="pi pi-filter" pTooltip="More Filter" tooltipPosition="bottom" [text]="true" (onClick)="filter.toggle($event)"></p-button>
         <p-popover #filter>
             <div class="flex flex-col gap-5 w[25rem]">
-                <p-select [options]="status" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
-                <p-select [options]="sortBy" formControlName="sortBy" optionLabel="label" optionValue="value" placeholder="Sort By" class="w-50" />
+                <p-select [options]="status" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" showClear />
+                <p-select [options]="sortBy" formControlName="sortBy" optionLabel="label" optionValue="value" placeholder="Sort By" class="w-50" showClear />
                 <div class="flex flex-row gap-4">
                     @for (item of [ 'asc', 'desc' ]; track $index) {
                         <div>

@@ -21,7 +21,7 @@
                     <ng-template #header>
                         <tr>
                             <th style="width: 2rem"><p-tableHeaderCheckbox /></th>
-                            <th>Status</th>
+                            <th style="width: 5rem;">Status</th>
                             <th>Name</th>
                             <th>Display</th>
                             <th>Content</th>
@@ -46,7 +46,7 @@
                                         @switch (item.type) {
                                             @case('desktop') { <i class="pi pi-desktop !font-black !text-2xl !text-blue-500"></i> }
                                             @case('android') { <i class="pi pi-android !text-2xl !text-lime-500"></i> }
-                                            @default { <i class="pi pi-globe"></i> }
+                                            @default { <i class="pi pi-globe !text-2xl"></i> }
                                         }
                                     </div>
                                     <p class="text-base font-semibold">{{ item.name }}</p>

@@ -17,9 +17,9 @@ export class FiltersComponent {
   utils = inject(UtilityService);
 
   filters: FormGroup = new FormGroup({
-    keywords: new FormControl('', { nonNullable: true }),
-    status: new FormControl(''),
-    sortBy: new FormControl(''),
+    keywords: new FormControl(null),
+    status: new FormControl(null),
+    sortBy: new FormControl(null),
     sort: new FormControl('asc', { nonNullable: true })
   })
 

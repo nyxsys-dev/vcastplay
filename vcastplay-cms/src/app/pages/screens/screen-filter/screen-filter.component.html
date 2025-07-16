@@ -17,23 +17,23 @@
             <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
             <div class="grid grid-cols-2 md:grid-cols-1 gap-2">
                 <p-datepicker formControlName="dateRange" selectionMode="range" placeholder="Date Range" readonlyInput showIcon fluid />
-                <p-select [options]="types()" formControlName="type" optionLabel="label" optionValue="value" placeholder="Type" />
-                <p-select [options]="filterGroup()" formControlName="group" placeholder="Group" />
-                <p-select [options]="filterSubGroup()" formControlName="subGroup" placeholder="Sub Group" />
+                <p-select [options]="types()" formControlName="type" optionLabel="label" optionValue="value" placeholder="Type" showClear />
+                <p-select [options]="filterGroup()" formControlName="group" placeholder="Group" showClear />
+                <p-select [options]="filterSubGroup()" formControlName="subGroup" placeholder="Sub Group" showClear />
 
                 @if (showOrientation) {
-                    <p-select [options]="orientations()" formControlName="orientation" optionLabel="label" optionValue="value" placeholder="Orientation" />
+                    <p-select [options]="orientations()" formControlName="orientation" optionLabel="label" optionValue="value" placeholder="Orientation" showClear />
                 }
                 
                 @if (showLocation) {
-                    <p-select [options]="filterLocation()" formControlName="location" placeholder="Location" />
+                    <p-select [options]="filterLocation()" formControlName="location" placeholder="Location" showClear />
                 }
 
                 @if (showScreenStatus) {
-                    <p-select [options]="screenStatus()" formControlName="screenStatus" optionLabel="label" optionValue="value" placeholder="Screen Status" />
-                    <p-select [options]="contentStatus()" formControlName="contentStatus" optionLabel="label" optionValue="value" placeholder="Content Status" />
+                    <p-select [options]="screenStatus()" formControlName="screenStatus" optionLabel="label" optionValue="value" placeholder="Screen Status" showClear />
+                    <p-select [options]="contentStatus()" formControlName="contentStatus" optionLabel="label" optionValue="value" placeholder="Content Status" showClear />
                 } @else {
-                    <p-select [options]="status" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
+                    <p-select [options]="status" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" showClear />
                 }
             </div>
             <div class="flex gap-2 justify-end items-center">

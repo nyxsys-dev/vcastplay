@@ -17,7 +17,7 @@
             <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
             <div class="grid grid-cols-2 md:grid-cols-1 gap-2 w[25rem]">
                 <p-datepicker formControlName="dateRange" selectionMode="range" placeholder="Date Range" readonlyInput showIcon fluid />
-                <p-select [options]="scheduleStatus()" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
+                <p-select [options]="scheduleStatus()" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" showClear />
             </div>
             <div class="flex gap-2 justify-end items-center">
                 <p-button severity="secondary" (onClick)="onClickClear(filter)" label="Clear" size="small" [text]="true" icon="pi pi-times"></p-button>

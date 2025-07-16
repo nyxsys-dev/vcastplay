@@ -29,7 +29,7 @@ export class ScreenService {
   types = signal<SelectOption[]>([
     { label: 'Desktop', value: 'desktop' },
     { label: 'Android', value: 'android' },
-    // { label: 'Web', value: 'web' },
+    { label: 'Web', value: 'web' },
   ]);
 
   screenStatus = signal<SelectOption[]>([
@@ -144,15 +144,40 @@ export class ScreenService {
         type: 'android',
         address: {
           country: 'Philippines',
-          region: 'Manila',
+          region: 'Metro Manila',
           city: 'Mandaluyong',
-          fullAddress: '',
-          latitude: 14.7611,
-          longitude: 121.2023,
-          zipCode: '1100'
+          fullAddress: '35 San Francisco Street, Barangay Plainview, Mandaluyong, Metro Manila, Philippines',
+          latitude: 14.5903,
+          longitude: 121.0341,
+          zipCode: '1550'
         },
         displaySettings: {
           orientation: 'portrait',
+          resolution: '757x1062'
+        },
+        status: 'inactive',
+        screenStatus: 'standby',
+        displayStatus: 'on',
+        createdOn: new Date('2024-01-01'),
+        updatedOn: new Date('2024-02-01'),
+      },
+      
+      { 
+        id: 3,
+        code: 'NYX003',
+        name: 'PLAYER-NYX003',
+        type: 'web',
+        address: {
+          country: 'Philippines',
+          region: 'Metro Manila',
+          city: 'Mandaluyong',
+          fullAddress: '221 Boni Avenue, Mandaluyong, Metro Manila, Philippines',
+          latitude: 14.5852,
+          longitude: 121.0346,
+          zipCode: '1550'
+        },
+        displaySettings: {
+          orientation: 'landscape',
           resolution: '757x1062'
         },
         status: 'inactive',

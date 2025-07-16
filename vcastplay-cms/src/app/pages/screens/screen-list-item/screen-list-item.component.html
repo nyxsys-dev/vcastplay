@@ -6,7 +6,7 @@
                     @switch (screen.type) {
                         @case('desktop') { <i class="pi pi-desktop !font-black !text-3xl !text-blue-500"></i> }
                         @case('android') { <i class="pi pi-android !text-3xl !text-lime-500"></i> }
-                        @default { <i class="pi pi-globe"></i> }
+                        @default { <i class="pi pi-globe !text-3xl"></i> }
                     }
                 </div>
 
@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="ml-auto">
-                <p-tag [value]="screen.status" [severity]="utils.getStatus(screen.status)" [icon]="'pi ' + utils.getIcon(screen.status)" />
+                <p-tag [value]="screen.status.toUpperCase()" [severity]="utils.getStatus(screen.status)" [icon]="'pi ' + utils.getIcon(screen.status)" />
             </div>
         </div>
     </ng-template>

@@ -17,10 +17,10 @@
             <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
             <div class="grid grid-cols-2 md:grid-cols-1 gap-2 w[25rem]">
                 <p-datepicker formControlName="dateRange" selectionMode="range" placeholder="Date Range" readonlyInput showIcon fluid />
-                <p-select [options]="filterCategory()" formControlName="category" placeholder="Category" />
-                <p-select [options]="filterSubCategory()" formControlName="subCategory" placeholder="Sub Category" />
-                <p-select [options]="fileTypes()" formControlName="type" optionLabel="label" optionValue="value" placeholder="Types" />
-                <p-select [options]="orientations()" formControlName="orientation" optionLabel="label" optionValue="value" placeholder="Orientation" />
+                <p-select [options]="filterCategory()" formControlName="category" placeholder="Category" showClear />
+                <p-select [options]="filterSubCategory()" formControlName="subCategory" placeholder="Sub Category" showClear />
+                <p-select [options]="fileTypes()" formControlName="type" optionLabel="label" optionValue="value" placeholder="Types" showClear />
+                <p-select [options]="orientations()" formControlName="orientation" optionLabel="label" optionValue="value" placeholder="Orientation" showClear />
                 <p-button class="col-span-2 md:col-span-1" label="Audience Tag" icon="pi pi-tag" (onClick)="isShowAudienceTag.set(true)" outlined fluid />
             </div>
             <div class="flex gap-2 justify-end items-center">

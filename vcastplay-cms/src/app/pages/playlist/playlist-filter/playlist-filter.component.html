@@ -17,7 +17,7 @@
             <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
             <div class="grid grid-cols-2 md:grid-cols-1 gap-3 w[25rem]">
                 <p-datepicker formControlName="dateRange" selectionMode="range" placeholder="Date Range" readonlyInput showIcon fluid />
-                <p-select [options]="playlistStatus()" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" />
+                <p-select [options]="playlistStatus()" formControlName="status" optionLabel="label" optionValue="value" placeholder="Status" showClear />
                 <div class="flex gap-2">
                     @for (item of playListTypes(); track $index) {
                         <div class="flex gap-2">
