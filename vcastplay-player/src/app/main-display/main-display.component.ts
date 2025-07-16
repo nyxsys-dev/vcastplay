@@ -37,7 +37,10 @@ export class MainDisplayComponent {
       console.log('🧭 Network status changed:', this.networkStat());
       
       const platform = this.storage.get('platform');
-      if (platform === 'android') this.player.onSendDataToAndroid('Player is playing');
+      if (platform === 'android') {
+        this.player.onGetAndroidInformation();
+        this.player.onSendDataToAndroid('Player is playing');
+      }
       
       // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
@@ -78,6 +81,7 @@ export class MainDisplayComponent {
     switch (platform) {
       case 'android':
         this.player.onGetAndroidInformation();
+        this.player.onSendDataToAndroid({ code, platform, playerCode, appVersion });
         break;
       case 'desktop':
         this.player.onGetDesktopInformation();
