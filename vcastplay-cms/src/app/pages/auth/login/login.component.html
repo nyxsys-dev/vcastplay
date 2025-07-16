@@ -1,25 +1,28 @@
 <div class="grid grid-cols-5 w-full h-screen">
-    <div class="col-span-3 hidden lg:block relative">
-        <div class="absolute top-0 left-0 m-5 z-50">
-            <img src="assets/vcastplay.png" alt="app logo" width="200">
-        </div>
-        <p-carousel [value]="slides" [numVisible]="1" [numScroll]="1" [circular]="true" [showIndicators]="false" [showNavigators]="false" [autoplayInterval]="5000">
-            <ng-template let-item #item>
-                <div class="flex items-center justify-center w-full h-screen relative">
-                    <img [src]="item.image" class="w-full h-full object-cover" alt="banner">
-                    <div class="absolute top-0 left-0 w-full h-full bg-[var(--p-primary-400)] opacity-50"></div>
-                    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-center">
-                        <p class="text-[2.75rem] font-bold text-white">"{{ item.text }}"</p>
+    <ng-container *ngIf="tokenValue()">
+        <div class="col-span-3 hidden lg:block relative">
+            <p-carousel [value]="slides" [numVisible]="1" [numScroll]="1" [circular]="true" [showIndicators]="false" [showNavigators]="false" [autoplayInterval]="5000">
+                <ng-template let-item #item>
+                    <div class="flex items-center justify-center w-full h-screen relative">
+                        <img [src]="item.image" class="w-full h-full object-cover" alt="banner">
+                        <div class="absolute top-0 left-0 w-full h-full bg-[var(--p-primary-500)] opacity-40"></div>
+                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-center">
+                            <p class="text-[2.75rem] font-bold text-[var(--p-surface-200)]">"{{ item.text }}"</p>
+                        </div>
                     </div>
-                </div>
-            </ng-template>
-        </p-carousel>
-    </div>
-    <div class="col-span-5 lg:col-span-2">
-        <div class="flex flex-col items-center justify-center h-full relative bg-gray-100 p-3 md:p-10 relative">
-            <div class="flex flex-col gap-4 w-full">
-                <div class="text-center">
-                    <p class="text-3xl font-bold">Login to your account</p>
+                </ng-template>
+            </p-carousel>
+        </div>
+    </ng-container>
+    <div class="col-span-5 text-white" [ngClass]="{ 'lg:col-span-2': tokenValue() }">
+        <div class="relative flex flex-col items-center justify-center h-full p-3 md:p-10 bg-[var(--p-primary-500)]">
+            <div class="flex flex-col gap-4 px-4 lg:px-0 w-full" [ngClass]="{ 'md:w-1/2 lg:w-1/4': !tokenValue(), 'sm:w-1/2 lg:w-full': tokenValue() }">
+                <div class="flex flex-col gap-10 items-center justify-center">
+                    <img src="assets/vcastplay-icon-transparent.png" alt="app logo" width="100">
+                    <p class="text-2xl font-bold">
+                        @if (tokenValue()) { Login to your account }
+                        @else { Administrator Login }
+                    </p>
                 </div>
                 <form class="grid grid-cols-1 gap-4 my-[2rem]" [formGroup]="auth.loginForm">
                     <p-floatlabel variant="in">
@@ -35,10 +38,10 @@
                             <p-checkbox inputId="rememberMe" formControlName="rememberMe" [binary]="true" />
                             <label for="rememberMe" class="ml-2">Remember Me</label>
                         </div>
-                        <a href="/" class="hover:text-orange-500">Forgot Password?</a>
+                        <a href="/" class="hover:text-[var(--p-primary-200)]">Forgot Password?</a>
                     </div>
                 </form>
-                <p-button (onClick)="auth.onLogin()" styleClass="w-full" label="Login" />
+                <p-button (onClick)="onClickLogin()" styleClass="w-full" label="Login" severity="secondary" />
             </div>
         </div>
     </div>

@@ -91,7 +91,7 @@ export class RoleService {
     const { id, status, ...info } = role;
     const index = tempRoles.findIndex(r => r.id === id);
     if (index !== -1) tempRoles[index] = { ...tempRoles[index], ...info };
-    else tempRoles.push({ id: tempRoles.length + 1, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    else tempRoles.push({ id: tempRoles.length + 1, status: 'pending', ...info, createdOn: new Date(), updatedOn: new Date() });
 
     this.roleSignal.set([...tempRoles]);
     /**Call POST/PATCH role API */

@@ -35,6 +35,12 @@ export class PlayerService {
   onLoadContents() { 
     this.contentSignal.set([
       {
+        id: 3,
+        link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+        type: 'video',
+        duration: 15
+      },
+      {
         id: 1,
         link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
         type: 'video',
@@ -45,12 +51,6 @@ export class PlayerService {
         link: 'https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_ebchx3WwzbM-Z4_KC_LeLBWr5LZMaAkWkF68',
         type: 'image',
         duration: 8
-      },
-      {
-        id: 3,
-        link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-        type: 'video',
-        duration: 15
       },
       {
         id: 4,

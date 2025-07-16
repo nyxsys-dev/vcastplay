@@ -123,7 +123,7 @@ export class UserService {
     const { id, code, status, ...info } = user;
     const index = tempUsers.findIndex(u => u.id === id);
     if (index !== -1) tempUsers[index] = { ...tempUsers[index], ...info };
-    else tempUsers.push({ id: tempUsers.length + 1, code: `NYX00${tempUsers.length + 1}`, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    else tempUsers.push({ id: tempUsers.length + 1, code: `NYX00${tempUsers.length + 1}`, status: 'pending', ...info, createdOn: new Date(), updatedOn: new Date() });
 
     this.userSignal.set([...tempUsers]);
     /**Call POST/PATCH user API */

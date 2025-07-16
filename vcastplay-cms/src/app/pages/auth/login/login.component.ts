@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { AuthService } from '../../../core/services/auth.service';
 import { MessageService } from 'primeng/api';
+import { ActivatedRoute } from '@angular/router';
+import { StorageService } from '../../../core/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +15,18 @@ import { MessageService } from 'primeng/api';
 export class LoginComponent {
 
   auth = inject(AuthService);
+  storage = inject(StorageService);
+  route = inject(ActivatedRoute);
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const token = params['id'];
+      if (token) {
+        this.tokenValue.set(token);
+        this.storage.set('id', token);
+      }
+    });
+  }
 
   slides: any[] = [
     {
@@ -36,4 +50,14 @@ export class LoginComponent {
       text: 'Visual Solutions That Speak Louder.',
     },
   ]
+
+  ngOnDestroy() {
+    this.auth.loginForm.reset();
+  }
+
+  onClickLogin() {
+    this.auth.onLogin();
+  }
+
+  get tokenValue() { return this.auth.token; }
 }

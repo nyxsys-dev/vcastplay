@@ -276,7 +276,7 @@ export class PlaylistService {
               pointOfInterests: [],
               tags: []
             },
-            status: 'Pending',
+            status: 'pending',
             createdOn: new Date(),
             updatedOn: new Date()
           }

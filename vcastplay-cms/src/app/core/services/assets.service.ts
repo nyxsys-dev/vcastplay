@@ -112,7 +112,7 @@ export class AssetsService {
           pointOfInterests: [],
           tags: []
         },
-        status: 'Pending',
+        status: 'pending',
         createdOn: new Date(),
         updatedOn: new Date(),
       }
@@ -155,7 +155,7 @@ export class AssetsService {
     const { id, code, status, ...info } = assets;    
     const index = tempAssets.findIndex(u => u.id === id);
     if (index !== -1) tempAssets[index] = { ...tempAssets[index], ...info };
-    else tempAssets.push({ id: tempAssets.length + 1, code: `NYX00${tempAssets.length + 1}`, status: 'Pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    else tempAssets.push({ id: tempAssets.length + 1, code: `NYX00${tempAssets.length + 1}`, status: 'pending', ...info, createdOn: new Date(), updatedOn: new Date() });
 
     this.assetSignal.set([...tempAssets]);
     this.totalRecords.set(this.assets().length);
@@ -171,7 +171,7 @@ export class AssetsService {
 
   onDuplicateAssets(assets: Assets) {
     const tempData = this.assets();
-    tempData.push({ ...assets, id: tempData.length + 1, name: `Copy of ${assets.name}`, status: 'Pending', createdOn: new Date(), updatedOn: new Date() });
+    tempData.push({ ...assets, id: tempData.length + 1, name: `Copy of ${assets.name}`, status: 'pending', createdOn: new Date(), updatedOn: new Date() });
     this.assetSignal.set([...tempData]);
     this.totalRecords.set(this.assets().length);
     /**CALL POST API */
