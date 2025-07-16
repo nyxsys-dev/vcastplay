@@ -25,9 +25,9 @@ export class MainDisplayComponent {
 
   @HostListener('window:keydown', ['$event'])
   onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Backspace') this.player.onStopPreview();
-    if (event.key === 'Enter') this.onClickPlayPreview();
-    if (event.key === 'p') this.player.screenShot();
+    // if (event.key === 'Backspace') this.player.onStopPreview();
+    // if (event.key === 'Enter') this.onClickPlayPreview();
+    // if (event.key === 'p') this.player.screenShot();
     
   }
 
@@ -65,7 +65,7 @@ export class MainDisplayComponent {
     })
 
     await this.indexedDB.getAllItems();
-    // this.player.onPlayPreview();
+    this.player.onPlayPreview();
   }
 
   onClickPlayPreview() {
