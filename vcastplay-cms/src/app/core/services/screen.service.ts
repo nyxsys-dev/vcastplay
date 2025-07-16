@@ -17,6 +17,7 @@ export class ScreenService {
   loadingAddressSignal = signal<boolean>(false);
 
   showDownload = signal<boolean>(false);
+  showOTP = signal<boolean>(false);
   toggleControls = signal<boolean>(false);
 
   selectedScreen = signal<Screen | null>(null);
@@ -61,7 +62,7 @@ export class ScreenService {
 
   screenForm: FormGroup = new FormGroup({
     id: new FormControl(0),
-    code: new FormControl(null),
+    code: new FormControl(null, { length: 6, validators: Validators.required }),
     name: new FormControl(null, [ Validators.required ]),
     type: new FormControl(null, [ Validators.required ]),
     address: new FormGroup({

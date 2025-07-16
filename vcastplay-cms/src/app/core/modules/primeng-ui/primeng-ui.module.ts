@@ -61,6 +61,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { SliderModule } from 'primeng/slider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { InputOtpModule } from 'primeng/inputotp';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -138,6 +139,7 @@ const PRIMEUI_MODULES = [
   SliderModule,
   FullCalendarModule,
   ProgressSpinnerModule,
+  InputOtpModule,
 ];
 
 @NgModule({

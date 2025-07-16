@@ -47,7 +47,8 @@ export class ScreenListComponent {
   }
 
   onClickAddNew() {
-    this.router.navigate([ '/screens/screen-details' ]);
+    this.showOTP.set(true);
+    // this.router.navigate([ '/screens/screen-details' ]);
   }
 
   onClickEdit(item: any) {
@@ -87,13 +88,21 @@ export class ScreenListComponent {
     this.showDownload.set(false);
   }
 
+  onClickVerify() {
+    this.showOTP.set(false);
+    this.router.navigate([ '/screens/screen-details' ]);
+  }
+
   onFilterChange(event: any) {
     this.screenFilters.set(event.filters);
   }
+
+  formControl(fieldName: string) { return this.utils.getFormControl(this.screenForm, fieldName); }
   
   get isMobile() { return this.utils.isMobile(); }
 
   get rows() { return this.screenService.rows; }
+  get showOTP() { return this.screenService.showOTP; }
   get screenForm() { return this.screenService.screenForm; }
   get isEditMode() { return this.screenService.isEditMode; }
   get totalRecords() { return this.screenService.totalRecords; }

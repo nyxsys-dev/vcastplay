@@ -5,9 +5,12 @@
             <ng-template #title>
                 <div class="flex gap-4 items-center mb-2">
                     <app-screen-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" [showOrientation]="true" />
-                    <div class="flex gap-2 ml-auto">
-                        <p-button class="hidden md:block" (onClick)="showDownload.set(true)" label="Download" icon="pi pi-download" [text]="false" />
-                        <p-button class="md:hidden" (onClick)="showDownload.set(true)" icon="pi pi-download" 
+                    <div class="gap-3 ml-auto hidden md:flex">
+                        <p-button (onClick)="onClickAddNew()" label="Register" icon="pi pi-plus" [text]="false" outlined />
+                        <p-button (onClick)="showDownload.set(true)" label="Download" icon="pi pi-download" [text]="false" />
+                    </div>
+                    <div class="flex gap-2 ml-auto md:hidden">
+                        <p-button (onClick)="showDownload.set(true)" icon="pi pi-download" 
                             [text]="false" pTooltip="Download" tooltipPosition="bottom" />
                     </div>
                 </div>
@@ -117,7 +120,17 @@
     <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" severity="danger" size="small" />
 </ng-template>
 
-<p-dialog [(visible)]="showDownload" styleClass="w-[20rem] md:w-[40rem] h-auto" [closable]="false" modal>
+<p-dialog header="Enter Screen Code" [(visible)]="showOTP" styleClass="w-[30rem] h-auto" (onHide)="screenForm.reset()" [focusOnShow]="true" modal>
+    <div class="flex items-center justify-center gap-4 w-full py-5" [formGroup]="screenForm">
+        <p-inputotp styleClass="uppercase" formControlName="code" [length]="6" size="large" />
+    </div>
+    <ng-template #footer>
+        <p-button class="w-full" label="Verify" [disabled]="formControl('code').invalid || formControl('code').value.length < 6"
+            (onClick)="onClickVerify()" icon="pi pi-check" fluid />
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="showDownload" styleClass="w-[20rem] md:w-[40rem] h-auto" modal>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 justify-center items-center">
         <div class="col-span-1 md:col-span-2 text-center text-xl font-semibold">Choose your device</div>
         <p-card class="hover:shadow-2xl">
