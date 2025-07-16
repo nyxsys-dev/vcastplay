@@ -4,29 +4,28 @@ import { UtilsService } from "../services/utils.service";
 import { environment } from "../../../environments/environment.development";
 import { StorageService } from "../services/storage.service";
 import { v7 as uuidv7 } from 'uuid';
+import { PlatformService } from "../services/platform.service";
 
 // Initialization of the system
 export function initializeApp() {
   return async () => {
     const appVersion = environment.version;
-    const isElectron = window.system?.isElectron;
     const utils = inject(UtilsService);
     const storage = inject(StorageService);
+    const platformService = inject(PlatformService);
 
-    // Generate player unique code
+    platformService.initializeApp();
+
+    const platform = platformService.platform;
+
+    // Generate player: unique code, player code, platform and app version
     if (!storage.hasKey('code')) {
       storage.set('code', uuidv7());
+      storage.set('platform', platform);
+      storage.set('playerCode', utils.genereteScreenCode(6));
+      storage.set('appVersion', appVersion);
     }
 
-    const playerCode = storage.get('code');
-
-    // Initialize IndexedDB
-    const indexedDbService = inject(IndexedDbService);
-
-    if (isElectron) utils.loadSystemInfo();
-    else utils.systemInfo.set({ appVersion, uuid: playerCode });
-
-    console.log(isElectron ? 'Running in Electron' : 'Running in Browser');
-    return await indexedDbService.database();
+    return console.log(`System has been initialized in ${platform.toUpperCase()}`);
   }
 }

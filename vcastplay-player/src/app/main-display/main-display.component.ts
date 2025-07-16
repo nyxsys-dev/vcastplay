@@ -7,6 +7,7 @@ import { PlayerService } from '../core/services/player.service';
 import { IndexedDbService } from '../core/services/indexed-db.service';
 import { Playlist } from '../core/interfaces/playlist';
 import { ComponentsModule } from '../core/modules/components/components.module';
+import { StorageService } from '../core/services/storage.service';
 
 @Component({
   selector: 'app-main-display',
@@ -20,16 +21,11 @@ export class MainDisplayComponent {
   indexedDB = inject(IndexedDbService);
   player = inject(PlayerService);
   utils = inject(UtilsService);
-
-  loading = signal<boolean>(false);
-
-  authForm: FormGroup = new FormGroup({
-    code: new FormControl('', [ Validators.required ])
-  });
+  storage = inject(StorageService);
 
   @HostListener('window:keydown', ['$event'])
   onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') this.player.onStopPreview();
+    if (event.key === 'Backspace') this.player.onStopPreview();
     if (event.key === 'Enter') this.onClickPlayPreview();
   }
 
@@ -39,6 +35,10 @@ export class MainDisplayComponent {
 
     effect(() => {
       console.log('🧭 Network status changed:', this.networkStat());
+      
+      const platform = this.storage.get('platform');
+      if (platform === 'android') this.player.onSendDataToAndroid('Player is playing');
+      
       // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
   }
@@ -46,6 +46,7 @@ export class MainDisplayComponent {
   async ngOnInit() {
     this.indexedDB.clearItems();
     this.player.onLoadContents();
+    this.onGetPlayerInformation();
   }
 
   async ngAfterViewInit() {
@@ -67,10 +68,27 @@ export class MainDisplayComponent {
     window.system.checkForUpdates();
   }
 
-  get playerCode() { return this.authForm.get('code'); }
+  onGetPlayerInformation() {
+    const platform = this.storage.get('platform');
+    const code = this.storage.get('code');
+    const playerCode = this.storage.get('playerCode');
+    const appVersion = this.storage.get('appVersion');
+    this.systemInfo.set({ code, platform, playerCode, appVersion })
+   
+    switch (platform) {
+      case 'android':
+        this.player.onGetAndroidInformation();
+        break;
+      case 'desktop':
+        this.player.onGetDesktopInformation();
+        break;
+      default:
+        this.player.onGetBrowserInformation();
+        break;
+    }
+  }
 
   get isDev() { return this.utils.isDev; }
-  get systemInfo() { return this.utils.systemInfo; }
 
   get isElectron() { return window.system?.isElectron; }
   
@@ -82,4 +100,6 @@ export class MainDisplayComponent {
   get currentTransition() { return this.player.currentTransition; }
   get onMouseMove() { return this.player.onMouseMove; }
   get hideCursor() { return this.player.hideCursor; }
+  get playerCode() { return this.player.playerCode; }
+  get systemInfo() { return this.player.systemInfo; }
 }

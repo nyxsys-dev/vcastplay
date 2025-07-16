@@ -12,7 +12,6 @@ export class UtilsService {
   geoAPI: string = environment.geoAPI;
   appVersion = environment.version;
   isDev = signal<boolean>(!environment.production);
-  systemInfo = signal<any>(null);
   isLoading = signal<boolean>(false);
   isElectron = signal<boolean>(false);
   location = signal<Location>({ 
@@ -47,32 +46,5 @@ export class UtilsService {
       code += characters.charAt(randomIndex);
     }
     return code;
-  }
-  
-  
-  send(action: string) {
-    window.system.control(action)
-      .then(response => console.log(response))
-      .catch(err => console.error(err));
-  }
-
-  sendApp(app: string) {
-    window.system.control("open", app)
-      .then(response => console.log(response));
-  }
-
-  closeApp(app: string) {
-    window.system.control("close", app)
-      .then(response => console.log(response));
-  }
-
-  loadSystemInfo() {
-    window.system.getSystemInfo()
-      .then((response: any) => {        
-        this.systemInfo.set({ appVersion: this.appVersion, uuid: uuidv7(), ...response }); 
-        console.log(this.systemInfo());
-        // this.requestLocation();
-      })
-      .catch(err => console.error(err));
   }
 }

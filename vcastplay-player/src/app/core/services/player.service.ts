@@ -8,10 +8,11 @@ export class PlayerService {
 
   private contentSignal = signal<Playlist[]>([]);
   contents = computed(() => this.contentSignal());
-  
+
   timeoutId: any;
   intervalId: any;
   gapTimeout: any;
+  systemInfo = signal<any>(null);
   currentIndex = signal<number>(0);
   currentContent = signal<any | null>(null);
   currentTransition = signal<any>(null);
@@ -26,6 +27,8 @@ export class PlayerService {
 
   hideCursor = signal<boolean>(false);
   private hideCursorTimeout: any;
+
+  playerCode = signal<string>('');
 
   constructor() { }
 
@@ -183,4 +186,49 @@ export class PlayerService {
     }, 3000);
   }
   
+  /**Player Control functions */
+  
+  send(action: string) {
+    window.system.control(action)
+      .then(response => console.log(response))
+      .catch(err => console.error(err));
+  }
+
+  sendApp(app: string) {
+    window.system.control("open", app)
+      .then(response => console.log(response));
+  }
+
+  closeApp(app: string) {
+    window.system.control("close", app)
+      .then(response => console.log(response));
+  }
+
+  onGetDesktopInformation() {
+    window.system.getSystemInfo()
+      .then((response: any) => {        
+        console.log(response);
+        console.log(this.systemInfo());
+        // this.requestLocation();
+      })
+      .catch(err => console.error(err));
+  }
+  
+  onGetAndroidInformation() {
+    (window as any).getDeviceDetails = (data: any) => {
+      console.log('Received from android device details:', data);
+    }
+  }
+
+  onGetBrowserInformation() {
+    console.log(navigator);
+  }
+
+  onSendDataToAndroid(data: any) {
+    if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {
+      (window as any).AndroidBridge.sendCommand(data);
+    } else {
+      console.warn('AndroidBridge not available.');
+    }
+  }
 }
