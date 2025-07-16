@@ -143,6 +143,7 @@ export class AssetDetailsComponent {
         label: 'Save',
       },
       accept: () => {
+        console.log(this.assetForm.value);
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Assets upload successfully!' });
         this.assetService.onSaveAssets(this.assetForm.value);
         this.selectedAsset.set(null);

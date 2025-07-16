@@ -98,6 +98,7 @@ export class ScheduleDetailsComponent {
         label: 'Save',
       },
       accept: () => {
+        console.log(this.scheduleForm.value);
         this.scheduleServices.onSaveSchedule(this.scheduleForm.value);
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Schedule saved successfully!' });
         this.scheduleForm.reset();

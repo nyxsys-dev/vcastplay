@@ -87,7 +87,9 @@ export class ScreenDetailsComponent {
       acceptButtonProps: {
         label: 'Save',
       },
-      accept: () => {        
+      accept: () => {
+        console.log(this.screenForm.value);
+          
         this.message.add({ severity:'success', summary: 'Success', detail: 'Screen registered successfully!' });
         this.screenService.onSaveScreen(this.screenForm.value);
         this.router.navigate([ '/screens/screen-registration' ]);
