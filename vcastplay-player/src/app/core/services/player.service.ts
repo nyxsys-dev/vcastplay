@@ -204,6 +204,12 @@ export class PlayerService {
       .then(response => console.log(response));
   }
 
+  screenShot() {
+    window.system.takeScreenshot()
+      .then(response => console.log(response))
+      .catch(err => console.error(err));
+  }
+
   onGetDesktopInformation() {
     window.system.getSystemInfo()
       .then((response: any) => {        
@@ -221,7 +227,8 @@ export class PlayerService {
   }
 
   onGetBrowserInformation() {
-    console.log(navigator);
+    const { appVersion, appName, platform, userAgent }: any = navigator;
+    console.log({ appVersion, appName, platform, userAgent }, navigator);
   }
 
   onSendDataToAndroid(data: any) {

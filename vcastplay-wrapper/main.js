@@ -1,5 +1,5 @@
 const si = require('systeminformation');
-const { app, BrowserWindow, ipcMain, screen, Menu, nativeImage, Tray } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, Menu, nativeImage, Tray, desktopCapturer } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 const { exec } = require('child_process');
@@ -21,7 +21,7 @@ let tray;
 function createWindow() {
   win = new BrowserWindow({
     fullscreen: !isDev,
-    contextIsolation: true,
+    contextIsolation: false,
     autoHideMenuBar: true,
     icon: path.join(__dirname, 'assets/favicon.png'),
     webPreferences: {
@@ -109,6 +109,10 @@ ipcMain.handle('getSystemInfo', async () => {
   };
 });
 
+ipcMain.handle('takeScreenshot', async () => {
+  return await takeScreenshot();
+});
+
 ipcMain.on('restart_app', () => {
   autoUpdater.quitAndInstall();
 });
@@ -118,6 +122,9 @@ ipcMain.on('check-for-updates', () => {
   log.info('Manual update check triggered');
   autoUpdater.checkForUpdatesAndNotify();
 });
+
+app.whenReady().then(createWindow);
+app.on('window-all-closed', () => app.quit());
 
 function createTray() {
   const icon = path.join(__dirname, 'assets/favicon.png');
@@ -147,9 +154,6 @@ function createTray() {
     win.isVisible() ? win.hide() : win.show();
   });
 }
-
-app.whenReady().then(createWindow);
-app.on('window-all-closed', () => app.quit());
 
 function setupAutoUpdater() {
   // Logging
@@ -192,4 +196,39 @@ function setupAutoUpdater() {
   setInterval(() => {
     autoUpdater.checkForUpdatesAndNotify();
   }, 10 * 60 * 1000); // 10 minutes
+}
+
+async function takeScreenshot() {
+  const sources = await desktopCapturer.getSources({ types: ['window', 'screen'] });
+
+  for (const source of sources) {
+    if (source.name === 'Entire Screen' || source.name === 'Screen 1') {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          mandatory: {
+            chromeMediaSource: 'desktop',
+            chromeMediaSourceId: source.id
+          }
+        }
+      });
+
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      await video.play();
+
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const image = canvas.toDataURL('image/png');
+      stream.getTracks()[0].stop();
+
+      console.log(image);
+      
+      return image;
+    }
+  }
 }

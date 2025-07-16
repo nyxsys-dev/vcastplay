@@ -20,7 +20,8 @@ declare global {
       // onUpdateAvailable: (callback: () => void) => void;
       // onUpdateDownloaded: (callback: () => void) => void;
       restartApp: () => void;
-      isElectron: boolean
+      takeScreenshot: () => Promise<any>;
+      isElectron: boolean;
     },
   }
 }

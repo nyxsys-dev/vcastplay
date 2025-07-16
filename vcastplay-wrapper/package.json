@@ -41,10 +41,11 @@
       "perMachine": true,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": false,
+      "installerIcon": "assets/favicon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Vcastplay Player",
-      "deleteAppDataOnUninstall": false,
+      "deleteAppDataOnUninstall": true,
       "runAfterFinish": true
     }
   },

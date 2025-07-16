@@ -27,19 +27,25 @@ export class MainDisplayComponent {
   onKeydown(event: KeyboardEvent) {
     if (event.key === 'Backspace') this.player.onStopPreview();
     if (event.key === 'Enter') this.onClickPlayPreview();
+    if (event.key === 'p') this.player.screenShot();
+    
   }
 
   constructor() {
+    const platform = this.storage.get('platform');
     window.addEventListener('online', () => this.networkStat.set(true));
     window.addEventListener('offline', () => this.networkStat.set(false));
 
     effect(() => {
       console.log('🧭 Network status changed:', this.networkStat());
+      console.log(`System has been initialized in ${platform.toUpperCase()}`);
       
-      const platform = this.storage.get('platform');
-      if (platform === 'android') {
-        this.player.onGetAndroidInformation();
-        this.player.onSendDataToAndroid('Player is playing');
+      if (this.player.isPlaying()) {
+        if (platform === 'android') {
+          this.player.onGetAndroidInformation();
+          this.player.onSendDataToAndroid('Player is playing');
+        }
+
       }
       
       // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      

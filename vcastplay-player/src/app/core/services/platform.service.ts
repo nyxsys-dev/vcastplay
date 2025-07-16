@@ -37,13 +37,13 @@ export class PlatformService {
     })
   }
 
-  get platform(): 'android' | 'desktop' | 'browser' {
+  get platform(): 'android' | 'desktop' | 'web' {
     if (this.isElectron()) {
       return 'desktop';
     } else if (this.isAndroid()) {
       return 'android';
     } else {
-      return 'browser';
+      return 'web';
     }
   }
 }

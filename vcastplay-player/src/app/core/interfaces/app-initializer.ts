@@ -25,7 +25,5 @@ export function initializeApp() {
       storage.set('playerCode', utils.genereteScreenCode(6));
       storage.set('appVersion', appVersion);
     }
-
-    return console.log(`System has been initialized in ${platform.toUpperCase()}`);
   }
 }
