@@ -2,17 +2,22 @@
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
     <p-card styleClass="h-full" class="flex-1">
         <ng-template #title>
-            <div class="flex flex-col md:flex-row gap-1 md:gap-4 items-end md:items-start md:justify-between">
+            <div class="flex gap-2 items-center">
                 <app-asset-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
-                <div class="flex items-center gap-4 block lg:hidden">
-                    <p class="text-base font-normal">View:</p>
-                    <p-selectbutton [options]="assetViewModes" [formControl]="assetViewModeCtrl" optionLabel="label" optionValue="label" [allowEmpty]="false">
-                        <ng-template #item let-item>
-                            <i [class]="item.icon" [pTooltip]="item.label" tooltipPosition="bottom"></i>
-                        </ng-template>
-                    </p-selectbutton>
+                <div class="ml-auto flex gap-2">
+
+                    <div class="flex items-center gap-2 block lg:hidden">
+                        <p class="text-base font-normal">View:</p>
+                        <p-selectbutton [options]="assetViewModes" [formControl]="assetViewModeCtrl" optionLabel="label" optionValue="label" [allowEmpty]="false">
+                            <ng-template #item let-item>
+                                <i [class]="item.icon" [pTooltip]="item.label" tooltipPosition="bottom"></i>
+                            </ng-template>
+                        </p-selectbutton>
+                    </div>
+                    <p-button (onClick)="showPrompt.set(true)" class="lg:hidden" pTooltip="Generate AI" tooltipPosition="bottom" icon="pi pi-images" />
                 </div>
-                <div class="flex items-center gap-4 hidden lg:block">
+                <div class="ml-auto items-center gap-3 hidden lg:flex">
+                    <p-button (onClick)="showPrompt.set(true)" label="Generate AI" icon="pi pi-images" outlined />
                     <p-button (onClick)="onClickAddNew()" label="Upload" icon="pi pi-upload"></p-button>
                 </div>
             </div>
@@ -145,6 +150,23 @@
                 <p-button label="Close" severity="secondary" (onClick)="onClickCancelSaveToPlaylist()" />
                 <p-button label="Save" (onClick)="onClickSaveToPlaylist($event)" [disabled]="selectedArrPlaylist().length == 0" />
             </div>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-dialog header="🌟 Welcome to Your Creative AI Assistant!" [(visible)]="showPrompt" [style]="{ width: '36rem' }" [draggable]="false" closable modal>
+    <div class="px-4">
+        <p>Hello! 👋 I'm your AI assistant, here to help you bring your ideas to life. Whether you need to generate an image, 
+            create a video, or craft engaging content, I've got you covered. Just tell me what you need — let's get started! 🚀</p>
+    </div>
+    <ng-template #footer>
+        <div class="w-full">
+            <p-inputgroup>
+                <input type="text" pInputText placeholder="Type your prompt here" />
+                <p-inputgroup-addon>
+                    <p-button icon="pi pi-send" (onClick)="showPrompt.set(false)"  />
+                </p-inputgroup-addon>
+            </p-inputgroup>
         </div>
     </ng-template>
 </p-dialog>

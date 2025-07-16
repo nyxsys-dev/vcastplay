@@ -213,6 +213,7 @@ export class AssetListComponent {
   get rows() { return this.assetService.rows; }
   get first() { return this.assetService.first; }
   get assetForm() { return this.assetService.assetForm; }
+  get showPrompt() { return this.assetService.showPrompt; }
   get isEditMode() { return this.assetService.isEditMode; }
   get totalRecords() { return this.assetService.totalRecords; }
   get selectedAsset() { return this.assetService.selectedAsset; }

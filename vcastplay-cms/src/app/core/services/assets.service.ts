@@ -19,6 +19,7 @@ export class AssetsService {
 
   loadingSignal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
+  showPrompt = signal<boolean>(false);
 
   assetType = signal<AssetType[]>([
     { label: 'File', value: 'file' },
