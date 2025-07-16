@@ -102,7 +102,14 @@ export class PlayerService {
         this.onTriggerInterval(duration);
         break;
       case 'video':
-        this.videoElement()?.play();
+        // this.videoElement()?.play();
+        const video = this.videoElement();
+        if (video) {
+          video.load(); // Ensures video is ready
+          video.oncanplay = () => {
+            video.play();
+          };
+        }
         this.onTriggerInterval(duration);
         break;
     }
