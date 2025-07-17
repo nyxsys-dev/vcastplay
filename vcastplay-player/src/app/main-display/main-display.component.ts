@@ -38,16 +38,7 @@ export class MainDisplayComponent {
 
     effect(() => {
       console.log('🧭 Network status changed:', this.networkStat());
-      console.log(`System has been initialized in ${platform.toUpperCase()}`);
-      
-      if (this.player.isPlaying()) {
-        if (platform === 'android') {
-          this.player.onGetAndroidInformation();
-          this.player.onSendDataToAndroid('Player is playing');
-        }
-
-      }
-      
+      console.log(`System has been initialized in ${platform.toUpperCase()}`);      
       // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
   }
@@ -59,6 +50,7 @@ export class MainDisplayComponent {
   }
 
   async ngAfterViewInit() {
+    const platform = this.storage.get('platform');
     const contents = this.player.onGetContents();
     contents.forEach(async (content: Playlist) => {
       await this.indexedDB.addItem(content)
@@ -66,6 +58,11 @@ export class MainDisplayComponent {
 
     await this.indexedDB.getAllItems();
     this.player.onPlayPreview();
+    
+    if (platform === 'android') {
+      this.player.onGetAndroidInformation();
+      this.player.onSendDataToAndroid('Player is playing');
+    }
   }
 
   onClickPlayPreview() {
