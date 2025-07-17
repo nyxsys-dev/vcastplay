@@ -67,5 +67,6 @@ export class ScreenControlsComponent {
   }
 
   get isMobile() { return this.utils.isMobile(); }
+  get isTablet() { return this.utils.isTablet(); }
   get toggleControls() { return this.screenService.toggleControls; }
 }

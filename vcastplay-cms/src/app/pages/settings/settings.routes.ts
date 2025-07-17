@@ -22,5 +22,10 @@ export default [
         path: 'tag',
         loadComponent: () => import('./tags/tags.component').then(m => m.TagsComponent),
         title: `Tags • ${appTitle}`,
+    },
+    {
+        path: 'broadcast',
+        loadComponent: () => import('./broadcast/broadcast-list/broadcast-list.component').then(m => m.BroadcastListComponent),
+        title: `Broadcast Messages • ${appTitle}`,
     }
 ] as Routes

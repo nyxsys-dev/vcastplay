@@ -51,14 +51,15 @@ export interface Screen {
 
 export interface ScreenMessage {
     id: number;
+    icon: string;
     name: string;
     category: string;
-    icon: string;
     title: string;
     description: string;
     message: string;
     duration: number;
     isDisplayed: boolean;
+    displayedOn: Date;
     createdOn: Date;
     updatedOn: Date;
 }

@@ -23,7 +23,6 @@ export class LoginComponent {
       const token = params['id'];
       if (token) {
         this.tokenValue.set(token);
-        this.storage.set('id', token);
       }
     });
   }

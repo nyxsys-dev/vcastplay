@@ -19,6 +19,19 @@ export class UtilityService {
   drawerVisible = signal<boolean>(false);
   tableSkeletonRows = Array(5).fill({});
 
+  icons = signal<SelectOption[]>([
+    { label: 'Envelope', value: 'pi-envelope' },
+    { label: 'Calendar', value: 'pi-calendar' },
+    { label: 'Users', value: 'pi-users' },
+    { label: 'Information', value: 'pi-info-circle' },
+    { label: 'Announcement', value: 'pi-megaphone' },
+    { label: 'Ban', value: 'pi-ban' },
+    { label: 'Check', value: 'pi-check' },
+    { label: 'Clock', value: 'pi-clock' },
+    { label: 'Bell', value: 'pi-bell' },
+    { label: 'Warning', value: 'pi-exclamation-triangle' },
+  ]);
+
   fileTypes = signal<SelectOption[]>([
     { label: 'Image', value: 'image' },
     { label: 'Video', value: 'video' },
@@ -65,6 +78,7 @@ export class UtilityService {
         { label: 'Users', icon: 'pi pi-users', routerLink: ['/settings/user-management'], },
         { label: 'Roles', icon: 'pi pi-lock', routerLink: ['/settings/role-management'], },
         { separator: true },
+        { label: 'Broadcast', icon: 'pi pi-megaphone', routerLink: ['/settings/broadcast'], },
         { label: 'Tags', icon: 'pi pi-tag', routerLink: ['/settings/tag'], },
       ]
     }

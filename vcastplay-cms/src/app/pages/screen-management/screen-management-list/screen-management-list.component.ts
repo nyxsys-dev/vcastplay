@@ -59,6 +59,8 @@ export class ScreenManagementListComponent {
     
   }
 
+  get rows() { return this.screenService.rows; }
+  get totalRecords() { return this.screenService.totalRecords; }
   get screenFilterForm() { return this.screenService.screenFilterForm; }
   get toggleControls() { return this.screenService.toggleControls; }
   get selectMultipleScreens() { return this.screenService.selectMultipleScreens; }

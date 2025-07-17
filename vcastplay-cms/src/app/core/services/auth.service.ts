@@ -25,6 +25,7 @@ export class AuthService {
       this.message.add({ summary: 'Login Error', detail: 'Please input required fields (*)', icon: 'pi pi-info-circle', severity: 'error' });
       return;
     }
+    this.storage.set('id', this.token());
 
     if (this.token()) {
       this.message.add({ severity: 'info', summary: 'Info', detail: 'This login is for customers only' });
@@ -37,6 +38,7 @@ export class AuthService {
 
   onLogout() {
     const id = this.storage.get('id');
+    this.storage.remove('id');
     this.router.navigate(['/login'], { queryParams: id ? { id } : {} });
   }
 }

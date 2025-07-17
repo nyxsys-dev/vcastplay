@@ -14,7 +14,7 @@
             </p-carousel>
         </div>
     </ng-container>
-    <div class="col-span-5 text-white" [ngClass]="{ 'lg:col-span-2': tokenValue() }">
+    <div class="col-span-5 text-white" [ngClass]="{ 'lg:col-span-2': tokenValue() }" (keydown.enter)="auth.onLogin()">
         <div class="relative flex flex-col items-center justify-center h-full p-3 md:p-10 bg-[var(--p-primary-500)]">
             <div class="flex flex-col gap-4 px-4 lg:px-0 w-full" [ngClass]="{ 'md:w-1/2 lg:w-1/4': !tokenValue(), 'sm:w-1/2 lg:w-full': tokenValue() }">
                 <div class="flex flex-col gap-10 items-center justify-center">

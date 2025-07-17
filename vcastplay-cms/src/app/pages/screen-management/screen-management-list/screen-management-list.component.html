@@ -106,6 +106,13 @@
                 </div>
             </div>
             <ng-template #footer>
+                <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
+                <p-fieldset toggleable collapsed>
+                    <ng-template #header>
+                        <p class="text-sm font-semibold">Controls:</p>
+                    </ng-template>
+                    <app-screen-controls />
+                </p-fieldset>
                 <p-fieldset>
                     <ng-template #header>
                         <p class="text-sm font-semibold">Legends:</p>
@@ -140,17 +147,6 @@
             </ng-template>
         </p-card>
     </div>
-</div>
-
-<p-button class="fixed top-100 right-0 z-10 transition-all duration-300 ease-out animate-fade-in" size="large" styleClass="!rounded-none !rounded-s-lg"
-    [ngClass]="{ 'opacity-0 translate-x-full': toggleControls(), 'opacity-100 translate-x-0': !toggleControls() }" severity="info" 
-        (onClick)="onClickToggleControls()" pTooltip="Controls" tooltipPosition="left">
-    <div class="flex items-center justify-center w-6 h-6">
-        <i class="pi pi-cog" style="font-size: 1.5rem;"></i>
-    </div>
-</p-button>
-<div class="absolute top-0 right-0 h-full flex items-center justify-end overflow-hidden" [ngClass]="{ 'z-10': toggleControls(), 'z-[-999]': !toggleControls() }">
-    <app-screen-controls />
 </div>
 
 <ng-template #actionBtn let-item>

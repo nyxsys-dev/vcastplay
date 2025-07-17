@@ -1,0 +1,82 @@
+<div class="flex flex-col gap-1 h-full">
+    <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
+    <p-card styleClass="h-full" class="flex-1">
+        <ng-template #title>
+            <div class="flex gap-2 items-center">
+                <app-filters class="w-full md:w-[25rem]" />
+                <div class="ml-auto">
+                    <p-button (onClick)="onClickAddNew()" label="New" icon="pi pi-plus"></p-button>
+                </div>
+            </div>
+        </ng-template>
+        <div class="flex-1 md:h-full">
+            <p-table
+                class="hidden lg:block" 
+                [value]="loadingSignal() ? utils.tableSkeletonRows : filteredMessages()" 
+                selectionMode="single"
+                [scrollable]="true" 
+                size="small"  
+                stripedRows
+            >
+                <ng-template #header>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Created On</th>
+                        <th>
+                            <div class="text-center">Actions</div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                    <tr class="text-sm">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.category }}</td>
+                        <td>{{ item.title }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ utils.onGetLastUpdatedLabel(item.createdOn) }}</td>
+                        <td class="flex flex-row justify-center gap-2">
+                            <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <div class="block lg:hidden flex flex-col gap-4">
+                @if (!loadingSignal()) {
+                    @for (item of filteredMessages(); track $index) {
+                        <app-broadcast-list-item [item]="item" [actionBtn]="actionBtn" />
+                    } @empty {
+                        <div class="flex justify-center items-center p-5 h-100">
+                            <p>No screend found</p>
+                        </div>
+                    }
+                } @else {
+                    @for (item of utils.tableSkeletonRows; track $index) {
+                        <p-skeleton height="5rem" />
+                    }
+                }
+            </div>
+        </div>
+        <ng-template #footer>
+            <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
+        </ng-template>
+    </p-card>
+</div>
+
+<ng-template #actionBtn let-item>
+    <p-button (onClick)="onClickEdit(item)" pTooltip="Edit" tooltipPosition="bottom" icon="pi pi-pencil" severity="success" size="small"/>
+    <p-button (onClick)="onClickDelete(item, $event)" pTooltip="Delete" tooltipPosition="bottom" icon="pi pi-trash" severity="danger" size="small" />
+</ng-template>
+
+<p-dialog header="Broadcast Message" [(visible)]="showDetails" styleClass="w-[30rem] md:w-[50rem] h-auto" [modal]="true" [draggable]="false">
+    <app-broadcast-details />
+    <ng-template #footer>
+        <p-button label="Cancel" severity="secondary" text (onClick)="onClickCancel()" />
+        <p-button label="Save" (onClick)="onClickSave($event)" />
+    </ng-template>
+</p-dialog>
+
+<p-toast />
+<p-confirmdialog />

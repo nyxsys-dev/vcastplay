@@ -28,6 +28,8 @@ import { PlaylistFilterComponent } from '../../../pages/playlist/playlist-filter
 import { ScheduleFilterComponent } from '../../../pages/schedules/schedule-filter/schedule-filter.component';
 import { ScreenControlsComponent } from '../../../pages/screen-management/screen-controls/screen-controls.component';
 import { ScreenManagementListItemComponent } from '../../../pages/screen-management/screen-management-list-item/screen-management-list-item.component';
+import { BroadcastListItemComponent } from '../../../pages/settings/broadcast/broadcast-list-item/broadcast-list-item.component';
+import { BroadcastDetailsComponent } from '../../../pages/settings/broadcast/broadcast-details/broadcast-details.component';
 
 
 const COMPONENT_MODULES = [
@@ -38,6 +40,10 @@ const COMPONENT_MODULES = [
   FiltersComponent,
   PreviewContentComponent,
   MapmarkersComponent,
+
+  // Broadcast Components
+  BroadcastListItemComponent,
+  BroadcastDetailsComponent,
 
   // Users Components
   UserListItemComponent, 

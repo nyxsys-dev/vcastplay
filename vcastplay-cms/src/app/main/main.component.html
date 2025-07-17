@@ -6,10 +6,11 @@
             <router-outlet></router-outlet>
         </div>
     </div>
-
-    <div class="block md:hidden absolute bottom-0 end-0 z-100">
-        <div class="bg-[var(--p-primary-600)] py-[1rem] px-[1.125rem] text-white rounded-tl-xl cursor-pointer" (click)="utils.drawerVisible.set(!utils.drawerVisible())">
-            <i class="pi pi-bars"></i>
+    
+    <div class="block md:hidden absolute bottom-0 end-0 z-100 m-3">
+        <div class="bg-[var(--p-primary-600)] w-15 h-15 flex items-center justify-center text-white rounded-full cursor-pointer" 
+            (click)="utils.drawerVisible.set(!utils.drawerVisible())">
+            <i class="pi pi-bars !text-lg"></i>
         </div>
     </div>
 </div>
