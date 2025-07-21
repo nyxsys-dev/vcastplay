@@ -39,10 +39,10 @@ export class ContentContainerComponent {
       this.player.play();
     });
 
-    // this.player.on('loadeddata', () => {
-    //   console.log('loadeddata');
-    //   this.player.play();
-    // });    
+    this.player.on('loadeddata', () => {
+      console.log('loadeddata');
+      this.player.play();
+    });    
   }
 
   ngOnDestroy() {
