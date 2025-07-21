@@ -1,6 +1,6 @@
 @switch (currentContent?.type) {
     @case ('video') {
-        <video #videoPlayer class="video-js vjs-default-skin vjs-big-play-centered"></video>
+        <video #videoPlayer class="video-js vjs-default-skin vjs-big-play-centered" poster="assets/video-poster.png"></video>
     }
     @case ('web') {
         <iframe class="w-full h-full border-none" [src]="currentContent?.link | safeurl"></iframe>
