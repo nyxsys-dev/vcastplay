@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
+import { BroadcastService } from '../../../core/services/broadcast.service';
+import { Screen } from '../../../core/interfaces/screen';
 
 @Component({
   selector: 'app-screen-controls',
@@ -12,6 +14,7 @@ import { UtilityService } from '../../../core/services/utility.service';
 export class ScreenControlsComponent {
 
   screenService = inject(ScreenService);
+  broadcastService = inject(BroadcastService);
   utils = inject(UtilityService);
 
   onClickToggleControls() { 
@@ -59,7 +62,9 @@ export class ScreenControlsComponent {
   }
 
   onClickBroadCastMessage() {
-    this.screenService.onBroadCastMessage();
+    const selectedScreens: Screen[] = this.screenService.selectMultipleScreens();
+    if (selectedScreens.length == 0) return;
+    this.showBroadcast.set(true);
   }
 
   onClickAssignContents() {
@@ -68,5 +73,6 @@ export class ScreenControlsComponent {
 
   get isMobile() { return this.utils.isMobile(); }
   get isTablet() { return this.utils.isTablet(); }
+  get showBroadcast() { return this.screenService.showBroadcast; }
   get toggleControls() { return this.screenService.toggleControls; }
 }

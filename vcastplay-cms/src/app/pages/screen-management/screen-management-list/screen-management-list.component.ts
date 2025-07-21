@@ -1,24 +1,30 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import _ from 'lodash';
-import { Screen } from '../../../core/interfaces/screen';
+import { Screen, ScreenMessage } from '../../../core/interfaces/screen';
+import { BroadcastService } from '../../../core/services/broadcast.service';
 
 @Component({
   selector: 'app-screen-management-list',
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './screen-management-list.component.html',
-  styleUrl: './screen-management-list.component.scss'
+  styleUrl: './screen-management-list.component.scss',
+  providers: [ ConfirmationService, MessageService ]
 })
 export class ScreenManagementListComponent {
 
   pageInfo: MenuItem = [ {label: 'Screens'}, {label: 'Management'} ];
 
   screenService = inject(ScreenService);
+  broadcastService = inject(BroadcastService);
   utils = inject(UtilityService);
+
+  confirmation = inject(ConfirmationService);
+  message = inject(MessageService);
   
   screenFilters = signal<any>(this.screenFilterForm.valueChanges)
   filteredScreen = computed(() => {
@@ -59,9 +65,26 @@ export class ScreenManagementListComponent {
     
   }
 
+  onClickApplyBroadcastMessage() {
+    const messageArr: ScreenMessage[] = this.selectedArrScreenBroadcastMessage();
+    if (messageArr.length == 0) return;
+    this.screenService.onBroadCastMessage(messageArr);
+    this.message.add({ severity:'success', summary: 'Success', detail: 'Broadcast message sent successfully!' });
+    this.showBroadcast.set(false);
+    this.selectedArrScreenBroadcastMessage.set([]);
+  }
+
+  onClickCloseBroadcastMessage() {
+    this.selectedArrScreenBroadcastMessage.set([]);
+    this.showBroadcast.set(false)
+  }
+
   get rows() { return this.screenService.rows; }
   get totalRecords() { return this.screenService.totalRecords; }
   get screenFilterForm() { return this.screenService.screenFilterForm; }
   get toggleControls() { return this.screenService.toggleControls; }
   get selectMultipleScreens() { return this.screenService.selectMultipleScreens; }
+  get showBroadcast() { return this.screenService.showBroadcast; }
+
+  get selectedArrScreenBroadcastMessage() { return this.broadcastService.selectedArrScreenBroadcastMessage; }
 }

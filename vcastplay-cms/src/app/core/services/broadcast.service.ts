@@ -18,6 +18,9 @@ export class BroadcastService {
   loadingSignal = signal<boolean>(false);
   showDetails = signal<boolean>(false);
 
+  selectedArrScreenBroadcastMessage = signal<ScreenMessage[]>([]);
+  selectedScreenBroadcastMessage = signal<ScreenMessage | null>(null);
+
   broadCastMessageForm: FormGroup = new FormGroup({
     id: new FormControl(0, { nonNullable: true }),
     icon: new FormControl(null),

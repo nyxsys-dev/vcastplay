@@ -1,1 +1,35 @@
-<p>screen-broadcast-message works!</p>
+<p-table
+    #screenBroadcastMessagesTable
+    [value]="message()"
+    [(selection)]="selectedArrScreenBroadcastMessage"
+    (selectionChange)="onSelectionChange($event)"
+    dataKey="id"
+    [scrollable]="true" 
+    scrollHeight="300px" 
+    size="small"
+    stripedRows
+>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem"></th>
+            <th>Message</th>
+            <th>Duration</th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-item>
+        <tr>
+            <td>
+                <div class="text-center"><p-tableRadioButton [value]="item" /></div>
+            </td>
+            <td><p class="line-clamp-1">{{ item.message }}</p></td>
+            <td><p class="line-clamp-1">{{ item.duration }}</p></td>
+        </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="2" [height]="20">
+                <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

@@ -16,5 +16,14 @@ export class ScreenBroadcastMessageComponent {
   broadcastService = inject(BroadcastService);
   utils = inject(UtilityService);
 
+  ngOnInit() { 
+    this.broadcastService.onGetMessages();
+  }
+
+  onSelectionChange(event: any) { 
+    this.messages.emit(event); 
+  }
+
   get message() { return this.broadcastService.messages; }
+  get selectedArrScreenBroadcastMessage() { return this.broadcastService.selectedArrScreenBroadcastMessage; }
 }

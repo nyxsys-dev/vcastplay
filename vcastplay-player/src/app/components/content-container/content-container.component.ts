@@ -23,9 +23,25 @@ export class ContentContainerComponent {
 
   ngAfterViewInit() {
     if (!this.videoPlayer) return;
-    this.player = videojs(this.videoPlayer.nativeElement, {  } ,() => {
+    this.player = videojs(this.videoPlayer.nativeElement, {
+      autoplay: this.autoPlay, 
+      controls: this.showControls,
+      preload: 'auto',
+      muted: true,
+      sources: {
+        src: this.currentContent?.link,
+        type: 'video/mp4'
+      }
+    } ,() => {
       console.log('player is ready');
+    this.player.requestFullscreen(); // enters fullscreen
+      // this.player.play();
     });
+
+    // this.player.on('loadeddata', () => {
+    //   console.log('loadeddata');
+    //   this.player.play();
+    // });
   }
 
   ngOnDestroy() {

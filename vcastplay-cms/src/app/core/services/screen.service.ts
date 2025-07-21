@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Screen } from '../interfaces/screen';
+import { Screen, ScreenMessage } from '../interfaces/screen';
 import { SelectOption } from '../interfaces/general';
 
 @Injectable({
@@ -18,6 +18,7 @@ export class ScreenService {
 
   showDownload = signal<boolean>(false);
   showOTP = signal<boolean>(false);
+  showBroadcast = signal<boolean>(false);
   toggleControls = signal<boolean>(false);
 
   selectedScreen = signal<Screen | null>(null);
@@ -285,9 +286,9 @@ export class ScreenService {
     console.log('Shutdown screen');
   }
 
-  onBroadCastMessage() {
+  onBroadCastMessage(messages: ScreenMessage[]) {
     /**Call POST broadcast message API */
-    console.log('Broadcast message');
+    console.log('Broadcast message', messages);
   }
 
   onAssignContents() {
