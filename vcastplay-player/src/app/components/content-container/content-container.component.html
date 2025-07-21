@@ -1,7 +1,7 @@
 @switch (currentContent?.type) {
     @case ('video') {
         <video #videoPlayer class="h-full w-full object-fill" [preload]="true" 
-            [controls]="showControls" [autoplay]="autoPlay" [muted]="true">
+            [controls]="showControls || false" [autoplay]="autoPlay" [muted]="true">
             <source [src]="currentContent?.link | safeurl" type="video/mp4">
         </video>
     }
