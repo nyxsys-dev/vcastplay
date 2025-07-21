@@ -34,7 +34,6 @@ export class ContentContainerComponent {
       }
     } ,() => {
       console.log('player is ready');
-    this.player.requestFullscreen(); // enters fullscreen
       // this.player.play();
     });
 
