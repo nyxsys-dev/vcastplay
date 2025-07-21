@@ -1,7 +1,8 @@
-<div class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden bg-[var(--p-primary-500)]">
+<div class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden bg-[var(--p-primary-500)]" 
+  (mousemove)="onMouseMove()" >
 
   <ng-container *ngIf="currentContent()">
-    <app-content-container class="absolute h-full w-full flex items-center justify-center" (mousemove)="onMouseMove()" [ngClass]="{ 'cursor-none': hideCursor() }"
+    <app-content-container class="absolute h-full w-full flex items-center justify-center" [ngClass]="{ 'cursor-none': hideCursor() }"
         [currentContent]="currentContent()" [isPlaying]="isPlaying()" (timeUpdate)="onTimeUpdate($event)" [autoPlay]="true" />
 
   </ng-container>

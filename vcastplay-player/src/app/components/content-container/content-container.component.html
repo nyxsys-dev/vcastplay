@@ -1,6 +1,9 @@
 @switch (currentContent?.type) {
     @case ('video') {
-        <video class="h-full w-full object-fill" [src]="currentContent?.link | safeurl" [preload]="true" [controls]="showControls" [autoplay]="autoPlay" [muted]="true"></video>
+        <video #videoPlayer class="h-full w-full object-fill" [preload]="true" 
+            [controls]="showControls" [autoplay]="autoPlay" [muted]="true" [playsInline]="true">
+            <source [src]="currentContent?.link | safeurl" type="video/mp4">
+        </video>
     }
     @case ('web') {
         <iframe class="w-full h-full border-none" [src]="currentContent?.link | safeurl"></iframe>

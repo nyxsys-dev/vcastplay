@@ -145,7 +145,7 @@ export class PlayerService {
         this.onPlayPreview(this.currentIndex());
       }, gapDuration + 50);
 
-    }, duration + 1500); // added 1.5 sec for complete transition
+    }, duration + 50); // added 1.5 sec for complete transition
   }
 
   onStopPreview() {
