@@ -1,6 +1,7 @@
 @switch (currentContent?.type) {
     @case ('video') {
-        <video #videoPlayer class="video-js vjs-default-skin vjs-big-play-centered" poster="assets/video-poster.jpg"></video>
+        <video #videoPlayer class="video-js vjs-default-skin vjs-big-play-centered" 
+            [attr.poster]="null" [poster]="platform == 'android' ? null : 'assets/vide0-poster.jpg'"></video>
     }
     @case ('web') {
         <iframe class="w-full h-full border-none" [src]="currentContent?.link | safeurl"></iframe>

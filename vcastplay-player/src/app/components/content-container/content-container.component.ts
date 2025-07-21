@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
 import videojs from 'video.js';
+import { PlatformService } from '../../core/services/platform.service';
 
 @Component({
   selector: 'app-content-container',
@@ -19,12 +20,13 @@ export class ContentContainerComponent {
 
   @Output() timeUpdate = new EventEmitter<any>();
 
+  platformService = inject(PlatformService);
   player: any;
 
   ngAfterViewInit() {
     if (!this.videoPlayer) return;
     this.player = videojs(this.videoPlayer.nativeElement, {
-      autoplay: this.autoPlay, 
+      // autoplay: this.autoPlay, 
       controls: this.showControls,
       preload: 'auto',
       muted: true,
@@ -34,13 +36,13 @@ export class ContentContainerComponent {
       }
     } ,() => {
       console.log('player is ready');
-      // this.player.play();
+      this.player.play();
     });
 
     // this.player.on('loadeddata', () => {
     //   console.log('loadeddata');
     //   this.player.play();
-    // });
+    // });    
   }
 
   ngOnDestroy() {
@@ -54,5 +56,9 @@ export class ContentContainerComponent {
     const currentTime = video.currentTime;
     const duration = video.duration;
     this.timeUpdate.emit({ currentTime, duration });
+  }
+
+  get platform() {    
+    return this.platformService.platform;
   }
 }
