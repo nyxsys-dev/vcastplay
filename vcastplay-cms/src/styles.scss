@@ -139,6 +139,12 @@ html {
   background: none !important;
 }
 
+/* calendar.component.scss */
+.fc .fc-timegrid-slot-label {
+  font-size: 12px !important;
+  color: #666;
+}
+
 /* Scrollbar effect */
 
 ::-webkit-scrollbar {

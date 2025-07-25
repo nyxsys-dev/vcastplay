@@ -49,6 +49,10 @@ export class ScreenManagementListComponent {
     this.screenService.onGetScreens();
   }
 
+  ngOnDestroy() {
+    this.selectMultipleScreens.set([]);
+  }
+
   isAllChecked(): boolean {
     return this.selectMultipleScreens().length == this.filteredScreen().length;
   }

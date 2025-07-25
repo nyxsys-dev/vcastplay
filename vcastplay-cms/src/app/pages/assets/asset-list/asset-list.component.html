@@ -160,13 +160,15 @@
             create a video, or craft engaging content, I've got you covered. Just tell me what you need — let's get started! 🚀</p>
     </div>
     <ng-template #footer>
-        <div class="w-full">
-            <p-inputgroup>
+        <div class="flex flex-col gap-3 w-full">
+            <textarea placeholder="Type your prompt here" name="prompt" id="prompt" cols="30" rows="5" pTextarea></textarea>
+            <p-button styleClass="!w-full" label="Send" icon="pi pi-send" (onClick)="showPrompt.set(false)" fluid />
+            <!-- <p-inputgroup>
                 <input type="text" pInputText placeholder="Type your prompt here" />
                 <p-inputgroup-addon>
                     <p-button icon="pi pi-send" (onClick)="showPrompt.set(false)"  />
                 </p-inputgroup-addon>
-            </p-inputgroup>
+            </p-inputgroup> -->
         </div>
     </ng-template>
 </p-dialog>

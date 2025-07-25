@@ -58,7 +58,7 @@ export class AssetsService {
     }, { validators: [ this.dateRangeValidator()]}),
     weekdays: new FormControl([], { nonNullable: true }),
     hours: new FormControl<[{ start: string, end: string }] | []>([], { nonNullable: true }),
-    duration: new FormControl(5, { nonNullable: true }),
+    duration: new FormControl(10, { nonNullable: true }),
     audienceTag: new FormGroup({
       genders: new FormControl([], { nonNullable: true }),
       ageGroups: new FormControl([], { nonNullable: true }),

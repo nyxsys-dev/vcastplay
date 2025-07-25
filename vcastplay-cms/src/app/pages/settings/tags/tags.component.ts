@@ -22,11 +22,16 @@ export class TagsComponent {
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
 
-  audienceTagControl: FormControl = new FormControl('', [ Validators.required ]);
+  audienceTagControl: FormControl = new FormControl(null, [ Validators.required ]);
 
   filteredAudienceTagList = computed(() => {
     const audienceTagLists = this.audienceTagsLists();
     return audienceTagLists.filter((audienceTag: any) => audienceTag.showInSettings);
+  })
+
+  filteredGroupCategoryList = computed(() => {
+    const audienceTagLists = this.audienceTagsLists();
+    return audienceTagLists.filter((audienceTag: any) => ['group', 'category'].includes(audienceTag.id));
   })
 
   onClickSave = (item: any, type: string, label: string) => {
@@ -39,6 +44,7 @@ export class TagsComponent {
   }
 
   onClickDelete = (event: Event, item: any, type: string) => {
+    event.stopPropagation();
     this.confirmation.confirm({
       target: event.target as EventTarget,
       message: 'Do you want to delete this tag?',

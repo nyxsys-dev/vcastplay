@@ -30,7 +30,7 @@
                     </p-floatlabel>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                 <div class="col-span-1 md:col-span-3">
                     <p-floatlabel variant="on">
                         <p-select inputId="calendarView" [(ngModel)]="calendarViewSignal" [options]="calendarViews()" optionLabel="label" optionValue="value" 
@@ -38,7 +38,11 @@
                         <label for="calendarView">Calendar View</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-9 flex">
+                <div class="col-span-1 md:col-span-3 flex gap-3 ">
+                    <p-button icon="pi pi-search-plus" (onClick)="onClickZoomIn()" [disabled]="zoomLevel == 3" size="small" />
+                    <p-button icon="pi pi-search-minus" (onClick)="onClickZoomOut()" [disabled]="zoomLevel == 0" size="small" />
+                </div>
+                <div class="col-span-1 md:col-span-6 flex">
                     <div class="flex gap-3 ml-auto">
                         <p-button icon="pi pi-chevron-left" size="small" pTooltip="Previous" tooltipPosition="bottom" (onClick)="onClickPreviousCalendar()" />
                         <p class="font-semibold text-lg">{{ calendarTitle() }}</p>

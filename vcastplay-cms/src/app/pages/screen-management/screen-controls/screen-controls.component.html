@@ -1,43 +1,52 @@
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3">
-    <div class="col-span-1 lg:col-span-6 flex gap-4">
-        <p class="text-sm">Settings:</p>
-        <div class="flex flex-wrap gap-3">
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickDisplayScreen()" 
-                icon="pi pi-desktop" pTooltip="Display" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickToggleAudio(true)" 
-                icon="pi pi-volume-up" pTooltip="Audio On" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickToggleAudio(false)" 
-                icon="pi pi-volume-off" pTooltip="Audio Off" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickToggleFullscreen(true)" 
-                icon="pi pi-window-maximize" pTooltip="Fullscreen" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickSyncTime()" 
-                icon="pi pi-sync" pTooltip="Sync Time" size="small" tooltipPosition="bottom" fluid />
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickPlaybackContent()" 
-                icon="pi pi-file-edit" pTooltip="Playback" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickClear(true)" 
-                icon="pi pi-trash" pTooltip="Clear" tooltipPosition="bottom" size="small" fluid />
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 border border-zinc-200 rounded-lg p-3 items-center overflow-hidden">
+    <div class="col-span-1 md:col-span-6 flex">
+        <div class="flex gap-3 items-center w-full" [formGroup]="assetForm">
+            <p-inputgroup>
+                <p-inputgroup-addon>
+                    <p-button label="Assign Content" severity="info" (onClick)="onClickOpenContents()" outlined />
+                </p-inputgroup-addon>
+                <input id="name" type="text" placeholder="Content" formControlName="name" readonly pInputText>
+                <p-inputgroup-addon>
+                    <p-button (onClick)="onClickApplyContents()" [disabled]="assetForm.invalid">
+                        <div class="flex gap-2">
+                            <img src="assets/vcastplay-logo.png" alt="vcastplay-icon" width="20">
+                            <p>Apply</p>
+                        </div>
+                    </p-button>
+                </p-inputgroup-addon>
+            </p-inputgroup>
         </div>
     </div>
-    <div class="col-span-1 lg:col-span-4 flex gap-7">
-        <p class="text-sm">Player:</p>
-        <div class="flex gap-3">
-            <p-button styleClass="!bg-green-500 !border-green-500 hover:!bg-green-600" (onClick)="onClickOpenScreen()" 
-                icon="pi pi-play" pTooltip="Open Screen" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-red-500 !border-red-500 hover:!bg-red-600" (onClick)="onClickCloseScreen()"
-                icon="pi pi-times-circle" pTooltip="Close Screen" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickRestartScreen()" 
-                icon="pi pi-refresh" pTooltip="Restart" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-red-500 !border-red-500 hover:!bg-red-600" (onClick)="onClickShutdownScreen()" 
-                icon="pi pi-power-off" pTooltip="Shutdown" tooltipPosition="bottom" size="small" fluid />
-        </div>
-    </div>
-    <div class="col-span-1 lg:col-span-2 flex gap-6">
-        <p class="text-sm">Others:</p>
-        <div class="flex gap-3">
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickBroadCastMessage()" 
-                icon="pi pi-megaphone" pTooltip="Broadcast Message" tooltipPosition="bottom" size="small" fluid />
-            <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickAssignContents()" 
-                icon="pi pi-images" pTooltip="Assign Contents" tooltipPosition="bottom" size="small" fluid />
+    <div class="col-span-1 lg:col-span-6" [ngClass]="{ 'py-5': toggleControls() }">
+        <div class="flex items-center w-full h-full relative">
+            @if (!toggleControls()) { 
+                <p-button class="ml-auto transition-opacity duration-300 ease-in-out" pTooltip="Controls" tooltipPosition="bottom"
+                    icon="pi pi-cog" (onClick)="onClickToggleControls()" /> 
+            }
+            <div class="flex items-center absolute right-0 transition-all duration-300 ease-in-out"
+                [ngClass]="{ 'translate-x-0 opacity-100': toggleControls(), 'translate-x-full opacity-0': !toggleControls() }">
+
+                <p-button class="ml-auto" icon="pi pi-times" severity="danger" (onClick)="onClickToggleControls()" size="small" text />
+                <p-divider layout="vertical"></p-divider>
+                <div class="flex flex-wrap gap-3 items-center">
+                    <p class="text-sm">Controls:</p>
+                    <p-button styleClass="!bg-green-500 !border-green-500 hover:!bg-green-600" (onClick)="onClickOpenScreen()"
+                        icon="pi pi-play" pTooltip="Open" tooltipPosition="bottom" size="small" fluid />
+                    <p-button styleClass="!bg-red-500 !border-red-500 hover:!bg-red-600" (onClick)="onClickCloseScreen()"
+                        icon="pi pi-times-circle" pTooltip="Close" tooltipPosition="bottom" size="small" fluid />
+                    <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickRestartScreen()"
+                        icon="pi pi-refresh" pTooltip="Restart" tooltipPosition="bottom" size="small" fluid />
+                    <p-button styleClass="!bg-red-500 !border-red-500 hover:!bg-red-600" (onClick)="onClickShutdownScreen()"
+                        icon="pi pi-power-off" pTooltip="Shutdown" tooltipPosition="bottom" size="small" fluid />
+                    <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickBroadCastMessage()" 
+                        icon="pi pi-megaphone" pTooltip="Broadcast Message" tooltipPosition="bottom" size="small" fluid />
+                    <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickAssignContents()" 
+                        icon="pi pi-cog" pTooltip="Settings" tooltipPosition="bottom" size="small" fluid />
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<p-toast />
+<p-confirmdialog />

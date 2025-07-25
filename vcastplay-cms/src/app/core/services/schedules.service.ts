@@ -274,7 +274,7 @@ export class SchedulesService {
       id: 'selectBox',
       start: startMoment.toISOString(),
       end: endMoment.toISOString(),
-      overlap: false
+      // overlap: false
     };
 
     if (this.calendarViewSignal() == 'dayGridMonth') {
@@ -294,17 +294,17 @@ export class SchedulesService {
     return true;
   }
 
-  onGetContentDetails(id: any, type: string) {
+  onGetContentDetails(id: any, type: string, eventId: string) {
     switch (type) {
       case 'asset':
         const asset = this.assetService.onGetAssets().find(item => item.code == id);
-        if (asset) this.selectedContent.set(asset);
+        if (asset) this.selectedContent.set({ ...asset, eventId });
         break;
       case 'playlist':
         const playlist = this.playlistService.onGetPlaylists().find(item => item.id == id);
         if (playlist) {
           this.playlistService.playListForm.patchValue(playlist);
-          this.selectedContent.set(this.playlistService.playListForm.value);
+          this.selectedContent.set({ ...playlist, eventId });
         }
         break;
       default:
@@ -314,8 +314,8 @@ export class SchedulesService {
   }
 
   onDeleteContent(event: any, fullcalendar: FullCalendarComponent) {
-    const calendar: any = fullcalendar.getApi();
-    calendar.getEventById(event.id).remove();
+    const calendar: any = fullcalendar.getApi();    
+    calendar.getEventById(event.eventId).remove();
     const events = calendar.getEvents().map((event: any) => event.extendedProps);    
     this.scheduleForm.patchValue({ contents: events });
   }

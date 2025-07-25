@@ -81,7 +81,8 @@
 </div>
 
 <ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" severity="success" size="small" />
+    <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" 
+        [disabled]="['approved', 'disapproved'].includes(item.status)" severity="success" size="small" />
     <p-button icon="pi pi-check-circle" (onClick)="onClickShowApproved($event, item, approved)" pTooltip="Approval" tooltipPosition="bottom"  severity="info" size="small" />
     <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" size="small" [disabled]="item.status == 'pending'" />
     <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" size="small" [disabled]="item.status == 'pending'" />
@@ -92,7 +93,7 @@
 <p-popover #approved (onHide)="scheduleForm.reset()" appendTo="body" (onHide)="scheduleForm.reset()">
     <ng-template #content>
         <div class="flex flex-col gap-3" [formGroup]="scheduleForm">
-            @if (!['Approved', 'Disapproved'].includes(status?.value)) {
+            @if (!['approved', 'disapproved'].includes(status?.value)) {
                 <p class="text-sm font-semibold">Approve this playlist?</p>
                 <div formGroupName="approvedInfo">
                     <p-floatlabel variant="on">
@@ -110,8 +111,9 @@
                     <p>User: {{ approvedInfo?.value.approvedBy }}</p>
                     <p>Remarks: {{ approvedInfo?.value.remarks }}</p>
                 </div>
-                <div class="flex gap-2 justify-end">
-                    <p-button label="Close" (onClick)="onClickCloseApproved($event, approved)" size="small" text />
+                <div class="flex gap-2 w-full items-center">
+                    <p-button label="Activate" severity="success" text />
+                    <p-button class="ml-auto" label="Close" (onClick)="onClickCloseApproved($event, approved)" size="small" text />
                 </div>
             }
         </div>

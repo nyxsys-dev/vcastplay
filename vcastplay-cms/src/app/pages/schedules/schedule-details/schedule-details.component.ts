@@ -43,7 +43,9 @@ export class ScheduleDetailsComponent {
     editable: true,
     dayHeaderFormat: { weekday: 'short' },
     headerToolbar: false,
-    slotDuration: '00:05:00',
+    // slotDuration: '00:00:30',
+    slotLabelInterval: '00:01:30',
+    eventOrder: 'start',
     views: {
       timeGridWeek: { type: 'timeGrid', duration: { days: 7 }, buttonText: 'Week' },
       timeGridDay: { type: 'timeGrid', duration: { days: 1 }, buttonText: 'Day' },
@@ -56,7 +58,8 @@ export class ScheduleDetailsComponent {
     slotLabelFormat: {
       hour: 'numeric',
       minute: '2-digit',
-      meridiem: 'short'
+      second: '2-digit',
+  hour12: false
     },
     events: [],
     datesSet: this.onDateSet.bind(this), // trigger when view changes
@@ -66,7 +69,15 @@ export class ScheduleDetailsComponent {
     selectAllow: (info: any) => this.onSelectAllow(info),
   }
 
+  slotDurations = ['00:00:30', '00:01:00', '00:01:30', '00:05:00'];
+  zoomLevel: number = 0;
+
   ngAfterViewInit() {
+    this.calendarOptions = {
+      slotDuration: this.slotDuration,
+      ...this.calendarOptions
+    }
+
     if (this.isEditMode()) this.onAddCalendarEvents()
   }
 
@@ -143,8 +154,8 @@ export class ScheduleDetailsComponent {
       start: moment(data.start).tz('Asia/Manila').toDate(),
       end: moment(data.end).tz('Asia/Manila').toDate(),
       ...info
-    });
-    this.scheduleServices.onGetContentDetails(info.id, info.type);
+    });    
+    this.scheduleServices.onGetContentDetails(info.id, info.type, data.id);
     this.showPreviewEvent.set(true);
   }
 
@@ -162,7 +173,8 @@ export class ScheduleDetailsComponent {
   }
 
   onClickDeleteContent(event: any) {
-    this.scheduleServices.onDeleteContent(event.event, this.scheduleCalendar);
+    this.scheduleServices.onDeleteContent(this.selectedContent(), this.scheduleCalendar);
+    this.showPreviewEvent.set(false);
   }
 
   onClickNextCalendar() {
@@ -173,6 +185,20 @@ export class ScheduleDetailsComponent {
   onClickPreviousCalendar() {
     const calendar = this.scheduleCalendar.getApi();
     calendar.prev();
+  }
+
+  onClickZoomIn() {
+    if (this.zoomLevel < this.slotDurations.length - 1) {
+      this.zoomLevel++;
+      this.scheduleCalendar.getApi().setOption('slotDuration', this.slotDuration);
+    }
+  }
+
+  onClickZoomOut() {
+    if (this.zoomLevel > 0) {
+      this.zoomLevel--;
+      this.scheduleCalendar.getApi().setOption('slotDuration', this.slotDuration);
+    }
   }
 
   onAddCalendarEvents() {    
@@ -214,6 +240,10 @@ export class ScheduleDetailsComponent {
   
   formControl(fieldName: string) {
     return this.utils.getFormControl(this.scheduleForm, fieldName);
+  }
+
+  get slotDuration() { 
+    return this.slotDurations[this.zoomLevel];
   }
 
   get isEditMode() { return this.scheduleServices.isEditMode; }

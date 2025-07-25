@@ -26,7 +26,7 @@ export class ContentContainerComponent {
   ngAfterViewInit() {
     if (!this.videoPlayer) return;
     this.player = videojs(this.videoPlayer.nativeElement, {
-      // autoplay: this.autoPlay, 
+      autoplay: this.autoPlay, 
       controls: this.showControls,
       preload: 'auto',
       muted: true,
@@ -36,13 +36,13 @@ export class ContentContainerComponent {
       }
     } ,() => {
       console.log('player is ready');
-      this.player.play();
+      // this.player.play();
     });
 
-    this.player.on('loadeddata', () => {
-      console.log('loadeddata');
-      this.player.play();
-    });    
+    // this.player.on('loadeddata', () => {
+    //   console.log('loadeddata');
+    //   this.player.play();
+    // });    
   }
 
   ngOnDestroy() {

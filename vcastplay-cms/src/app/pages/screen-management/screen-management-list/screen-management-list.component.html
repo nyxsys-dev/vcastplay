@@ -107,12 +107,7 @@
             </div>
             <ng-template #footer>
                 <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
-                <p-fieldset toggleable collapsed>
-                    <ng-template #header>
-                        <p class="text-sm font-semibold">Controls:</p>
-                    </ng-template>
-                    <app-screen-controls />
-                </p-fieldset>
+                <app-screen-controls />
                 <p-fieldset>
                     <ng-template #header>
                         <p class="text-sm font-semibold">Legends:</p>

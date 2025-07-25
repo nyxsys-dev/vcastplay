@@ -99,7 +99,7 @@ export class PlaylistDetailsComponent {
       accept: () => {
         console.log(this.playListForm.value);
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Playlist saved successfully!' });
-        this.playlistService.onSavePlaylist({ ...this.playListForm.value, duration: this.totalDuration() });
+        this.playlistService.onSavePlaylist({ ...this.playListForm.value, duration: this.totalDuration(), isAuto: false });
         this.playListForm.reset();
         this.isEditMode.set(false);
         this.router.navigate([ '/playlist/playlist-library' ]);

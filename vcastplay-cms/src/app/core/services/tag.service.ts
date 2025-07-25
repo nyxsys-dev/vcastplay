@@ -12,6 +12,38 @@ export class TagService {
   // Sub Group
   subGroups = signal<any[]>([ 'Sub Group 1', 'Sub Group 2', 'Sub Group 3' ]);
 
+  // Groups (new)
+  group = signal<any[]>([
+    {
+      name: 'Group 1',
+      subGroups: [ 'Sub Group 1.1', 'Sub Group 1.2' ,'Sub Group 1.3' ]
+    },
+    {
+      name: 'Group 2',
+      subGroups: [ 'Sub Group 2.1', 'Sub Group 2.2' ,'Sub Group 2.3' ]
+    },
+    {
+      name: 'Group 3',
+      subGroups: [ 'Sub Group 3.1', 'Sub Group 3.2' ,'Sub Group 3.3' ]
+    }
+  ])
+
+  // Category (new)
+  category = signal<any[]>([
+    {
+      name: 'Category 1',
+      subCategories: [ 'Sub Category 1.1', 'Sub Category 1.2', 'Sub Category 1.3' ]
+    },
+    {
+      name: 'Category 2',
+      subCategories: [ 'Sub Category 2.1', 'Sub Category 2.2', 'Sub Category 2.3' ]
+    },
+    {
+      name: 'Category 3',
+      subCategories: [ 'Sub Category 3.1', 'Sub Category 3.2', 'Sub Category 3.3' ]
+    }
+  ])
+
   // Category
   categories = signal<any[]>([ 'Category 1', 'Category 2', 'Category 3' ]);
 
@@ -46,10 +78,14 @@ export class TagService {
   });
   
   tagsLists = signal<any[]>([
+    // { id: 'group', name: 'Groups', data: this.group, formControlName: 'group', showInSettings: true },
+    // { id: 'category', name: 'Categories', data: this.category, formControlName: 'category', showInSettings: true },
+    
     { id: 'groups', name: 'Groups', data: this.groups, formControlName: 'groups', showInSettings: true },
     { id: 'subGroups', name: 'Sub Groups', data: this.subGroups, formControlName: 'subGroups', showInSettings: true },
     { id: 'categories', name: 'Categories', data: this.categories, formControlName: 'categories', showInSettings: true },
     { id: 'subCategories', name: 'Sub Categories', data: this.subCategories, formControlName: 'subCategories', showInSettings: true },
+
     { id: 'genders', name: 'Genders', data: this.genders, formControlName: 'genders', showInSettings: false },
     { id: 'ageGroups', name: 'Age Groups', data: this.ageGroups, formControlName: 'ageGroups', showInSettings: false },
     { id: 'timeOfDays', name: 'Time of Days', data: this.timeOfDays, formControlName: 'timeOfDays', showInSettings: true },
@@ -114,7 +150,7 @@ export class TagService {
     this.setTagData(type, [...tagData]);
   }
   
-  onDeleteAudienceTags(item: string, type: string) {
+  onDeleteAudienceTags(item: string, type: string) {    
     const tagData = this.tagsLists().find(tag => tag.id.includes(type)).data();
     const index = tagData.findIndex((data: any) => data === item);
 
