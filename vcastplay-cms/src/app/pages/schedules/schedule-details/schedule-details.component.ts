@@ -43,7 +43,6 @@ export class ScheduleDetailsComponent {
     editable: true,
     dayHeaderFormat: { weekday: 'short' },
     headerToolbar: false,
-    // slotDuration: '00:00:30',
     slotLabelInterval: '00:01:30',
     eventOrder: 'start',
     views: {
@@ -69,8 +68,9 @@ export class ScheduleDetailsComponent {
     selectAllow: (info: any) => this.onSelectAllow(info),
   }
 
-  slotDurations = ['00:00:30', '00:01:00', '00:01:30', '00:05:00'];
-  zoomLevel: number = 0;
+  slotDurations = ['00:00:10', '00:00:15', '00:00:30', '00:01:00', '00:01:30', '00:05:00'];
+  zoomLevel: number = 2;
+  calendarLoading = signal<boolean>(false);
 
   ngAfterViewInit() {
     this.calendarOptions = {
@@ -188,16 +188,18 @@ export class ScheduleDetailsComponent {
   }
 
   onClickZoomIn() {
+    const calendarApi = this.scheduleCalendar.getApi();
     if (this.zoomLevel < this.slotDurations.length - 1) {
       this.zoomLevel++;
-      this.scheduleCalendar.getApi().setOption('slotDuration', this.slotDuration);
+      calendarApi.setOption('slotDuration', this.slotDuration);
     }
   }
 
   onClickZoomOut() {
+    const calendarApi = this.scheduleCalendar.getApi();
     if (this.zoomLevel > 0) {
       this.zoomLevel--;
-      this.scheduleCalendar.getApi().setOption('slotDuration', this.slotDuration);
+      calendarApi.setOption('slotDuration', this.slotDuration);
     }
   }
 

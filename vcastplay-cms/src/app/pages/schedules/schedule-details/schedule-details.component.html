@@ -38,11 +38,12 @@
                         <label for="calendarView">Calendar View</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-3 flex gap-3 ">
-                    <p-button icon="pi pi-search-plus" (onClick)="onClickZoomIn()" [disabled]="zoomLevel == 3" size="small" />
+                <div class="col-span-1 md:col-span-3 flex gap-3" [ngClass]="{ 'hidden': ['dayGridMonth'].includes(calendarViewSignal()) }">
                     <p-button icon="pi pi-search-minus" (onClick)="onClickZoomOut()" [disabled]="zoomLevel == 0" size="small" />
+                    <p-button icon="pi pi-search-plus" (onClick)="onClickZoomIn()" [disabled]="zoomLevel == slotDurations.length" size="small" />
                 </div>
-                <div class="col-span-1 md:col-span-6 flex">
+                <div class="col-span-1 flex" [ngClass]="{ 'md:col-span-6': !['dayGridMonth'].includes(calendarViewSignal()), 
+                    'md:col-span-9': ['dayGridMonth'].includes(calendarViewSignal()) }">
                     <div class="flex gap-3 ml-auto">
                         <p-button icon="pi pi-chevron-left" size="small" pTooltip="Previous" tooltipPosition="bottom" (onClick)="onClickPreviousCalendar()" />
                         <p class="font-semibold text-lg">{{ calendarTitle() }}</p>
@@ -50,7 +51,7 @@
                     </div>
                 </div>
             </div>
-            
+            @if(calendarLoading()) {<p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />}
             <full-calendar #scheduleCalendar [options]="calendarOptions"></full-calendar>
         </div>
     </p-card>
