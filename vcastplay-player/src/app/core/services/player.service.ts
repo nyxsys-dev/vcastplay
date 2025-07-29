@@ -1,5 +1,6 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Playlist } from '../interfaces/playlist';
+import { PlatformService } from './platform.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,8 @@ export class PlayerService {
 
   private contentSignal = signal<Playlist[]>([]);
   contents = computed(() => this.contentSignal());
+
+  platform = inject(PlatformService);
 
   timeoutId: any;
   intervalId: any;
@@ -88,6 +91,10 @@ export class PlayerService {
     const item = contents[this.currentIndex()];
     
     this.currentContent.set(item);
+
+    if (this.platform.platform === 'android') {
+      this.onSendDataToAndroid(JSON.stringify(item));
+    }
     
     this.fadeIn.set(true);
     this.progress.set(0);
