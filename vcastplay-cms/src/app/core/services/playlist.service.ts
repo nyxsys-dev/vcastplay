@@ -67,6 +67,7 @@ export class PlaylistService {
       remarks: new FormControl(''),
     }),
     isAuto: new FormControl(false),
+    isActive: new FormControl(false),
     duration: new FormControl(0),
   })
   
@@ -285,6 +286,7 @@ export class PlaylistService {
         loop: false,
         duration: 5,
         isAuto: false,
+        isActive: true,
         createdOn: new Date(),
         updatedOn: new Date()
       }

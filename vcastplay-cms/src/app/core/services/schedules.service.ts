@@ -24,6 +24,7 @@ export class SchedulesService {
   selectedSchedule = signal<Schedule | null>(null);
 
   selectedContent = signal<any>(null);
+  arrSelectedContents = signal<any[]>([]);
   contentSignal = signal<string>('asset');
   contentTypes = signal<any[]>([
     { label: 'Asset', value: 'asset' },
@@ -47,6 +48,7 @@ export class SchedulesService {
   loadingSignal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
   showAddContents = signal<boolean>(false);
+  showFillerContents = signal<boolean>(false);
   showPreviewEvent = signal<boolean>(false);
   timeValues = signal<string[]>([]);
 

@@ -41,7 +41,13 @@
                 </ng-template>
                 <ng-template #body let-item>
                     <tr class="text-sm">
-                        <td>{{ item.name }}</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <i class="pi" [pTooltip]="item.isActive ? 'Active' : 'Inactive'" tooltipPosition="bottom"
+                                    [ngClass]="{ 'pi-check-circle text-green-500': item.isActive, 'pi-ban text-red-500': !item.isActive }"></i>
+                                <p>{{item.name}}</p>
+                            </div>
+                        </td>
                         <td>{{ item.description }}</td>
                         <td><p-tag [value]="item.isAuto ? 'Auto' : 'Manual'" [severity]="item.isAuto ? 'warn' : 'info'" /></td>
                         <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
@@ -146,8 +152,9 @@
                     <p>User: {{ approvedInfo?.value.approvedBy }}</p>
                     <p>Remarks: {{ approvedInfo?.value.remarks }}</p>
                 </div>
-                <div class="flex gap-2 w-full">
-                    <p-button label="Activate" severity="success" text />
+                <div class="flex gap-2 items-center w-full">
+                    <p-button [label]="playListValue.isActive ? 'Deactivate' : 'Activate'" 
+                        [severity]="playListValue.isActive ? 'danger' : 'success'"  text />
                     <p-button class="ml-auto" label="Close" (onClick)="onClickCloseApproved($event, approved)" size="small" text />
                 </div>
             }

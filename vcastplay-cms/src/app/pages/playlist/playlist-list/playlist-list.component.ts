@@ -162,6 +162,7 @@ export class PlaylistListComponent {
   get showContents() { return this.playlistService.showContents; }
   get totalRecords() { return this.playlistService.totalRecords; }
   get playlistForm() { return this.playlistService.playListForm; }
+  get playListValue() { return this.playlistService.playListForm.value; }
   get categoryForm() { return this.playlistService.categoryForm; }
   get totalDuration() { return this.playlistService.totalDuration; }
   get selectedAssets() { return this.playlistService.selectedAssets; }

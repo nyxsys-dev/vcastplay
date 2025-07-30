@@ -25,6 +25,15 @@ export class ScheduleDetailsComponent {
   @ViewChild('scheduleCalendar') scheduleCalendar!: FullCalendarComponent;
   
   pageInfo: MenuItem = [ {label: 'Schedules'}, {label: 'List', routerLink: '/schedule/schedule-library'}, {label: 'Details'} ];
+  itemMenu: MenuItem[] = [
+    { 
+      label: 'Choose One',
+      items: [
+        { label: 'Content', icon: 'pi pi-image', command: () => this.onClickAddContent() },
+        { label: 'Fillers', icon: 'pi pi-images', command: () => this.onClickAddFillers() }
+      ]
+    }
+  ];
 
   scheduleServices = inject(SchedulesService);
   playlistService = inject(PlaylistService);
@@ -85,7 +94,7 @@ export class ScheduleDetailsComponent {
     eventClick: (info: any) => this.onClickEditContent(info),
     // eventContent: (info: any) => this.onRenderEventContent(info),
     eventDrop: (info: any) => this.onEventDrop(info),
-    select: (info: any) => this.onClickSelectContents(info),
+    select: (info: any) => this.onSelectContents(info),
     selectAllow: (info: any) => this.onSelectAllow(info), 
   }
 
@@ -100,7 +109,7 @@ export class ScheduleDetailsComponent {
 
   ngAfterViewInit() {    
     this.onGetCurrentTime();
-    if (this.isEditMode()) this.onAddCalendarEvents()
+    if (this.isEditMode()) this.onAddCalendarEvents();
   }
 
   ngOnDestroy() {
@@ -151,8 +160,10 @@ export class ScheduleDetailsComponent {
 
   onClickCancelContent() {
     this.showAddContents.set(false);
+    this.showFillerContents.set(false);
     this.contentItemForm.reset();
     this.selectedContent.set(null);
+    this.arrSelectedContents.set([]);
   }
 
   onClickAddContent() {
@@ -164,24 +175,20 @@ export class ScheduleDetailsComponent {
     const startDateTime = moment(`${start} ${time.start}`, 'YYYY-MM-DD HH:mm:ss').toDate();
     const endDateTime = moment(`${end} ${time.end}`, 'YYYY-MM-DD HH:mm:ss').toDate();
     
-    this.onClickSelectContents({ start: startDateTime, end: endDateTime, allDay: isMonth }, false);
+    this.onSelectContents({ start: startDateTime, end: endDateTime, allDay: isMonth }, false);
   }
 
-  onClickSelectContents({ start, end, allDay }: { start: any, end: any, allDay: boolean }, isSpecificTime: boolean = true) {
-    // Remove the selection box
-    const calendarApi = this.scheduleCalendar.getApi();
-    const existing = calendarApi.getEventById('selectBox');
-    if (existing) existing.remove();
-
-    const startDate = moment(start);
-    const endDate = allDay ? moment(end).subtract(1, 'day') : moment(end);
-    this.currentDateRange.set(`${startDate.format('MMM DD, yyyy')} - ${endDate.format('MMM DD, yyyy')}`);
-
-    this.contentItemForm.patchValue({ start: startDate.toDate(), end: !isSpecificTime ? endDate.toDate() : null, allDay });
-    this.calendarSelectedDate.set({ start, end, allDay, isSpecificTime });
+  onClickAddFillers() {
+    const time = this.timeSlots().find(slot => slot.value == this.timeSlotSignal());
+    const start = moment(this.calendarDateRange()?.start).format('YYYY-MM-DD');
+    const end = moment(this.calendarDateRange()?.end).subtract(1, 'day').format('YYYY-MM-DD');    
     
-    this.showAddContents.set(true);
+    const startDateTime = moment(`${start} ${time.start}`, 'YYYY-MM-DD HH:mm:ss').toDate();
+    const endDateTime = moment(`${end} ${time.end}`, 'YYYY-MM-DD HH:mm:ss').toDate();
+    this.calendarSelectedDate.set({ start: startDateTime, end: endDateTime, allDay: true });
+    this.showFillerContents.set(true)
   }
+
 
   onClickEditContent(content: any) {
     document.querySelectorAll('.fc-popover').forEach(el => el.remove());
@@ -216,6 +223,22 @@ export class ScheduleDetailsComponent {
       this.showAddContents.set(false);
     });
   }
+  
+  onClickSaveFillers(event: Event) {
+    const { contents } = this.scheduleForm.value;
+    const fillers = this.arrSelectedContents().map((item: any) => ({
+      id: item.id,
+      code: item.code,
+      title: item.name,
+      type: item.type,
+      allDay: true,
+      color: '#71717B',
+      isFiller: true
+    }))
+    this.scheduleForm.patchValue({ contents: [ ...fillers, ...contents.filter((item: any) => !item.isFiller) ] });
+    this.showFillerContents.set(false);
+    this.arrSelectedContents.set([]);
+  }
 
   onClickDeleteContent(event: any) {
     this.scheduleServices.onDeleteContent(this.selectedContent(), this.scheduleCalendar);
@@ -232,10 +255,27 @@ export class ScheduleDetailsComponent {
     calendar.prev();
   }
 
+  onSelectContents({ start, end, allDay }: { start: any, end: any, allDay: boolean }, isSpecificTime: boolean = true) {
+    // Remove the selection box
+    const calendarApi = this.scheduleCalendar.getApi();
+    const existing = calendarApi.getEventById('selectBox');
+    if (existing) existing.remove();
+
+    const startDate = moment(start);
+    const endDate = allDay ? moment(end).subtract(1, 'day') : moment(end);
+    this.currentDateRange.set(`${startDate.format('MMM DD, yyyy')} - ${endDate.format('MMM DD, yyyy')}`);
+
+    this.contentItemForm.patchValue({ start: startDate.toDate(), end: !isSpecificTime ? endDate.toDate() : null, allDay });
+    this.calendarSelectedDate.set({ start, end, allDay, isSpecificTime });
+    
+    this.showAddContents.set(true);
+  }
+
   onAddCalendarEvents() {    
     const calendar = this.scheduleCalendar.getApi();
-    const contents = this.contents?.value || [];
-    calendar.addEventSource(contents.map((content: any) => ({
+    const contents: any[] = this.contents?.value || [];
+    const fillers = contents.filter((event: any) => event.isFiller);
+    const events: any[] = contents.filter((event: any) => !event.isFiller).map((content: any) => ({
       id: content.eventId,
       title: content.title,
       start: moment(content.start).toISOString(),
@@ -244,7 +284,9 @@ export class ScheduleDetailsComponent {
       borderColor: content.color,
       extendedProps: content,
       allDay: content.allDay,
-    })));
+    }));
+    calendar.addEventSource(events);    
+    this.arrSelectedContents.set(fillers);
   }
 
   onChangeCalendarView(event: any) {
@@ -346,7 +388,9 @@ export class ScheduleDetailsComponent {
   get contentItemForm() { return this.scheduleServices.contentItemForm; }
   get contentValue() { return this.scheduleServices.contentItemForm.value; }
   get selectedContent() { return this.scheduleServices.selectedContent; }
+  get arrSelectedContents() { return this.scheduleServices.arrSelectedContents; }
   get showAddContents() { return this.scheduleServices.showAddContents; }
+  get showFillerContents() { return this.scheduleServices.showFillerContents; }
   get showPreviewEvent() { return this.scheduleServices.showPreviewEvent; }
   get calendarTitle() { return this.scheduleServices.calendarTitle; }
   get calendarViewSignal() { return this.scheduleServices.calendarViewSignal; }

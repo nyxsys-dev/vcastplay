@@ -12,6 +12,7 @@ export interface Playlist {
     status: string;
     duration?: number;
     isAuto: boolean;
+    isActive: boolean;
     approvedInfo?: {
         approvedBy: string;
         approvedOn: Date | string | null;

@@ -34,7 +34,7 @@
                         </tr>
                     </ng-template>
                     <ng-template #body let-item>
-                        <tr class="text-sm">
+                        <tr class="text-sm" [pSelectableRow]="item">
                             <td><p-tableCheckbox [value]="item" /></td>
                             <td>
                                 <p-tag [value]="item?.screenStatus?.toUpperCase()" [icon]="'pi ' + utils.getIcon(item?.screenStatus ?? '')" 

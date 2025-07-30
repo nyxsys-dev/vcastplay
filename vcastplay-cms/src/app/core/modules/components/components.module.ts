@@ -32,6 +32,7 @@ import { BroadcastListItemComponent } from '../../../pages/settings/broadcast/br
 import { BroadcastDetailsComponent } from '../../../pages/settings/broadcast/broadcast-details/broadcast-details.component';
 import { ScreenBroadcastMessageComponent } from '../../../components/screen-broadcast-message/screen-broadcast-message.component';
 import { ScrubberTimelineComponent } from '../../../components/scrubber-timeline/scrubber-timeline.component';
+import { ScheduleFillersComponent } from '../../../pages/schedules/schedule-fillers/schedule-fillers.component';
 
 
 const COMPONENT_MODULES = [
@@ -83,6 +84,7 @@ const COMPONENT_MODULES = [
   SchedulesContentListComponent,
   ScheduleListItemComponent,
   ScheduleFilterComponent,
+  ScheduleFillersComponent,
 
   ScrubberTimelineComponent,
 ]
