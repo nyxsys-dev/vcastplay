@@ -7,22 +7,26 @@
                     <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" text />
                     <p class="text-sm md:text-xl font-semibold">{{ isEditMode() ? 'Edit Schedule' : 'New Schedule' }}</p>
                 </div>
-                <div class="ml:auto">
-                    <p-button class="hidden md:block" icon="pi pi-save" label="Save" (onClick)="onClickSave($event)" />
-                    <p-button class="block md:hidden" icon="pi pi-save" (onClick)="onClickSave($event)" />
+                <div class="hidden md:flex ml:auto gap-2">
+                    <p-button label="Add Content" icon="pi pi-plus" (onClick)="onClickAddContent()" outlined />
+                    <p-button icon="pi pi-save" label="Save" (onClick)="onClickSave($event)" />
+                </div>
+                <div class="flex md:hidden ml:auto gap-2">
+                    <p-button icon="pi pi-plus" (onClick)="onClickAddContent()"  outlined />
+                    <p-button icon="pi pi-save" (onClick)="onClickSave($event)" />
                 </div>
             </div>
         </ng-template>
         <div class="flex flex-col gap-4 h-full flex-1">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4" [formGroup]="scheduleForm">
-                <div class="col-span-1 md:col-span-3">
+                <div class="col-span-1 md:col-span-6 lg:col-span-3">
                     <p-floatlabel variant="on">
                         <input id="name" pInputText formControlName="name" 
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
                         <label for="name">Name</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-9">
+                <div class="col-span-1  md:col-span-6 lg:col-span-9">
                     <p-floatlabel variant="on">
                         <input id="description" pInputText formControlName="description"
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" fluid />
@@ -31,37 +35,39 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                <div class="col-span-1 md:col-span-3">
+                <div class="col-span-1 md:col-span-6 lg:col-span-3">
                     <p-floatlabel variant="on">
                         <p-select inputId="calendarView" [(ngModel)]="calendarViewSignal" [options]="calendarViews()" optionLabel="label" optionValue="value" 
                             (onChange)="onChangeCalendarView($event)" fluid />
                         <label for="calendarView">Calendar View</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-3 flex gap-3" [ngClass]="{ 'hidden': ['dayGridMonth'].includes(calendarViewSignal()) }">
-                    <p-button icon="pi pi-search-minus" (onClick)="onClickZoomOut()" [disabled]="zoomLevel == 0" size="small" />
-                    <p-button icon="pi pi-search-plus" (onClick)="onClickZoomIn()" [disabled]="zoomLevel == slotDurations.length" size="small" />
+                <div class="col-span-1 md:col-span-6 lg:col-span-3" [ngClass]="{ 'hidden': ['dayGridMonth'].includes(calendarViewSignal()) }">
+                    <p-floatlabel variant="on">
+                        <p-select inputId="timeSlot" [(ngModel)]="timeSlotSignal" [options]="timeSlots()" 
+                            optionLabel="value" optionValue="value" (onChange)="onChangeTimeSlot($event)" appendTo="body" fluid />
+                        <label for="timeSlot">Time Slots</label>
+                    </p-floatlabel>
                 </div>
-                <div class="col-span-1 flex" [ngClass]="{ 'md:col-span-6': !['dayGridMonth'].includes(calendarViewSignal()), 
-                    'md:col-span-9': ['dayGridMonth'].includes(calendarViewSignal()) }">
-                    <div class="flex gap-3 ml-auto">
+                <div class="col-span-1 md:col-span-12 flex justify-center md:justify-end" [ngClass]="{ 'lg:col-span-6': !['dayGridMonth'].includes(calendarViewSignal()), 
+                    'lg:col-span-9': ['dayGridMonth'].includes(calendarViewSignal()) }">
+                    <div class="flex gap-3">
                         <p-button icon="pi pi-chevron-left" size="small" pTooltip="Previous" tooltipPosition="bottom" (onClick)="onClickPreviousCalendar()" />
                         <p class="font-semibold text-lg">{{ calendarTitle() }}</p>
                         <p-button icon="pi pi-chevron-right" size="small" pTooltip="Next" tooltipPosition="bottom" (onClick)="onClickNextCalendar()" />
                     </div>
                 </div>
             </div>
-            @if(calendarLoading()) {<p-progressbar mode="indeterminate" [style]="{ height: '6px' }" />}
             <full-calendar #scheduleCalendar [options]="calendarOptions"></full-calendar>
         </div>
+        <ng-template #footer>
+            <!-- <app-scrubber-timeline (rangeChange)="onGetCurrentRange($event)"></app-scrubber-timeline> -->
+        </ng-template>
     </p-card>
 </div>
 
-<p-dialog [(visible)]="showAddContents" [style]="{ width: '36rem' }" [draggable]="false" closable modal>
-    <ng-template #header>
-        <div class="text-sm py-1 px-2 rounded-lg bg-[var(--p-surface-300)] font-bold">Date Range: {{ currentDateRange() }}</div>
-    </ng-template>
-    <app-schedules-content-list />
+<p-dialog header="Add Content" [(visible)]="showAddContents" [style]="{ width: '42rem' }" [draggable]="false" (onHide)="onClickCancelContent()" closable modal>
+    <app-schedules-content-list [calendar]="scheduleCalendar" />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCancelContent()" />
         <p-button label="Save" severity="success" (onClick)="onClickSaveContent($event)" />
@@ -74,7 +80,7 @@
         @case('asset') {
             <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
                 <app-preview-content class="absolute h-full w-full flex items-center justify-center"
-                    [currentContent]="selectedContent()" [showControls]="true" [autoPlay]="true" />
+                    [currentContent]="selectedContent()" [showControls]="true" [autoPlay]="false" />
             </div>
         }
         @case ('playlist') {
@@ -84,6 +90,35 @@
             </div>
         }
     }
+    <div class="flex flex-col gap-3 mt-3">
+        <p class="text-sm italic text-gray-400">Information</p>
+        <div class="flex gap-2">
+            <p class="text-lg font-semibold">{{ selectedContent()?.name }}</p>
+            @if (['asset'].includes(type?.value)) { <p-tag class="ml-auto" [value]="selectedContent()?.type.toUpperCase()" severity="info" /> }
+        </div>
+        @if (!['asset'].includes(type?.value)) {
+            <p class="text-lg">{{ selectedContent()?.description }}</p>
+        }
+        @if (!contentValue.allDay) {
+            <div class="flex gap-2">
+                <p>Start Date:</p>
+                <p class="ml-auto text-sm">{{ contentValue?.start | date: 'medium' }}</p>
+            </div>
+            <div class="flex gap-2">
+                <p>End Date:</p>
+                <p class="ml-auto text-sm">{{ contentValue?.end | date: 'medium' }}</p>
+            </div>
+        } @else {
+            <div class="flex">
+                <p>Schedule:</p>
+                <p-tag class="ml-auto" severity="success" value="Runs All Day" />
+            </div>
+        }
+        <div class="flex gap-2">
+            <p>Duration:</p>
+            <p-tag class="ml-auto" severity="info" [value]="utils.timeConversion(contentValue?.duration)" />
+        </div>
+    </div>
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="showPreviewEvent.set(false)" />
         <p-button label="Delete" severity="danger" (onClick)="onClickDeleteContent($event)" />

@@ -22,5 +22,7 @@ export interface ScheduleContentItem {
     end: string;
     color: string;
     allDay: boolean;
-    extendedProps?: any;
+    duration?: number;
+    isFiller?: boolean;
+    extendedProps?: any; // contents details
 }

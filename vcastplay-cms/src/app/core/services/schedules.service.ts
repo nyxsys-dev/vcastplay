@@ -32,12 +32,17 @@ export class SchedulesService {
   ]);
   
   calendarTitle = signal<string>('');
+  calendarDateRange = signal<{ start: Date, end: Date } | null>(null);
   calendarViewSignal = signal<string>('timeGridWeek');
   calendarViews = signal<any[]>([
     { label: 'Day', value: 'timeGridDay' },
     { label: 'Week', value: 'timeGridWeek' },
     { label: 'Month', value: 'dayGridMonth' },
   ]);
+
+  calendarSelectedDate = signal<any>(null);
+
+  timeSlotSignal = signal<string>('00:00:00 - 00:15:00');
 
   loadingSignal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
@@ -57,26 +62,28 @@ export class SchedulesService {
 
   scheduleForm: FormGroup = new FormGroup({
     id: new FormControl(0),
-    name: new FormControl('', [ Validators.required ]),
-    description: new FormControl('', [ Validators.required ]),
+    name: new FormControl(null, [ Validators.required ]),
+    description: new FormControl(null, [ Validators.required ]),
     contents: new FormControl<any[]>([], { nonNullable: true, validators: Validators.required }),
-    status: new FormControl(''),
+    status: new FormControl(null),
     approvedInfo: new FormGroup({
       approvedBy: new FormControl('Admin', { nonNullable: true }),
       approvedOn: new FormControl(new Date()),
-      remarks: new FormControl(''),
+      remarks: new FormControl(null),
     }),
   })
 
   contentItemForm: FormGroup = new FormGroup({
     id: new FormControl(0),
-    title: new FormControl('', [ Validators.required ]),
-    start: new FormControl('', [ Validators.required ]),
-    end: new FormControl('', [ Validators.required ]),
-    color: new FormControl('', [ Validators.required ]),
+    title: new FormControl(null, [ Validators.required ]),
+    start: new FormControl(null, [ Validators.required ]),
+    end: new FormControl(null, [ Validators.required ]),
+    color: new FormControl(null, [ Validators.required ]),
     type: new FormControl('asset', { nonNullable: true, validators: Validators.required }),
     allDay: new FormControl(false),
     overlap: new FormControl(false),
+    duration: new FormControl(0),
+    isFiller: new FormControl(false, { nonNullable: true }),
   }, { validators: this.onTimeRangeValidator })
 
   
@@ -193,61 +200,72 @@ export class SchedulesService {
     return this.scheduleSignal();
   }
 
-  async onSaveContent(content: ScheduleContentItem, fullCalendar: FullCalendarComponent) {
-    const calendarApi = fullCalendar.getApi();
-    const type = calendarApi.view.type;
-    const start = moment(content.start);
-    let end = moment(content.end);
+  async onSaveContent(content: ScheduleContentItem, fullCalendar: FullCalendarComponent) {    
+    return new Promise((resolve, reject) => {
+      let totalDuplicates: number = 0;
+      const calendarApi = fullCalendar.getApi();
+      const type = calendarApi.view.type;
+      const start = moment(content.start);
+      let end = moment(content.end);
 
-    if (type.startsWith('timeGrid') && end.isSameOrAfter(start)) end.add(1, 'day');
+      if (type.startsWith('timeGrid') && end.isSameOrAfter(start)) end.add(1, 'day');
 
-    const daysCount = moment(end).tz('Asia/Manila').diff(start, 'days');
-    
-    for (let day = 0; day < daysCount; day++) {
-      // debugger
-      const currentDate = moment(content.start).add(day, 'days');
-      const startTime = moment(content.start).tz('Asia/Manila').format('HH:mm:ss');
-      const endTime = moment(content.end).tz('Asia/Manila').format('HH:mm:ss');
+      const daysCount = moment(end).tz('Asia/Manila').diff(start, 'days');
+      
+      for (let day = 0; day < daysCount; day++) {
+        const currentDate = moment(content.start).add(day, 'days');
+        const startTime = moment(content.start).tz('Asia/Manila').format('HH:mm:ss');
+        const endTime = moment(content.start).tz('Asia/Manila').add(content.duration, 'seconds').format('HH:mm:ss');
 
-      const eventData = {
-        eventId: calendarApi.getEvents().length + 1,
-        id: content.id,
-        title: content.title,
-        start: currentDate.tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + startTime,
-        end: currentDate.tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + endTime,
-        color: content.color,
-        allDay: content.allDay,
-        type: content.type,
-      };
+        const eventData = {
+          eventId: calendarApi.getEvents().length + 1,
+          id: content.id,
+          title: content.title,
+          start: currentDate.tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + startTime,
+          end: currentDate.tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + endTime,
+          color: content.color,
+          allDay: content.allDay,
+          type: content.type,
+          duration: content.duration
+        };
 
-      calendarApi.addEvent({
-        id: eventData.eventId.toString(),
-        title: eventData.title,
-        start: eventData.start,
-        end: eventData.end,
-        backgroundColor: eventData.color,
-        borderColor: eventData.color,
-        extendedProps: eventData,
-        allDay: eventData.allDay,
-      });
-    }
+        // Check if there is a duplicate event
+        const hasDuplicate: any[] = this.onFindDuplicateEvents(eventData);
+        if (hasDuplicate.length == 0) {
+          calendarApi.addEvent({
+            id: eventData.eventId.toString(),
+            title: eventData.title,
+            start: eventData.start,
+            end: eventData.end,
+            backgroundColor: eventData.color,
+            borderColor: eventData.color,
+            extendedProps: eventData,
+            allDay: eventData.allDay,
+          });
+        } else {
+          totalDuplicates += hasDuplicate.length
+        }
+      }
 
-    const updatedContents = calendarApi.getEvents().map(event => event.extendedProps);
-    this.scheduleForm.patchValue({ contents: updatedContents });
+      const updatedContents = calendarApi.getEvents().map(event => event.extendedProps);
+      this.scheduleForm.patchValue({ contents: updatedContents });
+      resolve({ totalDuplicates })
+    })
   }
 
   onUpdateContent(event: any, fullcalendar: FullCalendarComponent) {
-    const { start, end, allDay, ...info } = event.extendedProps;    
+    const { start, end, allDay, duration, ...data } = event.extendedProps;
     
     const tempContents = [ ...this.scheduleForm.value.contents || [] ];
     const index = tempContents.findIndex((item: any) => item.eventId == event.id);
     
     tempContents[index] = { 
       start: moment(event.start).toISOString(),
-      end: moment(event.end).toISOString(),
+      end: moment(event.start).add(duration, 'seconds').toISOString(),
       allDay: event.allDay,
-      ...info
+      ...data
     };
+    
     this.scheduleForm.patchValue({ contents: tempContents });
   }
 
@@ -318,6 +336,30 @@ export class SchedulesService {
     calendar.getEventById(event.eventId).remove();
     const events = calendar.getEvents().map((event: any) => event.extendedProps);    
     this.scheduleForm.patchValue({ contents: events });
+  }
+
+  onFindDuplicateEvents(value: any) {
+    const eventMap = new Map();
+    const { contents } = this.scheduleForm.value;
+    const { start, end, ...curContent } = value;
+    
+    const eventContents = [ ...contents, {
+      ...curContent,
+      start: moment(start).toISOString(),
+      end: moment(end).toISOString(),
+    }];
+
+    for (const event of eventContents) {
+      const key = `${moment(event.start).valueOf()}|${moment(event.end).valueOf()}`;
+      if (!eventMap.has(key)) {
+        eventMap.set(key, []);
+      }
+
+      eventMap.get(key).push(event);
+    }
+    
+    // Only return groups with 2 or more events
+    return Array.from(eventMap.values()).filter(group => group.length > 1);
   }
 
   onSaveSchedule(schedule: Schedule) {

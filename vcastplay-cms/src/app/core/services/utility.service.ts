@@ -144,6 +144,42 @@ export class UtilityService {
     return value === null || value === undefined || value === '' || Object.keys(value).length === 0 || !value;
   }
 
+  /**
+   * Generate an array of time slots for 24 hours, with each time slot
+   * represented as an object with start and end properties.
+   * The start and end times are in the format HH:MM:SS.
+   * @returns The array of time slots.
+   */
+  generateTimeCode() {
+    const timeSlots = [];
+    const interval = 15; // minutes
+
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += interval) {
+        const start = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
+        let endHour = hour;
+        let endMinute = minute + interval;
+
+        if (endMinute >= 60) {
+          endMinute = 0;
+          endHour += 1;
+        }
+
+        const end = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}:00`;
+        timeSlots.push({ start, end });
+      }
+    }
+
+    return timeSlots;
+  }
+
+/**
+ * Generates a random screen code of specified length.
+ * The code consists of uppercase alphabets and numbers.
+ *
+ * @param length - The length of the screen code to generate.
+ * @returns A string representing the generated screen code.
+ */
   genereteScreenCode(length: number): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code = '';
@@ -154,6 +190,11 @@ export class UtilityService {
     return code;
   }
 
+  /**
+   * Generates an array of time options in 30 minute increments.
+   * The generated time options are in the format HH:MM.
+   * @returns An array of strings representing the generated time options.
+   */
   generateTimeOptions(): string[] {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -251,7 +292,6 @@ export class UtilityService {
   toTitleCase(value: string) {
     return _.startCase(value);
   }
-  
 
   onFilterItems(data: any[], filters: any) {
     const activeKeys = Object.keys(filters).filter(key => filters[key]?.length);

@@ -30,18 +30,19 @@
                 <p-divider layout="vertical"></p-divider>
                 <div class="flex flex-wrap gap-3 items-center">
                     <p class="text-sm">Controls:</p>
-                    <p-button styleClass="!bg-green-500 !border-green-500 hover:!bg-green-600" (onClick)="onClickOpenScreen()"
+                    <p-button (onClick)="onClickOpenScreen()"
                         icon="pi pi-play" pTooltip="Open" tooltipPosition="bottom" size="small" fluid />
-                    <p-button styleClass="!bg-red-500 !border-red-500 hover:!bg-red-600" (onClick)="onClickCloseScreen()"
+                    <p-button (onClick)="onClickCloseScreen()"
                         icon="pi pi-times-circle" pTooltip="Close" tooltipPosition="bottom" size="small" fluid />
-                    <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickRestartScreen()"
+                    <p-button (onClick)="onClickRestartScreen()"
                         icon="pi pi-refresh" pTooltip="Restart" tooltipPosition="bottom" size="small" fluid />
-                    <p-button styleClass="!bg-red-500 !border-red-500 hover:!bg-red-600" (onClick)="onClickShutdownScreen()"
+                    <p-button (onClick)="onClickShutdownScreen()"
                         icon="pi pi-power-off" pTooltip="Shutdown" tooltipPosition="bottom" size="small" fluid />
-                    <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickBroadCastMessage()" 
+                    <p-button (onClick)="onClickBroadCastMessage()" 
                         icon="pi pi-megaphone" pTooltip="Broadcast Message" tooltipPosition="bottom" size="small" fluid />
-                    <p-button styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600" (onClick)="onClickAssignContents()" 
-                        icon="pi pi-cog" pTooltip="Settings" tooltipPosition="bottom" size="small" fluid />
+                    <p-button (onClick)="onClickAssignContents()" 
+                        icon="pi pi-cog" pTooltip="Settings" tooltipPosition="bottom" size="small" fluid /> 
+                    <!-- styleClass="!bg-cyan-700 !border-cyan-700 hover:!bg-cyan-600"  -->
                 </div>
             </div>
         </div>

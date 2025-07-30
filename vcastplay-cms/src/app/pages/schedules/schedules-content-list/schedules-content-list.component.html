@@ -1,31 +1,10 @@
-<div class="flex flex-col gap-4 pt-2 h-full">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center" [formGroup]="contentItemForm">
-        <p-floatlabel variant="on">
-            <p-datepicker inputId="start" formControlName="start" [timeOnly]="true" [showIcon]="true" appendTo="body" [showTime]="true" [showSeconds]="true"
-                [ngClass]="{ 'ng-invalid ng-dirty': contentItemForm.errors?.['startAfterEnd'] }" stepMinute="5" stepSecond="5" hourFormat="12" fluid />
-            <label for="start">Start Time*</label>
+<div class="flex flex-col gap-3 pt-2 h-full">
+    <div class="flex" [formGroup]="contentItemForm">
+        <p-floatlabel class="w-full" variant="on">
+            <p-select inputId="type" [options]="contentTypes()" optionLabel="label" optionValue="value" formControlName="type" appendTo="body" fluid />
+            <label for="type">Type</label>
         </p-floatlabel>
-        <p-floatlabel variant="on">
-            <p-datepicker inputId="end" formControlName="end" [timeOnly]="true" [showIcon]="true" appendTo="body" [showTime]="true" [showSeconds]="true"
-                [ngClass]="{ 'ng-invalid ng-dirty': contentItemForm.errors?.['startAfterEnd'] }" stepMinute="5" stepSecond="5" hourFormat="12"  fluid />
-            <label for="end">End Time*</label>
-        </p-floatlabel>
-        <div class="flex gap-2">
-            <p-checkbox formControlName="allDay" binary />
-            <p>All Day</p>
-        </div>
-        @if (contentItemForm.errors?.['startAfterEnd']) {
-            <p class="italic text-sm text-red-400">*Start Date must be before End Date</p>
-        }
-        
-        <div class="col-span-1 md:col-span-3">
-            <p-floatlabel variant="on">
-                <p-select inputId="type" [options]="contentTypes()" optionLabel="label" optionValue="value" formControlName="type" appendTo="body" fluid />
-                <label for="type">Type</label>
-            </p-floatlabel>
-        </div>
     </div>
-    <p>Add Content:</p>
     @switch (type?.value) {
         @case ('asset') {
             <app-asset-filter (filterChange)="onFilterChange($event)" />
@@ -34,7 +13,7 @@
             <app-playlist-filter (filterChange)="onFilterChange($event)" />
         }
     }
-    <div class="border border-[var(--p-surface-300)] rounded-lg h-[250px]">
+    <div class="border border-[var(--p-surface-300)] rounded-lg h-[220px]">
         <p-table
             #contentTable
             [value]="filteredContentLists()"
@@ -42,8 +21,10 @@
             (selectionChange)="onSelectionChange($event)"
             dataKey="id"
             [scrollable]="true" 
-            scrollHeight="250px" 
+            scrollHeight="220px" 
+            selectionMode="single"
             size="small"
+            sty
             stripedRows
             showGridlines
         >
@@ -55,7 +36,7 @@
                 </tr>
             </ng-template>
             <ng-template #body let-item>
-                <tr>
+                <tr [pSelectableRow]="item">
                     <td>
                         <div class="text-center"><p-tableRadioButton [value]="item" /></div>
                     </td>
@@ -72,6 +53,56 @@
             </ng-template>
         </p-table>
     </div>
+
+    <p-fieldset legend="Schedule" [formGroup]="contentItemForm">
+        <div class="flex flex-col gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                <div class="absolute top-0 right-0 bg-gray-200 z-50 opacity-10 h-full w-full" *ngIf="!selectedContent()"></div>
+                <p-floatlabel variant="on">
+                    <p-datepicker inputId="startDate" formControlName="start" appendTo="body" readonlyInput
+                        [maxDate]="calendarDateRange()?.end" (onSelect)="onStartDateChange($event)"
+                        showIcon fluid />
+                    <label for="startDate">Start Date*</label>
+                </p-floatlabel>
+                <p-floatlabel variant="on">
+                    <p-datepicker inputId="startTime" formControlName="start" [timeOnly]="true" appendTo="body" readonlyInput (onSelect)="onStartDateChange($event, true)"
+                        hourFormat="24" stepMinute="5" stepSecond="5" [iconDisplay]="'input'" showOnFocus showSeconds showIcon fluid>
+                        <ng-template #inputicon let-clickCallBack="clickCallBack">
+                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+                        </ng-template>
+                    </p-datepicker>
+                    <label for="startTime">Start Time*</label>
+                </p-floatlabel>
+
+                @if (calendarSelectedDate()?.isSpecificTime) {
+                    <p class="italic text-red-500 text-sm col-span-1 md:col-span-2">*This will automatically compute end time</p>
+                }
+
+                <p-floatlabel variant="on">
+                    <p-datepicker inputId="endDate" formControlName="end" appendTo="body" readonlyInput
+                        [minDate]="calendarDateRange()?.start" (onSelect)="onEndDateChange($event)" showIcon fluid />
+                    <label for="endDate">End Date*</label>
+                </p-floatlabel>
+                <p-floatlabel variant="on">
+                    <p-datepicker inputId="endTime" formControlName="end" [timeOnly]="true" appendTo="body" [showOnFocus]="false" readonlyInput
+                        hourFormat="24" stepMinute="5" stepSecond="5" [iconDisplay]="'input'" [showSeconds]="true" showIcon fluid>
+                        <ng-template #inputicon let-clickCallBack="clickCallBack">
+                            <i class="pi pi-clock"></i>
+                        </ng-template>
+                    </p-datepicker>
+                    <label for="endTime">End Time*</label>
+                </p-floatlabel>
+            </div>
+        @if (contentItemForm.errors?.['startAfterEnd']) {
+            <p class="italic text-sm text-red-400">*Start Date must be before End Date</p>
+        }
+            <div class="flex gap-2">
+                <p-checkbox formControlName="allDay" binary />
+                <p>All Day</p>
+            </div>
+        </div>
+    </p-fieldset>
+    
     <div class="flex flex-col gap-2">
         <p class="text-sm italic" [ngClass]="{ 'text-red-400' : formcontrol('color').errors }">Select event color*:</p>
         <div class="flex gap-2">

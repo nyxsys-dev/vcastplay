@@ -1,0 +1,35 @@
+<div class="w-full pr-4 select-none">
+  <div #timeline id="timeline" class="relative h-4 bg-[var(--p-surface-300)] rounded">
+
+    <!-- Scrollbar-like range -->
+    <div
+      class="absolute top-0 h-4 bg-[var(--p-primary-500)] rounded flex opacity-80"
+      [style.left.%]="startPosition"
+      [style.width.%]="endPosition - startPosition">
+
+      <!-- Left Resize (scrollbar edge) -->
+      <div class="w-2 bg-[var(--p-primary-500)] cursor-ew-resize"
+           (mousedown)="onMouseDown($event, 'left')"></div>
+
+      <!-- Middle Move Area -->
+      <div class="flex-1 cursor-grab"
+           (mousedown)="onMouseDown($event, 'move')"></div>
+
+      <!-- Right Resize (scrollbar edge) -->
+      <div class="w-2 bg-[var(--p-primary-500)] cursor-ew-resize"
+           (mousedown)="onMouseDown($event, 'right')"></div>
+    </div>
+
+    <!-- Time markers -->
+    <div *ngFor="let mark of [0, 1, 2, 3, 4, 5, 6]"
+         class="absolute text-xs text-gray-700 -bottom-5"
+         [style.left.%]="(mark / 6) * 100">
+      {{ (mark * 4).toString().padStart(2, '0') }}:00
+    </div>
+  </div>
+
+  <!-- Selected Range -->
+  <div class="mt-4 text-center text-lg font-semibold text-gray-700">
+    {{ startTime }} → {{ endTime }}
+  </div>
+</div>

@@ -5,11 +5,11 @@
             <div class="flex gap-4 items-center mb-2">
                 <app-playlist-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
                 <div class="gap-2 ml-auto hidden md:flex">
-                    <p-button label="Generate" icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" outlined />
+                    <p-button label="Generate" icon="pi pi-images" (onClick)="onClickGetContents()" outlined />
                     <p-button (onClick)="onClickAddNew()" label="New" icon="pi pi-plus"></p-button>
                 </div>
                 <div class="flex gap-2 ml-auto md:hidden">
-                    <p-button icon="pi pi-images" severity="info" (onClick)="onClickGetContents()" outlined />
+                    <p-button icon="pi pi-images" (onClick)="onClickGetContents()" outlined />
                     <p-button (onClick)="onClickAddNew()" label="" icon="pi pi-plus" />
                 </div>
             </div>
