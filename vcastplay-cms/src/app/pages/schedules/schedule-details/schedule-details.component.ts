@@ -225,7 +225,7 @@ export class ScheduleDetailsComponent {
   }
   
   onClickSaveFillers(event: Event) {
-    const { contents } = this.scheduleForm.value;
+    const { contents } = this.scheduleForm.value;    
     const fillers = this.arrSelectedContents().map((item: any) => ({
       id: item.id,
       code: item.code,
@@ -234,7 +234,7 @@ export class ScheduleDetailsComponent {
       allDay: true,
       color: '#71717B',
       isFiller: true
-    }))
+    }))    
     this.scheduleForm.patchValue({ contents: [ ...fillers, ...contents.filter((item: any) => !item.isFiller) ] });
     this.showFillerContents.set(false);
     this.arrSelectedContents.set([]);
