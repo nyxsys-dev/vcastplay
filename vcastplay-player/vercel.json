@@ -3,6 +3,7 @@
     { "source": "/ngsw-worker.js", "destination": "/ngsw-worker.js" },
     { "source": "/ngsw.json", "destination": "/ngsw.json" },
     { "source": "/assets/:match*", "destination": "/assets/:match*" },
+    { "source": "/.well-known/assetlinks.json", "destination": "/.well-known/assetlinks.json" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
