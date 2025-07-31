@@ -45,6 +45,7 @@ export interface Screen {
     screenshotOn?: Date;
     onlineOn?: Date;
     registeredOn?: Date;
+    config?: ScreenConfiguration;
     createdOn: Date;
     updatedOn: Date;
 }
@@ -62,4 +63,13 @@ export interface ScreenMessage {
     displayedOn: Date;
     createdOn: Date;
     updatedOn: Date;
+}
+
+export interface ScreenConfiguration {
+    display: boolean;
+    audio: boolean;
+    alwaysTop: boolean;
+    fullscreen: boolean;
+    syncTime: boolean;
+    playbackLogging: boolean;
 }

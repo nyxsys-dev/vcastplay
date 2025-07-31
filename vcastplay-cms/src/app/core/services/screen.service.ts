@@ -2,6 +2,7 @@ import { computed, Injectable, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Screen, ScreenMessage } from '../interfaces/screen';
 import { SelectOption } from '../interfaces/general';
+import { MenuItem } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
@@ -62,6 +63,8 @@ export class ScreenService {
     { label: 'Skyscrapers', value: 'skyscrapers' },
   ]);
 
+  toggleOptions: MenuItem[] = [{ label: 'On', value: true, },{ label: 'Off', value: false }];
+
   screenForm: FormGroup = new FormGroup({
     id: new FormControl(0),
     code: new FormControl(null, { length: 6, validators: Validators.required }),
@@ -109,6 +112,15 @@ export class ScreenService {
     contentStatus: new FormControl(null),
     keywords: new FormControl(null),
   });
+
+  screenConfigForm: FormGroup = new FormGroup({
+    display: new FormControl(false),
+    audio: new FormControl(false),
+    alwaysTop: new FormControl(false),
+    fullscreen: new FormControl(false),
+    syncTime: new FormControl(false),
+    playbackLogging: new FormControl(false),
+  })
 
   tagControl: FormControl = new FormControl(null);
 

@@ -89,7 +89,7 @@ export class TagService {
     { id: 'genders', name: 'Genders', data: this.genders, formControlName: 'genders', showInSettings: false },
     { id: 'ageGroups', name: 'Age Groups', data: this.ageGroups, formControlName: 'ageGroups', showInSettings: false },
     { id: 'timeOfDays', name: 'Time of Days', data: this.timeOfDays, formControlName: 'timeOfDays', showInSettings: true },
-    { id: 'sesonalities', name: 'Sesonality', data: this.sesonalities, formControlName: 'seasonalities', showInSettings: true },
+    { id: 'sesonalities', name: 'Seasonality', data: this.sesonalities, formControlName: 'seasonalities', showInSettings: true },
     { id: 'locations', name: 'Locations', data: this.locations, formControlName: 'locations', showInSettings: true },
     { id: 'pointOfInterests', name: 'Point of Interests', data: this.pointOfInterests, formControlName: 'pointOfInterests', showInSettings: true },
     { id: 'tags', name: 'Tags', data: this.tags, formControlName: 'tags', showInSettings: true },
