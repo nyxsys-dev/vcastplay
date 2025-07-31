@@ -78,9 +78,14 @@ export class ScreenManagementListComponent {
     this.selectedArrScreenBroadcastMessage.set([]);
   }
 
-  onClickCloseBroadcastMessage() {
+  onClickApplySettings() {
+    this.message.add({ severity:'success', summary: 'Success', detail: 'Settings applied successfully!' });
+  }
+
+  onClickCloseDialog() {
     this.selectedArrScreenBroadcastMessage.set([]);
-    this.showBroadcast.set(false)
+    this.showBroadcast.set(false);
+    this.showSettings.set(false);
   }
 
   get rows() { return this.screenService.rows; }
@@ -89,6 +94,7 @@ export class ScreenManagementListComponent {
   get toggleControls() { return this.screenService.toggleControls; }
   get selectMultipleScreens() { return this.screenService.selectMultipleScreens; }
   get showBroadcast() { return this.screenService.showBroadcast; }
+  get showSettings() { return this.screenService.showSettings; }
 
   get selectedArrScreenBroadcastMessage() { return this.broadcastService.selectedArrScreenBroadcastMessage; }
 }

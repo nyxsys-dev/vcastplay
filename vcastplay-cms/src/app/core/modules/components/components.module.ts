@@ -33,6 +33,7 @@ import { BroadcastDetailsComponent } from '../../../pages/settings/broadcast/bro
 import { ScreenBroadcastMessageComponent } from '../../../components/screen-broadcast-message/screen-broadcast-message.component';
 import { ScrubberTimelineComponent } from '../../../components/scrubber-timeline/scrubber-timeline.component';
 import { ScheduleFillersComponent } from '../../../pages/schedules/schedule-fillers/schedule-fillers.component';
+import { ScreenSettingsComponent } from '../../../pages/screen-management/screen-settings/screen-settings.component';
 
 
 const COMPONENT_MODULES = [
@@ -43,6 +44,7 @@ const COMPONENT_MODULES = [
   FiltersComponent,
   PreviewContentComponent,
   MapmarkersComponent,
+  ScrubberTimelineComponent,
 
   // Broadcast Components
   BroadcastListItemComponent,
@@ -63,6 +65,7 @@ const COMPONENT_MODULES = [
   ScreenControlsComponent,
   ScreenManagementListItemComponent,
   ScreenBroadcastMessageComponent,
+  ScreenSettingsComponent,
 
   // Playlist Components
   AddToPlaylistComponent,
@@ -85,8 +88,6 @@ const COMPONENT_MODULES = [
   ScheduleListItemComponent,
   ScheduleFilterComponent,
   ScheduleFillersComponent,
-
-  ScrubberTimelineComponent,
 ]
 
 @NgModule({

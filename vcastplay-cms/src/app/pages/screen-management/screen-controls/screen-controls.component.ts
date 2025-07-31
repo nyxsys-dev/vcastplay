@@ -84,18 +84,19 @@ export class ScreenControlsComponent {
     this.showBroadcast.set(true);
   }
 
-  onClickAssignContents() {
+  onClickOpenSettings() {
     const selectedScreens: Screen[] = this.selectMultipleScreens();
     if (selectedScreens.length == 0) {
       this.message.add({ severity:'error', summary: 'Error', detail: 'Please select at least one screen.' });
       return;
     }
-    this.screenService.onAssignContents();
+    this.showSettings.set(true);
   }
 
   get isMobile() { return this.utils.isMobile(); }
   get isTablet() { return this.utils.isTablet(); }
   get showBroadcast() { return this.screenService.showBroadcast; }
+  get showSettings() { return this.screenService.showSettings; }
   get toggleControls() { return this.screenService.toggleControls; }
   get selectMultipleScreens() { return this.screenService.selectMultipleScreens; }
 

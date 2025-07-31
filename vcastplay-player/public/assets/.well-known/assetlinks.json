@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ph.nyxsys.vcastplayv2",
+      "sha256_cert_fingerprints": [
+        "8E:94:41:0F:C0:E2:02:5D:32:0F:9A:A5:73:37:FE:15:DD:91:63:83:C0:12:AE:21:11:09:E9:12:F8:C6:09:D9"
+      ]
+    }
+  }
+]

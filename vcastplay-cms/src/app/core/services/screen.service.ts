@@ -20,6 +20,7 @@ export class ScreenService {
   showOTP = signal<boolean>(false);
   showBroadcast = signal<boolean>(false);
   toggleControls = signal<boolean>(false);
+  showSettings = signal<boolean>(false);
 
   selectedScreen = signal<Screen | null>(null);
   selectMultipleScreens = signal<Screen[]>([]);

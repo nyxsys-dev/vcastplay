@@ -152,8 +152,16 @@
 <p-dialog header="Broadcast Message" [(visible)]="showBroadcast" styleClass="w-[50rem] h-auto" [modal]="true" [draggable]="false">
     <app-screen-broadcast-message />
     <ng-template #footer>
-        <p-button label="Close" severity="secondary" (onClick)="onClickCloseBroadcastMessage()" />
+        <p-button label="Close" severity="secondary" (onClick)="onClickCloseDialog()" />
         <p-button label="Apply" severity="success" (onClick)="onClickApplyBroadcastMessage()" />
+    </ng-template>
+</p-dialog>
+
+<p-dialog header="Settings" [(visible)]="showSettings" styleClass="w-[50rem] h-auto" [modal]="true" [draggable]="false">
+    <app-screen-settings />
+    <ng-template #footer>
+        <p-button label="Close" severity="secondary" (onClick)="onClickCloseDialog()" />
+        <p-button label="Apply" severity="success" (onClick)="onClickApplySettings()" />
     </ng-template>
 </p-dialog>
 
