@@ -15,6 +15,6 @@
     { "source": "/ngsw.json", "destination": "/ngsw.json" },
     { "source": "/assets/:match*", "destination": "/assets/:match*" },
     { "source": "/.well-known/assetlinks.json", "destination": "/.well-known/assetlinks.json" },
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
