@@ -55,7 +55,6 @@ export class ScheduleDetailsComponent {
     slotEventOverlap: false,
     dayHeaderFormat: { weekday: 'short' },
     headerToolbar: false,
-    // showNonCurrentDates: false,
     fixedWeekCount: false,
     eventOrder: 'start',
     slotDuration: '00:00:05',
@@ -167,6 +166,7 @@ export class ScheduleDetailsComponent {
   }
 
   onClickAddContent() {
+    this.contentItemForm.reset();
     const isMonth = ['dayGridMonth'].includes(this.calendarViewSignal());
     const time = this.timeSlots().find(slot => slot.value == this.timeSlotSignal());
     const start = moment(this.calendarDateRange()?.start).format('YYYY-MM-DD');
@@ -179,6 +179,9 @@ export class ScheduleDetailsComponent {
   }
 
   onClickAddFillers() {
+    const contents: any[] = this.contents?.value || [];
+    const fillers = contents.filter((event: any) => event.isFiller);
+
     const time = this.timeSlots().find(slot => slot.value == this.timeSlotSignal());
     const start = moment(this.calendarDateRange()?.start).format('YYYY-MM-DD');
     const end = moment(this.calendarDateRange()?.end).subtract(1, 'day').format('YYYY-MM-DD');    
@@ -186,7 +189,8 @@ export class ScheduleDetailsComponent {
     const startDateTime = moment(`${start} ${time.start}`, 'YYYY-MM-DD HH:mm:ss').toDate();
     const endDateTime = moment(`${end} ${time.end}`, 'YYYY-MM-DD HH:mm:ss').toDate();
     this.calendarSelectedDate.set({ start: startDateTime, end: endDateTime, allDay: true });
-    this.showFillerContents.set(true)
+    this.showFillerContents.set(true);
+    this.arrSelectedContents.set(fillers);
   }
 
 
@@ -205,7 +209,7 @@ export class ScheduleDetailsComponent {
   }
 
   async onClickSaveContent(event: Event) {
-        
+    
     if (this.contentItemForm.invalid) {
       this.contentItemForm.markAllAsTouched();
       this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
@@ -337,8 +341,8 @@ export class ScheduleDetailsComponent {
   }
 
   onGetCurrentTime() {    
-    const start = moment().startOf('hour').format('HH:mm:ss'); // e.g., 14:00:00
-    const end = moment().startOf('hour').add(15, 'minutes').format('HH:mm:ss'); // e.g., 15:00:00
+    const start = moment().startOf('hour').format('HH:mm'); // e.g., 14:00
+    const end = moment().startOf('hour').add(15, 'minutes').format('HH:mm'); // e.g., 14:15
 
     this.timeSlotSignal.set(`${start} - ${end}`);
     this.onChangeTimeSlot({ start, end });
@@ -375,6 +379,10 @@ export class ScheduleDetailsComponent {
     } else {
       this.message.add({ severity: 'success', summary: 'Success', detail: 'Event updated successfully' });
     }
+  }
+
+  onSelectionChange(event: any) {
+    this.arrSelectedContents.set(event);
   }
   
   formControl(fieldName: string) {

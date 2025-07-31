@@ -149,7 +149,8 @@
     <p-button pTooltip="Screen Information" tooltipPosition="bottom" icon="pi pi-info-circle" severity="contrast" size="small" />
 </ng-template>
 
-<p-dialog header="Broadcast Message" [(visible)]="showBroadcast" styleClass="w-[50rem] h-auto" [modal]="true" [draggable]="false">
+<p-dialog header="Broadcast Message" [(visible)]="showBroadcast" styleClass="w-[50rem] h-auto" (onHide)="onClickCloseDialog()" 
+    [resizable]="false" [modal]="true" [draggable]="false">
     <app-screen-broadcast-message />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCloseDialog()" />
@@ -157,7 +158,8 @@
     </ng-template>
 </p-dialog>
 
-<p-dialog header="Settings" [(visible)]="showSettings" styleClass="w-[50rem] h-auto" [modal]="true" [draggable]="false">
+<p-dialog header="Settings" [(visible)]="showSettings" styleClass="w-[50rem] h-auto" (onHide)="onClickCloseDialog()" 
+    [resizable]="false" [modal]="true" [draggable]="false">
     <app-screen-settings />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCloseDialog()" />

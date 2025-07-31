@@ -156,7 +156,7 @@ export class UtilityService {
 
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += interval) {
-        const start = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
+        const start = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
         let endHour = hour;
         let endMinute = minute + interval;
 
@@ -165,7 +165,7 @@ export class UtilityService {
           endHour += 1;
         }
 
-        const end = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}:00`;
+        const end = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
         timeSlots.push({ start, end });
       }
     }

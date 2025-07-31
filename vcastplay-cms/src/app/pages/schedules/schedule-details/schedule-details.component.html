@@ -38,21 +38,21 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                 <!-- !['dayGridMonth'].includes(calendarViewSignal()) -->
-                <div class="col-span1 md:col-span-12 lg:col-span-6 order-3 md:order-1">
+                <div class="col-span1 md:col-span-12 lg:col-span-8 order-3 md:order-1">
                     <div class="flex gap-3 items-center">
                         <p-button icon="pi pi-chevron-left" size="small" pTooltip="Previous" tooltipPosition="bottom" (onClick)="onClickPreviousCalendar()" />
                         <p-button icon="pi pi-chevron-right" size="small" pTooltip="Next" tooltipPosition="bottom" (onClick)="onClickNextCalendar()" />
                         <p class="font-semibold text-lg">{{ calendarTitle() }}</p>
                     </div>
                 </div>
-                <div class="col-span-1 md:col-span-6 lg:col-span-3 order-2">
+                <div class="col-span-1 md:col-span-6 lg:col-span-2 order-2">
                     <p-floatlabel variant="on" [ngClass]="{ '!hidden': ['dayGridMonth'].includes(calendarViewSignal()) }">
                         <p-select inputId="timeSlot" [(ngModel)]="timeSlotSignal" [options]="timeSlots()" 
                             optionLabel="value" optionValue="value" (onChange)="onChangeTimeSlot($event)" appendTo="body" fluid />
                         <label for="timeSlot">Time Slots</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-1 md:col-span-6 lg:col-span-3 order-1 md:order-3">
+                <div class="col-span-1 md:col-span-6 lg:col-span-2 order-1 md:order-3">
                     <p-floatlabel variant="on">
                         <p-select inputId="calendarView" [(ngModel)]="calendarViewSignal" [options]="calendarViews()" optionLabel="label" optionValue="value" 
                             (onChange)="onChangeCalendarView($event)" fluid />
@@ -76,8 +76,8 @@
     </ng-template>
 </p-dialog>
 
-<p-dialog header="Add Fillers" [(visible)]="showFillerContents" [style]="{ width: '42rem' }" [draggable]="false" (onHide)="onClickCancelContent()" closable modal>
-    <app-schedule-fillers></app-schedule-fillers>
+<p-dialog header="Add Fillers" [(visible)]="showFillerContents" [style]="{ width: '42rem' }" [draggable]="false" (onHide)="onClickCancelContent()" closable modal>     
+    <app-content-selection [assetOnly]="true" selectionMode="multiple" [selectionContent]="arrSelectedContents" (selectedContents)="onSelectionChange($event)" />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCancelContent()" />
         <p-button label="Save" severity="success" (onClick)="onClickSaveFillers($event)" />

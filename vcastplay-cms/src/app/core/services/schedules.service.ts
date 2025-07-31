@@ -43,7 +43,7 @@ export class SchedulesService {
 
   calendarSelectedDate = signal<any>(null);
 
-  timeSlotSignal = signal<string>('00:00:00 - 00:15:00');
+  timeSlotSignal = signal<string>('00:00 - 00:15');
 
   loadingSignal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
@@ -352,7 +352,8 @@ export class SchedulesService {
     }];
 
     for (const event of eventContents) {
-      const key = `${moment(event.start).valueOf()}|${moment(event.end).valueOf()}`;
+      // const key = `${moment(event.start).valueOf()}|${moment(event.end).valueOf()}`;
+      const key = `${moment(event.start).valueOf()}`;
       if (!eventMap.has(key)) {
         eventMap.set(key, []);
       }
