@@ -1,13 +1,13 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 border border-zinc-200 rounded-lg p-3 items-center overflow-hidden">
     <div class="col-span-1 md:col-span-6 flex">
-        <div class="flex gap-3 items-center w-full" [formGroup]="assetForm">
+        <div class="flex gap-3 items-center w-full" [formGroup]="selectedContentForm">
             <p-inputgroup>
                 <p-inputgroup-addon>
                     <p-button label="Assign Content" severity="info" (onClick)="onClickOpenContents()" outlined />
                 </p-inputgroup-addon>
                 <input id="name" type="text" placeholder="Content" formControlName="name" readonly pInputText>
                 <p-inputgroup-addon>
-                    <p-button (onClick)="onClickApplyContents()" [disabled]="assetForm.invalid">
+                    <p-button (onClick)="onClickApplyContents()" [disabled]="selectedContentForm.invalid">
                         <div class="flex gap-2">
                             <img src="assets/vcastplay-logo.png" alt="vcastplay-icon" width="20">
                             <p>Apply</p>
@@ -48,6 +48,15 @@
         </div>
     </div>
 </div>
+
+<p-dialog header="Assign Content" [(visible)]="showContents" styleClass="w-[50rem] h-auto" (onHide)="onClickCloseDialog()" 
+    [resizable]="false" [modal]="true" [draggable]="false">
+    <app-content-selection [selectionContent]="selectionContent" [includeSchedules]="true"
+        (contentType)="onContentTypeChange($event)" (selectedContents)="onSelectionChange($event)" />
+    <ng-template #footer>
+        <p-button label="Close" severity="secondary" (onClick)="onClickCloseDialog()" />
+    </ng-template>
+</p-dialog>
 
 <p-toast />
 <p-confirmdialog />

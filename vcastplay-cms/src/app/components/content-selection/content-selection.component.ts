@@ -7,16 +7,18 @@ import { PlaylistService } from '../../core/services/playlist.service';
 import { SchedulesService } from '../../core/services/schedules.service';
 import { UtilityService } from '../../core/services/utility.service';
 import { FormControl } from '@angular/forms';
+import { ScheduleFilterComponent } from '../../pages/schedules/schedule-filter/schedule-filter.component';
 
 @Component({
   selector: 'app-content-selection',
-  imports: [ PrimengUiModule, AssetFilterComponent, PlaylistFilterComponent ],
+  imports: [ PrimengUiModule, AssetFilterComponent, PlaylistFilterComponent, ScheduleFilterComponent ],
   templateUrl: './content-selection.component.html',
   styleUrl: './content-selection.component.scss'
 })
 export class ContentSelectionComponent {
   
   @Input() assetOnly: boolean = false;
+  @Input() includeSchedules: boolean = false;
   @Input() selectionMode: 'single' | 'multiple' = 'single';
   @Input() selectionContent: any;
 
@@ -56,6 +58,10 @@ export class ContentSelectionComponent {
 
     return filteredContents;
   })
+
+  filtereContentTypes = computed(() => {
+    return this.includeSchedules ? this.contentTypes() : this.contentTypes().filter(type => type !== 'schedule');
+  })
   
   constructor() {
     this.contentTypeControl.valueChanges.subscribe((value) => {
@@ -78,6 +84,9 @@ export class ContentSelectionComponent {
         break;
       case 'layout':
         this.contentLists.set([]);
+        break;
+      case 'schedule':
+        this.contentLists.set(this.scheduleService.onGetSchedule());
         break;
       default:
         this.contentLists.set(this.assetService.onGetAssets());

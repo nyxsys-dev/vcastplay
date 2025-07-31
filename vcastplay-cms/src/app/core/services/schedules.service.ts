@@ -30,6 +30,7 @@ export class SchedulesService {
     { label: 'Asset', value: 'asset' },
     { label: 'Playlist', value: 'playlist' },
     { label: 'Design Layout', value: 'layout' },
+    { label: 'Schdules', value: 'schedule' },
   ]);
   
   calendarTitle = signal<string>('');

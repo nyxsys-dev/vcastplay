@@ -14,6 +14,8 @@ export class ScreenService {
   private screenSignal = signal<Screen[]>([]);
   screens = computed(() => this.screenSignal());
 
+  selectionContent: any;
+
   loadingSignal = signal<boolean>(false);
   loadingAddressSignal = signal<boolean>(false);
 
@@ -22,9 +24,17 @@ export class ScreenService {
   showBroadcast = signal<boolean>(false);
   toggleControls = signal<boolean>(false);
   showSettings = signal<boolean>(false);
+  showContents = signal<boolean>(false);
 
   selectedScreen = signal<Screen | null>(null);
   selectMultipleScreens = signal<Screen[]>([]);
+
+  contentType = signal<string>('asset');
+  selectedContentForm: FormGroup = new FormGroup({
+    id: new FormControl(null),
+    name: new FormControl(null, [ Validators.required]),
+    type: new FormControl(null),
+  })
   
   rows = signal<number>(8);
   totalRecords = signal<number>(0);

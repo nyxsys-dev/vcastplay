@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
@@ -6,16 +6,16 @@ import { BroadcastService } from '../../../core/services/broadcast.service';
 import { Screen } from '../../../core/interfaces/screen';
 import { AssetsService } from '../../../core/services/assets.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { ContentSelectionComponent } from '../../../components/content-selection/content-selection.component';
 
 @Component({
   selector: 'app-screen-controls',
-  imports: [ PrimengUiModule ],
+  imports: [ PrimengUiModule, ContentSelectionComponent ],
   templateUrl: './screen-controls.component.html',
   styleUrl: './screen-controls.component.scss'
 })
 export class ScreenControlsComponent {
 
-  assetService = inject(AssetsService);
   screenService = inject(ScreenService);
   broadcastService = inject(BroadcastService);
   utils = inject(UtilityService);
@@ -29,10 +29,13 @@ export class ScreenControlsComponent {
       this.message.add({ severity:'error', summary: 'Error', detail: 'Please select at least one screen.' });
       return;
     }
+    this.showContents.set(true);
   }
 
   onClickApplyContents() {
     this.message.add({ severity:'success', summary: 'Success', detail: 'Contents applied successfully!' });
+    console.log(this.selectedContentForm.value);
+    this.selectedContentForm.reset();
   }
 
   onClickToggleControls() { 
@@ -93,12 +96,31 @@ export class ScreenControlsComponent {
     this.showSettings.set(true);
   }
 
+  onClickCloseDialog() {
+    this.showContents.set(false);
+  }
+  
+  onSelectionChange(event: any) {
+    this.selectedContentForm.patchValue({ 
+      id: event.id, 
+      name: event.name,
+      type: this.contentType()
+    });
+  }
+
+  onContentTypeChange(event: any) {
+    this.contentType.set(event);
+  }
+
   get isMobile() { return this.utils.isMobile(); }
   get isTablet() { return this.utils.isTablet(); }
+  get contentType() { return this.screenService.contentType; }
   get showBroadcast() { return this.screenService.showBroadcast; }
   get showSettings() { return this.screenService.showSettings; }
+  get showContents() { return this.screenService.showContents; }
   get toggleControls() { return this.screenService.toggleControls; }
+  get selectionContent() { return this.screenService.selectionContent; }
   get selectMultipleScreens() { return this.screenService.selectMultipleScreens; }
 
-  get assetForm() { return this.assetService.assetForm; }
+  get selectedContentForm() { return this.screenService.selectedContentForm; }
 }

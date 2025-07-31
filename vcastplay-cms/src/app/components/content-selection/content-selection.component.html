@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-3 pt-2 h-full">
     @if (!assetOnly) {
         <p-floatlabel class="w-full" variant="on">
-            <p-select inputId="type" [options]="contentTypes()" optionLabel="label" optionValue="value" [formControl]="contentTypeControl" appendTo="body" fluid />
+            <p-select inputId="type" [options]="filtereContentTypes()" optionLabel="label" optionValue="value" [formControl]="contentTypeControl" appendTo="body" fluid />
             <label for="type">Type</label>
         </p-floatlabel>
     }
@@ -11,6 +11,9 @@
         }
         @case ('playlist') {
             <app-playlist-filter (filterChange)="onFilterChange($event)" />
+        }
+        @case ('schedule') {
+            <app-schedule-filter (filterChange)="onFilterChange($event)" />
         }
     }
     <div class="border border-[var(--p-surface-300)] rounded-lg h-[220px]">
@@ -31,7 +34,10 @@
                 <tr>
                     <th style="width: 3rem"></th>
                     <th>Name</th>
-                    <th>Duration</th>
+                    <th>
+                        @if (contentTypeControl.value !== 'schedule') { Duration }
+                        @else { Description }
+                    </th>
                 </tr>
             </ng-template>
             <ng-template #body let-item>
@@ -46,7 +52,13 @@
                         </div>
                     </td>
                     <td><p class="line-clamp-1">{{ item.name }}</p></td>
-                    <td>{{ utils.timeConversion(item.duration) }}</td>
+                    <td>
+                        @if (contentTypeControl.value !== 'schedule') {
+                            {{ utils.timeConversion(item.duration) }}
+                        } @else {
+                            {{ item.description }}
+                        }
+                    </td>
                 </tr>
             </ng-template>
             <ng-template #emptymessage>

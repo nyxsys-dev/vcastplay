@@ -47,6 +47,7 @@ export class ScreenManagementListComponent {
 
   ngOnInit() {
     this.screenService.onGetScreens();
+    this.toggleControls.set(false);
   }
 
   ngOnDestroy() {
@@ -61,12 +62,8 @@ export class ScreenManagementListComponent {
     checked ? this.selectMultipleScreens.set(this.filteredScreen()) : this.selectMultipleScreens.set([]);
   }
 
-  onClickToggleControls() {
-    this.toggleControls.set(!this.toggleControls());
-  }
-
   onFilterChange(event: any) {
-    
+    this.screenFilters.set(event.filters);
   }
 
   onClickApplyBroadcastMessage() {
@@ -80,6 +77,11 @@ export class ScreenManagementListComponent {
 
   onClickApplySettings() {
     this.message.add({ severity:'success', summary: 'Success', detail: 'Settings applied successfully!' });
+    this.showSettings.set(false);
+  }
+
+  onClickApplyContents() {
+    this.message.add({ severity:'success', summary: 'Success', detail: 'Contents applied successfully!' });
   }
 
   onClickCloseDialog() {
