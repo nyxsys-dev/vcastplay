@@ -14,7 +14,7 @@ export class ScreenService {
   private screenSignal = signal<Screen[]>([]);
   screens = computed(() => this.screenSignal());
 
-  selectionContent: any;
+  selectionContent = signal<any>(null);
 
   loadingSignal = signal<boolean>(false);
   loadingAddressSignal = signal<boolean>(false);

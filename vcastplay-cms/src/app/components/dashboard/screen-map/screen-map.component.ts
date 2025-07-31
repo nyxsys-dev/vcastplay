@@ -111,9 +111,9 @@ export class ScreenMapComponent {
       })
     });
   }
-  onClickScreen(screen: any) {
-    this.selectedScreen.set(screen);
-    this.map.flyTo({ lat: screen.geolocation.latitude, lng: screen.geolocation.longitude }, 22);
+  onClickScreen(screen: Screen) {
+    this.selectedScreen.set(screen);    
+    this.map.flyTo({ lat: screen.address.latitude, lng: screen.address.longitude }, 22);
     this.drawerVisible.set(true);
   }
 

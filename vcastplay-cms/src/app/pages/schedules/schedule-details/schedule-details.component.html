@@ -69,7 +69,7 @@
 </div>
 
 <p-dialog header="Add Content" [(visible)]="showAddContents" [style]="{ width: '42rem' }" [draggable]="false" (onHide)="onClickCancelContent()" closable modal>
-    <app-schedules-content-list [calendar]="scheduleCalendar" />
+    <app-schedules-content-list #scheduleContents [calendar]="scheduleCalendar" />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCancelContent()" />
         <p-button label="Save" severity="success" (onClick)="onClickSaveContent($event)" />

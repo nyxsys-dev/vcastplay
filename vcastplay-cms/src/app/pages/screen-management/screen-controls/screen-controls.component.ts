@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
@@ -16,6 +16,8 @@ import { ContentSelectionComponent } from '../../../components/content-selection
 })
 export class ScreenControlsComponent {
 
+  @ViewChild('contents') contents!: ContentSelectionComponent;
+
   screenService = inject(ScreenService);
   broadcastService = inject(BroadcastService);
   utils = inject(UtilityService);
@@ -29,11 +31,13 @@ export class ScreenControlsComponent {
       this.message.add({ severity:'error', summary: 'Error', detail: 'Please select at least one screen.' });
       return;
     }
+    this.contents.selectionContent = [];
     this.showContents.set(true);
   }
 
   onClickApplyContents() {
     this.message.add({ severity:'success', summary: 'Success', detail: 'Contents applied successfully!' });
+    this.selectionContent.set(null);
     console.log(this.selectedContentForm.value);
     this.selectedContentForm.reset();
   }
@@ -101,6 +105,10 @@ export class ScreenControlsComponent {
   }
   
   onSelectionChange(event: any) {
+    if (!event) {
+      this.selectionContent.set(null);
+      return;
+    }
     this.selectedContentForm.patchValue({ 
       id: event.id, 
       name: event.name,

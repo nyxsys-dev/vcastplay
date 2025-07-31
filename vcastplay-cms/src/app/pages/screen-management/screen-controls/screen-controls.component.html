@@ -51,8 +51,7 @@
 
 <p-dialog header="Assign Content" [(visible)]="showContents" styleClass="w-[50rem] h-auto" (onHide)="onClickCloseDialog()" 
     [resizable]="false" [modal]="true" [draggable]="false">
-    <app-content-selection [selectionContent]="selectionContent" [includeSchedules]="true"
-        (contentType)="onContentTypeChange($event)" (selectedContents)="onSelectionChange($event)" />
+    <app-content-selection #contents [includeSchedules]="true" (contentType)="onContentTypeChange($event)" (selectedContents)="onSelectionChange($event)" />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCloseDialog()" />
     </ng-template>

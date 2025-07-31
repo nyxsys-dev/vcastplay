@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-3 pt-2 h-full">
-    <app-content-selection (contentType)="onContentTypeChange($event)" [selectionContent]="selectedContent" (selectedContents)="onSelectionChange($event)" />
+    <app-content-selection #contents (contentType)="onContentTypeChange($event)" [selectionContent]="selectedContent" (selectedContents)="onSelectionChange($event)" />
 
     <p-fieldset legend="Schedule" [formGroup]="contentItemForm">
         <div class="flex flex-col gap-3">

@@ -12,6 +12,7 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { Router } from '@angular/router';
 import moment from 'moment-timezone';
 import { PlaylistService } from '../../../core/services/playlist.service';
+import { SchedulesContentListComponent } from '../schedules-content-list/schedules-content-list.component';
 
 @Component({
   selector: 'app-schedule-details',
@@ -23,6 +24,7 @@ import { PlaylistService } from '../../../core/services/playlist.service';
 export class ScheduleDetailsComponent {
 
   @ViewChild('scheduleCalendar') scheduleCalendar!: FullCalendarComponent;
+  @ViewChild('scheduleContents') scheduleContents!: SchedulesContentListComponent;
   
   pageInfo: MenuItem = [ {label: 'Schedules'}, {label: 'List', routerLink: '/schedule/schedule-library'}, {label: 'Details'} ];
   itemMenu: MenuItem[] = [
@@ -176,6 +178,7 @@ export class ScheduleDetailsComponent {
     const endDateTime = moment(`${end} ${time.end}`, 'YYYY-MM-DD HH:mm:ss').toDate();
     
     this.onSelectContents({ start: startDateTime, end: endDateTime, allDay: isMonth }, false);
+    this.scheduleContents.contents.selectionContent = null;
   }
 
   onClickAddFillers() {
@@ -272,6 +275,7 @@ export class ScheduleDetailsComponent {
     this.contentItemForm.patchValue({ start: startDate.toDate(), end: !isSpecificTime ? endDate.toDate() : null, allDay });
     this.calendarSelectedDate.set({ start, end, allDay, isSpecificTime });
     
+    this.scheduleContents.contents.selectionContent = null;
     this.showAddContents.set(true);
   }
 

@@ -34,7 +34,7 @@
                         <label for="lastName">Last Name</label>
                     </p-floatlabel>
                 </div>
-                <div class="col-span-2">
+                <div class="col-span-2 md:col-span-1">
                     <p-floatlabel variant="in">
                         <input id="email" pInputText formControlName="email" fluid type="email" />
                         <label for="email">Email</label>
@@ -44,12 +44,6 @@
                     <p-floatlabel variant="in">
                         <p-inputmask mask="999-999-9999" formControlName="mobile" styleClass="w-full" />
                         <label for="mobile">Mobile Number</label>
-                    </p-floatlabel>
-                </div>
-                <div class="col-span-2 md:col-span-1">
-                    <p-floatlabel variant="in">
-                        <p-select formControlName="role" inputId="role" [options]="roleService.roles()" appendTo="body" optionLabel="name" optionValue="id" fluid />
-                        <label for="role">Roles</label>
                     </p-floatlabel>
                 </div>
                 <div class="col-span-2 pt-5">

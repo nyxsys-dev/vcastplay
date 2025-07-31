@@ -1,4 +1,4 @@
-import { Component, computed, inject, Input, signal } from '@angular/core';
+import { Component, computed, inject, Input, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { SchedulesService } from '../../../core/services/schedules.service';
 import { UtilityService } from '../../../core/services/utility.service';
@@ -17,6 +17,8 @@ import { ContentSelectionComponent } from '../../../components/content-selection
   styleUrl: './schedules-content-list.component.scss'
 })
 export class SchedulesContentListComponent {
+
+  @ViewChild('contents') contents!: ContentSelectionComponent;
 
   @Input() calendar!: FullCalendarComponent 
 

@@ -59,8 +59,8 @@ export class ContentSelectionComponent {
     return filteredContents;
   })
 
-  filtereContentTypes = computed(() => {
-    return this.includeSchedules ? this.contentTypes() : this.contentTypes().filter(type => type !== 'schedule');
+  filtereContentTypes = computed(() => {    
+    return this.includeSchedules ? this.contentTypes() : this.contentTypes().filter(type => type.value !== 'schedule');
   })
   
   constructor() {
