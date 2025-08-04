@@ -45,15 +45,15 @@ export class PlayerService {
         type: 'video',
         duration: 15
       },
-      {
-        id: 1,
-        link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-        type: 'video',
-        duration: 60
-      },
+      // {
+      //   id: 1,
+      //   link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+      //   type: 'video',
+      //   duration: 60
+      // },
       {
         id: 4,
-        link: 'https://fastly.picsum.photos/id/12/2500/1667.jpg?hmac=Pe3284luVre9ZqNzv1jMFpLihFI6lwq7TPgMSsNXw2w',
+        link: 'https://images.pexels.com/photos/31889976/pexels-photo-31889976.jpeg',
         type: 'image',
         duration: 7
       },
@@ -65,7 +65,7 @@ export class PlayerService {
       },
       {
         id: 2,
-        link: 'https://fastly.picsum.photos/id/10/2500/1667.jpg?hmac=J04WWC_ebchx3WwzbM-Z4_KC_LeLBWr5LZMaAkWkF68',
+        link: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg',
         type: 'image',
         duration: 5
       },
