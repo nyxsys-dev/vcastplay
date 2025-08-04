@@ -33,6 +33,8 @@ export class PlayerService {
 
   playerCode = signal<string>('');
 
+  androidData = signal<any>(null);
+
   constructor() { }
 
   onLoadContents() { 
@@ -235,9 +237,9 @@ export class PlayerService {
   }
   
   onGetAndroidInformation() {
-    return (window as any).getDeviceDetails = function (data: any) {
+    (window as any).getDeviceDetails = function (data: any) {
       console.log('Received from android device details');
-      return data;
+      this.androidData.set(data);
     }
   }
 

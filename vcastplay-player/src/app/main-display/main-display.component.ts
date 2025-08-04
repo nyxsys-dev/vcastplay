@@ -62,8 +62,8 @@ export class MainDisplayComponent {
     if (platform === 'android') {
       const playlist = this.player.onGetContents();
       this.player.onSendDataToAndroid(playlist);
-      const androidData = this.player.onGetAndroidInformation();
-      console.log(androidData);
+      this.player.onGetAndroidInformation();
+      console.log(this.androidData());
     }
   }
 
@@ -111,4 +111,5 @@ export class MainDisplayComponent {
   get hideCursor() { return this.player.hideCursor; }
   get playerCode() { return this.player.playerCode; }
   get systemInfo() { return this.player.systemInfo; }
+  get androidData() { return this.player.androidData; }
 }
