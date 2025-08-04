@@ -46,7 +46,7 @@ export class MainDisplayComponent {
   async ngOnInit() {
     this.indexedDB.clearItems();
     this.player.onLoadContents();
-    // this.onGetPlayerInformation();
+    this.onGetPlayerInformation();
   }
 
   async ngAfterViewInit() {
@@ -85,7 +85,7 @@ export class MainDisplayComponent {
    
     switch (platform) {
       case 'android':
-        this.player.onGetAndroidInformation();
+        // this.player.onGetAndroidInformation();
         this.player.onSendDataToAndroid({ code, platform, playerCode, appVersion });
         break;
       case 'desktop':
