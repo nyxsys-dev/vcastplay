@@ -235,8 +235,8 @@ export class PlayerService {
   }
   
   onGetAndroidInformation() {
-    (window as any).getDeviceDetails = function (data: any) {
-      // console.log('Received from android device details:', data);
+    return (window as any).getDeviceDetails = function (data: any) {
+      console.log('Received from android device details');
       return data;
     }
   }
