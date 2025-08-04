@@ -92,9 +92,9 @@ export class PlayerService {
     
     this.currentContent.set(item);
 
-    if (this.platform.platform === 'android') {
-      this.onSendDataToAndroid(JSON.stringify(item));
-    }
+    // if (this.platform.platform === 'android') {
+    //   this.onSendDataToAndroid(JSON.stringify(item));
+    // }
     
     this.fadeIn.set(true);
     this.progress.set(0);
@@ -236,7 +236,8 @@ export class PlayerService {
   
   onGetAndroidInformation() {
     (window as any).getDeviceDetails = function (data: any) {
-      console.log('Received from android device details:', data);
+      // console.log('Received from android device details:', data);
+      return data;
     }
   }
 

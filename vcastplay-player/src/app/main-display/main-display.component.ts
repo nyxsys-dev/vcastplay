@@ -46,7 +46,7 @@ export class MainDisplayComponent {
   async ngOnInit() {
     this.indexedDB.clearItems();
     this.player.onLoadContents();
-    this.onGetPlayerInformation();
+    // this.onGetPlayerInformation();
   }
 
   async ngAfterViewInit() {
@@ -57,11 +57,13 @@ export class MainDisplayComponent {
     })
 
     await this.indexedDB.getAllItems();
-    this.player.onPlayPreview();
+    // this.player.onPlayPreview();
     
     if (platform === 'android') {
-      this.player.onGetAndroidInformation();
-      this.player.onSendDataToAndroid('Player is playing');
+      const playlist = this.player.onGetContents();
+      this.player.onSendDataToAndroid(playlist);
+      const androidData = this.player.onGetAndroidInformation();
+      console.log(androidData);
     }
   }
 
