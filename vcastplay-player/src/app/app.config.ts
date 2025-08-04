@@ -23,6 +23,7 @@ declare global {
       takeScreenshot: () => Promise<any>;
       isElectron: boolean;
     },
+    getDeviceDetails: (data: any) => void;
   }
 }
 

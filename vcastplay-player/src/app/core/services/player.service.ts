@@ -237,10 +237,11 @@ export class PlayerService {
   }
   
   onGetAndroidInformation() {
-    (window as any).getDeviceDetails = function (data: any) {
-      console.log('Received from android device details');
+    window.getDeviceDetails = (data: any) => {
+      console.log('Received from android device details:', data);
+      // You can update Angular state here if needed
       this.androidData.set(data);
-    }
+    };
   }
 
   onGetBrowserInformation() {
