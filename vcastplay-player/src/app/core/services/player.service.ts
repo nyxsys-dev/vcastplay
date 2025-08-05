@@ -92,7 +92,7 @@ export class PlayerService {
     const item = contents[this.currentIndex()];
 
     if (this.platform.platform === 'android') {
-      this.currentContent.set({ ...item, link: `${this.androidPath}/${item.link}` });
+      this.currentContent.set({ ...item, link: `${this.androidPath}/${item.name}` });
     } else {
       this.currentContent.set(item);
     }
