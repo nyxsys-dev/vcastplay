@@ -61,6 +61,7 @@ export class MainDisplayComponent {
     // if (platform === 'android') {
     // }
     this.onGetPlayerInformation();
+    this.player.onGetReceiveData();
   }
 
   onClickPlayPreview() {

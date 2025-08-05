@@ -24,6 +24,7 @@ declare global {
       isElectron: boolean;
     },
     getDeviceDetails: (data: any) => void;
+    receiveDataFromAndroid: (data: any) => void;
   }
 }
 

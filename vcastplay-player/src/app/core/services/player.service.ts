@@ -244,6 +244,16 @@ export class PlayerService {
     };
   }
 
+  onGetReceiveData() {
+    window.receiveDataFromAndroid = (data: any) => {
+      if (data) {
+        console.log('Received from android:', data);
+      } else {
+        console.log('No data received from android.');
+      }
+    };
+  }
+
   onGetBrowserInformation() {
     const { appVersion, appName, platform, userAgent }: any = navigator;
     const height = screen.height;
