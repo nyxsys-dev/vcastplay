@@ -252,11 +252,20 @@ export class PlayerService {
     console.log({ appVersion, appName, platform, userAgent, height, width, orientation });
   }
 
+  // onSendDataToAndroid(data: any) {
+  //   if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {
+  //     (window as any).AndroidBridge.sendCommand(data);
+  //   } else {
+  //     console.warn('AndroidBridge not available.');
+  //   }
+  // }
+
   onSendDataToAndroid(data: any) {
-    if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {
-      (window as any).AndroidBridge.sendCommand(data);
-    } else {
-      console.warn('AndroidBridge not available.');
-    }
+  if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {
+    const jsonData = JSON.stringify(data);
+    (window as any).AndroidBridge.sendCommand(jsonData);
+  } else {
+    console.warn('AndroidBridge not available.');
   }
+}
 }
