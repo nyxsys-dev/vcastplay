@@ -50,21 +50,17 @@ export class MainDisplayComponent {
   }
 
   async ngAfterViewInit() {
-    const platform = this.storage.get('platform');
+    // const platform = this.storage.get('platform');
     const contents = this.player.onGetContents();
-    contents.forEach(async (content: Playlist) => {
-      await this.indexedDB.addItem(content)
-    })
+    // contents.forEach(async (content: Playlist) => {
+    //   await this.indexedDB.addItem(content)
+    // })
 
-    await this.indexedDB.getAllItems();
+    // await this.indexedDB.getAllItems();
     // this.player.onPlayPreview();
     
-    if (platform === 'android') {
-      const playlist = this.player.onGetContents();
-      this.player.onSendDataToAndroid(playlist);
-      this.player.onGetAndroidInformation();
-      console.log(this.androidData());
-    }
+    // if (platform === 'android') {
+    // }
   }
 
   onClickPlayPreview() {
@@ -85,8 +81,10 @@ export class MainDisplayComponent {
    
     switch (platform) {
       case 'android':
-        // this.player.onGetAndroidInformation();
-        this.player.onSendDataToAndroid({ code, platform, playerCode, appVersion });
+        const playlist = this.player.onGetContents();
+        this.player.onSendDataToAndroid({ code, platform, playerCode, appVersion, playlist });
+        this.player.onGetAndroidInformation();
+        console.log(this.androidData());
         break;
       case 'desktop':
         this.player.onGetDesktopInformation();

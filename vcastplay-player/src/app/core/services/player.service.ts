@@ -246,7 +246,10 @@ export class PlayerService {
 
   onGetBrowserInformation() {
     const { appVersion, appName, platform, userAgent }: any = navigator;
-    console.log({ appVersion, appName, platform, userAgent }, navigator);
+    const height = screen.height;
+    const width = screen.width;
+    const orientation = screen.orientation;
+    console.log({ appVersion, appName, platform, userAgent, height, width, orientation });
   }
 
   onSendDataToAndroid(data: any) {
