@@ -44,9 +44,8 @@ export class MainDisplayComponent {
   }
 
   async ngOnInit() {
-    this.indexedDB.clearItems();
-    this.player.onLoadContents();
-    this.onGetPlayerInformation();
+    // this.indexedDB.clearItems();
+    // this.player.onLoadContents();
   }
 
   async ngAfterViewInit() {
@@ -61,6 +60,7 @@ export class MainDisplayComponent {
     
     // if (platform === 'android') {
     // }
+    this.onGetPlayerInformation();
   }
 
   onClickPlayPreview() {
