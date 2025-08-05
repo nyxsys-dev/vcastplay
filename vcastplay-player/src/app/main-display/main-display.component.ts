@@ -49,8 +49,8 @@ export class MainDisplayComponent {
   }
 
   async ngAfterViewInit() {
-    // const platform = this.storage.get('platform');
-    const contents = this.player.onGetContents();
+    const platform = this.storage.get('platform');
+    // const contents = this.player.onGetContents();
     // contents.forEach(async (content: Playlist) => {
     //   await this.indexedDB.addItem(content)
     // })
@@ -58,8 +58,6 @@ export class MainDisplayComponent {
     // await this.indexedDB.getAllItems();
     // this.player.onPlayPreview();
     
-    // if (platform === 'android') {
-    // }
     this.onGetPlayerInformation();
     this.player.onGetReceiveData();
   }

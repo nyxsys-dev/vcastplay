@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Playlist } from '../interfaces/playlist';
 import { PlatformService } from './platform.service';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,7 @@ export class PlayerService {
   playerCode = signal<string>('');
 
   androidData = signal<any>(null);
+  androidPath: string = environment.androidFilePath;
 
   constructor() { }
 
@@ -41,30 +43,28 @@ export class PlayerService {
     this.contentSignal.set([
       {
         id: 3,
+        name: 'ForBiggerJoyrides.mp4',
         link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
         type: 'video',
         duration: 15
       },
-      // {
-      //   id: 1,
-      //   link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-      //   type: 'video',
-      //   duration: 60
-      // },
       {
         id: 4,
+        name: 'pexels-photo-31889976.jpeg',
         link: 'https://images.pexels.com/photos/31889976/pexels-photo-31889976.jpeg',
         type: 'image',
         duration: 7
       },
       {
         id: 5,
+        name: 'ForBiggerBlazes.mp4',
         link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
         type: 'video',
         duration: 15
       },
       {
         id: 2,
+        name: 'pexels-photo-355465.jpeg',
         link: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg',
         type: 'image',
         duration: 5
@@ -89,14 +89,13 @@ export class PlayerService {
     if (contents.length === 0) return;
 
     this.isPlaying.set(true);
-
     const item = contents[this.currentIndex()];
-    
-    this.currentContent.set(item);
 
-    // if (this.platform.platform === 'android') {
-    //   this.onSendDataToAndroid(JSON.stringify(item));
-    // }
+    if (this.platform.platform === 'android') {
+      this.currentContent.set({ ...item, link: `${this.androidPath}/${item.link}` });
+    } else {
+      this.currentContent.set(item);
+    }
     
     this.fadeIn.set(true);
     this.progress.set(0);
@@ -248,6 +247,7 @@ export class PlayerService {
     window.receiveDataFromAndroid = (data: any) => {
       if (data) {
         console.log('Received from android:', data);
+        this.onPlayPreview();
       } else {
         console.log('No data received from android.');
       }
