@@ -20,3 +20,9 @@ export interface Availability {
 }
 
 export const WEEKDAYS: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+export interface ApprovedInfo {
+    approvedBy: string;
+    approvedOn: Date | string | null;
+    remarks: string;
+}

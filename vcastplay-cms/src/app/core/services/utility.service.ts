@@ -65,7 +65,7 @@ export class UtilityService {
     { label: 'Screens', icon: 'pi pi-desktop', routerLink: '/screens/screen-registration' },
     { label: 'Assets', icon: 'pi pi-image', routerLink: '/assets/asset-library' },
     { label: 'Playlists', icon: 'pi pi-list', routerLink: '/playlist/playlist-library' },
-    { label: 'Layouts', icon: 'pi pi-th-large', routerLink: '/layout/design-layout-library' },
+    { label: 'Layouts', icon: 'pi pi-palette', routerLink: '/layout/design-layout-library' },
     { label: 'Schedules', icon: 'pi pi-calendar', routerLink: '/schedule/schedule-library' },
     { label: 'Screen Mangement', icon: 'pi pi-cloud', routerLink: '/screen-management' },
     { label: 'Reports', icon: 'pi pi-chart-bar', routerLink: '/reports' },
@@ -132,6 +132,9 @@ export class UtilityService {
     { text: 'pink', hex: '#FFC0CB', rgb: '255, 192, 203' },
     { text: 'orchid', hex: '#DA70D6', rgb: '218, 112, 214' },
     { text: 'taupe', hex: '#483D3C', rgb: '72, 61, 60' },
+    { text: 'white', hex: '#ffffff', rgb: '255, 255, 255' },
+    { text: 'black', hex: '#000000', rgb: '0, 0, 0' },
+    { text: 'gray', hex: '#808080', rgb: '128, 128, 128' },
   ]
 
   platForms: any[] = [

@@ -88,7 +88,14 @@ export class ScreenManagementListComponent {
     this.showBroadcast.set(false);
     this.showSettings.set(false);
     this.screenConfigForm.reset();
+    this.selectedScreen.set(null);
+    this.showScreenDetails.set(false);
     this.selectedArrScreenBroadcastMessage.set([]);
+  }
+
+  onClickOpenDetails(screen: Screen) {
+    this.selectedScreen.set(screen);
+    this.showScreenDetails.set(true);
   }
 
   get rows() { return this.screenService.rows; }
@@ -99,6 +106,8 @@ export class ScreenManagementListComponent {
   get showBroadcast() { return this.screenService.showBroadcast; }
   get showSettings() { return this.screenService.showSettings; }
   get screenConfigForm() { return this.screenService.screenConfigForm; }
+  get showScreenDetails() { return this.screenService.showScreenDetails; }
+  get selectedScreen() { return this.screenService.selectedScreen; }
 
   get selectedArrScreenBroadcastMessage() { return this.broadcastService.selectedArrScreenBroadcastMessage; }
 }

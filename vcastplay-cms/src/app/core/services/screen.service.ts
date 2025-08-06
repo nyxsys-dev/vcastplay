@@ -25,6 +25,7 @@ export class ScreenService {
   toggleControls = signal<boolean>(false);
   showSettings = signal<boolean>(false);
   showContents = signal<boolean>(false);
+  showScreenDetails = signal<boolean>(false);
 
   selectedScreen = signal<Screen | null>(null);
   selectMultipleScreens = signal<Screen[]>([]);

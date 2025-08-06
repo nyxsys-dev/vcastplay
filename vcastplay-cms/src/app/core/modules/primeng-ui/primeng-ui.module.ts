@@ -64,6 +64,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { InputOtpModule } from 'primeng/inputotp';
 import { EditorModule } from 'primeng/editor';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { MenubarModule } from 'primeng/menubar';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -144,6 +146,8 @@ const PRIMEUI_MODULES = [
   InputOtpModule,
   EditorModule,
   SplitButtonModule,
+  MenubarModule,
+  ColorPickerModule,
 ];
 
 @NgModule({

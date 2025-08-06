@@ -146,7 +146,7 @@
 
 <ng-template #actionBtn let-item>
     <p-button pTooltip="Screenshot" tooltipPosition="bottom" icon="pi pi-camera" severity="success" size="small" />
-    <p-button pTooltip="Screen Information" tooltipPosition="bottom" icon="pi pi-info-circle" severity="contrast" size="small" />
+    <p-button (onClick)="onClickOpenDetails(item)" pTooltip="Screen Information" tooltipPosition="bottom" icon="pi pi-info-circle" severity="contrast" size="small" />
 </ng-template>
 
 <p-dialog header="Broadcast Message" [(visible)]="showBroadcast" styleClass="w-[50rem] h-auto" (onHide)="onClickCloseDialog()" 
@@ -166,6 +166,18 @@
         <p-button label="Apply" severity="success" (onClick)="onClickApplySettings()" />
     </ng-template>
 </p-dialog>
+
+<p-drawer [(visible)]="showScreenDetails" header="Details" (onHide)="onClickCloseDialog()" position="right">
+    <app-screen-details [screen]="selectedScreen()" />
+
+    <ng-template #footer>
+        <div class="flex gap-3">
+            <p>Status:</p>
+            <p-tag class="ml-auto" [value]="selectedScreen()?.status?.toUpperCase()" [icon]="'pi ' + utils.getIcon(selectedScreen()?.status ?? '')" 
+                [severity]="utils.getStatus(selectedScreen()?.status  ?? '')" />
+        </div>
+    </ng-template>
+</p-drawer>
 
 <p-toast />
 <p-confirmdialog />

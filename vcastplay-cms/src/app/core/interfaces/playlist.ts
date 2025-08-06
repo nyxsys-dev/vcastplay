@@ -1,3 +1,5 @@
+import { ApprovedInfo } from "./general";
+
 export interface Playlist {
     id: number;
     name: string;
@@ -13,11 +15,7 @@ export interface Playlist {
     duration?: number;
     isAuto: boolean;
     isActive: boolean;
-    approvedInfo?: {
-        approvedBy: string;
-        approvedOn: Date | string | null;
-        remarks: string;
-    };
+    approvedInfo?: ApprovedInfo;
     createdOn: Date;
     updatedOn: Date;
 }

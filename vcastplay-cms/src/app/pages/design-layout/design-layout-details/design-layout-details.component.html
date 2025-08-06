@@ -1,0 +1,70 @@
+<div class="flex flex-col gap-1 h-full relative">
+    <p-menubar [model]="layoutItems">
+        <ng-template #item let-item let-root="root">
+            <a pRipple class="flex items-center p-menubar-item-link">
+                <span>{{ item.label }}</span>
+                <span *ngIf="item.shortcut" class="ml-auto text-sm">{{ item.shortcut }}</span>
+            </a>
+        </ng-template>
+        <ng-template #end>
+            <p-button label="Contents" outlined />
+        </ng-template>
+    </p-menubar>
+
+    <div class="relative flex flex-col flex-1 items-center justify-center overflow-y-auto">
+        <canvas class="rounded-lg" #canvas></canvas>
+        @if (designForm.invalid) {
+            <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                <p class="text-2xl italic text-gray-400">Create a new design (Alt + Ctrl + N)</p>
+            </div>
+        }
+    </div>
+
+    @if (!designForm.invalid) {
+        <div class="flex items-center abolute bottom-0 left-0 gap-1">
+            <p-button icon="pi pi-search-plus" (onClick)="onClickZoom(1.1)" />
+            <p-button icon="pi pi-search-minus" (onClick)="onClickZoom(0.9)" severity="secondary" />
+            <p class="text-sm italic text-red-500 ml-3">(Ctrl + Scroll to Zoom)</p>
+        </div>
+    }
+</div>
+
+<p-dialog header="Create New" [(visible)]="showCanvasSize" [style]="{ width: '60rem' }" [resizable]="false" draggable modal>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mt-2">
+        <app-screen-selection #screen class="col-span-1 md:col-span-8"(screenChange)="onSelectionChange($event)" />
+        <div class="col-span-1 md:col-span-4">
+            <form class="flex flex-col gap-4" [formGroup]="designForm">
+                <p-floatlabel variant="on">
+                    <input id="name" type="text" pInputText formControlName="name" fluid />
+                    <label for="name">Name</label>
+                </p-floatlabel>
+                <p-floatlabel variant="on">
+                    <textarea name="description" id="description" rows="3" formControlName="description" pTextarea fluid></textarea>
+                    <label for="description">Description</label>
+                </p-floatlabel>
+                <div class="flex items-center gap-3">
+                    <p-floatlabel variant="on">
+                        <p-select inputId="color" [options]="colors" optionLabel="text" optionValue="hex" formControlName="color" appendTo="body">
+                            <ng-template #selectedItem let-item>
+                                <span>{{ item.text.toUpperCase() }}</span>
+                            </ng-template>
+                            <ng-template #item let-item>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 rounded-full" [style.background-color]="item.hex"></div>
+                                    <span>{{ item.text.toUpperCase() }}</span>
+                                </div>
+                            </ng-template>
+                        </p-select>
+                        <label for="color">Color</label>
+                    </p-floatlabel>
+                    <p>or</p>
+                    <p-colorpicker formControlName="color" appendTo="body" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <ng-template #footer>
+        <p-button label="Cancel" severity="secondary" (onClick)="onClickCloseCanvasSize()" />
+        <p-button label="Create" severity="success" (onClick)="onClickCreateCanvas()" [disabled]="designForm.invalid" />
+    </ng-template>
+</p-dialog>

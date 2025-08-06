@@ -1,14 +1,12 @@
+import { ApprovedInfo } from "./general";
+
 export interface Schedule {
     id: number;
     name: string;
     description: string;
     contents: ScheduleContentItem[];
     status: string;
-    approvedInfo?: {
-        approvedBy: string,
-        approvedOn: Date | string | null,
-        remarks: string,
-    },
+    approvedInfo?: ApprovedInfo;
     createdOn: Date;
     updatedOn: Date;
 }

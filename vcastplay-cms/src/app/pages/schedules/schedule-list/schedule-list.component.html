@@ -95,12 +95,7 @@
         <div class="flex flex-col gap-3" [formGroup]="scheduleForm">
             @if (!['approved', 'disapproved'].includes(status?.value)) {
                 <p class="text-sm font-semibold">Approve this playlist?</p>
-                <div formGroupName="approvedInfo">
-                    <p-floatlabel variant="on">
-                        <textarea pTextarea id="remarks" formControlName="remarks" rows="5" cols="2" style="resize: none" class="h-full" fluid></textarea>
-                        <label for="remarks">Remarks</label>
-                    </p-floatlabel>
-                </div>
+                <app-user-approval [approvedForm]="scheduleForm" />
                 <div class="flex gap-2 justify-end">
                     <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApproved($event, approved, 'disapproved')" size="small" outlined />
                     <p-button label="Approve" (onClick)="onClickConfirmApproved($event, approved, 'approved')" size="small" />

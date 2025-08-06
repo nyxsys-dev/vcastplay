@@ -34,6 +34,8 @@ import { ScreenBroadcastMessageComponent } from '../../../components/screen-broa
 import { ScrubberTimelineComponent } from '../../../components/scrubber-timeline/scrubber-timeline.component';
 import { ScreenSettingsComponent } from '../../../pages/screen-management/screen-settings/screen-settings.component';
 import { ContentSelectionComponent } from '../../../components/content-selection/content-selection.component';
+import { ScreenDetailsComponent } from '../../../pages/screen-management/screen-details/screen-details.component';
+import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
 
 
 const COMPONENT_MODULES = [
@@ -67,6 +69,7 @@ const COMPONENT_MODULES = [
   ScreenManagementListItemComponent,
   ScreenBroadcastMessageComponent,
   ScreenSettingsComponent,
+  ScreenSelectionComponent,
 
   // Playlist Components
   AddToPlaylistComponent,
@@ -88,6 +91,7 @@ const COMPONENT_MODULES = [
   SchedulesContentListComponent,
   ScheduleListItemComponent,
   ScheduleFilterComponent,
+  ScreenDetailsComponent,
 ]
 
 @NgModule({

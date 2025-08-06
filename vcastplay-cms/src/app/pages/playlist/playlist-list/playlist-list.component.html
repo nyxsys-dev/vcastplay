@@ -32,8 +32,8 @@
                         <th>Name</th>
                         <th>Description</th>
                         <th>Type</th>
-                        <th>Status</th>
                         <th>Last Update</th>
+                        <th>Status</th>
                         <th>
                             <div class="text-center">Actions</div>
                         </th>
@@ -50,9 +50,9 @@
                         </td>
                         <td>{{ item.description }}</td>
                         <td><p-tag [value]="item.isAuto ? 'Auto' : 'Manual'" [severity]="item.isAuto ? 'warn' : 'info'" /></td>
+                        <td><p class="text-sm">{{ utils.onGetLastUpdatedLabel(item.updatedOn) }}</p></td>
                         <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
                             [severity]="utils.getStatus(item.status)" /></td>
-                        <td><p class="text-sm">{{ utils.onGetLastUpdatedLabel(item.updatedOn) }}</p></td>
                         <td>
                             <div class="flex flex-row justify-center gap-2">
                                 <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
@@ -133,15 +133,10 @@
 <p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
 <p-popover #approved (onHide)="playlistForm.reset()" appendTo="body" (onHide)="playlistForm.reset()">
     <ng-template #content>
-        <div class="flex flex-col gap-3" [formGroup]="playlistForm">
+        <div class="flex flex-col gap-3">
             @if (!['approved', 'disapproved'].includes(status?.value)) {
                 <p class="text-sm font-semibold">Approve this playlist?</p>
-                <div formGroupName="approvedInfo">
-                    <p-floatlabel variant="on">
-                        <textarea pTextarea id="remarks" formControlName="remarks" rows="5" cols="2" style="resize: none" class="h-full" fluid></textarea>
-                        <label for="remarks">Remarks</label>
-                    </p-floatlabel>
-                </div>
+                <app-user-approval [approvedForm]="playlistForm" />
                 <div class="flex gap-2 justify-end">
                     <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApproved($event, approved, 'disapproved')" size="small" outlined />
                     <p-button label="Approve" (onClick)="onClickConfirmApproved($event, approved, 'approved')" size="small" />

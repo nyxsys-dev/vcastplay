@@ -9,6 +9,83 @@
                 </div>
             </div>
         </ng-template>
-
+        <div class="flex-1 md:h-full">
+            <p-table
+                class="hidden lg:block" 
+                [value]="loadingSignal() ? utils.tableSkeletonRows : filteredDesigns()" 
+                selectionMode="single"
+                [scrollable]="true" 
+                size="small"  
+                stripedRows
+            >
+                <ng-template #header>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Last Update</th>
+                        <th>Status</th>
+                        <th>
+                            <div class="text-center">Actions</div>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-item>
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.description }}</td>
+                        <td><p class="text-sm">{{ utils.onGetLastUpdatedLabel(item.updatedOn) }}</p></td>
+                        <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
+                                [severity]="utils.getStatus(item.status)" /></td>
+                        <td>
+                            <div class="flex flex-row justify-center gap-2">
+                                <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item }"></ng-container>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <ng-template #footer>
+            <p-paginator [rows]="rows" [totalRecords]="totalRecords"></p-paginator>
+        </ng-template>
     </p-card>
 </div>
+
+<ng-template #actionBtn let-item>
+    <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" 
+        tooltipPosition="bottom" severity="success" size="small" [disabled]="['approved', 'disapproved'].includes(item.status)" />
+    <p-button (onClick)="onClickApproved($event, item, approved)" icon="pi pi-check-circle" pTooltip="Approval" tooltipPosition="bottom"  severity="info" size="small" />
+    <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" size="small" [disabled]="item.status == 'pending'" />
+    <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" size="small" [disabled]="item.status == 'pending'" />
+    <p-button (onClick)="onClickOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
+</ng-template>
+
+<p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
+<p-popover #approved appendTo="body" (onHide)="designForm.reset()">
+    <ng-template #content>
+        <div class="flex flex-col gap-3">
+            @if (!['approved', 'disapproved'].includes(status?.value)) {
+                <p class="text-sm font-semibold">Approve this playlist?</p>
+                <app-user-approval [approvedForm]="designForm" />
+                <div class="flex gap-2 justify-end">
+                    <p-button label="Disapprove" severity="danger" (onClick)="onClickConfirmApproved($event, approved, 'disapproved')" size="small" outlined />
+                    <p-button label="Approve" (onClick)="onClickConfirmApproved($event, approved, 'approved')" size="small" />
+                </div>
+            } @else {
+                <p class="text-sm font-semibold">Approval Info:</p>
+                <div class="flex flex-col gap-2 w-50">
+                    <p>User: {{ approvedInfo?.value.approvedBy }}</p>
+                    <p>Remarks: {{ approvedInfo?.value.remarks }}</p>
+                </div>
+                <div class="flex gap-2 items-center w-full">
+                    <p-button [label]="designValue.isActive ? 'Deactivate' : 'Activate'" 
+                        [severity]="designValue.isActive ? 'danger' : 'success'"  text />
+                    <p-button class="ml-auto" label="Close" (onClick)="onClickApproved($event, selectedDesign(), approved, false)" size="small" text />
+                </div>
+            }
+        </div>
+    </ng-template>
+</p-popover>
+
+<p-toast />
+<p-confirmdialog />
