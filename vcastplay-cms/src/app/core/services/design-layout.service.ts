@@ -42,12 +42,13 @@ export class DesignLayoutService {
     name: new FormControl('New Design', [ Validators.required ]),
     description: new FormControl('This is a new design', [ Validators.required ]),
     canvas: new FormControl(null),
-    color: new FormControl('#808080', { nonNullable: true }),
+    color: new FormControl('#ffffff', { nonNullable: true }),
     approvedInfo: new FormGroup({
       approvedBy: new FormControl('Admin'),
       approvedOn: new FormControl(new Date()),
       remarks: new FormControl(''),
     }),
+    status: new FormControl('active'),
     isActive: new FormControl(false),
     screen: new FormControl(null, [ Validators.required ]),
   });
@@ -91,7 +92,40 @@ export class DesignLayoutService {
   onSaveDesign(design: DesignLayout) {
     const canvas = this.getCanvas();
     const data = canvas.toJSON();
-    console.log(data);
+    
+    const tempData = this.designs();
+    const { id, status, ...info } = design;
+    const index = tempData.findIndex(item => item.id == design.id);
+
+    if (index !== -1) tempData[index] = { ...design, canvas: JSON.stringify(data), updatedOn: new Date() };
+    else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, 
+      canvas: JSON.stringify(data), createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
+
+    this.designSignal.set([...tempData]);
+    this.totalRecords.set(this.designs().length);
+    /**CALL POST API */
+  }
+
+  onEditDesign(canvasElement: HTMLCanvasElement, design: DesignLayout) {
+    const { screen, canvas }: any = design;
+    const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
+    
+    const canvasData = JSON.parse(canvas);
+    const newCanvas = new fabric.Canvas(canvasElement, {
+      width: width * this.DEFAULT_SCALE(), 
+      height: height * this.DEFAULT_SCALE(), 
+      backgroundColor: canvasData.background,
+      selection: false,
+      preserveObjectStacking: true,
+    });
+
+    newCanvas.loadFromJSON(canvasData, () => {
+      this.registerSelectionEvents(newCanvas);
+      this.setCanvas(newCanvas);
+      this.registerAlignmentGuides();
+      newCanvas.requestRenderAll();
+    });
+    
   }
 
   onDeleteDesign(design: DesignLayout) { }
@@ -111,6 +145,11 @@ export class DesignLayoutService {
     this.setCanvas(canvas);
     this.registerAlignmentGuides();
     canvas.renderAll();
+  }
+
+  onExitCanvas() {
+    this.designForm.reset();
+    this.router.navigate(['/layout/design-layout-library']);
   }
 
   onZoomCanvas(factor: number) {

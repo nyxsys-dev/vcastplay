@@ -43,8 +43,7 @@ export class DesignLayoutDetailsComponent {
         { label: 'Info', command: () => {}, disabled: true },
         {  separator: true },
         { label: 'Exit', command: () => {
-          this.router.navigate(['/layout/design-layout-library']);
-          this.designForm.reset();
+          this.designLayoutService.onExitCanvas()
         }},
       ]
     },
@@ -102,7 +101,11 @@ export class DesignLayoutDetailsComponent {
 
   ngOnInit() { }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {
+    if (this.isEditMode()) {
+      this.designLayoutService.onEditDesign(this.canvasElement.nativeElement, this.designForm.value);
+    }
+  }
 
   onClickCreateCanvas() {
     const { screen, color } = this.designForm.value;
@@ -124,12 +127,11 @@ export class DesignLayoutDetailsComponent {
       acceptButtonProps: { label: 'Save' },
       rejectButtonProps: { label: 'Cancel', severity: 'secondary', outlined: true },
       accept: () => {
-        console.log(this.designForm.value);
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Design saved successfully!' });
         this.designLayoutService.onSaveDesign(this.designForm.value);
         this.designForm.reset();
         this.isEditMode.set(false);
-        // this.router.navigate([ '/playlist/playlist-library' ]);
+        this.router.navigate([ '/layout/design-layout-library' ]);
       },
     });
 
