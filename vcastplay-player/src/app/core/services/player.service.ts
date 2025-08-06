@@ -90,11 +90,12 @@ export class PlayerService {
 
     this.isPlaying.set(true);
     const item = contents[this.currentIndex()];
+    
+    this.currentContent.set(item);
 
     if (this.platform.platform === 'android') {
-      this.currentContent.set({ ...item, link: `${this.androidPath}/${item.name}` });
-    } else {
-      this.currentContent.set(item);
+      console.log(item);
+      // this.currentContent.set({ ...item, link: `${this.androidPath}/${item.name}` });
     }
     
     this.fadeIn.set(true);
@@ -247,6 +248,7 @@ export class PlayerService {
     window.receiveDataFromAndroid = (data: any) => {
       if (data) {
         console.log('Received from android:', data);
+        this.contentSignal.set(JSON.parse(data));
         this.onPlayPreview();
       } else {
         console.log('No data received from android.');
