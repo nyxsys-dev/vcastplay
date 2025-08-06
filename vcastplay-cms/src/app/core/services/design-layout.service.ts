@@ -149,6 +149,9 @@ export class DesignLayoutService {
 
   onExitCanvas() {
     this.designForm.reset();
+    this.canvas.clear();
+    this.canvas.dispose();
+    this.canvas = undefined as any;
     this.router.navigate(['/layout/design-layout-library']);
   }
 
