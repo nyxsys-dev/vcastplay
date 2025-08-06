@@ -4,14 +4,15 @@ import { DesignLayoutService } from '../../../core/services/design-layout.servic
 import { UtilityService } from '../../../core/services/utility.service';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
-import { MenuItem } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-design-layout-details',
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './design-layout-details.component.html',
-  styleUrl: './design-layout-details.component.scss'
+  styleUrl: './design-layout-details.component.scss',
+  providers: [ ConfirmationService, MessageService ]
 })
 export class DesignLayoutDetailsComponent {
 
@@ -22,6 +23,8 @@ export class DesignLayoutDetailsComponent {
 
   designLayoutService = inject(DesignLayoutService);
   utils = inject(UtilityService);
+  confirmation = inject(ConfirmationService);
+  message = inject(MessageService);
   
   layoutItems: MenuItem[] = [
     {
@@ -30,7 +33,7 @@ export class DesignLayoutDetailsComponent {
       items: [
         { label: 'New', command: () => this.showCanvasSize.set(true), disabled: false, shortcut: 'Alt+Ctrl+N' },
         {  separator: true },
-        { label: 'Save', command: () => this.onClickSaveDesign(), disabled: false, shortcut: 'Ctrl+S' },
+        { label: 'Save', command: (event: any) => this.onClickSaveDesign(event), disabled: false, shortcut: 'Ctrl+S' },
         { label: 'Save As', command: () => {}, disabled: true },
         {  separator: true },
         { label: 'Import', command: () => {}, disabled: true },
@@ -110,8 +113,26 @@ export class DesignLayoutDetailsComponent {
     // this.designLayoutService.onDisableMenu();
   }
 
-  onClickSaveDesign() {
-    this.designLayoutService.onSaveCanvas();
+  onClickSaveDesign(event: Event) {
+    if (this.designForm.invalid) return;
+    
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to save changes?',
+      header: 'Confirm Save',
+      icon: 'pi pi-question-circle',
+      acceptButtonProps: { label: 'Save' },
+      rejectButtonProps: { label: 'Cancel', severity: 'secondary', outlined: true },
+      accept: () => {
+        console.log(this.designForm.value);
+        this.message.add({ severity: 'success', summary: 'Success', detail: 'Design saved successfully!' });
+        this.designLayoutService.onSaveDesign(this.designForm.value);
+        this.designForm.reset();
+        this.isEditMode.set(false);
+        // this.router.navigate([ '/playlist/playlist-library' ]);
+      },
+    });
+
   }
 
   onClickCloseCanvasSize() { 

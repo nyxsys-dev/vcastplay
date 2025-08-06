@@ -1,7 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { DesignLayout } from '../interfaces/design-layout';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
 import * as fabric from 'fabric';
 
@@ -89,7 +88,11 @@ export class DesignLayoutService {
     return this.designs();
   }
 
-  onSaveDesign(design: DesignLayout) { }
+  onSaveDesign(design: DesignLayout) {
+    const canvas = this.getCanvas();
+    const data = canvas.toJSON();
+    console.log(data);
+  }
 
   onDeleteDesign(design: DesignLayout) { }
 
@@ -238,15 +241,6 @@ export class DesignLayoutService {
     this.canvas.add(line);
   }
 
-  onSaveCanvas() {
-    const canvas = this.getCanvas();
-    const dataURL = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 1 });
-    const link = document.createElement('a');
-    link.href = dataURL;
-    link.download = 'canvas.png';
-    link.click();
-  }
-
   /**
    * ====================================================================================================================================
    * Private methods insert here
@@ -254,31 +248,48 @@ export class DesignLayoutService {
    */
   private registerSelectionEvents(canvas: fabric.Canvas): void {
     canvas.on('selection:created', (e) => {
-      const selected = e.selected?.[0];
-      if (selected) {
-        if (selected.type === 'image') {
-          console.log('Selected layer is an image');
-        } else if (selected.type === 'textbox') {
-          console.log('Selected layer is text');
-        } else if (selected.type === 'video') {
-          console.log('Selected layer is a video');
-        } else if ((selected as any).customType === 'div') {
-          console.log('Selected layer is a custom div');
+      const selectedObjects = e.selected || [];
+      if (selectedObjects.length === 0) return;
+
+      if (selectedObjects.length > 0) {
+        const activeSelection = canvas.getActiveObject() as fabric.ActiveSelection;
+        if (activeSelection) {
+          activeSelection.set({borderColor: '#36A2EB',
+            cornerColor: '#36A2EB',
+            cornerStyle: 'circle',
+            cornerSize: 6,
+            transparentCorners: false
+          })
+        }
+      } else {
+        const selected = e.selected?.[0];
+        
+        if (selected) {
+          if (selected.type === 'image') {
+            console.log('Selected layer is an image');
+          } else if (selected.type === 'textbox') {
+            console.log('Selected layer is text');
+          } else if (selected.type === 'video') {
+            console.log('Selected layer is a video');
+          } else if ((selected as any).customType === 'div') {
+            console.log('Selected layer is a custom div');
+          }
         }
       }
-      selected.set({
-        borderColor: '#36A2EB',
-        cornerColor: '#36A2EB', 
-        cornerStyle: 'circle',
-        cornerSize: 6,
-        transparentCorners: false
-      })
+
     });
 
     canvas.on('selection:updated', (e) => {
       const selected = e.selected?.[0];
+      
       if (selected) {
-        console.log('Layer re-selected:', selected);
+        selected.set({
+          borderColor: '#36A2EB',
+          cornerColor: '#36A2EB',
+          cornerStyle: 'circle',
+          cornerSize: 6,
+          transparentCorners: false
+        })
       }
     });
 

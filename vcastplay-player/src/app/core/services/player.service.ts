@@ -77,7 +77,7 @@ export class PlayerService {
     return this.contentSignal();
   }
 
-  onPlayPreview(index: number = 0) {
+  async onPlayPreview(index: number = 0) {
     const loop: boolean = true
     const contents = this.onGetContents();
     const { hasGap, type, speed } = { hasGap: false, type: 'fade', speed: 1 }//this.transition?.value;
@@ -90,12 +90,24 @@ export class PlayerService {
 
     this.isPlaying.set(true);
     const item = contents[this.currentIndex()];
-    
-    this.currentContent.set(item);
 
     if (this.platform.platform === 'android') {
-      console.log(item);
-      // this.currentContent.set({ ...item, link: `${this.androidPath}/${item.name}` });
+      try {
+        const exists = await (window as any).checkFileExists?.(item.name);
+        console.log(`[Android] Local file check for ${item.name}: ${exists}`);
+        if (exists) {
+          // item.link = `${this.androidPath}/${item.name}`;
+          this.currentContent.set({ ...item, link: `${this.androidPath}/${item.name}` });
+        } else {
+          this.currentContent.set(null);
+          console.warn(`[Android] Local file missing, using remote URL: ${item.link}`);
+        }
+      } catch (err) {
+        this.currentContent.set(null);
+        console.error(`[Android] Error checking file existence: ${err}`);
+      }
+    } else {
+      this.currentContent.set(item);
     }
     
     this.fadeIn.set(true);
@@ -248,7 +260,6 @@ export class PlayerService {
     window.receiveDataFromAndroid = (data: any) => {
       if (data) {
         console.log('Received from android:', data);
-        this.contentSignal.set(JSON.parse(data));
         this.onPlayPreview();
       } else {
         console.log('No data received from android.');

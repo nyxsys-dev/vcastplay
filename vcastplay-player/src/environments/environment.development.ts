@@ -1,6 +1,6 @@
 export const environment = {
     geoAPI: 'https://ipapi.co/json',
-    androidFilePath: 'vcastplay 2.0/assets/medias',
+    androidFilePath: 'https://appassets.androidplatform.net/medias/',
     version: '2.0.0',
     production: false,
 };

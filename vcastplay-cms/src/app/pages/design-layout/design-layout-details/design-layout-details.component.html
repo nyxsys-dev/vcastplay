@@ -23,7 +23,7 @@
             <canvas class="rounded-lg" #canvas></canvas>
         </div>
 
-        @if (designForm.invalid) {
+        @if (!designLayoutService.getCanvas()) {
             <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
                 <p class="text-2xl italic text-gray-400">Create a new design (Alt + Ctrl + N)</p>
             </div>
@@ -78,3 +78,7 @@
         <p-button label="Create" severity="success" (onClick)="onClickCreateCanvas()" [disabled]="designForm.invalid" />
     </ng-template>
 </p-dialog>
+
+
+<p-toast />
+<p-confirmdialog />
