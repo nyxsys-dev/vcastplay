@@ -4,7 +4,6 @@ import { DesignLayoutService } from '../../../core/services/design-layout.servic
 import { UtilityService } from '../../../core/services/utility.service';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
-import * as fabric from 'fabric';
 import { MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
 
@@ -18,7 +17,6 @@ export class DesignLayoutDetailsComponent {
 
   @ViewChild('screen') screenElement!: ScreenSelectionComponent;
   @ViewChild('canvas', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
-  canvas!: fabric.Canvas;
   
   router = inject(Router);
 
@@ -52,6 +50,7 @@ export class DesignLayoutDetailsComponent {
       icon: 'pi pi-pencil',
       items: [
         { label: 'Undo/Redo', command: () => {}, disabled: true, shortcut: 'Ctrl+Z' },
+        { label: 'Select All', command: () => {}, disabled: true, shortcut: 'Ctrl+A' },
         {  separator: true },
         { label: 'Cut', command: () => {}, disabled: true, shortcut: 'Ctrl+X' },
         { label: 'Copy', command: () => {}, disabled: true, shortcut: 'Ctrl+C' },
@@ -64,19 +63,30 @@ export class DesignLayoutDetailsComponent {
       label: 'Layers',
       icon: 'pi pi-th-large',
       items: [
-        { label: 'New Layer', command: () => this.onClickNewLayer(), disabled: false, shortcut: 'Ctrl+L' },
+        { label: 'New Layer', command: () => {}, disabled: false, shortcut: 'Ctrl+L' },
         { label: 'Duplicate', command: () => {}, disabled: true, shortcut: 'Ctrl+D' },
-        {  separator: true },
         { label: 'Delete', command: () => {}, disabled: true, shortcut: 'Del' },
+        { separator: true },
+        { 
+          label: 'Arrange',
+          childIcon: 'pi pi-chevron-right',
+          items: [
+            { label: 'Bring to Front', command: () => this.onClickLayerArrangement('front'), disabled: false },
+            { label: 'Send to Back', command: () => this.onClickLayerArrangement('back'), disabled: false },
+            { label: 'Bring Forward', command: () => this.onClickLayerArrangement('forward'), disabled: false },
+            { label: 'Send Backward', command: () => this.onClickLayerArrangement('backward'), disabled: false },
+          ],
+          // disabled: true
+        },
       ]
     }
   ];
 
   @HostListener('wheel', ['$event']) onWheel(event: WheelEvent) {
-    if (!event.ctrlKey || !this.canvas) return;
+    if (!event.ctrlKey) return;
     event.preventDefault();
     const factor = event.deltaY < 0 ? 1.1 : 0.9;    
-    this.designLayoutService.onZoomCanvas(this.canvas, factor);
+    this.designLayoutService.onZoomCanvas(factor);
   }
 
   @HostListener('document:keydown', ['$event']) onKeyDown(event: KeyboardEvent) {   
@@ -94,20 +104,14 @@ export class DesignLayoutDetailsComponent {
   onClickCreateCanvas() {
     const { screen, color } = this.designForm.value;
     const resolution = screen.displaySettings.resolution.split('x');
-    if (this.canvas) this.canvas.dispose();
-    this.canvas = this.designLayoutService.onCreateCanvas(this.canvasElement.nativeElement, { width: resolution[0], height: resolution[1] }, color);
-    this.canvas.renderAll();
+    this.designLayoutService.onCreateCanvas(this.canvasElement.nativeElement, { width: resolution[0], height: resolution[1] }, color);
     this.showCanvasSize.set(false);
     this.screenElement.selectedScreen.set(null);
     // this.designLayoutService.onDisableMenu();
   }
 
-  onClickNewLayer() {
-    this.designLayoutService.onAddTextToCanvas(this.canvas, 'New Layer');
-  }
-
   onClickSaveDesign() {
-    this.designLayoutService.onSaveCanvas(this.canvas);
+    this.designLayoutService.onSaveCanvas();
   }
 
   onClickCloseCanvasSize() { 
@@ -116,7 +120,11 @@ export class DesignLayoutDetailsComponent {
   }
 
   onClickZoom(factor: number) {
-    this.designLayoutService.onZoomCanvas(this.canvas, factor);
+    this.designLayoutService.onZoomCanvas(factor);
+  }
+
+  onClickLayerArrangement(position: string) {
+    this.designLayoutService.onLayerArrangement(position);
   }
 
   onSelectionChange(event: any) {
@@ -129,6 +137,7 @@ export class DesignLayoutDetailsComponent {
 
   get isEditMode() { return this.designLayoutService.isEditMode; }
   get designForm() { return this.designLayoutService.designForm; }
+  get canvasProps() { return this.designLayoutService.canvasProps; }
   get showCanvasSize() { return this.designLayoutService.showCanvasSize; }
 
   get colors() { return this.utils.colors; }

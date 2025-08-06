@@ -36,6 +36,7 @@ import { ScreenSettingsComponent } from '../../../pages/screen-management/screen
 import { ContentSelectionComponent } from '../../../components/content-selection/content-selection.component';
 import { ScreenDetailsComponent } from '../../../pages/screen-management/screen-details/screen-details.component';
 import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
+import { DesignLayoutToolsComponent } from '../../../pages/design-layout/design-layout-tools/design-layout-tools.component';
 
 
 const COMPONENT_MODULES = [
@@ -92,6 +93,9 @@ const COMPONENT_MODULES = [
   ScheduleListItemComponent,
   ScheduleFilterComponent,
   ScreenDetailsComponent,
+
+  // Design Layout Components
+  DesignLayoutToolsComponent,
 ]
 
 @NgModule({

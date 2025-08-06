@@ -1,9 +1,10 @@
 <div class="flex flex-col gap-1 h-full relative">
-    <p-menubar [model]="layoutItems">
+    <p-menubar class="z-10" [model]="layoutItems">
         <ng-template #item let-item let-root="root">
             <a pRipple class="flex items-center p-menubar-item-link">
                 <span>{{ item.label }}</span>
                 <span *ngIf="item.shortcut" class="ml-auto text-sm">{{ item.shortcut }}</span>
+                <i *ngIf="item.childIcon" class="ml-auto !text-sm" [ngClass]="'pi ' + item.childIcon"></i>
             </a>
         </ng-template>
         <ng-template #end>
@@ -11,8 +12,17 @@
         </ng-template>
     </p-menubar>
 
-    <div class="relative flex flex-col flex-1 items-center justify-center overflow-y-auto">
-        <canvas class="rounded-lg" #canvas></canvas>
+    <div class="relative flex flex-col flex-1 items-center justify-center overflow-hidden" cdkDropListGroup>
+        @if (designLayoutService.getCanvas()) {
+            <div class="absolute top-0 left-0 py-2 px-1 bg-[var(--p-surface-100)] shadow-lg rounded-lg z-5">
+                <app-design-layout-tools [canvasElement]="canvasElement.nativeElement" />
+            </div>
+        }
+
+        <div class="relative" cdkDrag [cdkDragDisabled]="!canvasProps.drag">
+            <canvas class="rounded-lg" #canvas></canvas>
+        </div>
+
         @if (designForm.invalid) {
             <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
                 <p class="text-2xl italic text-gray-400">Create a new design (Alt + Ctrl + N)</p>
@@ -20,7 +30,7 @@
         }
     </div>
 
-    @if (!designForm.invalid) {
+    @if (canvasProps.zoom) {
         <div class="flex items-center abolute bottom-0 left-0 gap-1">
             <p-button icon="pi pi-search-plus" (onClick)="onClickZoom(1.1)" />
             <p-button icon="pi pi-search-minus" (onClick)="onClickZoom(0.9)" severity="secondary" />

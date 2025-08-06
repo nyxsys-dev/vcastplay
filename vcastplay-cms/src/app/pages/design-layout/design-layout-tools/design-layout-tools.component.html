@@ -1,0 +1,25 @@
+<div class="flex flex-col items-center justify-center">
+    <p-button (onClick)="onClickMove()" text>
+        <img src="assets/icons/cursor.png" alt="move" pTooltip="Move" width="20">
+    </p-button>
+    <p-button (onClick)="onClickSelection()" text>
+        <img src="assets/icons/selection.png" alt="selection" pTooltip="Selection" width="20">
+    </p-button>
+    <p-button (onClick)="onClickAddText()" text>
+        <img src="assets/icons/text.png" alt="text" pTooltip="Text" width="20">
+    </p-button>
+    <p-button (onClick)="onClickAddRectangle()" text>
+        <img src="assets/icons/rectangle.png" alt="rectangle" pTooltip="Rectangle" width="20">
+    </p-button>
+    <p-button (onClick)="onClickAddLine()" text>
+        <img src="assets/icons/line.png" alt="line" pTooltip="Line" width="20">
+    </p-button>
+    <p-button (onClick)="onClickPan()" text>
+        <img src="assets/icons/hand.png" alt="hand" pTooltip="Hand" width="20">
+    </p-button>
+    <p-button text>
+        <img src="assets/icons/zoom.png" alt="zoom" pTooltip="Zoom" width="20">
+    </p-button>
+    <p-divider />
+    <p-colorpicker [(ngModel)]="selectedColor" (onChange)="onChangeColor($event)" appendTo="body" />
+</div>
