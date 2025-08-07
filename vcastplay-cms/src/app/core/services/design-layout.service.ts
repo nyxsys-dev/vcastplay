@@ -29,6 +29,13 @@ export class DesignLayoutService {
   showCanvasSize = signal<boolean>(false);
 
   DEFAULT_SCALE = signal<number>(0.45);
+  SELECTION_STYLE = signal<any>({
+    borderColor: '#36A2EB',
+    cornerColor: '#36A2EB',
+    cornerStyle: 'circle',
+    cornerSize: 6,
+    transparentCorners: false
+  })
 
   selectedDesign = signal<DesignLayout | null>(null);
   selectedArrDesign = signal<DesignLayout[]>([]);
@@ -135,10 +142,7 @@ export class DesignLayoutService {
             const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
             this.canvasHTMLLayers().push(htmlLayer);
           }
-        });
-
-        console.log(this.canvasHTMLLayers());
-        
+        });        
 
         this.setCanvas(newCanvas);
         this.registerCanvasEvents(newCanvas);
@@ -222,11 +226,11 @@ export class DesignLayoutService {
   }
 
   onChangeColor(color: string) {
-    const activeObject: any = this.canvas.getActiveObject();
-    if (activeObject && activeObject.type === 'rect') {
-      activeObject.set('fill', color);
-      this.canvas.requestRenderAll();
-    }
+    const activeObject: any = this.canvas.getActiveObjects();
+    activeObject.forEach((object: fabric.Object) => {
+      if (object.type === 'rect') object.set('fill', color);
+    });
+    this.canvas.requestRenderAll();
   }
 
   onLayerArrangement(position: string) {
@@ -261,6 +265,8 @@ export class DesignLayoutService {
   // }
 
   onAddTextToCanvas(content: string = 'Enter text here', fill: string = '#000000') {
+    const tempText = new fabric.FabricText(content, { fontSize: 12, fontFamily: 'Arial', fill });
+
     this.canvas.discardActiveObject();
     this.canvas.selection = false; 
     this.canvasProps.drag = false;
@@ -271,7 +277,8 @@ export class DesignLayoutService {
       fontSize: 12,
       fontFamily: 'Arial',
       fill,
-      editable: true
+      editable: true,
+      width: tempText.width
     })
 
     this.canvas.add(text);
@@ -285,7 +292,7 @@ export class DesignLayoutService {
     const rect = new fabric.Rect({
       left: 100,
       top: 100,
-      width: 100,
+      width: 200,
       height: 100,
       fill: color
     });
@@ -328,6 +335,47 @@ export class DesignLayoutService {
 
     this.canvas.setActiveObject(rect);
     rect.set('html', htmlLayer);
+  }
+
+  onDuplicateLayer(canvas: fabric.Canvas) {
+    const activeObject = canvas.getActiveObjects();
+    if (!activeObject || activeObject.length === 0) return;
+
+    const clones: fabric.Object[] = [];
+
+    canvas.discardActiveObject();
+    Promise.all(
+      activeObject.map((object: fabric.Object) =>
+        object.clone().then((cloned) => {
+          cloned.set({
+            left: object.left += 10,
+            top: object.top += 10,
+            evented: true,
+            selectable: true,
+            ...this.SELECTION_STYLE()
+          });
+          cloned.setCoords();
+          canvas.add(cloned);
+          clones.push(cloned);
+        })
+      )
+    ).then(() => {
+      const selection = new fabric.ActiveSelection(clones, { canvas });
+      selection.setCoords();
+      canvas.setActiveObject(selection);
+      canvas.requestRenderAll();
+    });
+  }
+
+  onSelectAllLayers(canvas: fabric.Canvas) {
+    const objects = canvas.getObjects();
+    if (objects && objects.length > 0) {
+      const selection = new fabric.ActiveSelection(objects, { canvas });
+      selection.set(this.SELECTION_STYLE());
+      selection.setCoords();
+      canvas.setActiveObject(selection);
+      canvas.requestRenderAll();
+    }
   }
 
   onRemoveLayer(canvas: fabric.Canvas) {
@@ -412,16 +460,10 @@ export class DesignLayoutService {
       if (selectedObjects.length > 0) {
         const activeSelection = canvas.getActiveObject() as fabric.ActiveSelection;
         if (activeSelection) {
-          activeSelection.set({borderColor: '#36A2EB',
-            cornerColor: '#36A2EB',
-            cornerStyle: 'circle',
-            cornerSize: 6,
-            transparentCorners: false
-          })
+          activeSelection.set(this.SELECTION_STYLE())
         }
       } else {
         const selected = e.selected?.[0];
-        
         if (selected) {
           if (selected.type === 'image') {
             console.log('Selected layer is an image');
@@ -439,15 +481,8 @@ export class DesignLayoutService {
 
     canvas.on('selection:updated', (e) => {
       const selected = e.selected?.[0];
-      
       if (selected) {
-        selected.set({
-          borderColor: '#36A2EB',
-          cornerColor: '#36A2EB',
-          cornerStyle: 'circle',
-          cornerSize: 6,
-          transparentCorners: false
-        })
+        selected.set(this.SELECTION_STYLE())
       }
     });
 
@@ -457,8 +492,8 @@ export class DesignLayoutService {
 
     canvas.on('object:moving', (e) => {
       const { width, height } = this.canvasDimensions(canvas);
-      const obj = e.target;
-      if (!obj) return;
+      const obj: any = e.target;
+      if (!obj || !obj.html) return;
 
       const boundX = width - obj.getScaledWidth();
       const boundY = height - obj.getScaledHeight();
@@ -469,9 +504,11 @@ export class DesignLayoutService {
 
     canvas.on('object:scaling', (e) => {
       const { width, height } = this.canvasDimensions(canvas);
-      const obj = e.target;
-      if (!obj) return;
-
+      const obj: any = e.target;
+      console.log(obj.type);
+      
+      if (!obj || !obj.html) return;
+      
       const canvasWidth = width;
       const canvasHeight = height;
 
@@ -481,15 +518,18 @@ export class DesignLayoutService {
       const scaledWidth = obj.width! * obj.scaleX!;
       const scaledHeight = obj.height! * obj.scaleY!;
 
-      // Clamp scale so it doesn't exceed canvas bounds
-      if (scaledWidth > maxWidth) {
-        obj.scaleX = maxWidth / obj.width!;
-      }
-      if (scaledHeight > maxHeight) {
-        obj.scaleY = maxHeight / obj.height!;
-      }
+      const MIN_WIDTH = 200;
+      const MIN_HEIGHT = 100;
 
-       canvas.requestRenderAll();
+      // ✅ Clamp minimum size
+      if (scaledWidth < MIN_WIDTH) obj.scaleX = MIN_WIDTH / obj.width!;
+      if (scaledHeight < MIN_HEIGHT)obj.scaleY = MIN_HEIGHT / obj.height!;
+
+      // ✅ Clamp maximum size (canvas bounds)
+      if (scaledWidth > maxWidth) obj.scaleX = maxWidth / obj.width!;
+      if (scaledHeight > maxHeight) obj.scaleY = maxHeight / obj.height!;
+
+      canvas.requestRenderAll();
     })
   }
 

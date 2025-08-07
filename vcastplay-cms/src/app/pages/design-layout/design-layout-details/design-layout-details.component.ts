@@ -52,7 +52,7 @@ export class DesignLayoutDetailsComponent {
       icon: 'pi pi-pencil',
       items: [
         { label: 'Undo/Redo', command: () => {}, disabled: true, shortcut: 'Ctrl+Z' },
-        { label: 'Select All', command: () => {}, disabled: true, shortcut: 'Ctrl+A' },
+        { label: 'Select All', command: () => this.onClickSelectAllLayers(), disabled: false, shortcut: 'Ctrl+A' },
         {  separator: true },
         { label: 'Cut', command: () => {}, disabled: true, shortcut: 'Ctrl+X' },
         { label: 'Copy', command: () => {}, disabled: true, shortcut: 'Ctrl+C' },
@@ -72,9 +72,10 @@ export class DesignLayoutDetailsComponent {
             { label: 'Text', command: () => this.onClickAddLayer('text'), disabled: false },
             { label: 'Rectangle', command: () => this.onClickAddLayer('rectangle'), disabled: false },
             { label: 'Line', command: () => this.onClickAddLayer('line'), disabled: false },
-          ]
+          ],
+          // disabled: true
         },
-        { label: 'Duplicate', command: () => {}, disabled: true, shortcut: 'Ctrl+D' },
+        { label: 'Duplicate', command: () => this.onClickDuplicateLayer(), disabled: false, shortcut: 'Ctrl+D' },
         { label: 'Delete', command: () => this.onClickRemoveLayer(), disabled: false, shortcut: 'Del' },
         { separator: true },
         { 
@@ -108,8 +109,19 @@ export class DesignLayoutDetailsComponent {
 
     //Delete
     if (event.key === 'Delete' && !this.showCanvasSize()) this.onClickRemoveLayer();
-  }
-  
+    //Duplicate
+    if ((event.key === 'd' && event.ctrlKey) && !this.showCanvasSize()) {
+      event.preventDefault();
+      event.stopPropagation(); 
+      this.onClickDuplicateLayer();
+    }
+    //Select All
+    if ((event.key === 'a' && event.ctrlKey) && !this.showCanvasSize()) {
+      event.preventDefault();
+      event.stopPropagation(); 
+      this.onClickSelectAllLayers();
+    }
+  }  
 
   ngOnInit() { }
 
@@ -175,6 +187,16 @@ export class DesignLayoutDetailsComponent {
 
   onClickLayerArrangement(position: string) {
     this.designLayoutService.onLayerArrangement(position);
+  }
+
+  onClickDuplicateLayer() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onDuplicateLayer(canvas);
+  }
+
+  onClickSelectAllLayers() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onSelectAllLayers(canvas);
   }
 
   onClickRemoveLayer() {
