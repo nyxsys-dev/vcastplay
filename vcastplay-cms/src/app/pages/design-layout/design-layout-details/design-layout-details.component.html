@@ -21,6 +21,14 @@
 
         <div class="relative" cdkDrag [cdkDragDisabled]="!canvasProps.drag">
             <canvas class="rounded-lg" #canvas></canvas>
+
+            @for (layer of canvasHTMLLayers(); track $index) {
+                <div [id]="layer.id" class="absolute origin-top-left bg-aqua pointer-events-none flex items-center justify-center"
+                    [style.top.px]="layer.top" [style.left.px]="layer.left"
+                    [style.width.px]="layer.width" [style.height.px]="layer.height" [style.transform]="'rotate(' + layer.rotation + 'deg)'">
+                    {{ layer.content }}
+                </div>
+            }
         </div>
 
         @if (!designLayoutService.getCanvas()) {

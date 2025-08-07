@@ -65,9 +65,17 @@ export class DesignLayoutDetailsComponent {
       label: 'Layers',
       icon: 'pi pi-th-large',
       items: [
-        { label: 'New Layer', command: () => {}, disabled: false, shortcut: 'Ctrl+L' },
+        { 
+          label: 'New Layer', 
+          childIcon: 'pi pi-chevron-right',
+          items: [
+            { label: 'Text', command: () => this.onClickAddLayer('text'), disabled: false },
+            { label: 'Rectangle', command: () => this.onClickAddLayer('rectangle'), disabled: false },
+            { label: 'Line', command: () => this.onClickAddLayer('line'), disabled: false },
+          ]
+        },
         { label: 'Duplicate', command: () => {}, disabled: true, shortcut: 'Ctrl+D' },
-        { label: 'Delete', command: () => {}, disabled: true, shortcut: 'Del' },
+        { label: 'Delete', command: () => this.onClickRemoveLayer(), disabled: false, shortcut: 'Del' },
         { separator: true },
         { 
           label: 'Arrange',
@@ -97,7 +105,11 @@ export class DesignLayoutDetailsComponent {
       event.stopPropagation(); 
       this.showCanvasSize.set(true)
     }
+
+    //Delete
+    if (event.key === 'Delete' && !this.showCanvasSize()) this.onClickRemoveLayer();
   }
+  
 
   ngOnInit() { }
 
@@ -131,10 +143,25 @@ export class DesignLayoutDetailsComponent {
         this.designLayoutService.onSaveDesign(this.designForm.value);
         this.designForm.reset();
         this.isEditMode.set(false);
+        this.canvasHTMLLayers.set([]);
         this.router.navigate([ '/layout/design-layout-library' ]);
       },
     });
+  }
 
+  onClickAddLayer(type: string) {
+    switch (type) {
+      case 'text':
+        this.designLayoutService.onAddTextToCanvas('Enter text here', this.selectedColor());
+        break;
+      case 'line':
+        this.designLayoutService.onAddLineToCanvas(this.selectedColor());
+        break;
+      default:
+        this.designLayoutService.onAddRectangleToCanvas(this.selectedColor());
+        break;
+    }
+    this.designLayoutService.onLayerArrangement('front');
   }
 
   onClickCloseCanvasSize() { 
@@ -150,6 +177,11 @@ export class DesignLayoutDetailsComponent {
     this.designLayoutService.onLayerArrangement(position);
   }
 
+  onClickRemoveLayer() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onRemoveLayer(canvas);
+  }
+
   onSelectionChange(event: any) {
     if (!event) {
       this.designForm.patchValue({ screen: null });
@@ -161,7 +193,9 @@ export class DesignLayoutDetailsComponent {
   get isEditMode() { return this.designLayoutService.isEditMode; }
   get designForm() { return this.designLayoutService.designForm; }
   get canvasProps() { return this.designLayoutService.canvasProps; }
+  get selectedColor() { return this.designLayoutService.selectedColor; }
   get showCanvasSize() { return this.designLayoutService.showCanvasSize; }
+  get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }
 
   get colors() { return this.utils.colors; }
 }

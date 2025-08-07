@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { DesignLayout } from '../interfaces/design-layout';
+import { DesignLayout, HtmlLayer } from '../interfaces/design-layout';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import * as fabric from 'fabric';
@@ -42,6 +42,7 @@ export class DesignLayoutService {
     name: new FormControl('New Design', [ Validators.required ]),
     description: new FormControl('This is a new design', [ Validators.required ]),
     canvas: new FormControl(null),
+    htmlLayers: new FormControl(null),
     color: new FormControl('#ffffff', { nonNullable: true }),
     approvedInfo: new FormGroup({
       approvedBy: new FormControl('Admin'),
@@ -58,7 +59,9 @@ export class DesignLayoutService {
     drag: false,
   }
 
+  selectedColor = signal<string>('#000000');
   canvasActiveObject = signal<any>(null);
+  canvasHTMLLayers = signal<HtmlLayer[]>([]);
 
   constructor() { }
 
@@ -91,15 +94,16 @@ export class DesignLayoutService {
 
   onSaveDesign(design: DesignLayout) {
     const canvas = this.getCanvas();
-    const data = canvas.toJSON();
+    const htmlLayers = this.canvasHTMLLayers();
+    const data = canvas.toObject(['html']);    
     
     const tempData = this.designs();
     const { id, status, ...info } = design;
     const index = tempData.findIndex(item => item.id == design.id);
 
-    if (index !== -1) tempData[index] = { ...design, canvas: JSON.stringify(data), updatedOn: new Date() };
+    if (index !== -1) tempData[index] = { ...design, canvas: JSON.stringify(data), htmlLayers, updatedOn: new Date() };
     else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, 
-      canvas: JSON.stringify(data), createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
+      canvas: JSON.stringify(data), htmlLayers, createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
 
     this.designSignal.set([...tempData]);
     this.totalRecords.set(this.designs().length);
@@ -118,14 +122,31 @@ export class DesignLayoutService {
       selection: false,
       preserveObjectStacking: true,
     });
-
-    newCanvas.loadFromJSON(canvasData, () => {
-      this.registerSelectionEvents(newCanvas);
-      this.setCanvas(newCanvas);
-      this.registerAlignmentGuides();
-      newCanvas.requestRenderAll();
-    });
     
+    newCanvas.loadFromJSON(canvasData, () => {
+      setTimeout(() => {
+        const objects = newCanvas.getObjects();
+        objects.forEach((obj: any, index: number) => { 
+          if (!obj.html) return;
+          const html: any = obj.html;
+          const alreadyExists = this.canvasHTMLLayers().find(item => item.id == html.id);
+                
+          if (!alreadyExists ) {
+            const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
+            this.canvasHTMLLayers().push(htmlLayer);
+          }
+        });
+
+        console.log(this.canvasHTMLLayers());
+        
+
+        this.setCanvas(newCanvas);
+        this.registerCanvasEvents(newCanvas);
+        this.registerAlignmentGuides(newCanvas);
+        this.syncDivsWithFabric(newCanvas);
+        newCanvas.requestRenderAll();        
+      }, 50);
+    });
   }
 
   onDeleteDesign(design: DesignLayout) { }
@@ -141,9 +162,10 @@ export class DesignLayoutService {
       preserveObjectStacking: true,
     });
 
-    this.registerSelectionEvents(canvas);
+    this.registerCanvasEvents(canvas);
     this.setCanvas(canvas);
-    this.registerAlignmentGuides();
+    this.registerAlignmentGuides(canvas);
+    this.syncDivsWithFabric(canvas);
     canvas.renderAll();
   }
 
@@ -158,8 +180,9 @@ export class DesignLayoutService {
   onZoomCanvas(factor: number) {
     const canvas = this.getCanvas();
     const zoom = canvas.getZoom() * factor;
-    const canvasWidth = canvas.getWidth() * factor;
-    const canvasHeight = canvas.getHeight() * factor;      
+    const { width, height } = this.canvasDimensions(canvas);
+    const canvasWidth = width * factor;
+    const canvasHeight = height * factor;      
 
     if ((canvasWidth * zoom) <= 250) return;
 
@@ -283,12 +306,105 @@ export class DesignLayoutService {
     this.canvas.add(line);
   }
 
+  onAddHTMLToCanvas() {
+    const length: number = this.canvasHTMLLayers().length;
+    const rect = new fabric.Rect({
+      left: 100 + length * 50,
+      top: 100 + length * 50,
+      width: 200,
+      height: 100,
+      fill: 'transparent',
+      strokeWidth: 2,
+      hasControls: true,
+      selectable: true,
+      lockRotation: true,
+    });
+
+    rect.setControlsVisibility({ mtr: false });
+
+    this.canvas.add(rect);
+    const htmlLayer = this.createHtmlLayerFromObject(rect, length + 1, `Layer ${length + 1}`);
+    this.canvasHTMLLayers().push(htmlLayer);
+
+    this.canvas.setActiveObject(rect);
+    rect.set('html', htmlLayer);
+  }
+
+  onRemoveLayer(canvas: fabric.Canvas) {
+    const activeObject = canvas.getActiveObjects();
+    if (!activeObject || activeObject.length === 0) return;
+
+    canvas.remove(...activeObject);
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+  }
+
   /**
    * ====================================================================================================================================
    * Private methods insert here
    * ====================================================================================================================================
    */
-  private registerSelectionEvents(canvas: fabric.Canvas): void {
+
+  private canvasDimensions(canvas: fabric.Canvas) {
+    return { width: canvas.getWidth(), height: canvas.getHeight() }
+  }
+  
+  private syncDivsWithFabric(canvas: fabric.Canvas) {
+    const events = [
+      'object:added',
+      'object:moving',
+      'object:scaling',
+      'object:rotating',
+      'object:modified',
+      'selection:created',
+      'selection:updated',
+      'selection:cleared',
+      'after:render'
+    ];
+
+    events.forEach((event: any) =>
+      canvas.on(event, () => this.updateHtmlLayers())
+    );
+  }
+
+  private updateHtmlLayers() {
+    this.canvasHTMLLayers().forEach((layer, index) => {
+      const obj = layer.fabricObject;
+      const updated = this.createHtmlLayerFromObject(obj, index, layer.content);
+
+      Object.assign(layer, updated);
+    });
+  }
+
+  private createHtmlLayerFromObject(obj: fabric.Object, id: number, content: any) {
+    const width = (obj.width || 0) * (obj.scaleX || 1);
+    const height = (obj.height || 0) * (obj.scaleY || 1);
+    const angle = obj.angle || 0;
+    const center = obj.getCenterPoint();
+
+    const rad = fabric.util.degreesToRadians(angle);
+    const offsetX = -width / 2;
+    const offsetY = -height / 2;
+    const rotatedX = offsetX * Math.cos(rad) - offsetY * Math.sin(rad);
+    const rotatedY = offsetX * Math.sin(rad) + offsetY * Math.cos(rad);
+
+    const topLeftX = center.x + rotatedX;
+    const topLeftY = center.y + rotatedY;
+
+    return {
+      id,
+      top: topLeftY,
+      left: topLeftX,
+      width,
+      height,
+      rotation: angle,
+      content,
+      fabricObject: obj,
+    };
+  }
+
+  
+  private registerCanvasEvents(canvas: fabric.Canvas): void {
     canvas.on('selection:created', (e) => {
       const selectedObjects = e.selected || [];
       if (selectedObjects.length === 0) return;
@@ -338,16 +454,53 @@ export class DesignLayoutService {
     canvas.on('selection:cleared', () => {
       console.log('No layer selected');
     });
+
+    canvas.on('object:moving', (e) => {
+      const { width, height } = this.canvasDimensions(canvas);
+      const obj = e.target;
+      if (!obj) return;
+
+      const boundX = width - obj.getScaledWidth();
+      const boundY = height - obj.getScaledHeight();
+
+      obj.left = Math.max(0, Math.min(obj.left || 0, boundX));
+      obj.top = Math.max(0, Math.min(obj.top || 0, boundY));
+    });
+
+    canvas.on('object:scaling', (e) => {
+      const { width, height } = this.canvasDimensions(canvas);
+      const obj = e.target;
+      if (!obj) return;
+
+      const canvasWidth = width;
+      const canvasHeight = height;
+
+      const maxWidth = canvasWidth - (obj.left ?? 0);
+      const maxHeight = canvasHeight - (obj.top ?? 0);
+
+      const scaledWidth = obj.width! * obj.scaleX!;
+      const scaledHeight = obj.height! * obj.scaleY!;
+
+      // Clamp scale so it doesn't exceed canvas bounds
+      if (scaledWidth > maxWidth) {
+        obj.scaleX = maxWidth / obj.width!;
+      }
+      if (scaledHeight > maxHeight) {
+        obj.scaleY = maxHeight / obj.height!;
+      }
+
+       canvas.requestRenderAll();
+    })
   }
 
-  private registerAlignmentGuides() {
-    this.canvas.on('object:moving', (e) => {
+  private registerAlignmentGuides(canvas: fabric.Canvas) {
+    canvas.on('object:moving', (e) => {
       const activeObject = e.target;
       if (!activeObject) return;
 
-      this.clearGuides();
+      this.clearGuides(canvas);
 
-      const objects = this.canvas.getObjects().filter(o => o !== activeObject);
+      const objects = canvas.getObjects().filter(o => o !== activeObject);
       const aCenter = activeObject.getCenterPoint();
 
       objects.forEach(obj => {
@@ -355,72 +508,72 @@ export class DesignLayoutService {
 
         // Vertical alignment (center)
         if (Math.abs(aCenter.x - oCenter.x) < this.alignThreshold) {
-          this.addVerticalGuide(oCenter.x);
+          this.addVerticalGuide(canvas, oCenter.x);
         }
 
         // Horizontal alignment (center)
         if (Math.abs(aCenter.y - oCenter.y) < this.alignThreshold) {
-          this.addHorizontalGuide(oCenter.y);
+          this.addHorizontalGuide(canvas, oCenter.y);
         }
 
         // Left alignment
         if (Math.abs((activeObject.left || 0) - (obj.left || 0)) < this.alignThreshold) {
-          this.addVerticalGuide(obj.left || 0);
+          this.addVerticalGuide(canvas, obj.left || 0);
         }
 
         // Right alignment
         const aRight = (activeObject.left || 0) + (activeObject.width || 0) * (activeObject.scaleX || 1);
         const oRight = (obj.left || 0) + (obj.width || 0) * (obj.scaleX || 1);
         if (Math.abs(aRight - oRight) < this.alignThreshold) {
-          this.addVerticalGuide(oRight);
+          this.addVerticalGuide(canvas, oRight);
         }
 
         // Top alignment
         if (Math.abs((activeObject.top || 0) - (obj.top || 0)) < this.alignThreshold) {
-          this.addHorizontalGuide(obj.top || 0);
+          this.addHorizontalGuide(canvas, obj.top || 0);
         }
 
         // Bottom alignment
         const aBottom = (activeObject.top || 0) + (activeObject.height || 0) * (activeObject.scaleY || 1);
         const oBottom = (obj.top || 0) + (obj.height || 0) * (obj.scaleY || 1);
         if (Math.abs(aBottom - oBottom) < this.alignThreshold) {
-          this.addHorizontalGuide(oBottom);
+          this.addHorizontalGuide(canvas, oBottom);
         }
       });
 
-      this.canvas.requestRenderAll();
+      canvas.requestRenderAll();
     });
 
-    this.canvas.on('mouse:up', () => {
-      this.clearGuides();
-      this.canvas.requestRenderAll();
+    canvas.on('mouse:up', () => {
+      this.clearGuides(canvas);
+      canvas.requestRenderAll();
     });
   }
 
-  private addVerticalGuide(x: number) {
-    const guide = new fabric.Line([x, 0, x, this.canvas.getHeight()], {
+  private addVerticalGuide(canvas: fabric.Canvas, x: number) {
+    const guide = new fabric.Line([x, 0, x, canvas.getHeight()], {
       stroke: '#4BC0C0',
       strokeDashArray: [5, 5],
       selectable: false,
       evented: false
     });
-    this.canvas.add(guide);
+    canvas.add(guide);
     this.guides.push({ line: guide });
   }
 
-  private addHorizontalGuide(y: number) {
-    const guide = new fabric.Line([0, y, this.canvas.getWidth(), y], {
+  private addHorizontalGuide(canvas: fabric.Canvas, y: number) {
+    const guide = new fabric.Line([0, y, canvas.getWidth(), y], {
       stroke: '#4BC0C0',
       strokeDashArray: [5, 5],
       selectable: false,
       evented: false
     });
-    this.canvas.add(guide);
+    canvas.add(guide);
     this.guides.push({ line: guide });
   }
 
-  private clearGuides() {
-    this.guides.forEach(g => this.canvas.remove(g.line));
+  private clearGuides(canvas: fabric.Canvas) {
+    this.guides.forEach(g => canvas.remove(g.line));
     this.guides = [];
   }
 }

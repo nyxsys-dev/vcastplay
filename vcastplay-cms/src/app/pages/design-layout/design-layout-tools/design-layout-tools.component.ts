@@ -15,8 +15,6 @@ export class DesignLayoutToolsComponent {
 
   designLayoutService = inject(DesignLayoutService);
 
-  selectedColor = signal<string>('#000000');
-
   onClickSelection() {
     this.designLayoutService.onSelection();
   }
@@ -27,6 +25,10 @@ export class DesignLayoutToolsComponent {
 
   onClickAddRectangle() {
     this.designLayoutService.onAddRectangleToCanvas(this.selectedColor());
+  }
+
+  onClickAddHTML() {
+    this.designLayoutService.onAddHTMLToCanvas();
   }
 
   onClickAddLine() {
@@ -44,4 +46,6 @@ export class DesignLayoutToolsComponent {
   onChangeColor(event: any) {
     this.designLayoutService.onChangeColor(event.value);
   }
+  
+  get selectedColor() { return this.designLayoutService.selectedColor; }
 }

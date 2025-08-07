@@ -93,7 +93,7 @@ export class PlayerService {
 
     if (this.platform.platform === 'android') {
       try {
-        const exists = await (window as any).checkFileExists?.(`${this.androidPath}/${item.name}`);
+        const exists = await (window as any).AndroidBridge.checkFileExists?.(`${this.androidPath}/${item.name}`);
         console.log(`[Android] Local file check for ${item.name}: ${exists}`);
         if (exists) {
           // item.link = `${this.androidPath}/${item.name}`;
