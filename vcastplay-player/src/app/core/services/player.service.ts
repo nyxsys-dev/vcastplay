@@ -95,6 +95,8 @@ export class PlayerService {
       try {
         const exists = await (window as any).AndroidBridge.checkFileExists?.(`${this.androidPath}/${item.name}`);
         console.log(`[Android] Local file check for ${item.name}: ${exists}`);
+        console.log(`${this.androidPath}/${item.name}`);
+        
         if (exists) {
           // item.link = `${this.androidPath}/${item.name}`;
           this.currentContent.set({ ...item, link: `${this.androidPath}/${item.name}` });
@@ -109,6 +111,7 @@ export class PlayerService {
     } else {
       this.currentContent.set(item);
     }
+
     
     this.fadeIn.set(true);
     this.progress.set(0);
