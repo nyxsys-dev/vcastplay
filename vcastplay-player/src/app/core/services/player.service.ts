@@ -77,7 +77,7 @@ export class PlayerService {
     return this.contentSignal();
   }
 
-  async onPlayPreview(index: number = 0) {
+  onPlayPreview(index: number = 0) {
     const loop: boolean = true
     const contents = this.onGetContents();
     const { hasGap, type, speed } = { hasGap: false, type: 'fade', speed: 1 }//this.transition?.value;
@@ -93,7 +93,7 @@ export class PlayerService {
 
     if (this.platform.platform === 'android') {
       try {
-        const exists = await (window as any).AndroidBridge.checkFileExists?.(`${this.androidPath}/${item.name}`);
+        const exists = (window as any).AndroidBridge.checkFileExists(`${this.androidPath}/${item.name}`);
         console.log(`[Android] Local file check for ${item.name}: ${exists}`);
         console.log(`${this.androidPath}/${item.name}`);
         
