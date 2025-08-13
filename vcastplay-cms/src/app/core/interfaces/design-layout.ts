@@ -7,6 +7,7 @@ export interface DesignLayout {
     description: string;
     canvas: any;
     htmlLayers?: any;
+    duration: number;
     status: string;
     approvedInfo?: ApprovedInfo;
     createdOn: Date;
@@ -20,7 +21,7 @@ export interface HtmlLayer {
     top: number;
     width: number;
     height: number;
-    content: string;
+    content: any;
     rotation: number;
     fabricObject: any;
 }

@@ -1,7 +1,6 @@
 import { Component, inject, Input, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { DesignLayoutService } from '../../../core/services/design-layout.service';
-import * as fabric from 'fabric';
 
 @Component({
   selector: 'app-design-layout-tools',
@@ -26,9 +25,10 @@ export class DesignLayoutToolsComponent {
   onClickAddRectangle() {
     this.designLayoutService.onAddRectangleToCanvas(this.selectedColor());
   }
-
-  onClickAddHTML() {
-    this.designLayoutService.onAddHTMLToCanvas();
+  
+  onClickAddContents() {
+    this.showContents.set(!this.showContents());
+    this.designLayoutService.onSetCanvasProps('content', false, 'default');
   }
 
   onClickAddLine() {
@@ -43,9 +43,21 @@ export class DesignLayoutToolsComponent {
     this.designLayoutService.onMove();
   }
 
+  onClickZoom() {
+    const canvas = this.designLayoutService.getCanvas();
+    canvas.discardActiveObject();
+    this.designLayoutService.onZoomCanvas(1.1);
+  }
+
+  onUnSelectAllLayers() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onUnSelectAllLayers(canvas);
+  }
+  
   onChangeColor(event: any) {
     this.designLayoutService.onChangeColor(event.value);
   }
   
   get selectedColor() { return this.designLayoutService.selectedColor; }
+  get showContents() { return this.designLayoutService.showContents; }
 }

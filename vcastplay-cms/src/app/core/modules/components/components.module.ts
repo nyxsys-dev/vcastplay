@@ -37,6 +37,9 @@ import { ContentSelectionComponent } from '../../../components/content-selection
 import { ScreenDetailsComponent } from '../../../pages/screen-management/screen-details/screen-details.component';
 import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
 import { DesignLayoutToolsComponent } from '../../../pages/design-layout/design-layout-tools/design-layout-tools.component';
+import { DesignLayoutContentsComponent } from '../../../pages/design-layout/design-layout-contents/design-layout-contents.component';
+import { TextPropertiesComponent } from '../../../components/design-layout/text-properties/text-properties.component';
+import { RectPropertiesComponent } from '../../../components/design-layout/rect-properties/rect-properties.component';
 
 
 const COMPONENT_MODULES = [
@@ -96,6 +99,9 @@ const COMPONENT_MODULES = [
 
   // Design Layout Components
   DesignLayoutToolsComponent,
+  DesignLayoutContentsComponent,
+  TextPropertiesComponent,
+  RectPropertiesComponent,
 ]
 
 @NgModule({

@@ -115,6 +115,37 @@ export class AssetsService {
         status: 'pending',
         createdOn: new Date(),
         updatedOn: new Date(),
+      },
+      {
+        id: 2,
+        code: 'NYX002',
+        name: 'ForBiggerBlazes.mp4',
+        type: 'video',
+        link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        fileDetails: {
+          name: 'ForBiggerBlazes.mp4',
+          size: 2498125,
+          type: 'video/mp4',
+          orientation: 'landscape',
+          resolution: {
+            width: 1280,
+            height: 720
+          },
+          thumbnail: 'https://picsum.photos/id/237/200/300'
+        },
+        duration: 15,
+        audienceTag: {
+          genders: [ 'Male', 'Female' ],
+          ageGroups: [],
+          timeOfDays: [],
+          seasonalities: [],
+          locations: [],
+          pointOfInterests: [],
+          tags: []
+        },
+        status: 'pending',
+        createdOn: new Date(),
+        updatedOn: new Date(),
       }
     ]);
     this.totalRecords.set(this.assets().length);

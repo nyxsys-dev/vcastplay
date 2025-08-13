@@ -11,8 +11,8 @@
     <p-button (onClick)="onClickAddRectangle()" text>
         <img src="assets/icons/rectangle.png" alt="rectangle" pTooltip="Rectangle" width="20">
     </p-button>
-    <p-button (onClick)="onClickAddHTML()" text>
-        <img src="assets/icons/block.png" alt="block" pTooltip="HTML" width="20">
+    <p-button (onClick)="onClickAddContents()" text>
+        <img src="assets/icons/images.png" alt="images" pTooltip="Contents" width="20">
     </p-button>
     <p-button (onClick)="onClickAddLine()" text>
         <img src="assets/icons/line.png" alt="line" pTooltip="Line" width="20">
@@ -20,9 +20,9 @@
     <p-button (onClick)="onClickPan()" text>
         <img src="assets/icons/hand.png" alt="hand" pTooltip="Hand" width="20">
     </p-button>
-    <p-button text>
+    <p-button (onClick)="onClickZoom()" text>
         <img src="assets/icons/zoom.png" alt="zoom" pTooltip="Zoom" width="20">
     </p-button>
     <p-divider />
-    <p-colorpicker [(ngModel)]="selectedColor" (onChange)="onChangeColor($event)" appendTo="body" />
+    <p-colorpicker [(ngModel)]="selectedColor" (onChange)="onChangeColor($event)" appendTo="body" (onShow)="onUnSelectAllLayers()" />
 </div>

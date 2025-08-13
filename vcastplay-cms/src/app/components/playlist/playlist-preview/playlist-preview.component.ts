@@ -12,6 +12,7 @@ import { PlaylistService } from '../../../core/services/playlist.service';
 export class PlaylistPreviewComponent {
 
   @Input() currentContent!: any
+  @Input() showControls: boolean = true;
 
   playlistService = inject(PlaylistService);
 

@@ -6,6 +6,7 @@ import { ComponentsModule } from '../../../core/modules/components/components.mo
 import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { PlaylistService } from '../../../core/services/playlist.service';
 
 @Component({
   selector: 'app-design-layout-details',
@@ -22,6 +23,7 @@ export class DesignLayoutDetailsComponent {
   router = inject(Router);
 
   designLayoutService = inject(DesignLayoutService);
+  playlistService = inject(PlaylistService);
   utils = inject(UtilityService);
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
@@ -43,7 +45,8 @@ export class DesignLayoutDetailsComponent {
         { label: 'Info', command: () => {}, disabled: true },
         {  separator: true },
         { label: 'Exit', command: () => {
-          this.designLayoutService.onExitCanvas()
+          this.designLayoutService.onExitCanvas();
+          this.router.navigate(['/layout/design-layout-library']);
         }},
       ]
     },
@@ -57,8 +60,6 @@ export class DesignLayoutDetailsComponent {
         { label: 'Cut', command: () => {}, disabled: true, shortcut: 'Ctrl+X' },
         { label: 'Copy', command: () => {}, disabled: true, shortcut: 'Ctrl+C' },
         { label: 'Paste', command: () => {}, disabled: true, shortcut: 'Ctrl+V' },
-        {  separator: true },
-        { label: 'Properties', command: () => {}, disabled: true },
       ]
     },
     {
@@ -72,6 +73,7 @@ export class DesignLayoutDetailsComponent {
             { label: 'Text', command: () => this.onClickAddLayer('text'), disabled: false },
             { label: 'Rectangle', command: () => this.onClickAddLayer('rectangle'), disabled: false },
             { label: 'Line', command: () => this.onClickAddLayer('line'), disabled: false },
+            { label: 'Contents', command: () => this.onClickAddLayer('content'), disabled: false },
           ],
           // disabled: true
         },
@@ -93,11 +95,22 @@ export class DesignLayoutDetailsComponent {
     }
   ];
 
+  objectAlignments: any[] = [
+    { label: 'Align Left', command: () => this.onClickLayerAlignment('left'), image: 'assets/icons/align-left.png' },
+    { label: 'Align Center', command: () => this.onClickLayerAlignment('center'), image: 'assets/icons/align-center.png' },
+    { label: 'Align Right', command: () => this.onClickLayerAlignment('right'), image: 'assets/icons/align-right.png' },
+    { label: 'Spacing Center', command: () => this.onClickLayerSpacing('horizontal'), image: 'assets/icons/spacing-center.png' },
+    { label: 'Align Top', command: () => this.onClickLayerAlignment('top'), image: 'assets/icons/align-top.png' },
+    { label: 'Align Middle', command: () => this.onClickLayerAlignment('middle'), image: 'assets/icons/align-middle.png' },
+    { label: 'Align Bottom', command: () => this.onClickLayerAlignment('bottom'), image: 'assets/icons/align-bottom.png' },
+    { label: 'Spacing Middle', command: () => this.onClickLayerSpacing('vertical'), image: 'assets/icons/spacing-middle.png' },
+  ]
+
   @HostListener('wheel', ['$event']) onWheel(event: WheelEvent) {
     if (!event.ctrlKey) return;
     event.preventDefault();
     const factor = event.deltaY < 0 ? 1.1 : 0.9;    
-    this.designLayoutService.onZoomCanvas(factor);
+    if(this.canvasProps.zoom) this.designLayoutService.onZoomCanvas(factor);
   }
 
   @HostListener('document:keydown', ['$event']) onKeyDown(event: KeyboardEvent) {   
@@ -124,6 +137,12 @@ export class DesignLayoutDetailsComponent {
   }  
 
   ngOnInit() { }
+
+  ngOnDestroy() {
+    this.designLayoutService.onExitCanvas();
+    this.canvasHTMLLayers.set([]);
+    if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
+  }
 
   ngAfterViewInit() {
     if (this.isEditMode()) {
@@ -156,6 +175,7 @@ export class DesignLayoutDetailsComponent {
         this.designForm.reset();
         this.isEditMode.set(false);
         this.canvasHTMLLayers.set([]);
+        if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
         this.router.navigate([ '/layout/design-layout-library' ]);
       },
     });
@@ -169,8 +189,11 @@ export class DesignLayoutDetailsComponent {
       case 'line':
         this.designLayoutService.onAddLineToCanvas(this.selectedColor());
         break;
-      default:
+      case 'rectangle':
         this.designLayoutService.onAddRectangleToCanvas(this.selectedColor());
+        break;
+      default:
+        this.showContents.set(true);
         break;
     }
     this.designLayoutService.onLayerArrangement('front');
@@ -187,6 +210,14 @@ export class DesignLayoutDetailsComponent {
 
   onClickLayerArrangement(position: string) {
     this.designLayoutService.onLayerArrangement(position);
+  }
+
+  onClickLayerAlignment(position: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') {
+    this.designLayoutService.onLayerAlignment(position);
+  }
+
+  onClickLayerSpacing(axis: 'horizontal' | 'vertical') {
+    this.designLayoutService.onLayerSpacing(axis);
   }
 
   onClickDuplicateLayer() {
@@ -212,12 +243,28 @@ export class DesignLayoutDetailsComponent {
     this.designForm.patchValue({ screen: event });
   }
 
+  onDropped(event: any) {
+    const { item: { data } } = event;
+    switch (data.type) {
+      case 'image':
+        this.designLayoutService.onAddImageToCanvas(data);
+        break;
+      default:
+        this.designLayoutService.onAddVideoToCanvas(data);
+        break;
+    }
+  }
+
   get isEditMode() { return this.designLayoutService.isEditMode; }
   get designForm() { return this.designLayoutService.designForm; }
   get canvasProps() { return this.designLayoutService.canvasProps; }
+  get showContents() { return this.designLayoutService.showContents; }
   get selectedColor() { return this.designLayoutService.selectedColor; }
   get showCanvasSize() { return this.designLayoutService.showCanvasSize; }
   get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }
 
   get colors() { return this.utils.colors; }
+
+  get isMobile() { return this.utils.isMobile(); }
+  get isTablet() { return this.utils.isTablet(); }
 }

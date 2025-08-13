@@ -1,8 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { DesignLayout, HtmlLayer } from '../interfaces/design-layout';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import * as fabric from 'fabric';
+import { PlaylistService } from './playlist.service';
+import { duration } from 'moment';
 
 
 interface GuideLine {
@@ -14,11 +15,12 @@ interface GuideLine {
 })
 export class DesignLayoutService {
 
-  router = inject(Router);
+  playlistService = inject(PlaylistService);
   
   private canvas!: fabric.Canvas;
   private guides: GuideLine[] = [];
-  private alignThreshold = 5; // pixels for snapping/align detection
+  private alignThreshold = 5;
+  private animFrameId!: number;
 
   private designSignal = signal<DesignLayout[]>([]);
   designs = computed(() => this.designSignal());
@@ -27,13 +29,16 @@ export class DesignLayoutService {
   loadingSignal = signal<boolean>(false);
   showApprove = signal<boolean>(false);
   showCanvasSize = signal<boolean>(false);
+  showContents = signal<boolean>(false);
 
   DEFAULT_SCALE = signal<number>(0.45);
   SELECTION_STYLE = signal<any>({
-    borderColor: '#36A2EB',
-    cornerColor: '#36A2EB',
+    borderColor: '#9B5CFA',
+    borderScaleFactor: 2,
+    cornerStrokeColor: '#8B3DFF',
+    cornerColor: '#9B5CFA',
     cornerStyle: 'circle',
-    cornerSize: 6,
+    cornerSize: 12,
     transparentCorners: false
   })
 
@@ -50,6 +55,7 @@ export class DesignLayoutService {
     description: new FormControl('This is a new design', [ Validators.required ]),
     canvas: new FormControl(null),
     htmlLayers: new FormControl(null),
+    duration: new FormControl(5, { nonNullable: true }),
     color: new FormControl('#ffffff', { nonNullable: true }),
     approvedInfo: new FormGroup({
       approvedBy: new FormControl('Admin'),
@@ -60,10 +66,34 @@ export class DesignLayoutService {
     isActive: new FormControl(false),
     screen: new FormControl(null, [ Validators.required ]),
   });
+  
+  textPropsForm: FormGroup = new FormGroup({
+    size: new FormControl(12, { nonNullable: true }),
+    weight: new FormControl(false, { nonNullable: true }),
+    italic: new FormControl(false, { nonNullable: true }),
+    underline: new FormControl(false, { nonNullable: true }),
+    alignment: new FormControl('left', { nonNullable: true }),
+    color: new FormControl('#000000', { nonNullable: true })
+  })
+
+  rectPropsForm: FormGroup = new FormGroup({
+    color: new FormControl('#000000', { nonNullable: true }),
+    transparent: new FormControl(false, { nonNullable: true }),
+    style: new FormControl('fill', { nonNullable: true }),
+    strokeWidth: new FormControl(1, { nonNullable: true }),
+  })
 
   canvasProps: any = {
     zoom: false,
+    move: false,
     drag: false,
+    selection: false,
+    text: false,
+    rect: false,
+    line: false,
+    image: false,
+    video: false,
+    content: false
   }
 
   selectedColor = signal<string>('#000000');
@@ -87,6 +117,8 @@ export class DesignLayoutService {
         name: 'Default',
         description: 'Default design layout',
         canvas: null,
+        htmlLayers: null,
+        duration: 0,
         status: 'active',
         createdOn: new Date(),
         updatedOn: new Date()
@@ -102,7 +134,7 @@ export class DesignLayoutService {
   onSaveDesign(design: DesignLayout) {
     const canvas = this.getCanvas();
     const htmlLayers = this.canvasHTMLLayers();
-    const data = canvas.toObject(['html']);    
+    const data = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp']);
     
     const tempData = this.designs();
     const { id, status, ...info } = design;
@@ -130,25 +162,34 @@ export class DesignLayoutService {
       preserveObjectStacking: true,
     });
     
+
+    this.setCanvas(newCanvas);
     newCanvas.loadFromJSON(canvasData, () => {
       setTimeout(() => {
-        const objects = newCanvas.getObjects();
+        const objects = newCanvas.getObjects();        
         objects.forEach((obj: any, index: number) => { 
-          if (!obj.html) return;
-          const html: any = obj.html;
-          const alreadyExists = this.canvasHTMLLayers().find(item => item.id == html.id);
-                
-          if (!alreadyExists ) {
-            const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
-            this.canvasHTMLLayers().push(htmlLayer);
+          if (obj.html) {
+            const html: any = obj.html;
+            const alreadyExists = this.canvasHTMLLayers().find(item => item.id == html.id);
+                  
+            if (!alreadyExists ) {
+              const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
+              this.canvasHTMLLayers().push(htmlLayer);
+              this.playlistService.onPlayPreview();
+            }
+          } else if (obj.data) {
+            const data: any = obj.data;
+            if (data.type == 'video') { 
+              this.onAddVideoToCanvas(data, obj);
+              newCanvas.remove(obj);
+            }
           }
-        });        
-
-        this.setCanvas(newCanvas);
+        });
+        
         this.registerCanvasEvents(newCanvas);
         this.registerAlignmentGuides(newCanvas);
-        this.syncDivsWithFabric(newCanvas);
-        newCanvas.requestRenderAll();        
+        if (this.canvasHTMLLayers().length > 0) this.syncDivsWithFabric(newCanvas);
+        newCanvas.requestRenderAll();           
       }, 50);
     });
   }
@@ -173,12 +214,22 @@ export class DesignLayoutService {
     canvas.renderAll();
   }
 
+  /**
+   * ====================================================================================================================================
+   * Editor Tools
+   * ====================================================================================================================================
+   */
+
   onExitCanvas() {
+    const canvas = this.getCanvas();
+    if (canvas) {
+      this.canvas.clear();
+      this.canvas.dispose();
+      this.canvas = undefined as any;
+    }
+    cancelAnimationFrame(this.animFrameId);
     this.designForm.reset();
-    this.canvas.clear();
-    this.canvas.dispose();
-    this.canvas = undefined as any;
-    this.router.navigate(['/layout/design-layout-library']);
+    this.showContents.set(false);
   }
 
   onZoomCanvas(factor: number) {
@@ -203,26 +254,27 @@ export class DesignLayoutService {
     });
 
     canvas.renderAll();
+    this.onSetCanvasProps('zoom', true, 'default');
   }
 
   onSelection() {
-    this.canvas.selection = true;
-    this.canvasProps.drag = false;
-    this.canvas.defaultCursor = 'pointer';
+    this.onSetCanvasProps('selection', true, 'default');
+    this.onDisableLayersProps(true);
+    this.showContents.set(false);
   }
 
   onPan() {
-    this.canvasProps.drag = true;
-    this.canvas.selection = false; 
+    this.onSetCanvasProps('drag', false, 'grab');
     this.canvas.discardActiveObject();
-    this.canvas.defaultCursor = 'grab';
+    this.onDisableLayersProps(false);
+    this.showContents.set(false);
   }
 
   onMove() {
+    this.onSetCanvasProps('move', false, 'pointer');
     this.canvas.discardActiveObject();
-    this.canvasProps.drag = false;
-    this.canvas.selection = false; 
-    this.canvas.defaultCursor = 'pointer';
+    this.onDisableLayersProps(true);
+    this.showContents.set(false);
   }
 
   onChangeColor(color: string) {
@@ -231,110 +283,6 @@ export class DesignLayoutService {
       if (object.type === 'rect') object.set('fill', color);
     });
     this.canvas.requestRenderAll();
-  }
-
-  onLayerArrangement(position: string) {
-    const object: any = this.canvas.getActiveObject();    
-    switch (position) {
-      case 'forward':
-        this.canvas.bringObjectForward(object, true);
-        break;
-      case 'backward':
-        this.canvas.sendObjectBackwards(object, true);
-        break;
-      case 'front':
-        this.canvas.bringObjectToFront(object);
-        break;
-      default:
-        this.canvas.sendObjectToBack(object);
-        break;
-    }
-    this.canvas.discardActiveObject();
-    this.canvas.setActiveObject(object);
-    this.canvas.requestRenderAll();
-  }
-
-  // onDisableMenu() {
-  //   const fileMenu = this.layoutItems.find(menu => menu.label === 'File');
-  //   if (fileMenu && fileMenu.items) {
-  //     const saveItem = fileMenu.items.find(item => item.label === 'New');
-  //     if (saveItem) {
-  //       saveItem.disabled = !saveItem.disabled; // toggle enable/disable
-  //     }
-  //   }
-  // }
-
-  onAddTextToCanvas(content: string = 'Enter text here', fill: string = '#000000') {
-    const tempText = new fabric.FabricText(content, { fontSize: 12, fontFamily: 'Arial', fill });
-
-    this.canvas.discardActiveObject();
-    this.canvas.selection = false; 
-    this.canvasProps.drag = false;
-    this.canvas.defaultCursor = 'pointer';
-    const text = new fabric.Textbox(content, {
-      left: 100,
-      top: 100,
-      fontSize: 12,
-      fontFamily: 'Arial',
-      fill,
-      editable: true,
-      width: tempText.width
-    })
-
-    this.canvas.add(text);
-  }
-
-  onAddRectangleToCanvas(color: string = '#808080') {
-    this.canvas.discardActiveObject();
-    this.canvas.selection = false; 
-    this.canvasProps.drag = false;
-    this.canvas.defaultCursor = 'pointer';
-    const rect = new fabric.Rect({
-      left: 100,
-      top: 100,
-      width: 200,
-      height: 100,
-      fill: color
-    });
-
-    this.canvas.add(rect);
-  }
-
-  onAddLineToCanvas(color: string = '#808080') {
-    this.canvas.discardActiveObject();
-    this.canvas.selection = false; 
-    this.canvasProps.drag = false;
-    this.canvas.defaultCursor = 'pointer';
-    const line = new fabric.Line([50, 100, 250, 100], {
-      stroke: color,
-      strokeWidth: 1
-    });
-
-    this.canvas.add(line);
-  }
-
-  onAddHTMLToCanvas() {
-    const length: number = this.canvasHTMLLayers().length;
-    const rect = new fabric.Rect({
-      left: 100 + length * 50,
-      top: 100 + length * 50,
-      width: 200,
-      height: 100,
-      fill: 'transparent',
-      strokeWidth: 2,
-      hasControls: true,
-      selectable: true,
-      lockRotation: true,
-    });
-
-    rect.setControlsVisibility({ mtr: false });
-
-    this.canvas.add(rect);
-    const htmlLayer = this.createHtmlLayerFromObject(rect, length + 1, `Layer ${length + 1}`);
-    this.canvasHTMLLayers().push(htmlLayer);
-
-    this.canvas.setActiveObject(rect);
-    rect.set('html', htmlLayer);
   }
 
   onDuplicateLayer(canvas: fabric.Canvas) {
@@ -378,13 +326,421 @@ export class DesignLayoutService {
     }
   }
 
+  onUnSelectAllLayers(canvas: fabric.Canvas) {
+    canvas.discardActiveObject();
+    canvas.requestRenderAll();
+  }
+
   onRemoveLayer(canvas: fabric.Canvas) {
     const activeObject = canvas.getActiveObjects();
     if (!activeObject || activeObject.length === 0) return;
 
     canvas.remove(...activeObject);
+
+    activeObject.forEach((obj: any) => {
+      if (obj.html) {
+        this.canvasHTMLLayers().splice(obj.html.index, 1);
+        if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
+      }
+    });
+
     canvas.discardActiveObject();
     canvas.requestRenderAll();
+  }
+
+  // onDisableMenu() {
+  //   const fileMenu = this.layoutItems.find(menu => menu.label === 'File');
+  //   if (fileMenu && fileMenu.items) {
+  //     const saveItem = fileMenu.items.find(item => item.label === 'New');
+  //     if (saveItem) {
+  //       saveItem.disabled = !saveItem.disabled; // toggle enable/disable
+  //     }
+  //   }
+  // }
+
+  /**
+   * ====================================================================================================================================
+   * Adding layers
+   * Text, Rectangle, Image, Line, Video and HTML
+   * ====================================================================================================================================
+   */
+  onAddTextToCanvas(content: string = 'Enter text here', fill: string = '#000000') {
+    this.onSetCanvasProps('text', true, 'default');
+    const tempText = new fabric.FabricText(content, { fontSize: 12, fontFamily: 'Arial', fill });
+
+    this.canvas.discardActiveObject();    
+    const { width, height } = this.canvasDimensions(this.canvas);
+    const left = Math.random() * (width - tempText.width);
+    const top = Math.random() * (height - tempText.height);
+    const text = new fabric.Textbox(content, {
+      left,
+      top,
+      fontSize: 12,
+      fontFamily: 'Arial',
+      fill,
+      editable: true,
+      width: tempText.width,
+    })
+
+    this.canvas.add(text);
+    this.canvas.setActiveObject(text);
+    this.onDisableLayersProps(true);
+    this.showContents.set(false);
+  }
+
+  onAddRectangleToCanvas(color: string = '#808080') {
+    this.onSetCanvasProps('rect', true, 'default');
+    this.canvas.discardActiveObject();
+    
+    const rect = new fabric.Rect({
+      width: 200,
+      height: 100,
+      fill: color
+    });
+
+    this.canvas.add(rect);
+    this.onDisableLayersProps(true);
+    this.showContents.set(false);
+  }
+
+  onAddImageToCanvas(data: any) {
+    const resolution: any = data.fileDetails.resolution;
+    this.onSetCanvasProps('image', true, 'default');
+    this.canvas.discardActiveObject();
+
+    const { width, height } = this.canvasDimensions(this.canvas);
+    const left = Math.random() * (width - resolution.width);
+    const top = Math.random() * (height - resolution.height);
+    
+    fabric.FabricImage.fromURL(data.link, { }, { top, left, data }).then((image) => {
+      this.canvas.add(image);
+      this.canvas.setActiveObject(image);
+      this.canvas.requestRenderAll();
+
+      image.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
+      this.onDisableLayersProps(true);
+    });
+    
+  }
+
+  onAddVideoToCanvas(data: any, fabricObject?: fabric.Object | any) {
+    const { width, height }: any = data.fileDetails.resolution;
+    this.onSetCanvasProps('video', true, 'default');
+    this.canvas.discardActiveObject();
+    
+    const video = document.createElement('video');
+    const videoSource = document.createElement('source');
+
+    video.appendChild(videoSource);
+    videoSource.src = data.link;
+
+    video.width = width;
+    video.height = height;
+    video.loop = true;
+    video.muted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.load();
+    video.play();
+
+    const videoObj = new fabric.FabricImage(video, { 
+      left: fabricObject?.left ?? 0,
+      top: fabricObject?.top ?? 0,
+      originX: fabricObject?.originX ?? 'top',
+      originY: fabricObject?.originY ?? 'left',
+      scaleX: fabricObject?.scaleX ?? 0.2,
+      scaleY: fabricObject?.scaleY ?? 0.2,
+      objectCaching: false,
+      data,
+    });
+
+    videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
+    this.canvas.add(videoObj);
+
+    this.onStartVideoRender();
+    this.onDisableLayersProps(true);
+  }
+
+  onAddLineToCanvas(color: string = '#808080') {
+    this.onSetCanvasProps('line', true, 'default');
+    this.canvas.discardActiveObject();
+    const line = new fabric.Line([50, 100, 250, 100], {
+      stroke: color,
+      strokeWidth: 1
+    });
+
+    this.canvas.add(line);
+    this.canvas.setActiveObject(line);
+    this.canvas.requestRenderAll();
+
+    line.setControlsVisibility({ tl: false, tr: false, bl: false, br: false, mt: false, mb: false, });
+    this.onDisableLayersProps(true);
+    this.onDisableLayersProps(true);
+    this.showContents.set(false);
+  }
+
+  onAddHTMLToCanvas(content: any) {
+    this.onSetCanvasProps('content', true, 'default');
+    const length: number = this.canvasHTMLLayers().length + 1;
+    const rect = new fabric.Rect({
+      left: 100 + length * 50,
+      top: 100 + length * 50,
+      width: 200,
+      height: 100,
+      fill: 'transparent',
+      strokeWidth: 2,
+      hasControls: true,
+      selectable: true,
+      lockRotation: true,
+    });
+
+    rect.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
+
+    this.canvas.add(rect);
+    const htmlLayer = this.createHtmlLayerFromObject(rect, length, content);
+    this.canvasHTMLLayers().push(htmlLayer);
+
+    rect.set('html', htmlLayer);
+    this.canvas.setActiveObject(rect);
+    this.canvas.requestRenderAll();
+    this.onDisableLayersProps(true);
+    this.showContents.set(false);
+  }
+
+  /**
+   * ====================================================================================================================================
+   * Canvas Functions
+   * ====================================================================================================================================
+   */
+
+  onSetCanvasProps(props: string, canvasSelection: boolean, cursor: string) {
+    const keys = Object.keys(this.canvasProps);
+    keys.forEach(key => this.canvasProps[key] = false);
+    if (keys.includes(props)) this.canvasProps[props] = true;
+    this.canvas.selection = canvasSelection;
+    this.canvas.defaultCursor = cursor;
+  }
+
+  onLayerArrangement(position: string) {
+    const object: any = this.canvas.getActiveObject();    
+    switch (position) {
+      case 'forward':
+        this.canvas.bringObjectForward(object, true);
+        break;
+      case 'backward':
+        this.canvas.sendObjectBackwards(object, true);
+        break;
+      case 'front':
+        this.canvas.bringObjectToFront(object);
+        break;
+      default:
+        this.canvas.sendObjectToBack(object);
+        break;
+    }
+    this.canvas.discardActiveObject();
+    this.canvas.setActiveObject(object);
+    this.canvas.requestRenderAll();
+  }
+
+  onLayerAlignment(direction: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') {
+    const canvas = this.getCanvas();
+    
+    const selected = canvas.getActiveObjects();
+    if (selected.length < 2) return;
+    
+    const boundsList = selected.map(obj => ({ obj, bounds: obj.getBoundingRect() }));
+
+    if (!boundsList.length) return;
+    let refItem;
+
+    switch (direction) {
+      case 'left':
+        refItem = boundsList.reduce((a, b) => b.bounds.left < a.bounds.left ? b : a);
+        break;
+      case 'center':
+        refItem = boundsList.reduce((a, b) =>
+          (b.bounds.left + b.bounds.width / 2) < (a.bounds.left + a.bounds.width / 2) ? b : a
+        );
+        break;
+      case 'right':
+        refItem = boundsList.reduce((a, b) =>
+          (b.bounds.left + b.bounds.width) > (a.bounds.left + a.bounds.width) ? b : a
+        );
+        break;
+      case 'top':
+        refItem = boundsList.reduce((a, b) => b.bounds.top < a.bounds.top ? b : a);
+        break;
+      case 'middle':
+        refItem = boundsList.reduce((a, b) =>
+          (b.bounds.top + b.bounds.height / 2) < (a.bounds.top + a.bounds.height / 2) ? b : a
+        );
+        break;
+      case 'bottom':
+        refItem = boundsList.reduce((a, b) =>
+          (b.bounds.top + b.bounds.height) > (a.bounds.top + a.bounds.height) ? b : a
+        );
+        break;
+    }
+
+    if (!refItem) return;
+    const refBounds = refItem.bounds;
+    
+    boundsList.forEach(({ obj, bounds }) => {
+      switch (direction) {
+        case 'left':
+          obj.left += refBounds.left - bounds.left;
+          break;
+        case 'center':
+          obj.left += (refBounds.left + refBounds.width / 2) - (bounds.left + bounds.width / 2);
+          break;
+        case 'right':
+          obj.left += (refBounds.left + refBounds.width) - (bounds.left + bounds.width);
+          break;
+        case 'top':
+          obj.top += refBounds.top - bounds.top;
+          break;
+        case 'middle':
+          obj.top += (refBounds.top + refBounds.height / 2) - (bounds.top + bounds.height / 2);
+          break;
+        case 'bottom':
+          obj.top += (refBounds.top + refBounds.height) - (bounds.top + bounds.height);
+          break;
+      }
+      obj.setCoords();
+    });
+
+    canvas.discardActiveObject();
+    const newSelection = new fabric.ActiveSelection(selected, { canvas });
+    canvas.setActiveObject(newSelection);
+    canvas.requestRenderAll();
+  }
+
+  onLayerSpacing(axis: 'horizontal' | 'vertical') {
+    const canvas = this.getCanvas();
+    const selected = canvas.getActiveObjects();
+    if (selected.length < 3) return; // need at least 3
+
+    // 1) Capture bounds once (absolute AABB, includes rotation/scale)
+    const items = selected.map(obj => ({ obj, b: obj.getBoundingRect() }));
+
+    // 2) Sort by axis
+    const sorted = items.sort((a, b) =>
+      axis === 'horizontal' ? a.b.left - b.b.left : a.b.top - b.b.top
+    );
+
+    const first = sorted[0];
+    const last  = sorted[sorted.length - 1];
+
+    // 3) Compute available segment between extremes (first's far edge to last's near edge)
+    const start = axis === 'horizontal' ? (first.b.left + first.b.width) : (first.b.top + first.b.height);
+    const end   = axis === 'horizontal' ?  last.b.left                 :  last.b.top;
+
+    const numGaps = sorted.length - 1;
+
+    // 4) Sum widths/heights of all *middle* items (indices 1..n-2)
+    const sumMiddleSizes = sorted.slice(1, -1).reduce((acc, it) =>
+      acc + (axis === 'horizontal' ? it.b.width : it.b.height), 0
+    );
+
+    // 5) Gap size formula:
+    // (end - start) = sumMiddleSizes + numGaps * gap
+    const available = end - start;
+    const gap = (available - sumMiddleSizes) / numGaps; // can be negative if things overlap
+
+    // 6) Walk from left/top to right/bottom, placing each middle item
+    let cursor = start; // this is the right/bottom edge of the "previous" piece initially
+
+    for (let i = 1; i < sorted.length - 1; i++) {
+      const it = sorted[i];
+      const b  = it.b;
+
+      // target left/top = cursor + gap
+      const targetPos = cursor + gap;
+
+      if (axis === 'horizontal') {
+        // move by delta between current bounds.left and target left
+        it.obj.left += (targetPos - b.left);
+        it.obj.setCoords();
+        cursor = targetPos + b.width; // update cursor to this item's right edge
+      } else {
+        it.obj.top += (targetPos - b.top);
+        it.obj.setCoords();
+        cursor = targetPos + b.height; // update cursor to this item's bottom edge
+      }
+    }
+
+    // 7) Reselect so selection box fits new positions
+    canvas.discardActiveObject();
+    canvas.setActiveObject(new fabric.ActiveSelection(selected, { canvas }));
+    canvas.requestRenderAll();
+  }
+
+
+  onDisableLayersProps(value: boolean) {
+    const objects = this.canvas.getObjects();
+    objects.forEach(object => { 
+      object.selectable = value; 
+      object.evented = value;
+    });
+  }
+
+  onStartVideoRender() {
+    const render = () => {      
+      if (this.canvas) this.canvas.requestRenderAll();
+      this.animFrameId = fabric.util.requestAnimFrame(render);
+    }
+
+    this.animFrameId = fabric.util.requestAnimFrame(render);
+  }
+
+  onUpdateTextProperty(value: any) {
+    const { size, weight, italic, underline, alignment, color } = value;
+    
+    const activeObj: any = this.canvas.getActiveObject();
+    if (!activeObj) return;
+    
+    activeObj.set({
+      fontSize: size,
+      fontWeight: !weight ? 'normal' : 'bold',
+      fontStyle: italic ? 'italic' : 'normal',
+      underline: underline,
+      textAlign: alignment,
+      fill: color,
+      textBoxProp: value,
+    })
+
+    this.canvas.requestRenderAll();
+  }
+
+  onUpdateRectProperty(value: any) {
+    const { color, transparent, style, strokeWidth } = value;
+    const activeObj = this.canvas.getActiveObject();
+    if (!activeObj) return;
+
+    activeObj.set('strokeDashArray', undefined)
+    switch (style) {
+      case 'fill':
+        activeObj.set({ stroke: 'transparent', fill: transparent ? 'transparent' : color, strokeWidth: 0, strokeUniform: false });
+        break;
+      case 'outline':
+        activeObj.set({ stroke: color, strokeWidth, fill: 'transparent', strokeUniform: true });
+        break;
+      case 'dashed':
+        activeObj.set('strokeDashArray', [5, 5]);
+        activeObj.set({ fill: 'transparent', strokeUniform: true });
+        break;
+    }
+    activeObj.set('rectProp', value);
+    this.canvas.requestRenderAll();
+  }
+
+  onUpdateLineProperty(value: any) {
+    const { color, strokeWidth } = value;
+    const activeObj = this.canvas.getActiveObject();
+    if (!activeObj) return;
+    activeObj.set({ stroke: color, strokeWidth });
+    activeObj.set('lineProp', value);
+    this.canvas.requestRenderAll();
   }
 
   /**
@@ -392,7 +748,6 @@ export class DesignLayoutService {
    * Private methods insert here
    * ====================================================================================================================================
    */
-
   private canvasDimensions(canvas: fabric.Canvas) {
     return { width: canvas.getWidth(), height: canvas.getHeight() }
   }
@@ -424,7 +779,7 @@ export class DesignLayoutService {
     });
   }
 
-  private createHtmlLayerFromObject(obj: fabric.Object, id: number, content: any) {
+  private createHtmlLayerFromObject(obj: fabric.Object | any, id: any, content: any) {
     const width = (obj.width || 0) * (obj.scaleX || 1);
     const height = (obj.height || 0) * (obj.scaleY || 1);
     const angle = obj.angle || 0;
@@ -439,6 +794,8 @@ export class DesignLayoutService {
     const topLeftX = center.x + rotatedX;
     const topLeftY = center.y + rotatedY;
 
+    if (obj.html) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
+    
     return {
       id,
       top: topLeftY,
@@ -450,63 +807,77 @@ export class DesignLayoutService {
       fabricObject: obj,
     };
   }
-
   
   private registerCanvasEvents(canvas: fabric.Canvas): void {
     canvas.on('selection:created', (e) => {
       const selectedObjects = e.selected || [];
       if (selectedObjects.length === 0) return;
 
-      if (selectedObjects.length > 0) {
+      if (selectedObjects.length > 1) {
         const activeSelection = canvas.getActiveObject() as fabric.ActiveSelection;
         if (activeSelection) {
           activeSelection.set(this.SELECTION_STYLE())
         }
       } else {
-        const selected = e.selected?.[0];
+        const selected: any = e.selected?.[0];
         if (selected) {
+          selected.set(this.SELECTION_STYLE());
           if (selected.type === 'image') {
-            console.log('Selected layer is an image');
+            this.onSetCanvasProps('image', true, 'default');
           } else if (selected.type === 'textbox') {
-            console.log('Selected layer is text');
-          } else if (selected.type === 'video') {
-            console.log('Selected layer is a video');
-          } else if ((selected as any).customType === 'div') {
-            console.log('Selected layer is a custom div');
+            this.textPropsForm.patchValue(selected.textBoxProp)
+            this.onSetCanvasProps('text', true, 'default');
+          } else if (selected.type == 'rect' && !selected.html) {
+            this.rectPropsForm.patchValue(selected.rectProp)
+            this.onSetCanvasProps('rect', true, 'default');
+          } else if (selected.type == 'line') {
+            this.rectPropsForm.patchValue(selected.lineProp)
+            this.onSetCanvasProps('line', true, 'default');
+          } else {
+            this.onSetCanvasProps('content', true, 'default');
           }
         }
       }
-
     });
 
     canvas.on('selection:updated', (e) => {
-      const selected = e.selected?.[0];
+      const selected: any = e.selected?.[0];      
       if (selected) {
-        selected.set(this.SELECTION_STYLE())
+        selected.set(this.SELECTION_STYLE());
+        if (selected.type === 'image') {
+          this.onSetCanvasProps('image', true, 'default');
+        } else if (selected.type === 'textbox') {
+          this.textPropsForm.patchValue(selected.textBoxProp)
+          this.onSetCanvasProps('text', true, 'default');
+        } else if (selected.type == 'rect' && !selected.html) {
+          this.rectPropsForm.patchValue(selected.rectProp)
+          this.onSetCanvasProps('rect', true, 'default');
+        } else if (selected.type == 'line') {
+          this.rectPropsForm.patchValue(selected.lineProp)
+          this.onSetCanvasProps('line', true, 'default');
+        } else {
+          this.onSetCanvasProps('content', true, 'default');
+        }
       }
     });
 
     canvas.on('selection:cleared', () => {
-      console.log('No layer selected');
+      // this.onMove();
+      this.textPropsForm.reset();
+      this.rectPropsForm.reset();
     });
 
-    canvas.on('object:moving', (e) => {
-      const { width, height } = this.canvasDimensions(canvas);
-      const obj: any = e.target;
-      if (!obj || !obj.html) return;
-
-      const boundX = width - obj.getScaledWidth();
-      const boundY = height - obj.getScaledHeight();
-
-      obj.left = Math.max(0, Math.min(obj.left || 0, boundX));
-      obj.top = Math.max(0, Math.min(obj.top || 0, boundY));
-    });
+    // canvas.on('object:moving', (e) => {
+    //   const selected = e.target;
+    //   if (selected) {
+    //     console.log(selected);
+        
+    //   }
+    // })
 
     canvas.on('object:scaling', (e) => {
       const { width, height } = this.canvasDimensions(canvas);
-      const obj: any = e.target;
-      console.log(obj.type);
-      
+      const obj: any = e.target;      
       if (!obj || !obj.html) return;
       
       const canvasWidth = width;
@@ -535,10 +906,17 @@ export class DesignLayoutService {
 
   private registerAlignmentGuides(canvas: fabric.Canvas) {
     canvas.on('object:moving', (e) => {
-      const activeObject = e.target;
-      if (!activeObject) return;
+      const { width, height } = this.canvasDimensions(canvas);
+      const activeObject: any = e.target;
+      if (!activeObject || !activeObject.html) return;
 
       this.clearGuides(canvas);
+
+      const boundX = width - activeObject.getScaledWidth();
+      const boundY = height - activeObject.getScaledHeight();
+
+      activeObject.left = Math.max(0, Math.min(activeObject.left || 0, boundX));
+      activeObject.top = Math.max(0, Math.min(activeObject.top || 0, boundY));
 
       const objects = canvas.getObjects().filter(o => o !== activeObject);
       const aCenter = activeObject.getCenterPoint();

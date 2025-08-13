@@ -7,12 +7,14 @@
     </div>
 </div>
 
-<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 z-60">
-    <div class="h-20 w-20 border-4 border-[var(--p-surface-200)] rounded-full opacity-70 flex items-center justify-center 
-        hover:opacity-100 cursor-pointer" (click)="onClickPlayPreview()" [pTooltip]="isPlaying() ? 'Pause' : 'Play'" tooltipPosition="bottom">
-        <i class="text-[var(--p-surface-200)] pi" [ngClass]="{ 'pi-pause': isPlaying(), 'pi-play': !isPlaying() }" style="font-size: 2rem;"></i>
+@if (showControls) {
+    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 z-60">
+        <div class="h-20 w-20 border-4 border-[var(--p-surface-200)] rounded-full opacity-70 flex items-center justify-center 
+            hover:opacity-100 cursor-pointer" (click)="onClickPlayPreview()" [pTooltip]="isPlaying() ? 'Pause' : 'Play'" tooltipPosition="bottom">
+            <i class="text-[var(--p-surface-200)] pi" [ngClass]="{ 'pi-pause': isPlaying(), 'pi-play': !isPlaying() }" style="font-size: 2rem;"></i>
+        </div>
     </div>
-</div>
+}
 
 <ng-container *ngIf="currentContent">
     <div class="absolute bottom-0 z-50 flex opacity-0 translate-y-2 transition-all duration-300 

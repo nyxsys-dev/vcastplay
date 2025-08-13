@@ -15,6 +15,7 @@ import { UtilityService } from '../../../core/services/utility.service';
 export class AssetListItemComponent {
 
   @Input() asset: any;
+  @Input() customCSS: string = 'h-full';
   @Input() showDetails: boolean = true;
   @Input() disableDrag: boolean = false;
   @Input() showOptions: boolean = false;
