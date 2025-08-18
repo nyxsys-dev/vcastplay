@@ -8,8 +8,8 @@
     <p-button (onClick)="onClickAddText()" text>
         <img src="assets/icons/text.png" alt="text" pTooltip="Text" width="20">
     </p-button>
-    <p-button (onClick)="onClickAddRectangle()" text>
-        <img src="assets/icons/rectangle.png" alt="rectangle" pTooltip="Rectangle" width="20">
+    <p-button (onClick)="shapes.toggle($event)" text>
+        <img src="assets/icons/shapes.png" alt="shapes" pTooltip="Shapes" width="20">
     </p-button>
     <p-button (onClick)="onClickAddContents()" text>
         <img src="assets/icons/images.png" alt="images" pTooltip="Contents" width="20">
@@ -26,3 +26,12 @@
     <p-divider />
     <p-colorpicker [(ngModel)]="selectedColor" (onChange)="onChangeColor($event)" appendTo="body" (onShow)="onUnSelectAllLayers()" />
 </div>
+
+<p-menu [model]="shapeItems" popup #shapes appendTo="body">
+    <ng-template #item let-item>
+        <a pRipple class="flex items-center p-menu-item-link">
+            <p>{{ item.label }}</p>
+            <img class="ml-auto" [src]="item.image" [alt]="item.label" [pTooltip]="item.label" width="20">
+        </a>
+    </ng-template>
+</p-menu>

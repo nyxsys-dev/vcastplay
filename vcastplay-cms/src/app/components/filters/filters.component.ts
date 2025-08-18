@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Popover } from 'primeng/popover';
@@ -13,6 +13,9 @@ import { UtilityService } from '../../core/services/utility.service';
 export class FiltersComponent {
 
   @ViewChild('filter') filterTemplate!: Popover;
+  
+  @Input() showOthers: boolean = true;
+  @Output() filterChange = new EventEmitter<any>();
 
   utils = inject(UtilityService);
 
@@ -43,18 +46,21 @@ export class FiltersComponent {
   }
 
   onClickApply() {
-    this.utils.filterValues.set(this.filters.value);
-    // this.filters.reset();
-    this.filterTemplate.hide();
+    const filters = this.filters.value;
+    this.filterValues.set(this.filters.value);
+    this.filterChange.emit({ filters });
+    if(this.showOthers) this.filterTemplate.hide();
   }
 
   onClickClear() {
-    this.utils.filterValues.set({});
     this.filters.reset();
-    this.filterTemplate.hide();
+    this.filterValues.set({});
+    
+    const filters = this.filters.value;
+    this.filterChange.emit({ filters });
+    if(this.showOthers) this.filterTemplate.hide();
   }
 
-  get keywords() { 
-    return this.filters.get('keywords');
-  }
+  get keywords() {  return this.filters.get('keywords'); }
+  get filterValues() { return this.utils.filterValues; }
 }

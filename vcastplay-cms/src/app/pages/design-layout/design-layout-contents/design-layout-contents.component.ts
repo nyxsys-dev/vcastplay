@@ -7,10 +7,12 @@ import { AssetFilterComponent } from '../../assets/asset-filter/asset-filter.com
 import { PlaylistFilterComponent } from '../../playlist/playlist-filter/playlist-filter.component';
 import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-item.component';
 import { UtilityService } from '../../../core/services/utility.service';
+import { FiltersComponent } from '../../../components/filters/filters.component';
+import { PreviewContentComponent } from '../../../components/preview-content/preview-content.component';
 
 @Component({
   selector: 'app-design-layout-contents',
-  imports: [ PrimengUiModule, AssetFilterComponent, AssetListItemComponent, PlaylistFilterComponent ],
+  imports: [ PrimengUiModule, AssetFilterComponent, AssetListItemComponent, PlaylistFilterComponent, FiltersComponent, PreviewContentComponent ],
   templateUrl: './design-layout-contents.component.html',
   styleUrl: './design-layout-contents.component.scss'
 })
@@ -36,7 +38,7 @@ export class DesignLayoutContentsComponent {
     const data = hasAnyValue ? filteredItems : contents;
     
     const filteredContents = data.filter((content: any) => {
-      const matchKeywords = !keywords || content.name.toLowerCase().includes(keywords.toLowerCase()) || content.description.toLowerCase().includes(keywords.toLowerCase());
+      const matchKeywords = !keywords || content?.name?.toLowerCase().includes(keywords.toLowerCase()) || content?.description?.toLowerCase().includes(keywords.toLowerCase());
       const matchStatus = !status || (content.status == status);
       const matchCategory = !category || content.category?.toLowerCase().includes(category.toLowerCase());
       const matchSubCategory = !subCategory || content.subCategory?.toLowerCase().includes(subCategory.toLowerCase());
@@ -64,6 +66,7 @@ export class DesignLayoutContentsComponent {
         this.contentLists.set(this.playlistService.onGetPlaylists());
         break;
       case 2:
+        this.contentLists.set(this.cliparts);        
         break;
       default:
         this.contentLists.set(this.assetService.onGetAssets());
@@ -86,6 +89,7 @@ export class DesignLayoutContentsComponent {
     this.audienceTagSignal.set(audienceTag ?? {});
   }
 
+  get cliparts() { return this.designlayoutService.cliparts; }
   get showContents() { return this.designlayoutService.showContents; }
   get canvasHTMLLayers() { return this.designlayoutService.canvasHTMLLayers; }
   

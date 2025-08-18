@@ -2,7 +2,7 @@
     <p-tablist>
         <p-tab [value]="0">Assets</p-tab>
         <p-tab [value]="1">Playlists</p-tab>
-        <p-tab [value]="2">Clipart</p-tab>
+        <p-tab [value]="2">Cliparts</p-tab>
     </p-tablist>
     <p-tabpanels class="!px-0 h-full">
         <p-tabpanel [value]="0">
@@ -67,7 +67,24 @@
             </div>
         </p-tabpanel>
         <p-tabpanel [value]="2">
-            Clipart
+            <div class="flex flex-col gap-3 h-full">
+                <app-filters (filterChange)="onFilterChange($event)" [showOthers]="false" />
+                <div *ngIf="tabIndex() == 2" class="relative flex-1 overflow-y-auto cursor-grab">
+                    <div class="absolute grid grid-cols-2" cdkDropList [cdkDropListData]="filteredContents()" cdkDropListSortingDisabled cdkDropListHasAnchor>
+                        @for (item of filteredContents(); track $index) {
+                            <div class="relative h-full w-full" cdkDrag [cdkDragData]="item">
+                                <app-preview-content class="h-full w-full flex items-center justify-center" [currentContent]="item" [showControls]="false" />
+                                <app-preview-content class="absolute top-0 h-20 w-20 flex items-center justify-center" 
+                                    [currentContent]="item" [showControls]="false" *cdkDragPlaceholder />
+                            </div>
+                        } @empty {
+                            <div class="flex items-center justify-center h-full w-full">
+                                <p class="text-gray-400 italic">No items found</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
         </p-tabpanel>
     </p-tabpanels>
 </p-tabs>

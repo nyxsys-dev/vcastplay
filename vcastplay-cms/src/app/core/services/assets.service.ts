@@ -232,7 +232,7 @@ export class AssetsService {
     }
 
     const fileDataURL = await this.readFileAsDataURL(file);
-    const metadata = await this.getImageOrientationAndResolution2(file, fileDataURL);
+    const metadata = await this.getImageOrientationAndResolution(file, fileDataURL);
     const type = file.type.split('/')[0];
     
     if (type === 'video') {
@@ -256,7 +256,7 @@ export class AssetsService {
     });
   }
   
-  private getImageOrientationAndResolution2(file: File, dataURL: string): Promise<AssestInfo> {
+  private getImageOrientationAndResolution(file: File, dataURL: string): Promise<AssestInfo> {
     return new Promise((resolve, reject) => {      
       const isImage = file.type.startsWith('image');
       const isVideo = file.type.startsWith('video');

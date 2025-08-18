@@ -27,7 +27,7 @@
                     [style.width.px]="layer.width" [style.height.px]="layer.height" [style.transform]="'rotate(' + layer.rotation + 'deg)'">
                     
                     <div class="flex h-full w-full">
-                        <app-playlist-preview class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
+                        <app-playlist-preview class="relative flex-1 group bg-stone-800 text-white rounded-lg"
                             [currentContent]="playlistService.currentContent()" [showControls]="false" />
                     </div>
                 </div>
@@ -77,6 +77,7 @@
         @if (canvasProps.rect) { <app-rect-properties /> }
         @if (canvasProps.line) { <app-rect-properties [lineProps]="true" /> }
     </div>
+    <input #importFile type="file" name="importFile" id="importFile" accept=".json" hidden (change)="onImportFile($event)">
 </div>
 
 
@@ -118,6 +119,23 @@
         <p-button label="Cancel" severity="secondary" (onClick)="onClickCloseCanvasSize()" />
         <p-button label="Create" severity="success" (onClick)="onClickCreateCanvas()" [disabled]="designForm.invalid" />
     </ng-template>
+</p-dialog>
+
+<p-dialog header="Info" [(visible)]="showInfo" [style]="{ width: '20rem' }" [resizable]="false" draggable modal>
+    <div class="flex flex-col gap-3 text-sm">
+        <div class="flex items-center gap-2">
+            <p>Name:</p>
+            <span class="font-semibold">{{ designFormValue.name }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <p>Description:</p>
+            <span class="font-semibold">{{ designFormValue.description }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <p>Date Created:</p>
+            <span class="font-semibold">{{ designFormValue.createdOn | date: 'medium' }}</span>
+        </div>
+    </div>
 </p-dialog>
 
 <p-toast />

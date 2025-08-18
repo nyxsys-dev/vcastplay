@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { DesignLayoutService } from '../../../core/services/design-layout.service';
 import { UtilityService } from '../../../core/services/utility.service';
@@ -19,6 +19,7 @@ export class DesignLayoutDetailsComponent {
 
   @ViewChild('screen') screenElement!: ScreenSelectionComponent;
   @ViewChild('canvas', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('importFile') importFileElement!: ElementRef<HTMLInputElement>;
   
   router = inject(Router);
 
@@ -28,23 +29,21 @@ export class DesignLayoutDetailsComponent {
   confirmation = inject(ConfirmationService);
   message = inject(MessageService);
   
+  showInfo = signal<boolean>(false);
   layoutItems: MenuItem[] = [
     {
       label: 'File',
       icon: 'pi pi-file',
       items: [
         { label: 'New', command: () => this.showCanvasSize.set(true), disabled: false, shortcut: 'Alt+Ctrl+N' },
+        { label: 'Save', command: (event: any) => this.onClickSaveDesign(event), disabled: true, shortcut: 'Ctrl+S' },
         {  separator: true },
-        { label: 'Save', command: (event: any) => this.onClickSaveDesign(event), disabled: false, shortcut: 'Ctrl+S' },
-        { label: 'Save As', command: () => {}, disabled: true },
-        {  separator: true },
-        { label: 'Import', command: () => {}, disabled: true },
-        { label: 'Export', command: () => {}, disabled: true },
-        {  separator: true },
-        { label: 'Print', command: () => {}, disabled: true, shortcut: 'Ctrl+P' },
-        { label: 'Info', command: () => {}, disabled: true },
+        { label: 'Import', command: () => this.onClickImportCanvas() },
+        { label: 'Export', command: () => this.onClickExportCanvas(), disabled: true },
+        { label: 'Info', command: () => this.showInfo.set(true), disabled: true },
         {  separator: true },
         { label: 'Exit', command: () => {
+          this.designLayoutService.onSetCanvasProps('exit', false, 'default');
           this.designLayoutService.onExitCanvas();
           this.router.navigate(['/layout/design-layout-library']);
         }},
@@ -54,12 +53,13 @@ export class DesignLayoutDetailsComponent {
       label: 'Edit',
       icon: 'pi pi-pencil',
       items: [
-        { label: 'Undo/Redo', command: () => {}, disabled: true, shortcut: 'Ctrl+Z' },
-        { label: 'Select All', command: () => this.onClickSelectAllLayers(), disabled: false, shortcut: 'Ctrl+A' },
+        { label: 'Undo', command: () => this.onClickUndoLayer(), disabled: true, shortcut: 'Ctrl+Z' },
+        { label: 'Redo', command: () => this.onClickRedoLayer(), disabled: true, shortcut: 'Ctrl+Y' },
+        { label: 'Select All', command: () => this.onClickSelectAllLayers(), disabled: true, shortcut: 'Ctrl+A' },
         {  separator: true },
-        { label: 'Cut', command: () => {}, disabled: true, shortcut: 'Ctrl+X' },
-        { label: 'Copy', command: () => {}, disabled: true, shortcut: 'Ctrl+C' },
-        { label: 'Paste', command: () => {}, disabled: true, shortcut: 'Ctrl+V' },
+        { label: 'Cut', command: () => this.onClickCutLayer(), disabled: true, shortcut: 'Ctrl+X' },
+        { label: 'Copy', command: () => this.onClickCopyLayer(), disabled: true, shortcut: 'Ctrl+C' },
+        { label: 'Paste', command: () => this.onClickPasteLayer(), disabled: true, shortcut: 'Ctrl+V' },
       ]
     },
     {
@@ -71,14 +71,23 @@ export class DesignLayoutDetailsComponent {
           childIcon: 'pi pi-chevron-right',
           items: [
             { label: 'Text', command: () => this.onClickAddLayer('text'), disabled: false },
-            { label: 'Rectangle', command: () => this.onClickAddLayer('rectangle'), disabled: false },
             { label: 'Line', command: () => this.onClickAddLayer('line'), disabled: false },
             { label: 'Contents', command: () => this.onClickAddLayer('content'), disabled: false },
+            {
+              label: 'Shapes',
+              childIcon: 'pi pi-chevron-right',
+              items: [
+                { label: 'Circle', command: () => this.onClickAddShape('circle'), disabled: false },
+                { label: 'Rectangle', command: () => this.onClickAddShape('rectangle'), disabled: false },
+                { label: 'Triangle', command: () => this.onClickAddShape('triangle'), disabled: false },
+                { label: 'Ellipse', command: () => this.onClickAddShape('ellipse'), disabled: false },
+              ]
+            }
           ],
-          // disabled: true
+          disabled: true
         },
-        { label: 'Duplicate', command: () => this.onClickDuplicateLayer(), disabled: false, shortcut: 'Ctrl+D' },
-        { label: 'Delete', command: () => this.onClickRemoveLayer(), disabled: false, shortcut: 'Del' },
+        { label: 'Duplicate', command: () => this.onClickDuplicateLayer(), disabled: true, shortcut: 'Ctrl+D' },
+        { label: 'Delete', command: () => this.onClickRemoveLayer(), disabled: true, shortcut: 'Del' },
         { separator: true },
         { 
           label: 'Arrange',
@@ -89,7 +98,7 @@ export class DesignLayoutDetailsComponent {
             { label: 'Bring Forward', command: () => this.onClickLayerArrangement('forward'), disabled: false },
             { label: 'Send Backward', command: () => this.onClickLayerArrangement('backward'), disabled: false },
           ],
-          // disabled: true
+          disabled: true
         },
       ]
     }
@@ -120,23 +129,62 @@ export class DesignLayoutDetailsComponent {
       this.showCanvasSize.set(true)
     }
 
+    // Copy
+    if ((event.key === 'c' && event.ctrlKey) && !this.showCanvasSize()) {
+      event.preventDefault();
+      event.stopPropagation(); 
+      this.onClickCopyLayer();
+    }
+
+    // Cut
+    if ((event.key === 'x' && event.ctrlKey) && !this.showCanvasSize()) {
+      event.preventDefault();
+      event.stopPropagation(); 
+      this.onClickCutLayer();
+    }
+
+    // Paste
+    if ((event.key === 'v' && event.ctrlKey) && !this.showCanvasSize()) {
+      event.preventDefault();
+      event.stopPropagation(); 
+      this.onClickPasteLayer();
+    }
+
     //Delete
     if (event.key === 'Delete' && !this.showCanvasSize()) this.onClickRemoveLayer();
+
     //Duplicate
     if ((event.key === 'd' && event.ctrlKey) && !this.showCanvasSize()) {
       event.preventDefault();
       event.stopPropagation(); 
       this.onClickDuplicateLayer();
     }
+
     //Select All
     if ((event.key === 'a' && event.ctrlKey) && !this.showCanvasSize()) {
       event.preventDefault();
       event.stopPropagation(); 
       this.onClickSelectAllLayers();
     }
+
+    // Undo
+    if ((event.key === 'z' && event.ctrlKey) && !this.showCanvasSize()) {
+      event.preventDefault();
+      event.stopPropagation(); 
+      this.onClickUndoLayer();
+    }
+
+    // Redo
+    if ((event.key === 'y' && event.ctrlKey) && !this.showCanvasSize()) {
+      event.preventDefault();
+      event.stopPropagation(); 
+      this.onClickRedoLayer();
+    }
   }  
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.designLayoutService.onGetDesigns();
+  }
 
   ngOnDestroy() {
     this.designLayoutService.onExitCanvas();
@@ -147,6 +195,7 @@ export class DesignLayoutDetailsComponent {
   ngAfterViewInit() {
     if (this.isEditMode()) {
       this.designLayoutService.onEditDesign(this.canvasElement.nativeElement, this.designForm.value);
+      this.onUpdateMenus();
     }
   }
 
@@ -156,6 +205,7 @@ export class DesignLayoutDetailsComponent {
     this.designLayoutService.onCreateCanvas(this.canvasElement.nativeElement, { width: resolution[0], height: resolution[1] }, color);
     this.showCanvasSize.set(false);
     this.screenElement.selectedScreen.set(null);
+    this.onUpdateMenus();
     // this.designLayoutService.onDisableMenu();
   }
 
@@ -176,6 +226,7 @@ export class DesignLayoutDetailsComponent {
         this.isEditMode.set(false);
         this.canvasHTMLLayers.set([]);
         if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
+        this.designLayoutService.onSetCanvasProps('exit', false, 'default');
         this.router.navigate([ '/layout/design-layout-library' ]);
       },
     });
@@ -189,14 +240,15 @@ export class DesignLayoutDetailsComponent {
       case 'line':
         this.designLayoutService.onAddLineToCanvas(this.selectedColor());
         break;
-      case 'rectangle':
-        this.designLayoutService.onAddRectangleToCanvas(this.selectedColor());
-        break;
       default:
         this.showContents.set(true);
         break;
     }
     this.designLayoutService.onLayerArrangement('front');
+  }
+  
+  onClickAddShape(type: string) {
+    this.designLayoutService.onAddShapeToCanvas(type, this.selectedColor());
   }
 
   onClickCloseCanvasSize() { 
@@ -220,6 +272,21 @@ export class DesignLayoutDetailsComponent {
     this.designLayoutService.onLayerSpacing(axis);
   }
 
+  onClickCopyLayer() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onCopyLayers(canvas);
+  }
+
+  onClickCutLayer() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onCutLayers(canvas);
+  }
+
+  onClickPasteLayer() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onPasteLayers(canvas);
+  }
+
   onClickDuplicateLayer() {
     const canvas = this.designLayoutService.getCanvas();
     this.designLayoutService.onDuplicateLayer(canvas);
@@ -235,6 +302,23 @@ export class DesignLayoutDetailsComponent {
     this.designLayoutService.onRemoveLayer(canvas);
   }
 
+  onClickUndoLayer() {  
+    this.designLayoutService.onUndoLayer();
+  }
+
+  onClickRedoLayer() {
+    this.designLayoutService.onRedoLayer();
+  }
+
+  onClickExportCanvas() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onExportCanvas(canvas);
+  }
+
+  onClickImportCanvas() {
+    this.importFileElement.nativeElement.click();
+  }
+
   onSelectionChange(event: any) {
     if (!event) {
       this.designForm.patchValue({ screen: null });
@@ -244,9 +328,10 @@ export class DesignLayoutDetailsComponent {
   }
 
   onDropped(event: any) {
-    const { item: { data } } = event;
+    const { item: { data } } = event;    
     switch (data.type) {
       case 'image':
+      case 'clipart':
         this.designLayoutService.onAddImageToCanvas(data);
         break;
       default:
@@ -255,12 +340,31 @@ export class DesignLayoutDetailsComponent {
     }
   }
 
+  onUpdateMenus() {
+    this.layoutItems.forEach(menu => {
+      const items = menu.items;
+      if (items) {
+        items.forEach(item => {
+          if (item.label == 'Export') item.disabled = !this.isEditMode();
+          else item.disabled = false;
+        });
+      }
+    })
+  }
+
+  onImportFile(event: any) {
+    this.isEditMode.set(true);
+    this.designLayoutService.onImportCanvas(event, this.canvasElement.nativeElement);
+    this.onUpdateMenus();
+  }
+
   get isEditMode() { return this.designLayoutService.isEditMode; }
   get designForm() { return this.designLayoutService.designForm; }
   get canvasProps() { return this.designLayoutService.canvasProps; }
   get showContents() { return this.designLayoutService.showContents; }
   get selectedColor() { return this.designLayoutService.selectedColor; }
   get showCanvasSize() { return this.designLayoutService.showCanvasSize; }
+  get designFormValue() { return this.designLayoutService.designForm.value; }
   get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }
 
   get colors() { return this.utils.colors; }

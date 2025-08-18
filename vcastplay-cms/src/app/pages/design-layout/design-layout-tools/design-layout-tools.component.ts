@@ -1,6 +1,7 @@
 import { Component, inject, Input, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { DesignLayoutService } from '../../../core/services/design-layout.service';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-design-layout-tools',
@@ -14,6 +15,13 @@ export class DesignLayoutToolsComponent {
 
   designLayoutService = inject(DesignLayoutService);
 
+  shapeItems: MenuItem[] = [
+    { label: 'Circle', command: () => this.onClickAddShape('circle'), image: 'assets/icons/circle.png' },
+    { label: 'Rectangle', command: () => this.onClickAddShape('rectangle'), image: 'assets/icons/rectangle.png' },
+    { label: 'Triangle', command: () => this.onClickAddShape('triangle'), image: 'assets/icons/triangle.png' },
+    { label: 'Ellipse', command: () => this.onClickAddShape('ellipse'), image: 'assets/icons/ellipse.png' },
+  ]
+
   onClickSelection() {
     this.designLayoutService.onSelection();
   }
@@ -22,8 +30,8 @@ export class DesignLayoutToolsComponent {
     this.designLayoutService.onAddTextToCanvas('Enter text here', this.selectedColor());
   }
 
-  onClickAddRectangle() {
-    this.designLayoutService.onAddRectangleToCanvas(this.selectedColor());
+  onClickAddShape(type: string) {
+    this.designLayoutService.onAddShapeToCanvas(type, this.selectedColor());
   }
   
   onClickAddContents() {
