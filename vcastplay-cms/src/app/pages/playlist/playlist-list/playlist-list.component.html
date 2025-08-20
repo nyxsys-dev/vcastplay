@@ -100,10 +100,10 @@
     <p-button (onClick)="onClickOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
 </ng-template>
 
-<p-dialog header="Preview Playlist" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="playlistService.onStopPreview()" modal>
+<p-dialog header="Preview Playlist" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="playlistService.onStopAllContents()" modal>
     <div class="flex h-full md:h-100">
-        <app-playlist-preview class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
-            [currentContent]="playlistService.currentContent()" />
+        <app-preview-playlist class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
+            [playlist]="playlistForm.value" />
     </div>
 </p-dialog>
 

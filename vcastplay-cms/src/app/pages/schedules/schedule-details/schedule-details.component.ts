@@ -330,8 +330,8 @@ export class ScheduleDetailsComponent {
   }
 
   onClosePreview() {
-    this.playlistService.onStopPreview();
-    this.playlistService.playListForm.reset();
+    this.playlistService.onStopAllContents();
+    this.playlistForm.reset();
   }
 
   onRenderEventContent(arg: any) {
@@ -393,6 +393,8 @@ export class ScheduleDetailsComponent {
     return this.utils.getFormControl(this.scheduleForm, fieldName);
   }
 
+  get generateTimeCode() { return this.utils.generateTimeCode; }
+
   get isEditMode() { return this.scheduleServices.isEditMode; }
   get scheduleForm() { return this.scheduleServices.scheduleForm; }
   get timeValues() { return this.scheduleServices.timeValues; }
@@ -415,5 +417,6 @@ export class ScheduleDetailsComponent {
   get calendarDateRange() { return this.scheduleServices.calendarDateRange; }
   get calendarSelectedDate() { return this.scheduleServices.calendarSelectedDate; }
 
-  get generateTimeCode() { return this.utils.generateTimeCode; }
+  get playlistForm() { return this.playlistService.playListForm; }
+
 }

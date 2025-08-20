@@ -74,7 +74,7 @@ export class PlaylistDetailsComponent {
   ngOnDestroy() {
     this.isEditMode.set(false);
     this.playListForm.reset({ contents: [] });
-    this.playlistService.onStopPreview();
+    this.playlistService.onStopAllContents();
   }
 
   onClickPlayPreview() {
