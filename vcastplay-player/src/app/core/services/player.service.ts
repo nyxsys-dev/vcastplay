@@ -91,27 +91,7 @@ export class PlayerService {
     this.isPlaying.set(true);
     const item = contents[this.currentIndex()];
 
-    if (this.platform.platform === 'android') {
-      try {
-        const exists = (window as any).AndroidBridge.checkFileExists(`${this.androidPath}/${item.name}`);
-        console.log(`[Android] Local file check for ${item.name}: ${exists}`);
-        console.log(`${this.androidPath}/${item.name}`);
-        
-        if (exists) {
-          // item.link = `${this.androidPath}/${item.name}`;
-          this.currentContent.set({ ...item, link: `${this.androidPath}/${item.name}` });
-        } else {
-          this.currentContent.set(null);
-          console.warn(`[Android] Local file missing, using remote URL: ${item.link}`);
-        }
-      } catch (err) {
-        this.currentContent.set(null);
-        console.error(`[Android] Error checking file existence: ${err}`);
-      }
-    } else {
-      this.currentContent.set(item);
-    }
-
+    this.currentContent.set(item);
     
     this.fadeIn.set(true);
     this.progress.set(0);
