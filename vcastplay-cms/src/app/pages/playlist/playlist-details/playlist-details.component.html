@@ -38,8 +38,11 @@
                 </div>
 
                 <!-- Preview Contents -->
-                 <app-playlist-preview class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
-                    [currentContent]="playlistService.currentContent()" />
+                 <!-- <app-playlist-preview class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
+                    [currentContent]="playlistService.currentContent()" /> -->
+                
+                <app-preview-playlist class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
+                    [playlist]="playListForm.value" />
             </div>
 
             <!-- Assets Lists -->

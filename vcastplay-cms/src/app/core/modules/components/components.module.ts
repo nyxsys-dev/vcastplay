@@ -40,6 +40,7 @@ import { DesignLayoutToolsComponent } from '../../../pages/design-layout/design-
 import { DesignLayoutContentsComponent } from '../../../pages/design-layout/design-layout-contents/design-layout-contents.component';
 import { TextPropertiesComponent } from '../../../components/design-layout/text-properties/text-properties.component';
 import { RectPropertiesComponent } from '../../../components/design-layout/rect-properties/rect-properties.component';
+import { PreviewPlaylistComponent } from '../../../components/preview-playlist/preview-playlist.component';
 
 
 const COMPONENT_MODULES = [
@@ -82,6 +83,7 @@ const COMPONENT_MODULES = [
   PlaylistListItemComponent,
   PlaylistPreviewComponent,
   PlaylistFilterComponent,
+  PreviewPlaylistComponent,
 
   // Asset Components
   AssetListItemComponent,

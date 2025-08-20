@@ -1,7 +1,7 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Assets } from '../interfaces/assets';
-import { Playlist } from '../interfaces/playlist';
+import { ContentState, Playlist } from '../interfaces/playlist';
 import { SelectOption } from '../interfaces/general';
 
 @Injectable({
@@ -87,7 +87,7 @@ export class PlaylistService {
     { label: 'Fade', value: 'fade-in', transition: { opacity: true } },
     { label: 'Slide Up', value: 'slide-in', transition: { opacity: true, x: 'translate-y-4', y: 'translate-y-0' } },
     { label: 'Slide Down', value: 'slide-out', transition: { opacity: true, x: '-translate-y-4', y: 'translate-y-0' } },
-    { label: 'Slide Left', value: 'slide-in', transition: { opacity: true, x: 'translate-x-4', y: 'translate-x-0' } },
+    { label: 'Slide Left', value: 'slide-left', transition: { opacity: true, x: 'translate-x-4', y: 'translate-x-0' } },
     { label: 'Slide Right', value: 'slide-out', transition: { opacity: true, x: '-translate-x-4', y: 'translate-x-0' } },
   ]
 
@@ -100,7 +100,165 @@ export class PlaylistService {
     return contents.reduce((acc: any, item: any) => acc + item.duration, 0);
   }
 
+  // for testing
+  private states = new Map<number, ContentState>();
+
   constructor() { }
+
+  /**
+   * ======================================================
+   * For Testing
+   * ======================================================
+  */
+  
+  private registerContent(id: number) {
+    if (!this.states.has(id)) {
+      this.states.set(id, { 
+        index: 0, 
+        currentContent: signal<any>(null), 
+        isPlaying: signal<boolean>(false), 
+        fadeIn: signal<boolean>(false),
+        progress: signal<number>(0),
+        currentTransition: signal<any>(null)
+      });
+    }
+  }
+
+  onPlayContent(playlist: Playlist) {
+    this.registerContent(playlist.id);
+    const contents = playlist.contents;    
+
+    if (contents.length === 0) return;
+    const state = this.states.get(playlist.id)!;
+    
+    this.onStopContent(playlist.id);
+
+    const playNextContent = () => {
+      if (state.index >= contents.length) {
+        state.index = 0;
+      }
+
+      const { hasGap, type, speed } = playlist.transition;
+      const transitionSpeed = speed * 100;
+      const gapDuration = hasGap ? 1000 : 0;
+
+      state.currentTransition.set({ type, speed: transitionSpeed });   
+
+      state.isPlaying.set(true);
+      state.progress.set(0);
+      state.fadeIn.set(true);
+
+      const item = contents[state.index];
+      state.currentContent.set(item);
+
+      const duration = item.duration * 1000;
+
+      switch(item.type) {
+        case 'image':
+        case 'audio':
+        case 'text':
+        case 'web':
+          this.onTriggerIntervals(state, duration);
+          break;
+        case 'video':
+          this.videoElement()?.play();
+          this.onTriggerIntervals(state, duration);
+          break;
+      }
+
+      console.log(item);
+      
+      state.timeoutId = setTimeout(() => {
+        const nextIndex = (state.index + 1) % contents.length; // Loop back to 0 after last item
+        const isLooping = playlist.loop;
+        
+        // Trigger fade-in again for next content
+        state.fadeIn.set(false);
+
+        // Clear content
+        state.currentContent.set(null);
+
+        // If there is a gap, wait for the gap duration before playing the next content
+        state.gapTimeout = setTimeout(() => {
+          if (isLooping) {
+            state.index = nextIndex;
+          } else {
+            if (state.index + 1 >= contents.length) {
+              this.onStopContent(playlist.id);
+              return;
+            }
+            state.index++;
+          }
+          
+          state.fadeIn.set(true);
+          state.currentContent.set(contents[state.index]);
+
+          // Trigger content schedule
+          // this.onGetContentSchedule(contents[this.currentIndex()])
+
+          playNextContent();
+        }, gapDuration + 50);
+
+      }, duration + 1500);
+    }
+
+    playNextContent();
+  }
+
+  /** Stop Playback */
+  onStopContent(id: number) {
+    const state = this.states.get(id)!;
+    if (state) {
+      state.index = 0;
+      state.isPlaying.set(false);
+      state.currentContent.set(null);
+      state.fadeIn.set(false);
+      state.currentTransition.set(null);
+      state.progress.set(0);
+      clearTimeout(state.timeoutId);
+      clearTimeout(state.gapTimeout);
+      clearInterval(state.intervalId);
+      state.timeoutId = undefined;
+      state.gapTimeout = undefined;
+      state.intervalId = undefined;
+    }
+  }
+
+  onStopAllContents() {
+    this.states.forEach((state) => this.onStopContent(state.index));
+  }
+
+  /** Expose current content signal */
+  onGetCurrentContent(id: number) {
+    const state = this.states.get(id);
+    return state ? signal<any>(state) : signal<any>(null);
+  }
+
+  onTriggerIntervals(state: ContentState, duration: number) {
+    let startTime = Date.now();
+    state.intervalId = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      state.progress.set(Math.min((elapsed / duration) * 100, 100));
+
+      if (elapsed >= duration) {
+        state.progress.set(100);
+        clearInterval(state.intervalId);
+      }
+    }, 500);
+  }
+
+  onProgressUpdate(id: number, event: any) {
+    const { currentTime, duration } = event;
+    const percent = (currentTime / duration) * 100;
+    const state = this.states.get(id)!;
+    state.progress.set(Math.min(percent, 100));
+  }
+
+  /**
+   * ======================================================
+   * End Testing
+   * ======================================================
+  */
 
   onPlayPreview(index: number = 0) {
     const contents = this.contents?.value;

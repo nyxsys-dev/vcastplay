@@ -27,8 +27,8 @@
                     [style.width.px]="layer.width" [style.height.px]="layer.height" [style.transform]="'rotate(' + layer.rotation + 'deg)'">
                     
                     <div class="flex h-full w-full">
-                        <app-playlist-preview class="relative flex-1 group bg-stone-800 text-white rounded-lg"
-                            [currentContent]="playlistService.currentContent()" [showControls]="false" />
+                        <app-preview-playlist class="relative flex-1 group bg-stone-800 text-white rounded-lg"
+                            [playlist]="layer.content" [autoPlay]="true" [showControls]="false" />
                     </div>
                 </div>
             }

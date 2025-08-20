@@ -76,11 +76,11 @@ export class DesignLayoutContentsComponent {
 
   onSelectionChange(event: any) {
     const { loop, ...info } = event;
-    this.canvasHTMLLayers.set([]);
-    this.selectionContent.set(event);
-    this.playListForm.patchValue({ loop: true, ...info });
-    this.playlistService.onPlayPreview();
-    this.designlayoutService.onAddHTMLToCanvas(event);
+    // this.canvasHTMLLayers().push(event);
+    // this.selectionContent.set(event);
+    // this.playListForm.patchValue({ loop: true, ...info });
+    // this.playlistService.onPlayContent(info.id);
+    this.designlayoutService.onAddHTMLToCanvas({ loop: true, ...info });
   }
 
   onFilterChange(event: any) {

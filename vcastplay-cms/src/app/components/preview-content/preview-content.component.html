@@ -6,7 +6,7 @@
         <iframe class="w-full h-full border-none" [src]="currentContent?.link | safeurl"></iframe>
     }
     @case ('image') {
-        <img class="max-h-full object-contain" [src]="currentContent?.link | safeurl" alt="preview image" />
+        <img class="max-h-full object-contain" [src]="currentContent?.link | safeurl" [alt]="currentContent?.name || 'preview image'" />
     }
     @default {
         <div class="h-full w-full flex justify-center items-center">

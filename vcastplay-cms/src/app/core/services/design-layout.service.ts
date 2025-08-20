@@ -218,9 +218,10 @@ export class DesignLayoutService {
             if (!alreadyExists ) {
               const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
               const { loop, ...info } = htmlLayer.content;
-              this.canvasHTMLLayers().push(htmlLayer);              
-              this.playlistService.playListForm.patchValue({ loop: true, ...info });
-              this.playlistService.onPlayPreview();
+              this.canvasHTMLLayers().push(htmlLayer);
+              this.playlistService.onPlayContent(html.content)
+              // this.playlistService.playListForm.patchValue({ loop: true, ...info });
+              // this.playlistService.onPlayPreview();
             }
           } else if (obj.data) {
             const data: any = obj.data;
@@ -279,6 +280,7 @@ export class DesignLayoutService {
     cancelAnimationFrame(this.animFrameId);
     this.designForm.reset();
     this.showContents.set(false);
+    this.canvasHTMLLayers.set([]);
   }
 
   onZoomCanvas(factor: number) {
@@ -686,6 +688,8 @@ export class DesignLayoutService {
     this.canvas.add(rect);
     const htmlLayer = this.createHtmlLayerFromObject(rect, length, content);
     this.canvasHTMLLayers().push(htmlLayer);
+    
+    this.playlistService.onPlayContent(content);
 
     rect.set('html', htmlLayer);
     this.canvas.setActiveObject(rect);

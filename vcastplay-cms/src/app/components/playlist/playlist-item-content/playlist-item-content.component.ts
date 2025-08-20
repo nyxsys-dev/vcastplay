@@ -4,6 +4,7 @@ import { Assets } from '../../../core/interfaces/assets';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { PreviewContentComponent } from '../../preview-content/preview-content.component';
+import { Playlist } from '../../../core/interfaces/playlist';
 
 @Component({
   selector: 'app-playlist-item-content',
@@ -13,6 +14,7 @@ import { PreviewContentComponent } from '../../preview-content/preview-content.c
 })
 export class PlaylistItemContentComponent {
   
+  @Input() playlist!: Playlist;
   @Input() asset!: any;
 
   showConfig = signal<boolean>(false);
@@ -22,6 +24,12 @@ export class PlaylistItemContentComponent {
 
   currentPlaying() {
     return (this.asset.contentId == this.currentContent()?.contentId) && this.currentContent()
+  }
+
+  onCurrentPlaying() {
+    const content: any = this.playlistService.onGetCurrentContent(this.playlist.id)(); 
+    const currentContent: any = content?.currentContent();
+    return content ? currentContent?.contentId === this.asset.contentId : false;
   }
 
   onClickRemove(asset: Assets) {

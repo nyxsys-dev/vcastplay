@@ -188,8 +188,7 @@ export class DesignLayoutDetailsComponent {
 
   ngOnDestroy() {
     this.designLayoutService.onExitCanvas();
-    this.canvasHTMLLayers.set([]);
-    if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
+    this.playlistService.onStopAllContents();
   }
 
   ngAfterViewInit() {

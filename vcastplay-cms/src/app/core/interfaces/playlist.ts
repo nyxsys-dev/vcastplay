@@ -1,3 +1,4 @@
+import { signal } from "@angular/core";
 import { ApprovedInfo } from "./general";
 
 export interface Playlist {
@@ -18,4 +19,16 @@ export interface Playlist {
     approvedInfo?: ApprovedInfo;
     createdOn: Date;
     updatedOn: Date;
+}
+
+export interface ContentState {
+    index: number;
+    currentContent: ReturnType<typeof signal<any>>;
+    isPlaying: ReturnType<typeof signal<boolean>>;
+    progress: ReturnType<typeof signal<number>>;
+    fadeIn: ReturnType<typeof signal<boolean>>;
+    currentTransition: ReturnType<typeof signal<any>>;
+    timeoutId?: any;
+    intervalId?: any;
+    gapTimeout?: any;
 }
