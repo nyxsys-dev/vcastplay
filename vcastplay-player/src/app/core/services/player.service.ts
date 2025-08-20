@@ -75,6 +75,13 @@ export class PlayerService {
         link: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         type: 'image',
         duration: 10
+      },
+      {
+        id: 6,
+        name: '1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
+        link: 'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
+        type: 'image',
+        duration: 8
       }
     ]); 
   }
