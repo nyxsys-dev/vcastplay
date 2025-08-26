@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { environment } from "../../../environments/environment.development";
+import { canDeactivateGuard } from "../../core/guards/can-deactivate.guard";
 
 const appTitle: string = environment.appTitle;
 
@@ -13,10 +14,11 @@ export default [
         path: 'asset-details', 
         loadComponent: () => import('./asset-details/asset-details.component').then(m => m.AssetDetailsComponent),
         title: `Asset Upload • ${appTitle}`,
+        canDeactivate: [ canDeactivateGuard ]
     },
-    {
-        path: 'asset-details/:code', 
-        loadComponent: () => import('./asset-details/asset-details.component').then(m => m.AssetDetailsComponent),
-        title: `Asset Upload • ${appTitle}`,
-    },
+    // {
+    //     path: 'asset-details/:code', 
+    //     loadComponent: () => import('./asset-details/asset-details.component').then(m => m.AssetDetailsComponent),
+    //     title: `Asset Upload • ${appTitle}`,
+    // },
 ] as Routes

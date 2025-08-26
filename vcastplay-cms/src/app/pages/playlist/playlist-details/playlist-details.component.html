@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-1 h-full relative">
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
-    <p-card styleClass="h-full" class="flex-1" [formGroup]="playListForm" cdkDropListGroup>
+    <p-card styleClass="h-full" class="flex-1" [formGroup]="playlistForm" cdkDropListGroup>
         <ng-template #title>
             <div class="flex items-center justify-between gap-4">
                 <div class="flex items-center gap-2">
@@ -39,7 +39,7 @@
 
                 <!-- Preview Contents -->                
                 <app-preview-playlist class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
-                    [playlist]="playListForm.value" />
+                    [playlist]="playlistForm.value" />
             </div>
 
             <!-- Assets Lists -->
@@ -60,9 +60,9 @@
                             'flex flex-col gap-5 ': assetViewModeSignal() == 'List'
                         }">
                             @for (item of filteredAssets(); track $index) {
-                                <app-asset-list-item [asset]="item" />
+                                <app-asset-list-item [asset]="item" [customCSS]="'h-20 w-20'" />
                             } @empty {
-                                <div class="flex items-center justify-center h-full w-full" [ngClass]="{ 'col-span-3 ': assetViewModeSignal() == 'Grid' }">
+                                <div class="flex items-center justify-center h-[200px] w-full" [ngClass]="{ 'col-span-3 ': assetViewModeSignal() == 'Grid' }">
                                     <p class="text-gray-400 italic">No items found</p>
                                 </div>
                             }
@@ -97,7 +97,7 @@
                     <div class="md:ml-auto"><p-button severity="danger" label="Clear All" (onClick)="onClickClearAll()" size="small" /></div>
                 }
             </div>
-            <app-playlist-container [playListForm]="playListForm" />
+            <app-playlist-container [playListForm]="playlistForm" />
             <div class="flex w-full justify-between items-center mt-2">
                 <p-tag severity="info" [value]="'Duration: ' + utils.timeConversion(totalDuration())" />
                 <p class="italic text-sm text-red-400 hidden md:block">Hold Shift + Mouse Wheel to scroll</p>
@@ -107,4 +107,3 @@
 </div>
 
 <p-toast />
-<p-confirmdialog />

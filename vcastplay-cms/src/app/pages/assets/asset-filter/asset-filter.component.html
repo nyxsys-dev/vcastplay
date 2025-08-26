@@ -1,10 +1,10 @@
 <form [formGroup]="assetFilterForm" class="flex items-center gap-2">
     <p-input-group>
-        <input pInputText placeholder="Search" formControlName="keywords" (keydown.enter)="onClickApplyAudienceTag()" />
+        <input pInputText placeholder="Search" formControlName="keywords" (keydown.enter)="onClickApplyAudienceTag()" fluid />
         <p-inputgroup-addon>
             <p-button (onClick)="onClickApplyAudienceTag()" icon="pi pi-search" />
         </p-inputgroup-addon>
-    </p-input-group>
+    </p-input-group>    
     <p-button pTooltip="More Filter" tooltipPosition="bottom" (onClick)="filter.toggle($event)" text>
         <ng-template #icon>
             <p-overlaybadge severity="danger" badgeSize="small" [badgeDisabled]="!useFilter()">
@@ -12,7 +12,7 @@
             </p-overlaybadge>
         </ng-template>
     </p-button>
-    <p-popover title="Filter" #filter>
+    <p-popover title="Filter" [appendTo]="'body'" #filter>
         <div class="flex flex-col gap-4 w-[18rem]">
             <p class="font-medium text-surface-500 dark:text-surface-0 block">Filter:</p>
             <div class="grid grid-cols-2 md:grid-cols-1 gap-2 w[25rem]">

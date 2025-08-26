@@ -53,7 +53,7 @@
     <div class="flex flex-col gap-2">
         <p class="text-sm italic" [ngClass]="{ 'text-red-400' : formcontrol('color').errors }">Select event color*:</p>
         <div class="flex gap-2">
-            @for (color of colors; track $index) {
+            @for (color of filteredColor(); track $index) {
                 <div class="border-none w-6 h-6 rounded-full p-0 cursor-pointer outline-none outline-offset-1" 
                     (click)="onUpdateContentEventColor(color)"
                     [ngClass]="{ 'ring ring-2 ring-offset-2' : selectedColor?.value == color.hex }"

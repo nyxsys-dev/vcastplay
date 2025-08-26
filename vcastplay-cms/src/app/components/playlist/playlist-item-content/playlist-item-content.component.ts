@@ -34,7 +34,7 @@ export class PlaylistItemContentComponent {
 
   onClickRemove(asset: Assets) {
     const { id } = asset;
-    const contents = this.contents?.value
+    const contents = this.contents?.value;
     this.contents?.setValue(contents.filter((item: Assets) => item.id !== id));
   }
 

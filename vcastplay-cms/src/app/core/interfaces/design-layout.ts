@@ -5,14 +5,17 @@ export interface DesignLayout {
     id: number;
     name: string;
     description: string;
+    type: string;
     canvas: any;
     htmlLayers?: any;
     duration: number;
+    color: string;
     status: string;
     approvedInfo?: ApprovedInfo;
+    isActive: boolean;
+    screen?: Screen;
     createdOn: Date;
     updatedOn: Date;
-    screen?: Screen;
 }
 
 export interface HtmlLayer {

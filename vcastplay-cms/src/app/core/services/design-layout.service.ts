@@ -56,6 +56,7 @@ export class DesignLayoutService {
     id: new FormControl(0, { nonNullable: true }),
     name: new FormControl('New Design', [ Validators.required ]),
     description: new FormControl('This is a new design', [ Validators.required ]),
+    type: new FormControl('design', { nonNullable: true }),
     canvas: new FormControl(null),
     htmlLayers: new FormControl(null),
     duration: new FormControl(5, { nonNullable: true }),
@@ -139,18 +140,155 @@ export class DesignLayoutService {
   }
 
   onLoadDesigns() {
-    this.designSignal.set([
-      {
-        id: 1,
-        name: 'Default',
-        description: 'Default design layout',
-        canvas: null,
-        htmlLayers: null,
-        duration: 0,
-        status: 'active',
-        createdOn: new Date(),
-        updatedOn: new Date()
-      }
+    this.designSignal.set([{
+      id: 1,
+      status: "pending",
+      duration: 5,
+      name: "New Design",
+      description: "This is a new design",
+      type: "design",
+      canvas: "{\"version\":\"6.7.1\",\"objects\":[{\"fontSize\":64,\"fontWeight\":\"bold\",\"fontFamily\":\"Arial\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"text\":\"This is a header\",\"charSpacing\":0,\"textAlign\":\"left\",\"styles\":[],\"pathStartOffset\":0,\"pathSide\":\"left\",\"pathAlign\":\"baseline\",\"underline\":false,\"overline\":false,\"linethrough\":false,\"textBackgroundColor\":\"\",\"direction\":\"ltr\",\"textDecorationThickness\":66.667,\"minWidth\":20,\"splitByGrapheme\":false,\"textBoxProp\":{\"size\":64,\"weight\":true,\"italic\":false,\"underline\":false,\"alignment\":\"left\",\"color\":\"#000000\"},\"type\":\"Textbox\",\"version\":\"6.7.1\",\"originX\":\"left\",\"originY\":\"top\",\"left\":19.5913,\"top\":22.0773,\"width\":627.6087,\"height\":72.32,\"fill\":\"#000000\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0},{\"rx\":0,\"ry\":0,\"html\":{\"id\":0,\"top\":115.02880658436192,\"left\":94,\"width\":698.6645104762786,\"height\":349.3322552381393,\"rotation\":0,\"content\":{\"loop\":true,\"id\":1,\"name\":\"New Playlist\",\"description\":\"This is a sample description of a new playlist\",\"type\":\"playlist\",\"transition\":{\"hasGap\":false,\"type\":\"\",\"speed\":5},\"contents\":[{\"contentId\":1,\"id\":1,\"code\":\"NYX001\",\"name\":\"image (2).png\",\"type\":\"image\",\"link\":\"https://picsum.photos/id/237/200/300\",\"category\":\"Category 1\",\"subCategory\":\"Sub-Category 1\",\"fileDetails\":{\"name\":\"image (2).png\",\"size\":55782,\"type\":\"image/png\",\"orientation\":\"landscape\",\"resolution\":{\"width\":326,\"height\":195},\"thumbnail\":\"https://picsum.photos/id/237/200/300\"},\"dateRange\":{\"start\":null,\"end\":null},\"weekdays\":[],\"hours\":[],\"duration\":5,\"audienceTag\":{\"genders\":[\"Male\"],\"ageGroups\":[],\"timeOfDays\":[],\"seasonalities\":[],\"locations\":[],\"pointOfInterests\":[],\"tags\":[]},\"status\":\"pending\",\"createdOn\":\"2025-08-26T00:32:29.495Z\",\"updatedOn\":\"2025-08-26T00:32:29.495Z\"}],\"status\":\"pending\",\"duration\":5,\"isAuto\":false,\"isActive\":true,\"createdOn\":\"2025-08-26T00:32:29.495Z\",\"updatedOn\":\"2025-08-26T00:32:29.495Z\"},\"fabricObject\":{\"rx\":0,\"ry\":0,\"type\":\"Rect\",\"version\":\"6.7.1\",\"originX\":\"left\",\"originY\":\"top\",\"left\":94,\"top\":115.0288,\"width\":200,\"height\":100,\"fill\":\"transparent\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":3.4933,\"scaleY\":3.4933,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0}},\"type\":\"Rect\",\"version\":\"6.7.1\",\"originX\":\"left\",\"originY\":\"top\",\"left\":94,\"top\":115.0288,\"width\":200,\"height\":100,\"fill\":\"transparent\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":3.4933,\"scaleY\":3.4933,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0}],\"background\":\"#ffffff\"}",
+      htmlLayers: [
+          {
+              "id": 0,
+              "top": 115.02880658436192,
+              "left": 94,
+              "width": 698.6645104762786,
+              "height": 349.3322552381393,
+              "rotation": 0,
+              "content": {
+                  "loop": true,
+                  "id": 1,
+                  "name": "New Playlist",
+                  "description": "This is a sample description of a new playlist",
+                  "type": "playlist",
+                  "transition": {
+                      "hasGap": false,
+                      "type": "",
+                      "speed": 5
+                  },
+                  "contents": [
+                      {
+                          "contentId": 1,
+                          "id": 1,
+                          "code": "NYX001",
+                          "name": "image (2).png",
+                          "type": "image",
+                          "link": "https://picsum.photos/id/237/200/300",
+                          "category": "Category 1",
+                          "subCategory": "Sub-Category 1",
+                          "fileDetails": {
+                              "name": "image (2).png",
+                              "size": 55782,
+                              "type": "image/png",
+                              "orientation": "landscape",
+                              "resolution": {
+                                  "width": 326,
+                                  "height": 195
+                              },
+                              "thumbnail": "https://picsum.photos/id/237/200/300"
+                          },
+                          "dateRange": {
+                              "start": null,
+                              "end": null
+                          },
+                          "weekdays": [],
+                          "hours": [],
+                          "duration": 5,
+                          "audienceTag": {
+                              "genders": [
+                                  "Male"
+                              ],
+                              "ageGroups": [],
+                              "timeOfDays": [],
+                              "seasonalities": [],
+                              "locations": [],
+                              "pointOfInterests": [],
+                              "tags": []
+                          },
+                          "status": "pending",
+                          "createdOn": "2025-08-26T00:32:29.495Z",
+                          "updatedOn": "2025-08-26T00:32:29.495Z"
+                      }
+                  ],
+                  "status": "pending",
+                  "duration": 5,
+                  "isAuto": false,
+                  "isActive": true,
+                  "createdOn": "2025-08-26T00:32:29.495Z",
+                  "updatedOn": "2025-08-26T00:32:29.495Z"
+              },
+              "fabricObject": {
+                  "rx": 0,
+                  "ry": 0,
+                  "type": "Rect",
+                  "version": "6.7.1",
+                  "originX": "left",
+                  "originY": "top",
+                  "left": 94,
+                  "top": 115.0288,
+                  "width": 200,
+                  "height": 100,
+                  "fill": "transparent",
+                  "stroke": null,
+                  "strokeWidth": 0,
+                  "strokeDashArray": null,
+                  "strokeLineCap": "butt",
+                  "strokeDashOffset": 0,
+                  "strokeLineJoin": "miter",
+                  "strokeUniform": false,
+                  "strokeMiterLimit": 4,
+                  "scaleX": 3.4933,
+                  "scaleY": 3.4933,
+                  "angle": 0,
+                  "flipX": false,
+                  "flipY": false,
+                  "opacity": 1,
+                  "shadow": null,
+                  "visible": true,
+                  "backgroundColor": "",
+                  "fillRule": "nonzero",
+                  "paintFirst": "fill",
+                  "globalCompositeOperation": "source-over",
+                  "skewX": 0,
+                  "skewY": 0
+              }
+          }
+      ],
+      color: "#ffffff",
+      approvedInfo: {
+          "approvedBy": "",
+          "approvedOn": null,
+          "remarks": ""
+      },
+      isActive: false,
+      screen: {
+          "id": 1,
+          "code": "NYX001",
+          "name": "PLAYER-NYX001",
+          "type": "desktop",
+          "address": {
+              "country": "Philippines",
+              "region": "Manila",
+              "city": "Quezon City",
+              "fullAddress": "Secret of God’s Child Learning Center, Inc., 176 12th Avenue corner Rosal Street,, A. Luna Street, Balong-Bato, San Juan, 1st District, Eastern Manila District, Metro Manila, 1132, Philippines",
+              "latitude": 14.6091,
+              "longitude": 121.0223,
+              "zipCode": "1100"
+          },
+          "displaySettings": {
+              "orientation": "landscape",
+              "resolution": "1920x1080"
+          },
+          status: "inactive",
+          screenStatus: "standby",
+          displayStatus: "on",
+          createdOn: new Date(),
+          updatedOn: new Date()
+      },
+      createdOn: new Date(),
+      updatedOn: new Date()
+    }
     ])
   }
 
@@ -220,8 +358,6 @@ export class DesignLayoutService {
               const { loop, ...info } = htmlLayer.content;
               this.canvasHTMLLayers().push(htmlLayer);
               this.playlistService.onPlayContent(html.content)
-              // this.playlistService.playListForm.patchValue({ loop: true, ...info });
-              // this.playlistService.onPlayPreview();
             }
           } else if (obj.data) {
             const data: any = obj.data;
@@ -281,6 +417,7 @@ export class DesignLayoutService {
     this.designForm.reset();
     this.showContents.set(false);
     this.canvasHTMLLayers.set([]);
+    this.playlistService.onStopAllContents();
   }
 
   onZoomCanvas(factor: number) {
@@ -448,15 +585,17 @@ export class DesignLayoutService {
     canvas.remove(...activeObject);
 
     activeObject.forEach((obj: any) => {
-      if (obj.html) {
+      const html = obj.html;
+      if (html) {
         this.canvasHTMLLayers().splice(obj.html.index, 1);
-        if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
+        this.playlistService.onStopContent(html.content.id);
       }
     });
 
     canvas.discardActiveObject();
     canvas.requestRenderAll();
     this.onSetCanvasProps('remove', false, 'default');
+    this.saveState();
   }
 
   onUndoLayer() {
@@ -990,7 +1129,6 @@ export class DesignLayoutService {
     //         if (!alreadyExists ) {
     //           const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
     //           this.canvasHTMLLayers().push(htmlLayer);
-    //           this.playlistService.onPlayPreview();
     //         }
     //       } else if (obj.data) {
     //         const data: any = obj.data;

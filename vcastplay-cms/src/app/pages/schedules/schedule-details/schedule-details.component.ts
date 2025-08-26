@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
@@ -19,7 +19,7 @@ import { SchedulesContentListComponent } from '../schedules-content-list/schedul
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './schedule-details.component.html',
   styleUrl: './schedule-details.component.scss',
-  providers: [ ConfirmationService, MessageService ]
+  providers: [ MessageService ]
 })
 export class ScheduleDetailsComponent {
 
@@ -100,12 +100,21 @@ export class ScheduleDetailsComponent {
   }
 
   timeSlots = computed(() => this.generateTimeCode().map((timeSlot: any) => ({ ...timeSlot, value: `${timeSlot.start} - ${timeSlot.end}`})) );
+  
+  hasUnsavedChanges!: () => boolean;
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (this.hasUnsavedData()) {
+      $event.returnValue = true;
+    }
+  }
 
   ngOnInit() {
     if (!this.isEditMode()) {
       this.scheduleForm.reset();
       this.contentItemForm.reset();
-    }
+    }    
   }
 
   ngAfterViewInit() {    
@@ -116,6 +125,10 @@ export class ScheduleDetailsComponent {
   ngOnDestroy() {
     this.scheduleForm.reset();
     this.calendarViewSignal.set('timeGridWeek');
+  }
+  
+  hasUnsavedData(): boolean {
+    return this.scheduleForm.invalid;
   }
 
   onClickSave(event: Event) {
@@ -155,7 +168,6 @@ export class ScheduleDetailsComponent {
   }
 
   onClickCancel() {
-    this.scheduleForm.reset();
     this.router.navigate([ '/schedule/schedule-library' ]);
   }
 

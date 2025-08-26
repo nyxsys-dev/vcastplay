@@ -5,6 +5,7 @@ export interface Playlist {
     id: number;
     name: string;
     description: string;
+    type: string;
     transition: {
         hasGap: boolean;
         type: string;

@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { environment } from "../../../environments/environment.development";
+import { canDeactivateGuard } from "../../core/guards/can-deactivate.guard";
 
 const appTitle: string = environment.appTitle;
 
@@ -13,5 +14,6 @@ export default [
         path: 'design-layout-details', 
         loadComponent: () => import('./design-layout-details/design-layout-details.component').then(m => m.DesignLayoutDetailsComponent),
         title: `Design Layout • ${appTitle}`,
+        canDeactivate: [ canDeactivateGuard ]
     }
 ] as Routes

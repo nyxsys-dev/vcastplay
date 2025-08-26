@@ -53,6 +53,7 @@ export class PlaylistService {
     id: new FormControl(0),
     name: new FormControl('', [ Validators.required ]),
     description: new FormControl('', [ Validators.required ]),
+    type: new FormControl('playlist', { nonNullable: true, validators: [ Validators.required ] }),
     transition: new FormGroup({
       hasGap: new FormControl(false),
       type: new FormControl(null),
@@ -107,7 +108,7 @@ export class PlaylistService {
 
   /**
    * ======================================================
-   * For Testing
+   * Start Play Playlist
    * ======================================================
   */
   
@@ -158,11 +159,15 @@ export class PlaylistService {
         case 'audio':
         case 'text':
         case 'web':
+        case 'design':
           this.onTriggerIntervals(state, duration);
           break;
         case 'video':
           this.videoElement()?.play();
           this.onTriggerIntervals(state, duration);
+          break;
+        case 'playlist':
+          this.onPlayContent(item);
           break;
       }
 
@@ -197,9 +202,9 @@ export class PlaylistService {
           // this.onGetContentSchedule(contents[this.currentIndex()])
 
           playNextContent();
-        }, gapDuration + 50);
+        }, gapDuration);
 
-      }, duration + 1500);
+      }, duration + 800);
     }
 
     playNextContent();
@@ -208,24 +213,28 @@ export class PlaylistService {
   /** Stop Playback */
   onStopContent(id: number) {
     const state = this.states.get(id)!;
-    if (state) {
-      state.index = 0;
-      state.isPlaying.set(false);
-      state.currentContent.set(null);
-      state.fadeIn.set(false);
-      state.currentTransition.set(null);
-      state.progress.set(0);
-      clearTimeout(state.timeoutId);
-      clearTimeout(state.gapTimeout);
-      clearInterval(state.intervalId);
-      state.timeoutId = undefined;
-      state.gapTimeout = undefined;
-      state.intervalId = undefined;
-    }
+    if (!state) return;
+    
+    state.index = 0;
+    state.isPlaying.set(false);
+    state.currentContent.set(null);
+    state.fadeIn.set(false);
+    state.currentTransition.set(null);
+    state.progress.set(0);
+
+    clearTimeout(state.timeoutId ?? undefined);
+    clearTimeout(state.gapTimeout ?? undefined);
+    clearInterval(state.intervalId ?? undefined);
+
+    state.timeoutId = undefined;
+    state.gapTimeout = undefined;
+    state.intervalId = undefined;
   }
 
   onStopAllContents() {
-    this.states.forEach((state) => this.onStopContent(state.index));
+    this.states.forEach((state, id) => {
+      this.onStopContent(id);
+    });
   }
 
   /** Expose current content signal */
@@ -256,111 +265,9 @@ export class PlaylistService {
 
   /**
    * ======================================================
-   * End Testing
+   * End Play Playlist
    * ======================================================
   */
-
-  onPlayPreview(index: number = 0) {
-    const contents = this.contents?.value;
-    const { hasGap, type, speed } = this.transition?.value;
-    const transitionSpeed = speed * 100;
-    const gapDuration = hasGap ? 1000 : 0;
-
-    this.currentTransition.set({ type, speed: transitionSpeed });    
-
-    if (contents.length === 0) return;
-
-    this.isPlaying.set(true);
-
-    const item = contents[this.currentIndex()];
-    this.currentContent.set(item);
-    
-    this.fadeIn.set(true);
-    this.progress.set(0);
-
-    const duration = item.duration * 1000;
-    
-    switch(item.type) {
-      case 'image':
-      case 'audio':
-      case 'text':
-      case 'web':
-        this.onTriggerInterval(duration);
-        break;
-      case 'video':
-        this.videoElement()?.play();
-        this.onTriggerInterval(duration);
-        break;
-    }
-
-    this.timeoutId = setTimeout(() => {
-      const nextIndex = (index + 1) % contents.length; // Loop back to 0 after last item
-      const isLooping = this.loop?.value;
-      
-      // Trigger fade-in again for next content
-      this.fadeIn.set(false);
-
-      // Clear content
-      this.currentContent.set(null);
-
-      // If there is a gap, wait for the gap duration before playing the next content
-      this.gapTimeout = setTimeout(() => {
-        if (isLooping) {
-          this.currentIndex.set(nextIndex);
-        } else {
-          if (index + 1 >= contents.length) {
-            this.onStopPreview();
-            return;
-          }
-          this.currentIndex.set(this.currentIndex() + 1);
-        }
-        
-        this.fadeIn.set(true);
-        this.currentContent.set(contents[this.currentIndex()]);
-
-        // Trigger content schedule
-        this.onGetContentSchedule(contents[this.currentIndex()])
-
-        this.onPlayPreview(this.currentIndex());
-      }, gapDuration + 50);
-
-    }, duration + 1500); // added 1.5 sec for complete transition
-  }
-
-  onStopPreview() {
-    this.progress.set(0);
-    this.isPlaying.set(false);
-    this.currentIndex.set(0);
-    this.currentContent.set(null);
-    clearTimeout(this.timeoutId);
-    clearInterval(this.intervalId);
-    clearTimeout(this.gapTimeout);
-  }
-  
-  
-  onTimeUpdate(event: any) {    
-    const { currentTime, duration } = event;
-    this.onUpdateProgress(currentTime, duration);
-  }
-
-  onTriggerInterval(duration: number) {
-    let startTime = Date.now();
-    this.intervalId = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      this.progress.set(Math.min((elapsed / duration) * 100, 100));
-
-      if (elapsed >= duration) {
-        this.progress.set(100);
-        clearInterval(this.intervalId);
-        // this.onStopPreview();
-      }
-    }, 500);
-  }
-
-  onUpdateProgress(currentSeconds: number, duration: number) {
-    const percent = (currentSeconds / duration) * 100;
-    this.progress.set(Math.min(percent, 100));
-  }
 
   onGetContentSchedule(content: Assets) {
     const { dateRange, weekdays, hours } = content;
@@ -369,17 +276,6 @@ export class PlaylistService {
       weekdays,
       hours
     });
-  }  
-  
-  getTransitionClasses() {
-    const { type } = this.currentTransition() ?? '';
-    const fadeIn = this.fadeIn();    
-    return {
-      'transition-all duration-500 ease-in-out': true,
-      'w-full h-full flex justify-center items-center': true,
-      [`${type?.opacity ? 'opacity-0' : ''} ${type?.x ?? ''}`]: !fadeIn,
-      [`${type?.opacity ? 'opacity-100' : ''} ${type?.y ?? ''}`]: fadeIn
-    };
   }
   
   onPageChange(event: any) {
@@ -393,6 +289,7 @@ export class PlaylistService {
         id: 1,
         name: 'New Playlist',
         description: 'This is a sample description of a new playlist',
+        type: 'playlist',
         transition: {
           hasGap: false,
           type: '',

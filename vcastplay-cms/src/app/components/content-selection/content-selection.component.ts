@@ -8,6 +8,7 @@ import { SchedulesService } from '../../core/services/schedules.service';
 import { UtilityService } from '../../core/services/utility.service';
 import { FormControl } from '@angular/forms';
 import { ScheduleFilterComponent } from '../../pages/schedules/schedule-filter/schedule-filter.component';
+import { DesignLayoutService } from '../../core/services/design-layout.service';
 
 @Component({
   selector: 'app-content-selection',
@@ -27,6 +28,7 @@ export class ContentSelectionComponent {
 
   assetService = inject(AssetsService);
   playlistService = inject(PlaylistService);
+  designLayoutService = inject(DesignLayoutService);
   scheduleService = inject(SchedulesService);
   utils = inject(UtilityService);
   
@@ -83,7 +85,7 @@ export class ContentSelectionComponent {
         this.contentLists.set(this.playlistService.onGetPlaylists());
         break;
       case 'layout':
-        this.contentLists.set([]);
+        this.contentLists.set(this.designLayoutService.onGetDesigns());
         break;
       case 'schedule':
         this.contentLists.set(this.scheduleService.onGetSchedule());

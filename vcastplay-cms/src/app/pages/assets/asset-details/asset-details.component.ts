@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
@@ -13,7 +13,7 @@ import { TagService } from '../../../core/services/tag.service';
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.scss',
-  providers: [ ConfirmationService, MessageService ]
+  providers: [ MessageService ]
 })
 export class AssetDetailsComponent {
 
@@ -58,8 +58,17 @@ export class AssetDetailsComponent {
     const type = this.assetTypeControl.value;
     return [ 'web', 'widget' ].includes(type);
   }
+  
+  hasUnsavedChanges!: () => boolean;
 
   constructor() { }
+  
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (this.hasUnsavedData()) {
+      $event.returnValue = true;
+    }
+  }
   
   ngOnInit() { 
     if (!this.isEditMode()) this.assetTypeControl.enable();
@@ -69,6 +78,10 @@ export class AssetDetailsComponent {
 
   ngOnDestroy() {
     this.onClickCancel();
+  }
+  
+  hasUnsavedData(): boolean {
+    return this.assetForm.invalid;
   }
 
   onChangeType(event: any) {

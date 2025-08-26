@@ -133,7 +133,7 @@ export class PlaylistListComponent {
   onClickGetContents() {
     this.showContents.set(true);
     this.activeStep.set(1);
-    this.playlistService.onStopPreview();
+    this.playlistService.onStopAllContents();
   }
 
   onClickComplete(event: Event) {
@@ -169,7 +169,6 @@ export class PlaylistListComponent {
   get filteredAssets() { return this.playlistService.filteredAssets; }
   get selectedPlaylist() { return this.playlistService.selectedPlaylist; }
   get currentTransition() { return this.playlistService.currentTransition(); }
-  get getTransitionClasses() { return this.playlistService.getTransitionClasses; }
   
   get status() { return this.playlistForm.get('status'); }
   get approvedInfo() { return this.playlistForm.get('approvedInfo'); }

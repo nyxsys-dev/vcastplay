@@ -29,6 +29,10 @@ export class SchedulesContentListComponent {
   
   dateRange: { start: Date; end: Date } = { start: new Date(), end: new Date() };
 
+  filteredColor = computed(() => {
+    return this.colors.filter((color: any) => color.text != 'white');
+  })
+
   constructor() { }
 
   ngOnInit() {

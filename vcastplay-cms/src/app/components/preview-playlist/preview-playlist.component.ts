@@ -3,10 +3,11 @@ import { ContentState, Playlist } from '../../core/interfaces/playlist';
 import { PlaylistService } from '../../core/services/playlist.service';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { PreviewContentComponent } from '../preview-content/preview-content.component';
+import { PreviewDesignLayoutComponent } from '../preview-design-layout/preview-design-layout.component';
 
 @Component({
   selector: 'app-preview-playlist',
-  imports: [PrimengUiModule, PreviewContentComponent, ],
+  imports: [PrimengUiModule, PreviewContentComponent, PreviewDesignLayoutComponent ],
   templateUrl: './preview-playlist.component.html',
   styleUrl: './preview-playlist.component.scss',
 })

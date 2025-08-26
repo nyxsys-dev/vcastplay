@@ -2,7 +2,7 @@
     [ngClass]="{ 'shadow-lg shadow-red-600/70': onCurrentPlaying() }">
 
     <div class="absolute top-0 right-0 h-full w-full z-10 bg-gradient-to-t from-[var(--p-primary-500)] to-transparent ">
-        <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300/60" [ngClass]="{ 'group-hover:flex': !isPlaying()}">
+        <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300/60" [ngClass]="{ 'group-hover:flex': !onCurrentPlaying()}">
             @if (!['video', 'audio'].includes(asset.type)) {
                 <p-button severity="info" icon="pi pi-cog" pTooltip="Configuration" 
                     tooltipPosition="bottom" (onClick)="showConfig.set(true); $event.stopPropagation()" size="small" rounded />

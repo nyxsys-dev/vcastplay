@@ -1,4 +1,4 @@
-import { Component, computed, effect, ElementRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { AssetsService } from '../../../core/services/assets.service';
@@ -15,7 +15,7 @@ import moment from 'moment';
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './playlist-details.component.html',
   styleUrl: './playlist-details.component.scss',
-  providers: [ MessageService, ConfirmationService ]
+  providers: [ MessageService ]
 })
 export class PlaylistDetailsComponent {
   
@@ -59,6 +59,8 @@ export class PlaylistDetailsComponent {
     return filteredAssets;
   });
 
+  hasUnsavedChanges!: () => boolean;
+
   constructor() {
     this.keywords.valueChanges.subscribe(value => this.keywordSignal.set(value));
     this.assetViewModeCtrl.valueChanges.subscribe(value => this.assetViewModeSignal.set(value));
@@ -68,23 +70,32 @@ export class PlaylistDetailsComponent {
       if (progress > 0 && this.videoPlayer) this.playlistService.videoElement.set(this.videoPlayer.nativeElement);      
     })
   }
+  
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (this.hasUnsavedData()) {
+      $event.returnValue = true;
+    }
+  }
 
   ngOnInit() { }
 
-  ngOnDestroy() {
+  ngOnDestroy(event: Event) {    
     this.isEditMode.set(false);
-    this.playListForm.reset({ contents: [] });
+    this.playlistForm.markAsPristine();
+    this.playlistForm.markAsUntouched();
+    this.playlistForm.reset();
+    this.playlistForm.reset({ contents: [] });
     this.playlistService.onStopAllContents();
   }
-
-  onClickPlayPreview() {
-    if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
-    else this.playlistService.onPlayPreview();
+  
+  hasUnsavedData(): boolean {
+    return this.playlistForm.invalid;
   }
 
   async onClickSave(event: Event) {
-    if (this.playListForm.invalid) {
-      this.playListForm.markAllAsTouched();
+    if (this.playlistForm.invalid) {
+      this.playlistForm.markAllAsTouched();
       this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
       return;
     }
@@ -97,24 +108,22 @@ export class PlaylistDetailsComponent {
       acceptButtonProps: { label: 'Save' },
       rejectButtonProps: { label: 'Cancel', severity: 'secondary', outlined: true },
       accept: () => {
-        console.log(this.playListForm.value);
+        console.log(this.playlistForm.value);
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Playlist saved successfully!' });
-        this.playlistService.onSavePlaylist({ ...this.playListForm.value, duration: this.totalDuration(), isAuto: false });
-        this.playListForm.reset();
-        this.isEditMode.set(false);
+        this.playlistService.onSavePlaylist({ ...this.playlistForm.value, duration: this.totalDuration(), isAuto: false });
         this.router.navigate([ '/playlist/playlist-library' ]);
       },
     });
   }
   
   onClickCancel() {
+    // this.playlistForm.reset({ contents: [] });
     this.router.navigate([ '/playlist/playlist-library' ]);
-    this.playListForm.reset({ contents: [] });
   }
 
   onClickClearAll() {
     this.formControl('contents').setValue([]);
-    this.playlistService.onStopPreview();
+    this.playlistService.onStopAllContents();
   }
 
   onFilterChange(event: any) {
@@ -124,12 +133,12 @@ export class PlaylistDetailsComponent {
   }
 
   formControl(fieldName: string) {
-    return this.utils.getFormControl(this.playListForm, fieldName);
+    return this.utils.getFormControl(this.playlistForm, fieldName);
   }
 
   get activeStep() { return this.playlistService.activeStep; }
   get isEditMode() { return this.playlistService.isEditMode; }
-  get playListForm() { return this.playlistService.playListForm; }
+  get playlistForm() { return this.playlistService.playListForm; }
   get totalDuration() { return this.playlistService.totalDuration; }
   get transitionTypes() { return this.playlistService.transitionTypes; }
 

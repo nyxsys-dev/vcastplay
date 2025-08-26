@@ -13,7 +13,7 @@ import { PlaylistService } from '../../../core/services/playlist.service';
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './design-layout-details.component.html',
   styleUrl: './design-layout-details.component.scss',
-  providers: [ ConfirmationService, MessageService ]
+  providers: [ MessageService ]
 })
 export class DesignLayoutDetailsComponent {
 
@@ -43,8 +43,6 @@ export class DesignLayoutDetailsComponent {
         { label: 'Info', command: () => this.showInfo.set(true), disabled: true },
         {  separator: true },
         { label: 'Exit', command: () => {
-          this.designLayoutService.onSetCanvasProps('exit', false, 'default');
-          this.designLayoutService.onExitCanvas();
           this.router.navigate(['/layout/design-layout-library']);
         }},
       ]
@@ -180,15 +178,24 @@ export class DesignLayoutDetailsComponent {
       event.stopPropagation(); 
       this.onClickRedoLayer();
     }
-  }  
+  }
+  
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (this.hasUnsavedData()) {
+      $event.returnValue = true;
+    }
+  }
+
+  hasUnsavedChanges!: () => boolean;
 
   ngOnInit() {
     this.designLayoutService.onGetDesigns();
   }
 
   ngOnDestroy() {
+    this.designLayoutService.onSetCanvasProps('exit', false, 'default');
     this.designLayoutService.onExitCanvas();
-    this.playlistService.onStopAllContents();
   }
 
   ngAfterViewInit() {
@@ -196,6 +203,10 @@ export class DesignLayoutDetailsComponent {
       this.designLayoutService.onEditDesign(this.canvasElement.nativeElement, this.designForm.value);
       this.onUpdateMenus();
     }
+  }
+  
+  hasUnsavedData(): boolean {
+    return this.designForm.invalid;
   }
 
   onClickCreateCanvas() {
@@ -224,7 +235,7 @@ export class DesignLayoutDetailsComponent {
         this.designForm.reset();
         this.isEditMode.set(false);
         this.canvasHTMLLayers.set([]);
-        if (this.playlistService.isPlaying()) this.playlistService.onStopPreview();
+        this.playlistService.onStopAllContents();
         this.designLayoutService.onSetCanvasProps('exit', false, 'default');
         this.router.navigate([ '/layout/design-layout-library' ]);
       },

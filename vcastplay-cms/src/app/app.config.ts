@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -17,6 +17,8 @@ import { provideHttpClient } from '@angular/common/http';
 // import * as L from 'leaflet';
 import 'leaflet';
 import 'leaflet.markercluster';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 echarts.use([
   PieChart,
@@ -32,6 +34,7 @@ echarts.use([
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    importProvidersFrom([ ConfirmDialogModule ]),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'top' }) ),
     provideHttpClient(),
@@ -44,6 +47,7 @@ export const appConfig: ApplicationConfig = {
       }
     }),
     provideAnimationsAsync(),
-    provideEchartsCore({ echarts })
+    provideEchartsCore({ echarts }),
+    ConfirmationService,
   ]
 };
