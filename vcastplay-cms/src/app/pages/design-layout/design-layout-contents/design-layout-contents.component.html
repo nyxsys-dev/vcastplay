@@ -40,18 +40,12 @@
                 >
                     <ng-template #header>
                         <tr>
-                            <th style="width: 3rem"></th>
                             <th>Name</th>
                             <th>Duration</th>
                         </tr>
                     </ng-template>
                     <ng-template #body let-item>
                         <tr [pSelectableRow]="item">
-                            <td>
-                                <div class="text-center">
-                                    <p-tableRadioButton [value]="item" />
-                                </div>
-                            </td>
                             <td><p class="line-clamp-1">{{ item.name }}</p></td>
                             <td>{{ utils.timeConversion(item.duration) }}</td>
                         </tr>
@@ -73,8 +67,8 @@
                     <div class="absolute grid grid-cols-2" cdkDropList [cdkDropListData]="filteredContents()" cdkDropListSortingDisabled cdkDropListHasAnchor>
                         @for (item of filteredContents(); track $index) {
                             <div class="relative h-full w-full" cdkDrag [cdkDragData]="item">
-                                <app-preview-content class="h-full w-full flex items-center justify-center" [currentContent]="item" [showControls]="false" />
-                                <app-preview-content class="absolute top-0 h-20 w-20 flex items-center justify-center" 
+                                <app-preview-assets class="h-full w-full flex items-center justify-center" [currentContent]="item" [showControls]="false" />
+                                <app-preview-assets class="absolute top-0 h-20 w-20 flex items-center justify-center" 
                                     [currentContent]="item" [showControls]="false" *cdkDragPlaceholder />
                             </div>
                         } @empty {

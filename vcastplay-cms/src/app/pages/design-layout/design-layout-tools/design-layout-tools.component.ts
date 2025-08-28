@@ -1,4 +1,4 @@
-import { Component, inject, Input, signal } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { DesignLayoutService } from '../../../core/services/design-layout.service';
 import { MenuItem } from 'primeng/api';
@@ -12,6 +12,7 @@ import { MenuItem } from 'primeng/api';
 export class DesignLayoutToolsComponent {
 
   @Input() canvasElement!: HTMLCanvasElement;
+  @Output() resetDragPosition = new EventEmitter<void>();
 
   designLayoutService = inject(DesignLayoutService);
 
@@ -23,23 +24,28 @@ export class DesignLayoutToolsComponent {
   ]
 
   onClickSelection() {
+    this.resetDragPosition.emit();
     this.designLayoutService.onSelection();
   }
 
   onClickAddText() {
+    this.resetDragPosition.emit();
     this.designLayoutService.onAddTextToCanvas('Enter text here', this.selectedColor());
   }
 
   onClickAddShape(type: string) {
+    this.resetDragPosition.emit();
     this.designLayoutService.onAddShapeToCanvas(type, this.selectedColor());
   }
   
   onClickAddContents() {
+    this.resetDragPosition.emit();
     this.showContents.set(!this.showContents());
     this.designLayoutService.onSetCanvasProps('content', false, 'default');
   }
 
   onClickAddLine() {
+    this.resetDragPosition.emit();
     this.designLayoutService.onAddLineToCanvas(this.selectedColor());
   }
 
@@ -48,13 +54,15 @@ export class DesignLayoutToolsComponent {
   }
 
   onClickMove() {
+    this.resetDragPosition.emit();
     this.designLayoutService.onMove();
   }
 
   onClickZoom() {
+    this.resetDragPosition.emit();
     const canvas = this.designLayoutService.getCanvas();
     canvas.discardActiveObject();
-    this.designLayoutService.onZoomCanvas(1.1);
+    this.designLayoutService.onSetCanvasProps('zoom', true, 'default');
   }
 
   onUnSelectAllLayers() {

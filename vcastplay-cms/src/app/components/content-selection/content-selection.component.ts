@@ -9,19 +9,21 @@ import { UtilityService } from '../../core/services/utility.service';
 import { FormControl } from '@angular/forms';
 import { ScheduleFilterComponent } from '../../pages/schedules/schedule-filter/schedule-filter.component';
 import { DesignLayoutService } from '../../core/services/design-layout.service';
+import { FiltersComponent } from '../filters/filters.component';
 
 @Component({
   selector: 'app-content-selection',
-  imports: [ PrimengUiModule, AssetFilterComponent, PlaylistFilterComponent, ScheduleFilterComponent ],
+  imports: [ PrimengUiModule, AssetFilterComponent, PlaylistFilterComponent, ScheduleFilterComponent, FiltersComponent ],
   templateUrl: './content-selection.component.html',
   styleUrl: './content-selection.component.scss'
 })
 export class ContentSelectionComponent {
   
   @Input() assetOnly: boolean = false;
-  @Input() includeSchedules: boolean = false;
+  @Input() selectedTypes: string[] = [];
   @Input() selectionMode: 'single' | 'multiple' = 'single';
   @Input() selectionContent: any;
+  @Input() isSelectable: boolean = true;
 
   @Output() contentType = new EventEmitter<any>();
   @Output() selectedContents = new EventEmitter<any>();
@@ -47,22 +49,23 @@ export class ContentSelectionComponent {
     const data = hasAnyValue ? filteredItems : contents;
     
     const filteredContents = data.filter((content: any) => {
-      const matchKeywords = !keywords || content.name.toLowerCase().includes(keywords.toLowerCase()) || content.description.toLowerCase().includes(keywords.toLowerCase());
+      const matchKeywords = !keywords || content.name?.toLowerCase().includes(keywords.toLowerCase()) || content.description?.toLowerCase().includes(keywords.toLowerCase());
       const matchStatus = !status || (content.status == status);
       const matchCategory = !category || content.category?.toLowerCase().includes(category.toLowerCase());
       const matchSubCategory = !subCategory || content.subCategory?.toLowerCase().includes(subCategory.toLowerCase());
       const matchType = !type || content.type?.toLowerCase().includes(type.toLowerCase());
       const matchOrientation = !orientation || content.displaySettings.orientation?.toLowerCase().includes(orientation.toLowerCase());
       const matchIsAuto = isAuto == null || content.isAuto == isAuto;
+      const matchHasPlaylist = !content.hasPlaylist;
 
-      return matchKeywords && matchStatus && matchCategory && matchSubCategory && matchType && matchOrientation && matchIsAuto;
+      return matchKeywords && matchStatus && matchCategory && matchSubCategory && matchType && matchOrientation && matchIsAuto && matchHasPlaylist;
     })
 
     return filteredContents;
   })
 
   filtereContentTypes = computed(() => {    
-    return this.includeSchedules ? this.contentTypes() : this.contentTypes().filter(type => type.value !== 'schedule');
+    return this.selectedTypes.length > 0 ? this.contentTypes().filter(type => this.selectedTypes.includes(type.value)) : this.contentTypes();
   })
   
   constructor() {
@@ -84,14 +87,17 @@ export class ContentSelectionComponent {
       case 'playlist':
         this.contentLists.set(this.playlistService.onGetPlaylists());
         break;
-      case 'layout':
+      case 'design':
         this.contentLists.set(this.designLayoutService.onGetDesigns());
         break;
       case 'schedule':
         this.contentLists.set(this.scheduleService.onGetSchedule());
         break;
-      default:
+      case 'asset':
         this.contentLists.set(this.assetService.onGetAssets());
+        break;
+      case 'clipart':
+        this.contentLists.set(this.cliparts);
         break;
     }
   }
@@ -108,4 +114,6 @@ export class ContentSelectionComponent {
   
   get contentTypes() { return this.scheduleService.contentTypes; }
   get calendarSelectedDate() { return this.scheduleService.calendarSelectedDate; }
+  
+  get cliparts() { return this.designLayoutService.cliparts; }
 }

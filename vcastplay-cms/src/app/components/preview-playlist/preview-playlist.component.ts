@@ -2,20 +2,18 @@ import { Component, inject, Input, signal } from '@angular/core';
 import { ContentState, Playlist } from '../../core/interfaces/playlist';
 import { PlaylistService } from '../../core/services/playlist.service';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
-import { PreviewContentComponent } from '../preview-content/preview-content.component';
 import { PreviewDesignLayoutComponent } from '../preview-design-layout/preview-design-layout.component';
+import { PreviewAssetsComponent } from '../preview-assets/preview-assets.component';
 
 @Component({
   selector: 'app-preview-playlist',
-  imports: [PrimengUiModule, PreviewContentComponent, PreviewDesignLayoutComponent ],
+  imports: [ PrimengUiModule, PreviewAssetsComponent, PreviewDesignLayoutComponent ],
   templateUrl: './preview-playlist.component.html',
   styleUrl: './preview-playlist.component.scss',
 })
 export class PreviewPlaylistComponent {
 
   @Input() playlist!: Playlist;
-  @Input() showControls: boolean = true;
-  @Input() autoPlay: boolean = false;
 
   playlistService = inject(PlaylistService);
 
@@ -28,19 +26,13 @@ export class PreviewPlaylistComponent {
     currentTransition: signal<any>(null),
   });
 
-  ngOnInit() {
-    if (this.autoPlay) {
-      this.content.set(this.playlistService.onGetCurrentContent(this.playlist.id)());
-    }
+  ngOnInit() {    
+    const currentContent = this.playlistService.onGetCurrentContent(this.playlist.id)();
+    this.content.set(currentContent);
   }
 
-  onClickPlayPreview() {    
-    if (!this.content().isPlaying()) {
-      this.playlistService.onPlayContent(this.playlist);
-      this.content.set(this.playlistService.onGetCurrentContent(this.playlist.id)());      
-    } else {
-      this.playlistService.onStopContent(this.playlist.id);
-    }
+  ngOnDestroy() {
+    this.playlistService.onStopContent(this.playlist.id);
   }
   
   getTransitionClasses() {    

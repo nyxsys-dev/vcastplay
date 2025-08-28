@@ -24,6 +24,7 @@ export class DesignLayoutService {
   private undoStack: any[] = [];
   private redoStack: any[] = [];
   private isRestoringState = signal<boolean>(false);
+  private canvasDefaults = signal<any>({ });
 
   private designSignal = signal<DesignLayout[]>([]);
   designs = computed(() => this.designSignal());
@@ -58,6 +59,7 @@ export class DesignLayoutService {
     description: new FormControl('This is a new design', [ Validators.required ]),
     type: new FormControl('design', { nonNullable: true }),
     canvas: new FormControl(null),
+    thumbnail: new FormControl(null),
     htmlLayers: new FormControl(null),
     duration: new FormControl(5, { nonNullable: true }),
     color: new FormControl('#ffffff', { nonNullable: true }),
@@ -67,7 +69,8 @@ export class DesignLayoutService {
       remarks: new FormControl(''),
     }),
     status: new FormControl('active'),
-    isActive: new FormControl(false),
+    isActive: new FormControl(false, { nonNullable: true }),
+    hasPlaylist: new FormControl(false, { nonNullable: true }),
     screen: new FormControl(null, [ Validators.required ]),
     createdOn: new FormControl(new Date()),
     updatedOn: new FormControl(new Date()),
@@ -140,154 +143,51 @@ export class DesignLayoutService {
   }
 
   onLoadDesigns() {
-    this.designSignal.set([{
-      id: 1,
-      status: "pending",
-      duration: 5,
-      name: "New Design",
-      description: "This is a new design",
-      type: "design",
-      canvas: "{\"version\":\"6.7.1\",\"objects\":[{\"fontSize\":64,\"fontWeight\":\"bold\",\"fontFamily\":\"Arial\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"text\":\"This is a header\",\"charSpacing\":0,\"textAlign\":\"left\",\"styles\":[],\"pathStartOffset\":0,\"pathSide\":\"left\",\"pathAlign\":\"baseline\",\"underline\":false,\"overline\":false,\"linethrough\":false,\"textBackgroundColor\":\"\",\"direction\":\"ltr\",\"textDecorationThickness\":66.667,\"minWidth\":20,\"splitByGrapheme\":false,\"textBoxProp\":{\"size\":64,\"weight\":true,\"italic\":false,\"underline\":false,\"alignment\":\"left\",\"color\":\"#000000\"},\"type\":\"Textbox\",\"version\":\"6.7.1\",\"originX\":\"left\",\"originY\":\"top\",\"left\":19.5913,\"top\":22.0773,\"width\":627.6087,\"height\":72.32,\"fill\":\"#000000\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0},{\"rx\":0,\"ry\":0,\"html\":{\"id\":0,\"top\":115.02880658436192,\"left\":94,\"width\":698.6645104762786,\"height\":349.3322552381393,\"rotation\":0,\"content\":{\"loop\":true,\"id\":1,\"name\":\"New Playlist\",\"description\":\"This is a sample description of a new playlist\",\"type\":\"playlist\",\"transition\":{\"hasGap\":false,\"type\":\"\",\"speed\":5},\"contents\":[{\"contentId\":1,\"id\":1,\"code\":\"NYX001\",\"name\":\"image (2).png\",\"type\":\"image\",\"link\":\"https://picsum.photos/id/237/200/300\",\"category\":\"Category 1\",\"subCategory\":\"Sub-Category 1\",\"fileDetails\":{\"name\":\"image (2).png\",\"size\":55782,\"type\":\"image/png\",\"orientation\":\"landscape\",\"resolution\":{\"width\":326,\"height\":195},\"thumbnail\":\"https://picsum.photos/id/237/200/300\"},\"dateRange\":{\"start\":null,\"end\":null},\"weekdays\":[],\"hours\":[],\"duration\":5,\"audienceTag\":{\"genders\":[\"Male\"],\"ageGroups\":[],\"timeOfDays\":[],\"seasonalities\":[],\"locations\":[],\"pointOfInterests\":[],\"tags\":[]},\"status\":\"pending\",\"createdOn\":\"2025-08-26T00:32:29.495Z\",\"updatedOn\":\"2025-08-26T00:32:29.495Z\"}],\"status\":\"pending\",\"duration\":5,\"isAuto\":false,\"isActive\":true,\"createdOn\":\"2025-08-26T00:32:29.495Z\",\"updatedOn\":\"2025-08-26T00:32:29.495Z\"},\"fabricObject\":{\"rx\":0,\"ry\":0,\"type\":\"Rect\",\"version\":\"6.7.1\",\"originX\":\"left\",\"originY\":\"top\",\"left\":94,\"top\":115.0288,\"width\":200,\"height\":100,\"fill\":\"transparent\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":3.4933,\"scaleY\":3.4933,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0}},\"type\":\"Rect\",\"version\":\"6.7.1\",\"originX\":\"left\",\"originY\":\"top\",\"left\":94,\"top\":115.0288,\"width\":200,\"height\":100,\"fill\":\"transparent\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":3.4933,\"scaleY\":3.4933,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0}],\"background\":\"#ffffff\"}",
-      htmlLayers: [
-          {
-              "id": 0,
-              "top": 115.02880658436192,
-              "left": 94,
-              "width": 698.6645104762786,
-              "height": 349.3322552381393,
-              "rotation": 0,
-              "content": {
-                  "loop": true,
-                  "id": 1,
-                  "name": "New Playlist",
-                  "description": "This is a sample description of a new playlist",
-                  "type": "playlist",
-                  "transition": {
-                      "hasGap": false,
-                      "type": "",
-                      "speed": 5
-                  },
-                  "contents": [
-                      {
-                          "contentId": 1,
-                          "id": 1,
-                          "code": "NYX001",
-                          "name": "image (2).png",
-                          "type": "image",
-                          "link": "https://picsum.photos/id/237/200/300",
-                          "category": "Category 1",
-                          "subCategory": "Sub-Category 1",
-                          "fileDetails": {
-                              "name": "image (2).png",
-                              "size": 55782,
-                              "type": "image/png",
-                              "orientation": "landscape",
-                              "resolution": {
-                                  "width": 326,
-                                  "height": 195
-                              },
-                              "thumbnail": "https://picsum.photos/id/237/200/300"
-                          },
-                          "dateRange": {
-                              "start": null,
-                              "end": null
-                          },
-                          "weekdays": [],
-                          "hours": [],
-                          "duration": 5,
-                          "audienceTag": {
-                              "genders": [
-                                  "Male"
-                              ],
-                              "ageGroups": [],
-                              "timeOfDays": [],
-                              "seasonalities": [],
-                              "locations": [],
-                              "pointOfInterests": [],
-                              "tags": []
-                          },
-                          "status": "pending",
-                          "createdOn": "2025-08-26T00:32:29.495Z",
-                          "updatedOn": "2025-08-26T00:32:29.495Z"
-                      }
-                  ],
-                  "status": "pending",
-                  "duration": 5,
-                  "isAuto": false,
-                  "isActive": true,
-                  "createdOn": "2025-08-26T00:32:29.495Z",
-                  "updatedOn": "2025-08-26T00:32:29.495Z"
-              },
-              "fabricObject": {
-                  "rx": 0,
-                  "ry": 0,
-                  "type": "Rect",
-                  "version": "6.7.1",
-                  "originX": "left",
-                  "originY": "top",
-                  "left": 94,
-                  "top": 115.0288,
-                  "width": 200,
-                  "height": 100,
-                  "fill": "transparent",
-                  "stroke": null,
-                  "strokeWidth": 0,
-                  "strokeDashArray": null,
-                  "strokeLineCap": "butt",
-                  "strokeDashOffset": 0,
-                  "strokeLineJoin": "miter",
-                  "strokeUniform": false,
-                  "strokeMiterLimit": 4,
-                  "scaleX": 3.4933,
-                  "scaleY": 3.4933,
-                  "angle": 0,
-                  "flipX": false,
-                  "flipY": false,
-                  "opacity": 1,
-                  "shadow": null,
-                  "visible": true,
-                  "backgroundColor": "",
-                  "fillRule": "nonzero",
-                  "paintFirst": "fill",
-                  "globalCompositeOperation": "source-over",
-                  "skewX": 0,
-                  "skewY": 0
-              }
-          }
-      ],
-      color: "#ffffff",
-      approvedInfo: {
-          "approvedBy": "",
-          "approvedOn": null,
-          "remarks": ""
-      },
-      isActive: false,
-      screen: {
-          "id": 1,
-          "code": "NYX001",
-          "name": "PLAYER-NYX001",
-          "type": "desktop",
-          "address": {
-              "country": "Philippines",
-              "region": "Manila",
-              "city": "Quezon City",
-              "fullAddress": "Secret of God’s Child Learning Center, Inc., 176 12th Avenue corner Rosal Street,, A. Luna Street, Balong-Bato, San Juan, 1st District, Eastern Manila District, Metro Manila, 1132, Philippines",
-              "latitude": 14.6091,
-              "longitude": 121.0223,
-              "zipCode": "1100"
-          },
-          "displaySettings": {
-              "orientation": "landscape",
-              "resolution": "1920x1080"
-          },
-          status: "inactive",
-          screenStatus: "standby",
-          displayStatus: "on",
-          createdOn: new Date(),
-          updatedOn: new Date()
-      },
-      createdOn: new Date(),
-      updatedOn: new Date()
+    this.designSignal.set([
+      {
+        "id": 1,
+        "status": "pending",
+        "duration": 15,
+        "name": "New Design",
+        "description": "This is a new design",
+        "type": "design",
+        "canvas": "{\"version\":\"6.7.1\",\"objects\":[{\"fontSize\":64,\"fontWeight\":\"bold\",\"fontFamily\":\"Arial\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"text\":\"THIS IS A HEADER\",\"charSpacing\":0,\"textAlign\":\"center\",\"styles\":[],\"pathStartOffset\":0,\"pathSide\":\"left\",\"pathAlign\":\"baseline\",\"underline\":false,\"overline\":false,\"linethrough\":false,\"textBackgroundColor\":\"\",\"direction\":\"ltr\",\"textDecorationThickness\":66.667,\"minWidth\":20,\"splitByGrapheme\":false,\"textBoxProp\":{\"size\":64,\"weight\":true,\"italic\":false,\"underline\":false,\"alignment\":\"center\",\"color\":\"#000000\"},\"defaultState\":{\"scaleX\":0.9745487313361073,\"scaleY\":0.9745487313361073,\"left\":11.868674897800616,\"top\":16.01907079864577,\"angle\":0},\"type\":\"Textbox\",\"version\":\"6.7.1\",\"originX\":\"left\",\"originY\":\"top\",\"left\":11.8687,\"top\":16.0191,\"width\":326.5602,\"height\":156.2112,\"fill\":\"#000000\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":0.9745,\"scaleY\":0.9745,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0},{\"cropX\":0,\"cropY\":0,\"data\":{\"id\":2,\"code\":\"NYX002\",\"name\":\"ForBiggerBlazes.mp4\",\"type\":\"video\",\"link\":\"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4\",\"fileDetails\":{\"name\":\"ForBiggerBlazes.mp4\",\"size\":2498125,\"type\":\"video/mp4\",\"orientation\":\"landscape\",\"resolution\":{\"width\":1280,\"height\":720},\"thumbnail\":\"https://picsum.photos/id/237/200/300\"},\"duration\":15,\"audienceTag\":{\"genders\":[\"Male\",\"Female\"],\"ageGroups\":[],\"timeOfDays\":[],\"seasonalities\":[],\"locations\":[],\"pointOfInterests\":[],\"tags\":[]},\"status\":\"pending\",\"createdOn\":\"2025-08-26T07:18:07.908Z\",\"updatedOn\":\"2025-08-26T07:18:07.908Z\"},\"defaultState\":{\"scaleX\":0.2570494305004011,\"scaleY\":0.2570494305004011,\"left\":4.99045950523805,\"top\":222.8600154011919,\"angle\":0},\"type\":\"Image\",\"version\":\"6.7.1\",\"originX\":\"top\",\"originY\":\"left\",\"left\":4.9905,\"top\":222.86,\"width\":1280,\"height\":720,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":0,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeDashOffset\":0,\"strokeLineJoin\":\"miter\",\"strokeUniform\":false,\"strokeMiterLimit\":4,\"scaleX\":0.257,\"scaleY\":0.257,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"paintFirst\":\"fill\",\"globalCompositeOperation\":\"source-over\",\"skewX\":0,\"skewY\":0,\"src\":\"\",\"crossOrigin\":null,\"filters\":[]}],\"background\":\"#ffffff\"}",
+        thumbnail: null,
+        "htmlLayers": [],
+        "color": "#ffffff",
+        "approvedInfo": {
+            "approvedBy": "",
+            "approvedOn": null,
+            "remarks": ""
+        },
+        "isActive": false,
+        hasPlaylist: false,
+        "screen": {
+            "id": 2,
+            "code": "NYX002",
+            "name": "PLAYER-NYX002",
+            "type": "android",
+            "address": {
+                "country": "Philippines",
+                "region": "Metro Manila",
+                "city": "Mandaluyong",
+                "fullAddress": "35 San Francisco Street, Barangay Plainview, Mandaluyong, Metro Manila, Philippines",
+                "latitude": 14.5903,
+                "longitude": 121.0341,
+                "zipCode": "1550"
+            },
+            "displaySettings": {
+                "orientation": "portrait",
+                "resolution": "757x1062"
+            },
+            "status": "inactive",
+            "screenStatus": "standby",
+            "displayStatus": "on",
+            createdOn: new Date(),
+            updatedOn: new Date()
+        },
+        createdOn: new Date(),
+        updatedOn: new Date()
     }
     ])
   }
@@ -301,8 +201,9 @@ export class DesignLayoutService {
     this.onResetZoomCanvas();
     const canvas = this.getCanvas();
     const htmlLayers = this.canvasHTMLLayers();
-    const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp']);
+    const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp', 'defaultState']);
     const canvasObjects = canvasData.objects;
+    const thumbnail = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });    
 
     const curDurations: number[] = [];
     canvasObjects.forEach((object: any) => {
@@ -320,9 +221,12 @@ export class DesignLayoutService {
     const { id, status, duration, ...info } = design;
     const index = tempData.findIndex(item => item.id == design.id);
 
-    if (index !== -1) tempData[index] = { ...design, duration: curDuration, canvas: JSON.stringify(canvasData), htmlLayers, updatedOn: new Date() };
+    const hasPlaylist = htmlLayers.length > 0 ? true : false;
+
+    if (index !== -1) tempData[index] = { ...design, duration: curDuration, canvas: JSON.stringify(canvasData), htmlLayers, hasPlaylist, thumbnail, updatedOn: new Date() };
     else tempData.push({ id: tempData.length + 1, status: 'pending', duration: curDuration, ...info, 
-      canvas: JSON.stringify(canvasData), htmlLayers, createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
+      canvas: JSON.stringify(canvasData), htmlLayers, hasPlaylist, thumbnail, createdOn: new Date(), updatedOn: new Date(), 
+        approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' }});
 
     this.designSignal.set([...tempData]);
     console.log(this.designSignal());
@@ -378,9 +282,23 @@ export class DesignLayoutService {
     });
   }
 
-  onDeleteDesign(design: DesignLayout) { }
+  onDeleteDesign(design: DesignLayout) {
+    const tempData = this.designs().filter(item => item.id !== design.id);
+    this.designSignal.set([...tempData]);
+    
+    this.totalRecords.set(this.designs().length);
+    /**CALL DELETE API */
+  }
 
-  onDuplicateDesign(design: DesignLayout) { }
+  onDuplicateDesign(design: DesignLayout) {
+    const tempData = this.designs();
+    tempData.push({ ...design, id: tempData.length + 1, name: `Copy of ${design.name}`, status: 'pending', 
+      createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
+    this.designSignal.set([...tempData]);
+    
+    this.totalRecords.set(this.designs().length);
+    /**CALL POST API */
+  }
 
   onCreateCanvas(canvasElement: HTMLCanvasElement, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
     const canvas = new fabric.Canvas(canvasElement, { 
@@ -417,7 +335,6 @@ export class DesignLayoutService {
     this.designForm.reset();
     this.showContents.set(false);
     this.canvasHTMLLayers.set([]);
-    this.playlistService.onStopAllContents();
   }
 
   onZoomCanvas(factor: number) {
@@ -425,7 +342,7 @@ export class DesignLayoutService {
     const zoom = canvas.getZoom() * factor;
     const { width, height } = this.canvasDimensions(canvas);
     const canvasWidth = width * factor;
-    const canvasHeight = height * factor;      
+    const canvasHeight = height * factor;
 
     if ((canvasWidth * zoom) <= 250) return;
 
@@ -442,7 +359,6 @@ export class DesignLayoutService {
     });
 
     canvas.renderAll();
-    this.onSetCanvasProps('zoom', true, 'default');
   }
 
   onResetZoomCanvas() {
@@ -451,12 +367,15 @@ export class DesignLayoutService {
     const [ width, height ] = screen.displaySettings.resolution.split('x');
     canvas.setDimensions({ width: width * this.DEFAULT_SCALE(), height: height * this.DEFAULT_SCALE() });
     // Scale every object proportionally
-    canvas.getObjects().forEach(obj => {
-      obj.scaleX = obj.scaleX! / canvas.getZoom();
-      obj.scaleY = obj.scaleY! / canvas.getZoom();
-      obj.left = obj.left! / canvas.getZoom();
-      obj.top = obj.top! / canvas.getZoom();
-      obj.setCoords();
+    canvas.getObjects().forEach((obj: any) => {
+      const def = obj?.defaultState;
+      if (def) {
+        obj.scaleX = def.scaleX;
+        obj.scaleY = def.scaleY;
+        obj.left = def.left;
+        obj.top = def.top;
+        obj.setCoords();
+      }
     });
   }
 
@@ -618,7 +537,7 @@ export class DesignLayoutService {
 
   onExportCanvas(canvas: fabric.Canvas) {
     const { name } = this.designForm.value;
-    const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp']);
+    const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp', 'defaultState']);
 
     const length = this.designs().length + 1; 
 
@@ -742,6 +661,7 @@ export class DesignLayoutService {
       this.canvas.setActiveObject(image);
       this.canvas.requestRenderAll();
 
+      image.set('data', data);
       image.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
       this.onDisableLayersProps(true);
       this.saveState();
@@ -765,6 +685,7 @@ export class DesignLayoutService {
     video.muted = true;
     video.autoplay = true;
     video.playsInline = true;
+    video.crossOrigin = 'anonymous';
     video.load();
     video.play();
 
@@ -782,6 +703,7 @@ export class DesignLayoutService {
     videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
     this.canvas.add(videoObj);
 
+    videoObj.set('data', data);
     this.onStartVideoRender();
     this.onDisableLayersProps(true);
     this.saveState();
@@ -826,15 +748,15 @@ export class DesignLayoutService {
 
     this.canvas.add(rect);
     const htmlLayer = this.createHtmlLayerFromObject(rect, length, content);
-    this.canvasHTMLLayers().push(htmlLayer);
     
+    this.canvasHTMLLayers().push(htmlLayer);
     this.playlistService.onPlayContent(content);
 
     rect.set('html', htmlLayer);
     this.canvas.setActiveObject(rect);
     this.canvas.requestRenderAll();
     this.onDisableLayersProps(true);
-    this.showContents.set(false);
+    // this.showContents.set(false);
     this.saveState();
   }
 
@@ -1081,6 +1003,17 @@ export class DesignLayoutService {
    * Private methods insert here
    * ====================================================================================================================================
    */
+  
+  private captureState(obj: fabric.Object) {
+    return {
+      scaleX: obj.scaleX,
+      scaleY: obj.scaleY,
+      left: obj.left,
+      top: obj.top,
+      angle: obj.angle
+    };
+  }
+
   private saveState() {
     const canvas = this.getCanvas();
     const canvasState: any = {
@@ -1271,6 +1204,21 @@ export class DesignLayoutService {
       this.rectPropsForm.reset();
       this.onSetCanvasProps('cleared', true, 'default');
     });
+
+    canvas.on('object:added', (e) => {
+      const obj: any = e.target;
+      if (!obj) return;
+
+      if (!obj.defaultState) {
+        obj.defaultState = this.captureState(obj)
+      }
+    })
+
+    canvas.on('object:modified', (e) => {
+      const obj: any = e.target;
+      if (!obj) return;
+      obj.defaultState = this.captureState(obj)
+    })
 
     // canvas.on('object:moving', (e) => {
     //   const selected = e.target;

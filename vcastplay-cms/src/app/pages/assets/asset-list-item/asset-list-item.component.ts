@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, signal, TemplateRef } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
-import { CdkDragPlaceholder, CdkDragPreview } from '@angular/cdk/drag-drop';
+import { CdkDragPreview } from '@angular/cdk/drag-drop';
 import { AssetsService } from '../../../core/services/assets.service';
-import { PreviewContentComponent } from '../../../components/preview-content/preview-content.component';
 import { UtilityService } from '../../../core/services/utility.service';
+import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
 
 @Component({
   selector: 'app-asset-list-item',
-  imports: [ PrimengUiModule, CommonModule, CdkDragPlaceholder, CdkDragPreview, PreviewContentComponent ],
+  imports: [PrimengUiModule, CommonModule, CdkDragPreview, PreviewAssetsComponent ],
   templateUrl: './asset-list-item.component.html',
   styleUrl: './asset-list-item.component.scss'
 })

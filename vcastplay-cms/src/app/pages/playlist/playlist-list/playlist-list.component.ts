@@ -68,7 +68,7 @@ export class PlaylistListComponent {
   onClickDelete(playlist: any, event: Event) {
     this.confirmation.confirm({
       target: event.target as EventTarget,
-      message: 'Do you want to delete this asset?',
+      message: 'Do you want to delete this playlist?',
       closable: true,
       closeOnEscape: true,
       header: 'Danger Zone',

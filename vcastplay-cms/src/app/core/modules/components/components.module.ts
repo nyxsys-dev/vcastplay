@@ -4,7 +4,6 @@ import { ToolbarComponent } from '../../../components/toolbar/toolbar.component'
 import { DrawerComponent } from '../../../components/drawer/drawer.component';
 import { BreadcrumbsComponent } from '../../../components/breadcrumbs/breadcrumbs.component';
 import { FiltersComponent } from '../../../components/filters/filters.component';
-import { PreviewContentComponent } from '../../../components/preview-content/preview-content.component';
 import { PlaylistContainerComponent } from '../../../components/playlist/playlist-container/playlist-container.component';
 import { PlaylistSelectContentsComponent } from '../../../components/playlist/playlist-select-contents/playlist-select-contents.component';
 import { AssetListItemComponent } from '../../../pages/assets/asset-list-item/asset-list-item.component';
@@ -39,7 +38,8 @@ import { DesignLayoutToolsComponent } from '../../../pages/design-layout/design-
 import { DesignLayoutContentsComponent } from '../../../pages/design-layout/design-layout-contents/design-layout-contents.component';
 import { TextPropertiesComponent } from '../../../components/design-layout/text-properties/text-properties.component';
 import { RectPropertiesComponent } from '../../../components/design-layout/rect-properties/rect-properties.component';
-import { PreviewPlaylistComponent } from '../../../components/preview-playlist/preview-playlist.component';
+import { DesignLayoutListItemComponent } from '../../../pages/design-layout/design-layout-list-item/design-layout-list-item.component';
+import { PlaylistMainPlayerComponent } from '../../../pages/playlist/playlist-main-player/playlist-main-player.component';
 
 
 const COMPONENT_MODULES = [
@@ -48,7 +48,6 @@ const COMPONENT_MODULES = [
   DrawerComponent,
   BreadcrumbsComponent,
   FiltersComponent,
-  PreviewContentComponent,
   MapmarkersComponent,
   ScrubberTimelineComponent,
   ContentSelectionComponent,
@@ -81,7 +80,7 @@ const COMPONENT_MODULES = [
   PlaylistSelectContentsComponent, 
   PlaylistListItemComponent,
   PlaylistFilterComponent,
-  PreviewPlaylistComponent,
+  PlaylistMainPlayerComponent,
 
   // Asset Components
   AssetListItemComponent,
@@ -100,6 +99,7 @@ const COMPONENT_MODULES = [
   // Design Layout Components
   DesignLayoutToolsComponent,
   DesignLayoutContentsComponent,
+  DesignLayoutListItemComponent,
   TextPropertiesComponent,
   RectPropertiesComponent,
 ]

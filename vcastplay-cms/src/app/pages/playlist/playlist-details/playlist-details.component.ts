@@ -8,6 +8,7 @@ import { Assets } from '../../../core/interfaces/assets';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { v7 as uuidv7 } from 'uuid';
 import moment from 'moment';
 
 @Component({
@@ -132,6 +133,15 @@ export class PlaylistDetailsComponent {
     this.audienceTagSignal.set(audienceTag);
   }
 
+  onSelectionChange(event: any) {
+    const { contents } = this.playlistForm.value;    
+    this.playlistForm.patchValue({ contents: [...contents, { ...event, contentId: uuidv7() }]});
+  }
+
+  onContentTypeChange(event: any) {
+    console.log(event);
+  }
+
   formControl(fieldName: string) {
     return this.utils.getFormControl(this.playlistForm, fieldName);
   }
@@ -141,6 +151,7 @@ export class PlaylistDetailsComponent {
   get playlistForm() { return this.playlistService.playListForm; }
   get totalDuration() { return this.playlistService.totalDuration; }
   get transitionTypes() { return this.playlistService.transitionTypes; }
+  get showContents() { return this.playlistService.showContents; }
 
   get assets() { return this.assetService.assets; }
   get assetViewModes() { return this.assetService.assetViewModes; }

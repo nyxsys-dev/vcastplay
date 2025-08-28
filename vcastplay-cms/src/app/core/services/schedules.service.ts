@@ -29,8 +29,9 @@ export class SchedulesService {
   contentTypes = signal<any[]>([
     { label: 'Asset', value: 'asset' },
     { label: 'Playlist', value: 'playlist' },
-    { label: 'Design Layout', value: 'layout' },
+    { label: 'Design Layout', value: 'design' },
     { label: 'Schdules', value: 'schedule' },
+    { label: 'Clipart', value: 'clipart' },
   ]);
   
   calendarTitle = signal<string>('');

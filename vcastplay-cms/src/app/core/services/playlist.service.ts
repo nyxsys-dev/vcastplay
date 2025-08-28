@@ -126,30 +126,33 @@ export class PlaylistService {
   }
 
   onPlayContent(playlist: Playlist) {
+    // Register state for this playlist only
     this.registerContent(playlist.id);
-    const contents = playlist.contents;    
-
+    const contents = playlist.contents;  
     if (contents.length === 0) return;
+
     const state = this.states.get(playlist.id)!;
     
-    this.onStopContent(playlist.id);
+    // Only reset this playlist, not others
+    clearTimeout(state.timeoutId);
+    clearTimeout(state.gapTimeout);
+
+    state.isPlaying.set(false);
+    state.progress.set(0);
+    state.fadeIn.set(false);
+    
+    // this.onStopContent(playlist.id);
 
     const playNextContent = () => {
-      if (state.index >= contents.length) {
-        state.index = 0;
-      }
-
+      const item = contents[state.index];
       const { hasGap, type, speed } = playlist.transition;
       const transitionSpeed = speed * 100;
-      const gapDuration = hasGap ? 1000 : 0;
+      const gapDuration = hasGap ? 500 : 0;
 
       state.currentTransition.set({ type, speed: transitionSpeed });   
-
       state.isPlaying.set(true);
       state.progress.set(0);
       state.fadeIn.set(true);
-
-      const item = contents[state.index];
       state.currentContent.set(item);
 
       const duration = item.duration * 1000;
@@ -167,11 +170,11 @@ export class PlaylistService {
           this.onTriggerIntervals(state, duration);
           break;
         case 'playlist':
-          this.onPlayContent(item);
+          setTimeout(() => this.onPlayContent(item), 0);
           break;
       }
 
-      console.log(item);
+      console.log("Current Playing:", playlist.name, "->", item);
       
       state.timeoutId = setTimeout(() => {
         const nextIndex = (state.index + 1) % contents.length; // Loop back to 0 after last item
@@ -189,14 +192,15 @@ export class PlaylistService {
             state.index = nextIndex;
           } else {
             if (state.index + 1 >= contents.length) {
+              // Playlist completed
               this.onStopContent(playlist.id);
               return;
             }
             state.index++;
           }
           
-          state.fadeIn.set(true);
-          state.currentContent.set(contents[state.index]);
+          // state.fadeIn.set(true);
+          // state.currentContent.set(contents[state.index]);
 
           // Trigger content schedule
           // this.onGetContentSchedule(contents[this.currentIndex()])

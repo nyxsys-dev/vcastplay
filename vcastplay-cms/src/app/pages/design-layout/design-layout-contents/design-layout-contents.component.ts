@@ -8,11 +8,11 @@ import { PlaylistFilterComponent } from '../../playlist/playlist-filter/playlist
 import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-item.component';
 import { UtilityService } from '../../../core/services/utility.service';
 import { FiltersComponent } from '../../../components/filters/filters.component';
-import { PreviewContentComponent } from '../../../components/preview-content/preview-content.component';
+import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
 
 @Component({
   selector: 'app-design-layout-contents',
-  imports: [ PrimengUiModule, AssetFilterComponent, AssetListItemComponent, PlaylistFilterComponent, FiltersComponent, PreviewContentComponent ],
+  imports: [ PrimengUiModule, AssetFilterComponent, AssetListItemComponent, PlaylistFilterComponent, FiltersComponent, PreviewAssetsComponent ],
   templateUrl: './design-layout-contents.component.html',
   styleUrl: './design-layout-contents.component.scss'
 })
@@ -74,12 +74,10 @@ export class DesignLayoutContentsComponent {
     }    
   }
 
-  onSelectionChange(event: any) {
+  onSelectionChange(event: any) {     
+    if (!event) return;
     const { loop, ...info } = event;
-    // this.canvasHTMLLayers().push(event);
-    // this.selectionContent.set(event);
-    // this.playListForm.patchValue({ loop: true, ...info });
-    // this.playlistService.onPlayContent(info.id);
+    this.selectionContent.set(null);
     this.designlayoutService.onAddHTMLToCanvas({ loop: true, ...info });
   }
 

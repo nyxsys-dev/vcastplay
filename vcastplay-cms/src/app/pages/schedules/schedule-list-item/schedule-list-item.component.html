@@ -6,7 +6,7 @@
                 <p class="text-xs md:text-sm line-clamp-1 font-normal">{{ schedule.description }}</p>
             </div>
             <div class="ml-auto">
-                <p-tag [value]="schedule.status" [severity]="utils.getStatus(schedule.status)" [icon]="'pi ' + utils.getIcon(schedule.status)" />
+                <p-tag [value]="schedule.status.toUpperCase()" [severity]="utils.getStatus(schedule.status)" [icon]="'pi ' + utils.getIcon(schedule.status)" />
             </div>
         </div>
     </ng-template>

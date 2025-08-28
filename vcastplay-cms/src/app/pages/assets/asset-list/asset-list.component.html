@@ -136,7 +136,7 @@
 
 <p-dialog header="Preview" [(visible)]="isShowPreview" [style]="{ width: '50rem' }" modal>
     <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
-        <app-preview-content class="absolute h-full w-full flex items-center justify-center"
+        <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
             [currentContent]="selectedAsset()" [showControls]="true" [autoPlay]="true" />
     </div>
 </p-dialog>
@@ -163,12 +163,6 @@
         <div class="flex flex-col gap-3 w-full">
             <textarea placeholder="Type your prompt here" name="prompt" id="prompt" cols="30" rows="5" pTextarea></textarea>
             <p-button styleClass="!w-full" label="Send" icon="pi pi-send" (onClick)="showPrompt.set(false)" fluid />
-            <!-- <p-inputgroup>
-                <input type="text" pInputText placeholder="Type your prompt here" />
-                <p-inputgroup-addon>
-                    <p-button icon="pi pi-send" (onClick)="showPrompt.set(false)"  />
-                </p-inputgroup-addon>
-            </p-inputgroup> -->
         </div>
     </ng-template>
 </p-dialog>
@@ -180,4 +174,3 @@
 </ng-template>
 
 <p-toast />
-<p-confirmdialog />

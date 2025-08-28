@@ -1,12 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
-import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { WEEKDAYS } from '../../../core/interfaces/general';
 import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-asset-schedule',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule ],
   templateUrl: './asset-schedule.component.html',
   styleUrl: './asset-schedule.component.scss'
 })

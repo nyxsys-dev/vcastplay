@@ -14,11 +14,11 @@
 
         @if (designLayoutService.getCanvas()) {
             <div class="absolute top-0 left-0 py-2 px-1 bg-[var(--p-surface-100)] shadow-lg rounded-lg z-10">
-                <app-design-layout-tools [canvasElement]="canvasElement.nativeElement" />
+                <app-design-layout-tools [canvasElement]="canvasElement.nativeElement" (resetDragPosition)="onResetCanvasPosition()" />
             </div>
         }
 
-        <div class="relative" cdkDrag [cdkDragDisabled]="!canvasProps.drag" cdkDropList (cdkDropListDropped)="onDropped($event)">
+        <div #canvasContainer class="relative" cdkDrag [cdkDragDisabled]="!canvasProps.drag" cdkDropList (cdkDropListDropped)="onDropped($event)">
             <canvas #canvas></canvas>
 
             @for (layer of canvasHTMLLayers(); track $index) {
@@ -26,8 +26,8 @@
                     [style.top.px]="layer.top" [style.left.px]="layer.left"
                     [style.width.px]="layer.width" [style.height.px]="layer.height" [style.transform]="'rotate(' + layer.rotation + 'deg)'">
                     
-                    <div class="flex h-full w-full">
-                        <app-preview-playlist class="relative flex-1 group bg-stone-800 text-white rounded-lg"
+                    <div class="relative flex-1 flex h-full w-full">
+                        <app-playlist-main-player class="h-full w-full group bg-stone-800 text-white rounded-lg"
                             [playlist]="layer.content" [autoPlay]="true" [showControls]="false" />
                     </div>
                 </div>
@@ -49,7 +49,10 @@
                             <p-button (onClick)="showContents.set(false)" class="ml-auto" icon="pi pi-times" size="small" text />
                         </div>
                     </ng-template>
-                    <app-design-layout-contents />
+                    <!-- <app-design-layout-contents /> -->
+                     
+                    <app-content-selection #contents [selectedTypes]="['asset', 'playlist', 'clipart']" [isSelectable]="false" 
+                        (selectedContents)="onSelectedContentChange($event)" />
                 </p-card>
             </div>
         }
@@ -59,6 +62,7 @@
                 <p class="text-sm italic text-red-500 ml-3">(Ctrl + Scroll to Zoom)</p>
                 <p-button icon="pi pi-search-plus" (onClick)="onClickZoom(1.1)" size="small" />
                 <p-button icon="pi pi-search-minus" (onClick)="onClickZoom(0.9)" severity="secondary" size="small" />
+                <p-button icon="pi pi-sync" (onClick)="onClickResetZoom()" severity="secondary" size="small" />
             </div>
         }
         

@@ -7,10 +7,12 @@ import { ScreenSelectionComponent } from '../../../components/screen-selection/s
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { PlaylistService } from '../../../core/services/playlist.service';
+import { CdkDrag } from '@angular/cdk/drag-drop';
+import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player/playlist-main-player.component';
 
 @Component({
   selector: 'app-design-layout-details',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, PlaylistMainPlayerComponent ],
   templateUrl: './design-layout-details.component.html',
   styleUrl: './design-layout-details.component.scss',
   providers: [ MessageService ]
@@ -20,6 +22,7 @@ export class DesignLayoutDetailsComponent {
   @ViewChild('screen') screenElement!: ScreenSelectionComponent;
   @ViewChild('canvas', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
   @ViewChild('importFile') importFileElement!: ElementRef<HTMLInputElement>;
+  @ViewChild(CdkDrag) cdkDrag!: CdkDrag;
   
   router = inject(Router);
 
@@ -42,9 +45,7 @@ export class DesignLayoutDetailsComponent {
         { label: 'Export', command: () => this.onClickExportCanvas(), disabled: true },
         { label: 'Info', command: () => this.showInfo.set(true), disabled: true },
         {  separator: true },
-        { label: 'Exit', command: () => {
-          this.router.navigate(['/layout/design-layout-library']);
-        }},
+        { label: 'Exit', command: () => this.router.navigate(['/layout/design-layout-library']) },
       ]
     },
     {
@@ -194,6 +195,8 @@ export class DesignLayoutDetailsComponent {
   }
 
   ngOnDestroy() {
+    this.isEditMode.set(false);
+    this.playlistService.onStopAllContents();
     this.designLayoutService.onSetCanvasProps('exit', false, 'default');
     this.designLayoutService.onExitCanvas();
   }
@@ -232,11 +235,6 @@ export class DesignLayoutDetailsComponent {
       accept: () => {
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Design saved successfully!' });
         this.designLayoutService.onSaveDesign(this.designForm.value);
-        this.designForm.reset();
-        this.isEditMode.set(false);
-        this.canvasHTMLLayers.set([]);
-        this.playlistService.onStopAllContents();
-        this.designLayoutService.onSetCanvasProps('exit', false, 'default');
         this.router.navigate([ '/layout/design-layout-library' ]);
       },
     });
@@ -254,10 +252,12 @@ export class DesignLayoutDetailsComponent {
         this.showContents.set(true);
         break;
     }
+    this.onResetCanvasPosition();
     this.designLayoutService.onLayerArrangement('front');
   }
   
   onClickAddShape(type: string) {
+    this.onResetCanvasPosition();
     this.designLayoutService.onAddShapeToCanvas(type, this.selectedColor());
   }
 
@@ -270,15 +270,22 @@ export class DesignLayoutDetailsComponent {
     this.designLayoutService.onZoomCanvas(factor);
   }
 
+  onClickResetZoom() {
+    this.designLayoutService.onResetZoomCanvas();
+  }
+
   onClickLayerArrangement(position: string) {
+    this.onResetCanvasPosition();
     this.designLayoutService.onLayerArrangement(position);
   }
 
   onClickLayerAlignment(position: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') {
+    this.onResetCanvasPosition();
     this.designLayoutService.onLayerAlignment(position);
   }
 
   onClickLayerSpacing(axis: 'horizontal' | 'vertical') {
+    this.onResetCanvasPosition();
     this.designLayoutService.onLayerSpacing(axis);
   }
 
@@ -337,6 +344,22 @@ export class DesignLayoutDetailsComponent {
     this.designForm.patchValue({ screen: event });
   }
 
+  onSelectedContentChange(event: any) {
+    const { loop, type, ...info }: any = event;
+    switch (type) {
+      case 'image':
+      case 'clipart':
+        this.designLayoutService.onAddImageToCanvas(event);
+        break;
+      case 'playlist':
+        this.designLayoutService.onAddHTMLToCanvas({ loop: true, type, ...info });
+        break;
+      default:
+        this.designLayoutService.onAddVideoToCanvas(event);
+        break;
+    }
+  }
+
   onDropped(event: any) {
     const { item: { data } } = event;    
     switch (data.type) {
@@ -366,6 +389,10 @@ export class DesignLayoutDetailsComponent {
     this.isEditMode.set(true);
     this.designLayoutService.onImportCanvas(event, this.canvasElement.nativeElement);
     this.onUpdateMenus();
+  }
+
+  onResetCanvasPosition() {
+    this.cdkDrag.reset();
   }
 
   get isEditMode() { return this.designLayoutService.isEditMode; }

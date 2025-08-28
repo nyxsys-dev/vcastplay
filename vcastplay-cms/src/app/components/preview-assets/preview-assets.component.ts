@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
 import { Assets } from '../../core/interfaces/assets';
+import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
 
 @Component({
-  selector: 'app-preview-content',
+  selector: 'app-preview-assets',
   imports: [ SafeurlPipe ],
-  templateUrl: './preview-content.component.html',
-  styleUrl: './preview-content.component.scss'
+  templateUrl: './preview-assets.component.html',
+  styleUrl: './preview-assets.component.scss'
 })
-export class PreviewContentComponent {
+export class PreviewAssetsComponent {
 
   @Input() currentContent!: Assets | null;
   @Input() isPlaying: boolean = false;

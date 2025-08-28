@@ -13,10 +13,12 @@ import { Router } from '@angular/router';
 import moment from 'moment-timezone';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { SchedulesContentListComponent } from '../schedules-content-list/schedules-content-list.component';
+import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
+import { PreviewPlaylistComponent } from '../../../components/preview-playlist/preview-playlist.component';
 
 @Component({
   selector: 'app-schedule-details',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, PreviewAssetsComponent, PreviewPlaylistComponent ],
   templateUrl: './schedule-details.component.html',
   styleUrl: './schedule-details.component.scss',
   providers: [ MessageService ]

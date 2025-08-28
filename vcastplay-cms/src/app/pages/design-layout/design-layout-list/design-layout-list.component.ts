@@ -57,9 +57,38 @@ export class DesignLayoutListComponent {
     this.router.navigate([ '/layout/design-layout-details' ]);
   }
 
-  onClickDelete(design: any, event: Event) { }
+  onClickDelete(design: any, event: Event) {
+    this.confirmation.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to delete this design?',
+      closable: true,
+      closeOnEscape: true,
+      header: 'Danger Zone',
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+        severity: 'danger',
+      },
+      accept: () => {
+        this.designLayoutService.onDeleteDesign(design);
+        this.message.add({ severity:'success', summary: 'Success', detail: 'Design deleted successfully!' });
+        this.selectedDesign.set(null);
+        this.designForm.reset();
+      },
+      reject: () => { }
+    })
+  }
 
-  onClickDuplicate(design: any) { }
+  onClickDuplicate(design: any) {
+    const { approvedInfo, ...info } = design;
+    this.designLayoutService.onDuplicateDesign(info);
+    this.message.add({ severity:'success', summary: 'Success', detail: 'Design duplicated successfully!' });
+  }
 
   onClickAddToPlaylist(design: any, event: Event) { }
   

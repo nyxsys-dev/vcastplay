@@ -15,7 +15,7 @@
                 <p-button class="flex md:hidden gap-2" icon="pi pi-save" (onClick)="onClickSave($event)" />
             </div>
         </ng-template>
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-2 h-full mt-2">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-5 h-full mt-2">
             <div class="col-span-1 md:col-span-6 xl:col-span-8 flex flex-col gap-2">
 
                 <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4">
@@ -38,13 +38,13 @@
                 </div>
 
                 <!-- Preview Contents -->                
-                <app-preview-playlist class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
+                <app-playlist-main-player class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
                     [playlist]="playlistForm.value" />
             </div>
 
             <!-- Assets Lists -->
             <div class="col-span-1 md:col-span-6 xl:col-span-4">
-                <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg h-80 md:h-full">
+                <!-- <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg h-80 md:h-full">
                     <div class="p-3 flex items-center gap-2">
                         <app-asset-filter class="w-full" (filterChange)="onFilterChange($event)" />
                         <p-selectbutton [options]="assetViewModes" [formControl]="assetViewModeCtrl" optionLabel="label" optionValue="label" [allowEmpty]="false">
@@ -53,14 +53,14 @@
                             </ng-template>
                         </p-selectbutton>
                     </div>
-                    <div class="relative flex-1 overflow-y-auto cursor-grab" cdkDropList [cdkDropListData]="assets()" 
-                        cdkDragPreviewContainer="body" cdkDropListOrientation="vertical">
-                        <div class="px-3 pb-2 absolute w-full"  [ngClass]="{ 
+                    <div class="relative flex-1 overflow-y-auto cursor-grab" >
+                        <div class="px-3 pb-2 absolute w-full" cdkDropList [cdkDropListData]="assets()" 
+                        cdkDragPreviewContainer="body" cdkDropListOrientation="horizontal" [ngClass]="{ 
                             'grid grid-cols-2 xl:grid-cols-3 gap-3': assetViewModeSignal() == 'Grid',
                             'flex flex-col gap-5 ': assetViewModeSignal() == 'List'
                         }">
                             @for (item of filteredAssets(); track $index) {
-                                <app-asset-list-item [asset]="item" [customCSS]="'h-20 w-20'" />
+                                <app-asset-list-item [showAddToPlaylist]="true" [asset]="item" customCSS="w-[140px]" />
                             } @empty {
                                 <div class="flex items-center justify-center h-[200px] w-full" [ngClass]="{ 'col-span-3 ': assetViewModeSignal() == 'Grid' }">
                                     <p class="text-gray-400 italic">No items found</p>
@@ -68,6 +68,9 @@
                             }
                         </div>
                     </div>
+                </div> -->
+                <div class="flex flex-col h-80 md:h-full">
+                    <app-content-selection #contents [selectedTypes]="['asset', 'design']" [isSelectable]="false" (selectedContents)="onSelectionChange($event)" />
                 </div>
             </div>
         </div>

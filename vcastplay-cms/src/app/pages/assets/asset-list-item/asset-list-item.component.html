@@ -1,9 +1,8 @@
-<div class="flex flex-col gap-2 border-1 border-[var(--p-primary-100)] shadow shadow-xl h-40 w-full" 
+<div class="relative flex flex-col gap-2 border-1 border-[var(--p-primary-100)] shadow shadow-xl h-40 w-full group" 
     cdkDrag [cdkDragDisabled]="disableDrag" [cdkDragData]="asset">
     
     <div class="flex-1 flex flex-col items-center justify-center gap-2 relative group rounded-lg">
-        <app-preview-content class="absolute h-full w-full flex items-center justify-center" 
-            [currentContent]="asset" [showControls]="false" />
+        <app-preview-assets class="absolute h-full w-full flex items-center justify-center" [currentContent]="asset" [showControls]="false" />
 
         @if(showDetails) {
             <div class="flex items-end absolute bottom-0 left-0 h-full w-full bg-gradient-to-t from-[var(--p-primary-500)] to-transparent p-2 text-white"  
@@ -16,12 +15,11 @@
         }
     </div>
 
-    <div class="outline-dashed outline-2 outline-offset-2 outline-gray-400 w-30" [ngClass]="customCSS" *cdkDragPlaceholder></div>
+    <div class="outline-dashed outline-2 outline-offset-2 outline-gray-400" [ngClass]="customCSS" *cdkDragPlaceholder></div>
 
     <div *cdkDragPreview>
-        <div class="flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg p-3 bg-[var(--p-surface-300)] h-20 w-50">
-            <h4 class="font-semibold text-sm">{{ asset.name }}</h4>
-            <p class="text-sm">{{ asset.code }}</p>
+        <div class="relative flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg p-3 bg-[var(--p-surface-300)] w-50">
+            <app-preview-assets class="flex items-center justify-center" [currentContent]="asset" [showControls]="false" />
         </div>
     </div>
 </div>

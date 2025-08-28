@@ -3,12 +3,11 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { Assets } from '../../../core/interfaces/assets';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
-import { PreviewContentComponent } from '../../preview-content/preview-content.component';
 import { Playlist } from '../../../core/interfaces/playlist';
 
 @Component({
   selector: 'app-playlist-item-content',
-  imports: [ PrimengUiModule, PreviewContentComponent ],
+  imports: [ PrimengUiModule ],
   templateUrl: './playlist-item-content.component.html',
   styleUrl: './playlist-item-content.component.scss'
 })
@@ -22,20 +21,16 @@ export class PlaylistItemContentComponent {
   utils = inject(UtilityService);
   playlistService = inject(PlaylistService);
 
-  currentPlaying() {
-    return (this.asset.contentId == this.currentContent()?.contentId) && this.currentContent()
-  }
-
   onCurrentPlaying() {
     const content: any = this.playlistService.onGetCurrentContent(this.playlist.id)(); 
-    const currentContent: any = content?.currentContent();
-    return content ? currentContent?.contentId === this.asset.contentId : false;
+    const currentContent: any = content?.currentContent() ?? null;
+    return content ? currentContent?.contentId == this.asset.contentId : false;
   }
 
-  onClickRemove(asset: Assets) {
-    const { id } = asset;
+  onClickRemove(asset: any) {
+    const { contentId } = asset;
     const contents = this.contents?.value;
-    this.contents?.setValue(contents.filter((item: Assets) => item.id !== id));
+    this.contents?.setValue(contents.filter((item: any) => item.contentId !== contentId));
   }
 
   onClickHide() {

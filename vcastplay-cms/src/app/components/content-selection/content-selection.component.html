@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-3 pt-2 h-full">
+<div class="flex flex-col gap-3 h-full">
     @if (!assetOnly) {
         <p-floatlabel class="w-full" variant="on">
             <p-select inputId="type" [options]="filtereContentTypes()" optionLabel="label" optionValue="value" [formControl]="contentTypeControl" appendTo="body" fluid />
@@ -11,6 +11,12 @@
         }
         @case ('playlist') {
             <app-playlist-filter (filterChange)="onFilterChange($event)" />
+        }
+        @case ('design') {
+            <app-filters (filterChange)="onFilterChange($event)" />
+        }
+        @case ('clipart') {
+            <app-filters (filterChange)="onFilterChange($event)" />
         }
         @case ('schedule') {
             <app-schedule-filter (filterChange)="onFilterChange($event)" />
@@ -35,29 +41,34 @@
                     <th style="width: 3rem"></th>
                     <th>Name</th>
                     <th>
-                        @if (contentTypeControl.value !== 'schedule') { Duration }
+                        @if (!['schedule', 'clipart'].includes(contentTypeControl.value)) { Duration }
+                        @else if (['clipart'].includes(contentTypeControl.value)) { Preview }
                         @else { Description }
                     </th>
                 </tr>
             </ng-template>
             <ng-template #body let-item>
-                <tr [pSelectableRow]="item">
+                <tr class="text-sm" [pSelectableRow]="item" [pSelectableRowDisabled]="!isSelectable">
                     <td>
-                        <div class="text-center">
-                            @if (selectionMode === 'multiple') {
-                                <p-tableCheckbox [value]="item" />
-                            } @else {
-                                <p-tableRadioButton [value]="item" />
-                            }
-                        </div>
+                        @if (isSelectable) {
+                            <div class="text-center">
+                                @if (selectionMode === 'multiple') {
+                                    <p-tableCheckbox [value]="item" />
+                                } @else {
+                                    <p-tableRadioButton [value]="item" />
+                                }
+                            </div>
+                        } @else {
+                            <div class="text-center">
+                                <p-button (onClick)="onSelectionChange(item)" icon="pi pi-plus" severity="success" size="small" pTooltip="Select" tooltipPosition="bottom" />
+                            </div>
+                        }
                     </td>
                     <td><p class="line-clamp-1">{{ item.name }}</p></td>
                     <td>
-                        @if (contentTypeControl.value !== 'schedule') {
-                            {{ utils.timeConversion(item.duration) }}
-                        } @else {
-                            {{ item.description }}
-                        }
+                        @if (!['schedule', 'clipart'].includes(contentTypeControl.value)) { {{ utils.timeConversion(item.duration) }} } 
+                        @else if (['clipart'].includes(contentTypeControl.value)) { <img [src]="item.link" [alt]="item.name" class="w-15"> }
+                        @else { {{ item.description }} }
                     </td>
                 </tr>
             </ng-template>

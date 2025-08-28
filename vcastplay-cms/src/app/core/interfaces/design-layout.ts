@@ -7,12 +7,14 @@ export interface DesignLayout {
     description: string;
     type: string;
     canvas: any;
+    thumbnail: string | null;
     htmlLayers?: any;
     duration: number;
     color: string;
     status: string;
     approvedInfo?: ApprovedInfo;
     isActive: boolean;
+    hasPlaylist: boolean;
     screen?: Screen;
     createdOn: Date;
     updatedOn: Date;

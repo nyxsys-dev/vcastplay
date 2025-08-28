@@ -6,16 +6,16 @@ import { AssetsService } from '../../../core/services/assets.service';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { Assets } from '../../../core/interfaces/assets';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { PlaylistService } from '../../../core/services/playlist.service';
-import { Playlist } from '../../../core/interfaces/playlist';
+import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
 
 @Component({
   selector: 'app-asset-list',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, PreviewAssetsComponent ],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss',
-  providers: [ ConfirmationService, MessageService ]
+  providers: [ MessageService ]
 })
 export class AssetListComponent {
 
