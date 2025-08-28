@@ -1,18 +1,23 @@
-<div class="flex h-80 md:h-full w-full justify-center items-center">
+<!-- <div class="flex h-80 md:h-full w-full justify-center items-center">
     <div class="relative transition-all duration-{{content().currentTransition()?.speed}} ease-in-out" [ngClass]="getTransitionClasses()">
-        <ng-container *ngIf="content().currentContent() as content">
-            @switch (content.type) {
+            @switch (content().currentContent().type) {
                 @case ('playlist') {
-                    <app-preview-playlist [playlist]="content" />
+                    <ng-container *ngIf="content().currentContent() as content">
+                        <app-preview-playlist [playlist]="content" />
+                    </ng-container>
                 }
                 @case ('design') {
-                    <app-preview-design-layout />
+                    <ng-container *ngIf="content().currentContent() as content">
+                        <app-preview-design-layout [designLayout]="content" />
+                    </ng-container>
                 }
                 @default {
-                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
-                        [currentContent]="content" (timeUpdate)="onProgressUpdate(content().index, $event)" [autoPlay]="true" />
+                    <ng-container *ngIf="content().currentContent() as content">
+                        <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
+                            [currentContent]="content" (timeUpdate)="onProgressUpdate(content().index, $event)" [autoPlay]="true" />
+                    </ng-container>
                 }
             }
-        </ng-container>
     </div>
-</div>
+</div> -->
+<ng-container *ngIf="content().currentContent() as content"><app-preview-content-renderer [content]="content" /></ng-container>

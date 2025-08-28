@@ -49,7 +49,7 @@ export class SchedulesContentListComponent {
       return
     };
 
-    this.selectedContent.set(event);
+    this.selectedContent.set(event);    
     
     const { start, end, allDay } = this.calendarSelectedDate();
     const startDate = moment(start);

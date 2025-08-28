@@ -1,5 +1,6 @@
 <div class="flex flex-col gap-3 pt-2 h-full">
-    <app-content-selection #contents (contentType)="onContentTypeChange($event)" [selectionContent]="selectedContent" (selectedContents)="onSelectionChange($event)" />
+    <app-content-selection #contents [selectedTypes]="['asset', 'playlist', 'design']" [includeDesignLayoutWithPlaylist]="true"
+        (contentType)="onContentTypeChange($event)" [selectionContent]="selectedContent" (selectedContents)="onSelectionChange($event)" />
 
     <p-fieldset legend="Schedule" [formGroup]="contentItemForm">
         <div class="flex flex-col gap-3">
@@ -13,9 +14,9 @@
                 </p-floatlabel>
                 <p-floatlabel variant="on">
                     <p-datepicker inputId="startTime" formControlName="start" [timeOnly]="true" appendTo="body" readonlyInput (onSelect)="onStartDateChange($event, true)"
-                        hourFormat="24" stepMinute="5" stepSecond="5" [iconDisplay]="'input'" showOnFocus showSeconds showIcon fluid>
+                        hourFormat="24" stepMinute="5" stepSecond="5" [iconDisplay]="'input'" [showOnFocus]="!formcontrol('allDay').value" showSeconds showIcon fluid>
                         <ng-template #inputicon let-clickCallBack="clickCallBack">
-                            <i class="pi pi-clock" (click)="clickCallBack($event)"></i>
+                            <i class="pi pi-clock"></i>
                         </ng-template>
                     </p-datepicker>
                     <label for="startTime">Start Time*</label>
@@ -30,7 +31,7 @@
                         [minDate]="calendarDateRange()?.start" (onSelect)="onEndDateChange($event)" showIcon fluid />
                     <label for="endDate">End Date*</label>
                 </p-floatlabel>
-                <p-floatlabel variant="on">
+                <p-floatlabel variant="on"  >
                     <p-datepicker inputId="endTime" formControlName="end" [timeOnly]="true" appendTo="body" [showOnFocus]="false" readonlyInput
                         hourFormat="24" stepMinute="5" stepSecond="5" [iconDisplay]="'input'" [showSeconds]="true" showIcon fluid>
                         <ng-template #inputicon let-clickCallBack="clickCallBack">

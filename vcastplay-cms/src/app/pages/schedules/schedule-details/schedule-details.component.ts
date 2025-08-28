@@ -14,14 +14,15 @@ import moment from 'moment-timezone';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { SchedulesContentListComponent } from '../schedules-content-list/schedules-content-list.component';
 import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
-import { PreviewPlaylistComponent } from '../../../components/preview-playlist/preview-playlist.component';
+import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player/playlist-main-player.component';
+import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';
+import { PreviewPlaylistComponent } from "../../../components/preview-playlist/preview-playlist.component";
 
 @Component({
   selector: 'app-schedule-details',
-  imports: [ PrimengUiModule, ComponentsModule, PreviewAssetsComponent, PreviewPlaylistComponent ],
+  imports: [PrimengUiModule, ComponentsModule, PreviewAssetsComponent, PlaylistMainPlayerComponent, PreviewDesignLayoutComponent, PreviewPlaylistComponent],
   templateUrl: './schedule-details.component.html',
   styleUrl: './schedule-details.component.scss',
-  providers: [ MessageService ]
 })
 export class ScheduleDetailsComponent {
 

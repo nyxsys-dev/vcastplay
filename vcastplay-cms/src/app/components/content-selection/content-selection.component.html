@@ -22,7 +22,8 @@
             <app-schedule-filter (filterChange)="onFilterChange($event)" />
         }
     }
-    <div class="border border-[var(--p-surface-300)] rounded-lg h-[220px]">
+
+    <div class="border border-[var(--p-surface-300)] rounded-lg flex-1 min-h-[200px]">
         <p-table
             #contentTable
             [value]="filteredContentLists()"
@@ -30,7 +31,7 @@
             (selectionChange)="onSelectionChange($event)"
             dataKey="id"
             [scrollable]="true" 
-            scrollHeight="220px" 
+            scrollHeight="200px"
             [selectionMode]="selectionMode"
             size="small"
             stripedRows
@@ -48,7 +49,7 @@
                 </tr>
             </ng-template>
             <ng-template #body let-item>
-                <tr class="text-sm" [pSelectableRow]="item" [pSelectableRowDisabled]="!isSelectable">
+                <tr [pSelectableRow]="item" [pSelectableRowDisabled]="!isSelectable">
                     <td>
                         @if (isSelectable) {
                             <div class="text-center">
@@ -64,7 +65,14 @@
                             </div>
                         }
                     </td>
-                    <td><p class="line-clamp-1">{{ item.name }}</p></td>
+                    <td>
+                        <div class="flex flex-col">
+                            <p class="line-clamp-1">{{ item.name }}</p>
+                            @if (['asset'].includes(contentTypeControl.value)) {
+                                <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
+                            }
+                        </div>
+                    </td>
                     <td>
                         @if (!['schedule', 'clipart'].includes(contentTypeControl.value)) { {{ utils.timeConversion(item.duration) }} } 
                         @else if (['clipart'].includes(contentTypeControl.value)) { <img [src]="item.link" [alt]="item.name" class="w-15"> }

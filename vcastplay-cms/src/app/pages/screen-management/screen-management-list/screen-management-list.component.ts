@@ -13,7 +13,6 @@ import { BroadcastService } from '../../../core/services/broadcast.service';
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './screen-management-list.component.html',
   styleUrl: './screen-management-list.component.scss',
-  providers: [ ConfirmationService, MessageService ]
 })
 export class ScreenManagementListComponent {
 

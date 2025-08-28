@@ -11,7 +11,6 @@ import { RoleService } from '../../../core/services/role.service';
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
-  providers: [ ConfirmationService, MessageService ],
 })
 export class ProfileComponent {
   

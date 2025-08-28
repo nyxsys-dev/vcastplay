@@ -15,7 +15,6 @@ import { PreviewAssetsComponent } from '../../../components/preview-assets/previ
   imports: [ PrimengUiModule, ComponentsModule, PreviewAssetsComponent ],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss',
-  providers: [ MessageService ]
 })
 export class AssetListComponent {
 

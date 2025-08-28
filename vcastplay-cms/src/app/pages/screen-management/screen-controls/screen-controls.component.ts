@@ -42,10 +42,6 @@ export class ScreenControlsComponent {
     this.selectedContentForm.reset();
   }
 
-  onClickToggleControls() { 
-    this.screenService.toggleControls.set(!this.screenService.toggleControls()); 
-  }
-
   onClickOpenScreen() {
     const selectedScreens: Screen[] = this.selectMultipleScreens();
     if (selectedScreens.length == 0) {

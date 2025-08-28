@@ -102,5 +102,8 @@
     </ng-template>
 </p-popover>
 
-<p-toast />
-<p-confirmdialog />
+<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" appendTo="body" modal>
+    <ng-container *ngIf="selectedDesign() as design">
+        <app-preview-design-layout [designLayout]="design" [isViewOnly]="true"></app-preview-design-layout>
+    </ng-container>
+</p-dialog>

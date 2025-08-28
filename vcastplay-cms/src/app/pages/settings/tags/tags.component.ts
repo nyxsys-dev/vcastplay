@@ -11,7 +11,6 @@ import { TagService } from '../../../core/services/tag.service';
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './tags.component.html',
   styleUrl: './tags.component.scss',
-  providers: [ ConfirmationService, MessageService ]
 })
 export class TagsComponent {
 

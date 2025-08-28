@@ -16,7 +16,6 @@ import { BreadcrumbsComponent } from '../../../components/breadcrumbs/breadcrumb
   imports: [ PrimengUiModule, BreadcrumbsComponent, AssetScheduleComponent, AudienceTagFiltersComponent, PreviewAssetsComponent ],
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.scss',
-  providers: [ MessageService ]
 })
 export class AssetDetailsComponent {
 

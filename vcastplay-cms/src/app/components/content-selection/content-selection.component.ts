@@ -24,6 +24,7 @@ export class ContentSelectionComponent {
   @Input() selectionMode: 'single' | 'multiple' = 'single';
   @Input() selectionContent: any;
   @Input() isSelectable: boolean = true;
+  @Input() includeDesignLayoutWithPlaylist: boolean = false;
 
   @Output() contentType = new EventEmitter<any>();
   @Output() selectedContents = new EventEmitter<any>();
@@ -58,7 +59,8 @@ export class ContentSelectionComponent {
       const matchIsAuto = isAuto == null || content.isAuto == isAuto;
       const matchHasPlaylist = !content.hasPlaylist;
 
-      return matchKeywords && matchStatus && matchCategory && matchSubCategory && matchType && matchOrientation && matchIsAuto && matchHasPlaylist;
+      if (this.includeDesignLayoutWithPlaylist) return matchKeywords && matchStatus && matchCategory && matchSubCategory && matchType && matchOrientation && matchIsAuto;
+      else return matchKeywords && matchStatus && matchCategory && matchSubCategory && matchType && matchOrientation && matchIsAuto && matchHasPlaylist;
     })
 
     return filteredContents;

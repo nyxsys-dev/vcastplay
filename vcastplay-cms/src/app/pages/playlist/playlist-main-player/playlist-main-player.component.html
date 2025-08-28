@@ -2,15 +2,13 @@
     <div class="relative transition-all duration-{{content().currentTransition()?.speed}} ease-in-out" [ngClass]="getTransitionClasses()">
         <ng-container *ngIf="content().currentContent() as content">
             @switch (content.type) {
-                @case ('playlist') {
-                    <app-preview-playlist class="h-full w-full" [playlist]="content" />
-                }
                 @case ('design') {
                     <app-preview-design-layout class="absolute h-full w-full scale-55" [designLayout]="content" />
                 }
                 @default {
-                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
-                        [currentContent]="content" (timeUpdate)="onProgressUpdate(content().index, $event)" [autoPlay]="true" />
+                    <app-preview-content-renderer class="absolute h-full w-full" [content]="content" />
+                    <!-- <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
+                        [currentContent]="content" (timeUpdate)="onProgressUpdate(content().index, $event)" [autoPlay]="true" /> -->
                 }
             }
         </ng-container>

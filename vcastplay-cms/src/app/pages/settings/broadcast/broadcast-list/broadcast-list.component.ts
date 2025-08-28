@@ -12,7 +12,6 @@ import { ScreenMessage } from '../../../../core/interfaces/screen';
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './broadcast-list.component.html',
   styleUrl: './broadcast-list.component.scss',
-  providers: [ ConfirmationService, MessageService ]
 })
 export class BroadcastListComponent {
 

@@ -34,6 +34,7 @@ export class DesignLayoutService {
   showApprove = signal<boolean>(false);
   showCanvasSize = signal<boolean>(false);
   showContents = signal<boolean>(false);
+  showPreview = signal<boolean>(false);
 
   DEFAULT_SCALE = signal<number>(0.45);
   SELECTION_STYLE = signal<any>({
@@ -235,7 +236,7 @@ export class DesignLayoutService {
     /**CALL POST API */
   }
 
-  onEditDesign(canvasElement: HTMLCanvasElement, design: DesignLayout) {
+  onEditDesign(canvasElement: HTMLCanvasElement, design: DesignLayout, isViewOnly: boolean = false) {
     const { screen, canvas }: any = design;
     const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
     
@@ -244,11 +245,9 @@ export class DesignLayoutService {
       width: width * this.DEFAULT_SCALE(), 
       height: height * this.DEFAULT_SCALE(), 
       backgroundColor: canvasData.background,
-      selection: false,
       preserveObjectStacking: true,
     });
     
-
     this.setCanvas(newCanvas);
     newCanvas.loadFromJSON(canvasData, () => {
       setTimeout(() => {
@@ -272,6 +271,12 @@ export class DesignLayoutService {
           }
         });
         
+        if (isViewOnly) {
+          newCanvas.selection = false;
+          newCanvas.skipTargetFind = true;
+          newCanvas.requestRenderAll();
+        }
+
         this.registerCanvasEvents(newCanvas);
         this.registerAlignmentGuides(newCanvas);
         if (this.canvasHTMLLayers().length > 0) this.syncDivsWithFabric(newCanvas);

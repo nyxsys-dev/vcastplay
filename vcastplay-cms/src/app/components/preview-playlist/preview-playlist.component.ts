@@ -2,14 +2,14 @@ import { Component, inject, Input, signal } from '@angular/core';
 import { ContentState, Playlist } from '../../core/interfaces/playlist';
 import { PlaylistService } from '../../core/services/playlist.service';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
-import { PreviewDesignLayoutComponent } from '../preview-design-layout/preview-design-layout.component';
-import { PreviewAssetsComponent } from '../preview-assets/preview-assets.component';
+import { PreviewContentRendererComponent } from '../preview-content-renderer/preview-content-renderer.component';
 
 @Component({
   selector: 'app-preview-playlist',
-  imports: [ PrimengUiModule, PreviewAssetsComponent, PreviewDesignLayoutComponent ],
+  imports: [ PrimengUiModule, PreviewContentRendererComponent ],
   templateUrl: './preview-playlist.component.html',
   styleUrl: './preview-playlist.component.scss',
+  standalone: true
 })
 export class PreviewPlaylistComponent {
 

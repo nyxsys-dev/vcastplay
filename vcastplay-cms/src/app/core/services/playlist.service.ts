@@ -174,7 +174,7 @@ export class PlaylistService {
           break;
       }
 
-      console.log("Current Playing:", playlist.name, "->", item);
+      console.log("Current Playing:", item.name);
       
       state.timeoutId = setTimeout(() => {
         const nextIndex = (state.index + 1) % contents.length; // Loop back to 0 after last item

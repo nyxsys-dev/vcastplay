@@ -11,7 +11,6 @@ import { RoleService } from '../../../core/services/role.service';
   imports: [ PrimengUiModule, ComponentsModule,  ],
   templateUrl: './roles.component.html',
   styleUrl: './roles.component.scss',
-  providers: [ ConfirmationService, MessageService ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RolesComponent {
@@ -84,7 +83,7 @@ export class RolesComponent {
       },
       accept: () => {       
         this.roleService.onSaveRole(this.roleForm.value);
-        this.message.add({ severity:'success', summary: 'Success', detail: 'User saved successfully!' });
+        this.message.add({ severity:'success', summary: 'Success', detail: 'Role saved successfully!' });
         this.showDialog.set(false);
         this.roleForm.reset();
       },
@@ -98,7 +97,7 @@ export class RolesComponent {
   onClickDelete(role: Roles, event: Event) {
     this.confirmation.confirm({
       target: event.target as EventTarget,
-      message: 'Do you want to delete this user?',
+      message: 'Do you want to delete this role?',
       closable: true,
       closeOnEscape: true,
       header: 'Danger Zone',
@@ -114,7 +113,7 @@ export class RolesComponent {
       },
       accept: () => {
         this.roleService.onDeleteRole(role);
-        this.message.add({ severity:'success', summary: 'Success', detail: 'User deleted successfully!' });
+        this.message.add({ severity:'success', summary: 'Success', detail: 'Role deleted successfully!' });
       },
       reject: () => { }
     })

@@ -13,7 +13,6 @@ import { TagService } from '../../../core/services/tag.service';
   imports: [ PrimengUiModule, ComponentsModule,  ],
   templateUrl: './screen-details.component.html',
   styleUrl: './screen-details.component.scss',
-  providers: [ ConfirmationService, MessageService ]
 
 })
 export class ScreenDetailsComponent {

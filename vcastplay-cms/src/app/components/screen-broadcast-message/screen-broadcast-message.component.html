@@ -6,6 +6,7 @@
     dataKey="id"
     [scrollable]="true" 
     scrollHeight="300px" 
+    selectionMode="single"
     size="small"
     stripedRows
 >
@@ -17,7 +18,7 @@
         </tr>
     </ng-template>
     <ng-template #body let-item>
-        <tr>
+        <tr [pSelectableRow]="item">
             <td>
                 <div class="text-center"><p-tableRadioButton [value]="item" /></div>
             </td>

@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { AuthService } from '../../../core/services/auth.service';
-import { MessageService } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
 import { StorageService } from '../../../core/services/storage.service';
 
@@ -10,7 +9,7 @@ import { StorageService } from '../../../core/services/storage.service';
   imports: [ PrimengUiModule ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  providers: [ AuthService, MessageService ]
+  providers: [ AuthService ]
 })
 export class LoginComponent {
 

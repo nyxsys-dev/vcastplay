@@ -10,13 +10,13 @@ import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { v7 as uuidv7 } from 'uuid';
 import moment from 'moment';
+import { PlaylistMainPlayerComponent } from '../playlist-main-player/playlist-main-player.component';
 
 @Component({
   selector: 'app-playlist-details',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, PlaylistMainPlayerComponent ],
   templateUrl: './playlist-details.component.html',
   styleUrl: './playlist-details.component.scss',
-  providers: [ MessageService ]
 })
 export class PlaylistDetailsComponent {
   

@@ -9,6 +9,7 @@ import { AssetsService } from './assets.service';
 import { PlaylistService } from './playlist.service';
 import { SelectOption } from '../interfaces/general';
 import _ from 'lodash';
+import { DesignLayoutService } from './design-layout.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,7 @@ export class SchedulesService {
 
   assetService = inject(AssetsService);
   playlistService = inject(PlaylistService);
+  designlayoutService = inject(DesignLayoutService);
 
   private scheduleSignal = signal<Schedule[]>([]);
   schedules = computed(() => this.scheduleSignal());
@@ -329,8 +331,9 @@ export class SchedulesService {
           this.selectedContent.set({ ...playlist, eventId });
         }
         break;
-      default:
-        this.selectedContent.set(null);
+      case 'design':
+        const design = this.designlayoutService.onGetDesigns().find(item => item.id == id);
+        if (design) this.selectedContent.set({ ...design, eventId });
         break;
     }    
   }

@@ -17,7 +17,6 @@
         </ng-template>
         <div class="grid grid-cols-1 md:grid-cols-12 gap-5 h-full mt-2">
             <div class="col-span-1 md:col-span-6 xl:col-span-8 flex flex-col gap-2">
-
                 <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4">
                     <div class="col-span-1 md:col-span-3">
                         <p-floatlabel variant="on">
@@ -70,7 +69,7 @@
                     </div>
                 </div> -->
                 <div class="flex flex-col h-80 md:h-full">
-                    <app-content-selection #contents [selectedTypes]="['asset', 'design']" [isSelectable]="false" (selectedContents)="onSelectionChange($event)" />
+                    <app-content-selection class="flex-1" #contents [selectedTypes]="['asset', 'design']" [isSelectable]="false" (selectedContents)="onSelectionChange($event)" />
                 </div>
             </div>
         </div>
@@ -108,5 +107,3 @@
         </ng-template>
     </p-card>
 </div>
-
-<p-toast />

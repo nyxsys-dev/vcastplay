@@ -12,7 +12,6 @@ import { Schedule } from '../../../core/interfaces/schedules';
   imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './schedule-list.component.html',
   styleUrl: './schedule-list.component.scss',
-  providers: [ ConfirmationService, MessageService ]
 })
 export class ScheduleListComponent {
 

@@ -1,3 +1,19 @@
-<div class="relative flex items-center justify-center h-full w-full">
+<!-- <div class="relative flex items-center justify-center h-full w-full">
     <canvas #canvas></canvas>
+</div> -->
+
+
+<div #canvasContainer class="relative">
+    <canvas #canvas></canvas>
+
+    @for (layer of canvasHTMLLayers(); track $index) {
+        <div [id]="layer.id" class="absolute origin-top-left bg-aqua pointer-events-none flex items-center justify-center"
+            [style.top.px]="layer.top" [style.left.px]="layer.left"
+            [style.width.px]="layer.width" [style.height.px]="layer.height" [style.transform]="'rotate(' + layer.rotation + 'deg)'">
+            
+            <div class="relative flex-1 flex h-full w-full">
+                <app-preview-content-renderer [content]="layer.content" />
+            </div>
+        </div>
+    }
 </div>

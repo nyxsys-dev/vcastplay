@@ -7,14 +7,13 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { Playlist } from '../../../core/interfaces/playlist';
 import { Router } from '@angular/router';
 import { Menu } from 'primeng/menu';
-import { isNull } from 'lodash';
+import { PlaylistMainPlayerComponent } from '../playlist-main-player/playlist-main-player.component';
 
 @Component({
   selector: 'app-playlist-list',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, PlaylistMainPlayerComponent ],
   templateUrl: './playlist-list.component.html',
   styleUrl: './playlist-list.component.scss',
-  providers: [ MessageService, ConfirmationService ]
 })
 export class PlaylistListComponent {
 

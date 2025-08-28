@@ -94,9 +94,19 @@
             </div>
         }
         @case ('playlist') {
+            <ng-container *ngIf="playlistForm?.valid as playlist">
+                <div class="flex h-full md:h-100">
+                    <app-playlist-main-player class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
+                        [playlist]="playlistForm.value" />
+                </div>
+            </ng-container>
+        }
+        @case ('design') {
             <div class="flex h-full md:h-100">
-                <app-preview-playlist class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
-                    [playlist]="playlistForm.value" />
+                <ng-container *ngIf="selectedContent() as content">
+                    <app-preview-design-layout class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
+                        [designLayout]="content" [isViewOnly]="true" />
+                </ng-container>
             </div>
         }
     }
@@ -136,5 +146,3 @@
 </p-dialog>
 
 <p-menu #addOptions [model]="itemMenu" [popup]="true" appendTo="body" />
-
-<p-toast />

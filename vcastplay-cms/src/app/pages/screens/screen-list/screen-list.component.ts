@@ -13,7 +13,6 @@ import _ from  'lodash';
   imports: [ PrimengUiModule, ComponentsModule, ScreenListItemComponent ],
   templateUrl: './screen-list.component.html',
   styleUrl: './screen-list.component.scss',
-  providers: [ ConfirmationService, MessageService ],
 })
 export class ScreenListComponent {
 

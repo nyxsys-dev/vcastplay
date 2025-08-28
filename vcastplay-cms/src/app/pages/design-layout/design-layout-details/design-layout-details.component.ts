@@ -15,7 +15,6 @@ import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player
   imports: [ PrimengUiModule, ComponentsModule, PlaylistMainPlayerComponent ],
   templateUrl: './design-layout-details.component.html',
   styleUrl: './design-layout-details.component.scss',
-  providers: [ MessageService ]
 })
 export class DesignLayoutDetailsComponent {
 

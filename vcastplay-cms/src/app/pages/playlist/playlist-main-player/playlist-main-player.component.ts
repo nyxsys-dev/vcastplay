@@ -3,13 +3,12 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { ContentState, Playlist } from '../../../core/interfaces/playlist';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
+import { PreviewContentRendererComponent } from '../../../components/preview-content-renderer/preview-content-renderer.component';
 import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';
-import { PreviewPlaylistComponent } from '../../../components/preview-playlist/preview-playlist.component';
 
 @Component({
   selector: 'app-playlist-main-player',
-  imports: [ PrimengUiModule, ComponentsModule, PreviewAssetsComponent, PreviewDesignLayoutComponent, PreviewPlaylistComponent ],
+  imports: [ PrimengUiModule, ComponentsModule, PreviewContentRendererComponent, PreviewDesignLayoutComponent ],
   templateUrl: './playlist-main-player.component.html',
   styleUrl: './playlist-main-player.component.scss'
 })

@@ -17,8 +17,9 @@ import { provideHttpClient } from '@angular/common/http';
 // import * as L from 'leaflet';
 import 'leaflet';
 import 'leaflet.markercluster';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageModule } from 'primeng/message';
 
 echarts.use([
   PieChart,
@@ -34,7 +35,7 @@ echarts.use([
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    importProvidersFrom([ ConfirmDialogModule ]),
+    importProvidersFrom([ ConfirmDialogModule, MessageModule ]),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'top' }) ),
     provideHttpClient(),
@@ -49,5 +50,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideEchartsCore({ echarts }),
     ConfirmationService,
+    MessageService,
   ]
 };

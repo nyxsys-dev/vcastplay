@@ -7,13 +7,13 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { DesignLayout } from '../../../core/interfaces/design-layout';
 import { Menu } from 'primeng/menu';
 import { Router } from '@angular/router';
+import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';
 
 @Component({
   selector: 'app-design-layout-list',
-  imports: [ PrimengUiModule, ComponentsModule ],
+  imports: [ PrimengUiModule, ComponentsModule, PreviewDesignLayoutComponent ],
   templateUrl: './design-layout-list.component.html',
   styleUrl: './design-layout-list.component.scss',
-  providers: [ ConfirmationService, MessageService ]
 })
 export class DesignLayoutListComponent {
 
@@ -22,8 +22,8 @@ export class DesignLayoutListComponent {
     { 
       label: 'Options',
       items: [
+        { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => { this.onClickPreview(this.selectedDesign()); } },
         { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate(this.selectedDesign()) },
-        { label: 'Add to Playlist', icon: 'pi pi-list', command: ($event: any) => this.onClickAddToPlaylist(this.selectedDesign(), $event) },
         { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete(this.selectedDesign(), $event) }  
       ]
     }
@@ -89,8 +89,6 @@ export class DesignLayoutListComponent {
     this.designLayoutService.onDuplicateDesign(info);
     this.message.add({ severity:'success', summary: 'Success', detail: 'Design duplicated successfully!' });
   }
-
-  onClickAddToPlaylist(design: any, event: Event) { }
   
   onClickOptions(event: Event, design: DesignLayout, menu: Menu) {
     this.selectedDesign.set(design);
@@ -109,9 +107,15 @@ export class DesignLayoutListComponent {
     }
   }
 
+  onClickPreview(design: any) {
+    this.showPreview.set(true);
+    this.selectedDesign.set(design);
+  }
+
   get rows() { return this.designLayoutService.rows; }
   get isEditMode() { return this.designLayoutService.isEditMode; }
   get designForm() { return this.designLayoutService.designForm; }
+  get showPreview() { return this.designLayoutService.showPreview; }
   get showApprove() { return this.designLayoutService.showApprove; }
   get totalRecords() { return this.designLayoutService.totalRecords; }
   get loadingSignal() { return this.designLayoutService.loadingSignal; }
