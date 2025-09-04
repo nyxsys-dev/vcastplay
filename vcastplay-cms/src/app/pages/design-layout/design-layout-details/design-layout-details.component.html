@@ -49,7 +49,6 @@
                             <p-button (onClick)="showContents.set(false)" class="ml-auto" icon="pi pi-times" size="small" text />
                         </div>
                     </ng-template>
-                    <!-- <app-design-layout-contents /> -->
                      
                     <app-content-selection #contents [selectedTypes]="['asset', 'playlist', 'clipart']" [isSelectable]="false" 
                         (selectedContents)="onSelectedContentChange($event)" />

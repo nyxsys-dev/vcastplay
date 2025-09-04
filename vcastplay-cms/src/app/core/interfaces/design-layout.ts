@@ -16,6 +16,8 @@ export interface DesignLayout {
     isActive: boolean;
     hasPlaylist: boolean;
     screen?: Screen;
+    contentId?: any;
+    preloaded?: any;
     createdOn: Date;
     updatedOn: Date;
 }

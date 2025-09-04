@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minimal Weather Widget</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #6dd5ed, #2193b0);
+      color: #fff;
+    }
+    .weather-widget {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 1rem;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+    .current {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .current .icon {
+      font-size: 4rem;
+      margin-bottom: .5rem;
+    }
+    .current .temp {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+    .current .desc {
+      margin-top: .25rem;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .date {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.85;
+    }
+    .forecast {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .day-card {
+      flex: 1;
+      min-width: 70px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 0.75rem;
+      padding: .75rem;
+      text-align: center;
+    }
+    .day-card .f-icon {
+      font-size: 1.5rem;
+      margin: .25rem 0;
+    }
+    .day-card .f-temp {
+      font-size: 0.9rem;
+      opacity: 0.95;
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-widget">
+    <div class="current">
+      <div class="icon">☀️</div>
+      <div class="temp">--°C</div>
+      <div class="desc">Loading...</div>
+    </div>
+    <div class="date">--</div>
+    <div class="forecast">Loading forecast...</div>
+  </div>
+
+  <script>
+    const iconEl = document.querySelector('.current .icon');
+    const tempEl = document.querySelector('.current .temp');
+    const descEl = document.querySelector('.current .desc');
+    const dateEl = document.querySelector('.date');
+    const forecastEl = document.querySelector('.forecast');
+
+    const icons = {
+      0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌫️", 51: "🌦️", 61: "🌧️", 71: "❄️", 95: "⛈️"
+    };
+
+    async function fetchWeather() {
+      try {
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=14.6&longitude=121.0&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto");
+        const data = await res.json();
+        if (data.current_weather) {
+          const temp = data.current_weather.temperature;
+          const code = data.current_weather.weathercode;
+
+          iconEl.textContent = icons[code] || "☀️";
+          tempEl.textContent = `${temp}°C`;
+          descEl.textContent = `Wind: ${data.current_weather.windspeed} km/h`;
+
+          const now = new Date();
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+          dateEl.textContent = now.toLocaleDateString(undefined, options);
+
+          if (data.daily) {
+            forecastEl.innerHTML = "";
+            const days = data.daily.time;
+            const codes = data.daily.weathercode;
+            const max = data.daily.temperature_2m_max;
+            const min = data.daily.temperature_2m_min;
+
+            for (let i = 0; i < Math.min(5, days.length); i++) {
+              const date = new Date(days[i]);
+              const dayName = date.toLocaleDateString(undefined, { weekday: 'short' });
+              const icon = icons[codes[i]] || "☀️";
+              const maxT = max[i];
+              const minT = min[i];
+
+              const item = document.createElement('div');
+              item.className = 'day-card';
+              item.innerHTML = `
+                <div>${dayName}</div>
+                <div class="f-icon">${icon}</div>
+                <div class="f-temp">${minT}°C / ${maxT}°C</div>
+              `;
+              forecastEl.appendChild(item);
+            }
+          }
+        } else {
+          tempEl.textContent = "--";
+          descEl.textContent = "Weather unavailable";
+          forecastEl.textContent = "Forecast unavailable";
+        }
+      } catch (e) {
+        tempEl.textContent = "--";
+        descEl.textContent = "Weather error";
+        forecastEl.textContent = "Forecast error";
+      }
+    }
+
+    fetchWeather();
+    setInterval(fetchWeather, 600000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Digital Clock</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI Variable Display", "Segoe UI", Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(to right, #141E30, #243B55);
+      color: #fff;
+      text-align: center;
+    }
+    .time {
+      font-size: 5rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    .date {
+      margin-top: 0.5rem;
+      font-size: 1.4rem;
+      color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="time">--:--:--</div>
+  <div class="date">--</div>
+
+  <script>
+    const timeEl = document.querySelector('.time');
+    const dateEl = document.querySelector('.date');
+
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      timeEl.textContent = `${hours}:${minutes}:${seconds}`;
+
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      dateEl.textContent = now.toLocaleDateString(undefined, options);
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>

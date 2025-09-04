@@ -1,24 +1,30 @@
-import { Component, inject, Input, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, Input, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ContentState, Playlist } from '../../../core/interfaces/playlist';
 import { PlaylistService } from '../../../core/services/playlist.service';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { PreviewContentRendererComponent } from '../../../components/preview-content-renderer/preview-content-renderer.component';
 import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';
+import { UtilityService } from '../../../core/services/utility.service';
+import { DesignLayoutService } from '../../../core/services/design-layout.service';
+import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
 
 @Component({
   selector: 'app-playlist-main-player',
-  imports: [ PrimengUiModule, ComponentsModule, PreviewContentRendererComponent, PreviewDesignLayoutComponent ],
+  imports: [ PrimengUiModule, ComponentsModule, PreviewDesignLayoutComponent, PreviewAssetsComponent ],
   templateUrl: './playlist-main-player.component.html',
   styleUrl: './playlist-main-player.component.scss'
 })
 export class PlaylistMainPlayerComponent {
+
+  @ViewChild('mainPlayer') mainPlayer!: ElementRef<HTMLDivElement>;
 
   @Input() playlist!: Playlist;
   @Input() showControls: boolean = true;
   @Input() autoPlay: boolean = false;
   
   playlistService = inject(PlaylistService);
+  designLayoutService = inject(DesignLayoutService);
+  utils = inject(UtilityService);
 
   content = signal<ContentState>({
     index: 0,
@@ -36,9 +42,9 @@ export class PlaylistMainPlayerComponent {
   }
 
   onClickPlayPreview() {
-    if (!this.content().isPlaying()) {
+    if (!this.isPlaying()) {
       this.playlistService.onPlayContent(this.playlist);
-      this.content.set(this.playlistService.onGetCurrentContent(this.playlist.id)());      
+      this.content.set(this.playlistService.onGetCurrentContent(this.playlist.id)());
     } else {
       this.playlistService.onStopContent(this.playlist.id);
     }
@@ -54,6 +60,16 @@ export class PlaylistMainPlayerComponent {
       [`${type?.opacity ? 'opacity-100' : ''} ${type?.y ?? ''}`]: fadeIn
     };
   }
-  
+  trackById(index: number, item: any): any {
+    return { id: index, contentId: item.contentId } //item.contentId; // must be unique per item
+  }
+    
+  get isPlaying() { return this.playlistService.isPlaying; }
   get onProgressUpdate() { return this.playlistService.onProgressUpdate; }
+  get playlistContents() { return this.playlist.contents; }
+  get playlistForm() { return this.playlistService.playListForm; }
+
+  get isMobile() { return this.utils.isMobile; }
+  get isTablet() { return this.utils.isTablet; }
+  get isDesktop() { return this.utils.isDesktop; }
 }

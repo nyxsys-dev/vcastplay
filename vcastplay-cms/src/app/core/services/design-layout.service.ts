@@ -24,7 +24,6 @@ export class DesignLayoutService {
   private undoStack: any[] = [];
   private redoStack: any[] = [];
   private isRestoringState = signal<boolean>(false);
-  private canvasDefaults = signal<any>({ });
 
   private designSignal = signal<DesignLayout[]>([]);
   designs = computed(() => this.designSignal());
@@ -201,13 +200,17 @@ export class DesignLayoutService {
   onSaveDesign(design: DesignLayout) {
     this.onResetZoomCanvas();
     const canvas = this.getCanvas();
-    const htmlLayers = this.canvasHTMLLayers();
-    const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp', 'defaultState']);
-    const canvasObjects = canvasData.objects;
-    const thumbnail = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });    
+    canvas.getObjects().forEach((object: any, index: number) => { object.set('zIndex', index) });
 
+    const htmlLayers = this.canvasHTMLLayers();
+    const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp', 'defaultState', 'zIndex']);
+    const canvasObjects = canvas.getObjects(); //canvasData.objects;
+    const thumbnail = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
+    
     const curDurations: number[] = [];
-    canvasObjects.forEach((object: any) => {
+    canvasObjects.forEach((object: any, index: number) => {
+      console.log(object);
+      
       if (object.html) {
         const content: any = object.html.content;
         curDurations.push(content.duration);
@@ -215,6 +218,9 @@ export class DesignLayoutService {
       if (object.data) curDurations.push(object.data.duration);
     })
 
+    console.log(curDurations);
+    
+    
     const maxDuration = Math.max(...curDurations);
     const curDuration = maxDuration > 0 ? maxDuration : 5;
     
@@ -235,76 +241,7 @@ export class DesignLayoutService {
     this.totalRecords.set(this.designs().length);
     /**CALL POST API */
   }
-
-  onEditDesign(canvasElement: HTMLCanvasElement, design: DesignLayout, isViewOnly: boolean = false) {
-    const { screen, canvas }: any = design;
-    const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
-    
-    const canvasData = JSON.parse(canvas);    
-    const newCanvas = new fabric.Canvas(canvasElement, {
-      width: width * this.DEFAULT_SCALE(), 
-      height: height * this.DEFAULT_SCALE(), 
-      backgroundColor: canvasData.background,
-      preserveObjectStacking: true,
-    });
-    
-    this.setCanvas(newCanvas);
-    newCanvas.loadFromJSON(canvasData, () => {
-      setTimeout(() => {
-        const objects = newCanvas.getObjects();        
-        objects.forEach((obj: any, index: number) => { 
-          if (obj.html) {
-            const html: any = obj.html;
-            const alreadyExists = this.canvasHTMLLayers().find(item => item.id == html.id);            
-            if (!alreadyExists ) {
-              const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
-              const { loop, ...info } = htmlLayer.content;
-              this.canvasHTMLLayers().push(htmlLayer);
-              this.playlistService.onPlayContent(html.content)
-            }
-          } else if (obj.data) {
-            const data: any = obj.data;
-            if (data.type == 'video') { 
-              this.onAddVideoToCanvas(data, obj);
-              newCanvas.remove(obj);
-            }
-          }
-        });
-        
-        if (isViewOnly) {
-          newCanvas.selection = false;
-          newCanvas.skipTargetFind = true;
-          newCanvas.requestRenderAll();
-        }
-
-        this.registerCanvasEvents(newCanvas);
-        this.registerAlignmentGuides(newCanvas);
-        if (this.canvasHTMLLayers().length > 0) this.syncDivsWithFabric(newCanvas);
-        newCanvas.requestRenderAll();
-        
-        this.saveState();        
-      }, 50);
-    });
-  }
-
-  onDeleteDesign(design: DesignLayout) {
-    const tempData = this.designs().filter(item => item.id !== design.id);
-    this.designSignal.set([...tempData]);
-    
-    this.totalRecords.set(this.designs().length);
-    /**CALL DELETE API */
-  }
-
-  onDuplicateDesign(design: DesignLayout) {
-    const tempData = this.designs();
-    tempData.push({ ...design, id: tempData.length + 1, name: `Copy of ${design.name}`, status: 'pending', 
-      createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
-    this.designSignal.set([...tempData]);
-    
-    this.totalRecords.set(this.designs().length);
-    /**CALL POST API */
-  }
-
+  
   onCreateCanvas(canvasElement: HTMLCanvasElement, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
     const canvas = new fabric.Canvas(canvasElement, { 
       width: resolution.width * this.DEFAULT_SCALE(), 
@@ -321,6 +258,32 @@ export class DesignLayoutService {
     canvas.renderAll();
 
     this.saveState();
+  }
+
+  onEditDesign(canvasElement: HTMLCanvasElement, design: DesignLayout, isViewOnly: boolean = false) {
+    this.initCanvas(canvasElement, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly, registerEvents: true, scale: this.DEFAULT_SCALE() });
+  }
+
+  onPreloadCanvas(canvasElement: HTMLCanvasElement, design: DesignLayout) {
+    return this.initCanvas(canvasElement, design, { renderOnAddRemove: false, autoPlayVideos: false, isViewOnly: false, registerEvents: false, scale: 1 });
+  }
+
+  onDeleteDesign(design: DesignLayout) {
+    const tempData = this.designs().filter(item => item.id !== design.id);
+    this.designSignal.set([...tempData]);
+    
+    this.totalRecords.set(this.designs().length);
+    /**CALL DELETE API */
+  }
+
+  onDuplicateDesign(design: DesignLayout) {
+    const tempData = this.designs();
+    tempData.push({ ...design, id: tempData.length + 1, name: `Copy of ${design.name}`, status: 'pending', 
+      createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
+    this.designSignal.set([...tempData]);
+        
+    this.totalRecords.set(this.designs().length);
+    /**CALL POST API */
   }
 
   /**
@@ -384,23 +347,23 @@ export class DesignLayoutService {
     });
   }
 
-  onSelection() {
+  onSelection(canvas: fabric.Canvas) {
     this.onSetCanvasProps('selection', true, 'default');
-    this.onDisableLayersProps(true);
+    this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
   }
 
-  onPan() {
+  onPan(canvas: fabric.Canvas) {
     this.onSetCanvasProps('drag', false, 'grab');
     this.canvas.discardActiveObject();
-    this.onDisableLayersProps(false);
+    this.onDisableLayersProps(canvas, false);
     this.showContents.set(false);
   }
 
-  onMove() {
+  onMove(canvas: fabric.Canvas) {
     this.onSetCanvasProps('move', false, 'pointer');
     this.canvas.discardActiveObject();
-    this.onDisableLayersProps(true);
+    this.onDisableLayersProps(canvas,true);
     this.showContents.set(false);
   }
 
@@ -504,16 +467,16 @@ export class DesignLayoutService {
 
   onRemoveLayer(canvas: fabric.Canvas) {
     const activeObject = canvas.getActiveObjects();
-    if (!activeObject || activeObject.length === 0) return;
-
-    canvas.remove(...activeObject);
-
+    if (!activeObject || activeObject.length == 0) return;
+    
     activeObject.forEach((obj: any) => {
       const html = obj.html;
       if (html) {
         this.canvasHTMLLayers().splice(obj.html.index, 1);
         this.playlistService.onStopContent(html.content.id);
       }
+
+      canvas.remove(obj);
     });
 
     canvas.discardActiveObject();
@@ -583,7 +546,7 @@ export class DesignLayoutService {
    * Text, Rectangle, Image, Line, Video and HTML
    * ====================================================================================================================================
    */
-  onAddTextToCanvas(content: string = 'Enter text here', fill: string = '#000000') {
+  onAddTextToCanvas(canvas: fabric.Canvas, content: string = 'Enter text here', fill: string = '#000000') {
     this.onSetCanvasProps('text', true, 'default');
     const tempText = new fabric.FabricText(content, { fontSize: 12, fontFamily: 'Arial', fill });
 
@@ -603,12 +566,12 @@ export class DesignLayoutService {
 
     this.canvas.add(text);
     this.canvas.setActiveObject(text);
-    this.onDisableLayersProps(true);
+    this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
     this.saveState();
   }
 
-  onAddRectangleToCanvas(color: string = '#808080') {
+  onAddRectangleToCanvas(canvas: fabric.Canvas, color: string = '#808080') {
     this.onSetCanvasProps('rect', true, 'default');
     this.canvas.discardActiveObject();
     
@@ -619,13 +582,13 @@ export class DesignLayoutService {
     });
 
     this.canvas.add(rect);
-    this.onDisableLayersProps(true);
+    this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
     this.saveState();
     this.saveState();
   }
 
-  onAddShapeToCanvas(type: string, color: string = '#808080') {
+  onAddShapeToCanvas(canvas: fabric.Canvas, type: string, color: string = '#808080') {
     this.onSetCanvasProps('rect', true, 'default');
     this.canvas.discardActiveObject();
 
@@ -646,12 +609,12 @@ export class DesignLayoutService {
     }
 
     this.canvas.add(shape);
-    this.onDisableLayersProps(true);
+    this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
     this.saveState();
   }
 
-  onAddImageToCanvas(data: any) {
+  onAddImageToCanvas(canvas: fabric.Canvas, data: any) {
     const resolution: any = data?.fileDetails?.resolution ?? { width: 100, height: 100 };
     
     this.onSetCanvasProps('image', true, 'default');
@@ -661,22 +624,21 @@ export class DesignLayoutService {
     const left = Math.random() * (width - resolution.width);
     const top = Math.random() * (height - resolution.height);
     
-    fabric.FabricImage.fromURL(data.link, { }, { top, left, data }).then((image) => {
+    fabric.FabricImage.fromURL(data.link, { crossOrigin: 'anonymous' }, { top, left, data }).then((image) => {
       this.canvas.add(image);
       this.canvas.setActiveObject(image);
       this.canvas.requestRenderAll();
 
       image.set('data', data);
       image.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
-      this.onDisableLayersProps(true);
+      this.onDisableLayersProps(canvas, true);
       this.saveState();
     });
   }
 
-  onAddVideoToCanvas(data: any, fabricObject?: fabric.Object | any) {
+  onAddVideoToCanvas(canvas: fabric.Canvas, data: any, autoPlay: boolean = true, fabricObject?: fabric.Object | any) {
     const { width, height }: any = data.fileDetails.resolution;
     this.onSetCanvasProps('video', true, 'default');
-    this.canvas.discardActiveObject();
     
     const video = document.createElement('video');
     const videoSource = document.createElement('source');
@@ -688,13 +650,14 @@ export class DesignLayoutService {
     video.height = height;
     video.loop = true;
     video.muted = true;
-    video.autoplay = true;
+    video.autoplay = autoPlay;
     video.playsInline = true;
     video.crossOrigin = 'anonymous';
-    video.load();
-    video.play();
+    video.preload = 'auto';
+    // video.load();
+    // video.play();
 
-    const videoObj = new fabric.FabricImage(video, { 
+    const videoObj: any = new fabric.FabricImage(video, { 
       left: fabricObject?.left ?? 0,
       top: fabricObject?.top ?? 0,
       originX: fabricObject?.originX ?? 'top',
@@ -703,18 +666,26 @@ export class DesignLayoutService {
       scaleY: fabricObject?.scaleY ?? 0.2,
       objectCaching: false,
       data,
+      zIndex: fabricObject?.zIndex ?? 0
     });
 
-    videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
-    this.canvas.add(videoObj);
+    videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
+    // this.canvas.add(videoObj);
+    canvas.insertAt(videoObj.zIndex, videoObj);
 
-    videoObj.set('data', data);
-    this.onStartVideoRender();
-    this.onDisableLayersProps(true);
+    videoObj.set('data', { ...data, element: video });
+    
+    // ⚡ Wait until first frame is ready
+    video.addEventListener('loadeddata', () => {
+      canvas.renderAll(); // show first frame
+    });
+
+    if (autoPlay) this.onStartVideoRender(canvas);
+    this.onDisableLayersProps(canvas, true);
     this.saveState();
   }
 
-  onAddLineToCanvas(color: string = '#808080') {
+  onAddLineToCanvas(canvas: fabric.Canvas, color: string = '#808080') {
     this.onSetCanvasProps('line', true, 'default');
     this.canvas.discardActiveObject();
     const line = new fabric.Line([50, 100, 250, 100], {
@@ -727,13 +698,12 @@ export class DesignLayoutService {
     this.canvas.requestRenderAll();
 
     line.setControlsVisibility({ tl: false, tr: false, bl: false, br: false, mt: false, mb: false, });
-    this.onDisableLayersProps(true);
-    this.onDisableLayersProps(true);
+    this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
     this.saveState();
   }
 
-  onAddHTMLToCanvas(content: any) {
+  onAddHTMLToCanvas(canvas: fabric.Canvas, content: any) {
     this.onSetCanvasProps('content', true, 'default');
     const length: number = this.canvasHTMLLayers().length + 1;
     const rect = new fabric.Rect({
@@ -760,8 +730,8 @@ export class DesignLayoutService {
     rect.set('html', htmlLayer);
     this.canvas.setActiveObject(rect);
     this.canvas.requestRenderAll();
-    this.onDisableLayersProps(true);
-    // this.showContents.set(false);
+    this.onDisableLayersProps(canvas, true);
+    this.showContents.set(false);
     this.saveState();
   }
 
@@ -797,6 +767,7 @@ export class DesignLayoutService {
         this.canvas.sendObjectToBack(object);
         break;
     }
+    
     this.canvas.discardActiveObject();
     this.canvas.setActiveObject(object);
     this.canvas.requestRenderAll();
@@ -936,17 +907,46 @@ export class DesignLayoutService {
   }
 
 
-  onDisableLayersProps(value: boolean) {
-    const objects = this.canvas.getObjects();
+  onDisableLayersProps(canvas: fabric.Canvas, value: boolean) {
+    const objects = canvas.getObjects();
     objects.forEach(object => { 
       object.selectable = value; 
       object.evented = value;
     });
   }
 
-  onStartVideoRender() {
+  onPlayVideosInCanvas(canvas: fabric.Canvas) {
+    const objects = canvas.getObjects();
+    objects.forEach((object: any) => {
+      const data = object.data;
+      if (data && data?.type == 'video' && data.element instanceof HTMLVideoElement) {
+        data.element.play().catch((err: any) => {
+          console.warn('Autoplay blocked for video:', err);
+        });
+      }
+    });
+    this.onStartVideoRender(canvas);
+  }
+
+  onStopVideosInCanvas(canvas: fabric.Canvas) {
+    if (!canvas) return;
+    const objects = canvas.getObjects();
+    objects.forEach((object: any) => {
+      const data = object.data;
+      if (data && data?.type == 'video' && data.element instanceof HTMLVideoElement) {        
+        data.element.pause();
+        data.element.currentTime = 0;
+      }
+    });
+    cancelAnimationFrame(this.animFrameId);
+    this.animFrameId = 0;
+    canvas.requestRenderAll();
+  }
+
+  onStartVideoRender(canvas: fabric.Canvas) {
+    // if (this.animFrameId) return;
     const render = () => {      
-      if (this.canvas) this.canvas.requestRenderAll();
+      canvas.requestRenderAll();
       this.animFrameId = fabric.util.requestAnimFrame(render);
     }
 
@@ -1008,6 +1008,89 @@ export class DesignLayoutService {
    * Private methods insert here
    * ====================================================================================================================================
    */
+
+  private initCanvas(
+    canvasElement: HTMLCanvasElement, 
+    design: DesignLayout, 
+    options: { 
+      renderOnAddRemove: boolean, 
+      autoPlayVideos: boolean, 
+      isViewOnly?: boolean, 
+      registerEvents?: boolean 
+      scale: number
+    }
+  ) {
+    try {
+      const { screen, canvas }: any = design;
+      const [width, height] = screen.displaySettings.resolution.split('x').map(Number);
+      const canvasData = JSON.parse(canvas);
+
+      const newCanvas = new fabric.Canvas(canvasElement, {
+        width: width,
+        height: height,
+        backgroundColor: canvasData.background,
+        preserveObjectStacking: true,
+        renderOnAddRemove: options.renderOnAddRemove
+      });
+
+      if (!options.isViewOnly) this.setCanvas(newCanvas);
+
+      newCanvas.loadFromJSON(canvasData, () => {
+        setTimeout(() => {
+          const objects = newCanvas.getObjects();
+
+          // Sort objects by zIndex
+          objects.sort((a: any, b: any) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
+
+          objects.forEach((obj: any) => {
+            if (obj.html) {
+              const html: any = obj.html;
+              const alreadyExists = this.canvasHTMLLayers().find(item => item.id === html.id);
+
+              if (!alreadyExists) {
+                const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
+                this.canvasHTMLLayers().push(htmlLayer);
+                this.playlistService.onPlayContent(html.content);
+              }
+
+            } else if (obj.data) {
+              const data: any = obj.data;
+
+              if (data.type === 'video') {
+                this.onAddVideoToCanvas(newCanvas, data, options.autoPlayVideos, obj);
+                newCanvas.remove(obj);
+              }
+            }
+          });
+        }, 0);
+
+        // View-only canvas tweaks
+        if (options.isViewOnly) {
+          newCanvas.selection = false;
+          newCanvas.skipTargetFind = true;
+        }
+
+        // Register events if required
+        if (options.registerEvents) {
+          this.registerCanvasEvents(newCanvas);
+          this.registerAlignmentGuides(newCanvas);
+          if (this.canvasHTMLLayers().length > 0) {
+            this.syncDivsWithFabric(newCanvas);
+          }
+          
+          if (!options.isViewOnly) this.saveState();
+        }
+
+        newCanvas.requestRenderAll();
+      });
+
+      return newCanvas;
+    } catch (error) {
+      console.log('error on initCanvas', error);
+      return null;
+    }
+  }
+
   
   private captureState(obj: fabric.Object) {
     return {

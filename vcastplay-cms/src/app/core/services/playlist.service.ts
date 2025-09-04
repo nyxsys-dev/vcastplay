@@ -1,4 +1,4 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, Injector, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Assets } from '../interfaces/assets';
 import { ContentState, Playlist } from '../interfaces/playlist';
@@ -8,6 +8,8 @@ import { SelectOption } from '../interfaces/general';
   providedIn: 'root'
 })
 export class PlaylistService {
+
+  private injector = inject(Injector);
 
   private playlistSignal = signal<Playlist[]>([]);
   playlists = computed(() => this.playlistSignal());
@@ -20,14 +22,8 @@ export class PlaylistService {
 
   loadingSignal = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
-
-  currentIndex = signal<number>(0);
-  currentContent = signal<any | null>(null);
-  currentTransition = signal<any>(null);
-  duration = signal<number>(3000);
   isPlaying = signal<boolean>(false);
-  fadeIn = signal<boolean>(false);
-  isLooping = signal<boolean>(false);
+
   showContents = signal<boolean>(false);
   progress = signal<number>(0);
   
@@ -44,10 +40,6 @@ export class PlaylistService {
     { label: 'Manual', value: false },
     { label: 'Auto', value: true },
   ])
-
-  timeoutId: any;
-  intervalId: any;
-  gapTimeout: any;
 
   playListForm: FormGroup = new FormGroup({
     id: new FormControl(0),
@@ -103,6 +95,7 @@ export class PlaylistService {
 
   // for testing
   private states = new Map<number, ContentState>();
+  preloadContents: { [id: string]: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement } = {};
 
   constructor() { }
 
@@ -125,7 +118,9 @@ export class PlaylistService {
     }
   }
 
-  onPlayContent(playlist: Playlist) {
+  onPlayContent(playlist: Playlist) {    
+    this.isPlaying.set(true);
+
     // Register state for this playlist only
     this.registerContent(playlist.id);
     const contents = playlist.contents;  
@@ -162,6 +157,8 @@ export class PlaylistService {
         case 'audio':
         case 'text':
         case 'web':
+          this.onTriggerIntervals(state, duration);
+          break;
         case 'design':
           this.onTriggerIntervals(state, duration);
           break;
@@ -177,6 +174,7 @@ export class PlaylistService {
       console.log("Current Playing:", item.name);
       
       state.timeoutId = setTimeout(() => {
+
         const nextIndex = (state.index + 1) % contents.length; // Loop back to 0 after last item
         const isLooping = playlist.loop;
         
@@ -192,7 +190,10 @@ export class PlaylistService {
             state.index = nextIndex;
           } else {
             if (state.index + 1 >= contents.length) {
-              // Playlist completed
+              console.log('Playlist completed');
+
+              // Clear content
+              state.currentContent.set(null);
               this.onStopContent(playlist.id);
               return;
             }
@@ -201,14 +202,10 @@ export class PlaylistService {
           
           // state.fadeIn.set(true);
           // state.currentContent.set(contents[state.index]);
-
-          // Trigger content schedule
-          // this.onGetContentSchedule(contents[this.currentIndex()])
-
           playNextContent();
         }, gapDuration);
 
-      }, duration + 800);
+      }, duration);
     }
 
     playNextContent();
@@ -233,12 +230,16 @@ export class PlaylistService {
     state.timeoutId = undefined;
     state.gapTimeout = undefined;
     state.intervalId = undefined;
+
+    this.isPlaying.set(false);
   }
 
   onStopAllContents() {
     this.states.forEach((state, id) => {
       this.onStopContent(id);
     });
+
+    this.isPlaying.set(false);
   }
 
   /** Expose current content signal */
@@ -301,34 +302,26 @@ export class PlaylistService {
         },
         contents: [
           {
-            contentId: 1,
             id: 1,
+            contentId: 1,
             code: 'NYX001',
-            name: 'image (2).png',
+            name: 'pexels-photo-355465.jpeg',
             type: 'image',
-            link: 'https://picsum.photos/id/237/200/300',
-            category: 'Category 1',
-            subCategory: 'Sub-Category 1',
+            link: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg',
             fileDetails: {
               name: 'image (2).png',
               size: 55782,
               type: 'image/png',
-              orientation: 'landscape',
+              orientation: 'portrait',
               resolution: {
                 width: 326,
                 height: 195
               },
-              thumbnail: 'https://picsum.photos/id/237/200/300'
+              thumbnail: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg'
             },
-            dateRange: {
-              start: null,
-              end: null
-            },
-            weekdays: [],
-            hours: [],
             duration: 5,
             audienceTag: {
-              genders: [ 'Male' ],
+              genders: [ 'Male', 'Female' ],
               ageGroups: [],
               timeOfDays: [],
               seasonalities: [],
@@ -338,7 +331,7 @@ export class PlaylistService {
             },
             status: 'pending',
             createdOn: new Date(),
-            updatedOn: new Date()
+            updatedOn: new Date(),
           }
         ],
         status: 'pending',

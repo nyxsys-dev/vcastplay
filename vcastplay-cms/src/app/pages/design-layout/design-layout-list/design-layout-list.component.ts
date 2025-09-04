@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
@@ -22,9 +22,9 @@ export class DesignLayoutListComponent {
     { 
       label: 'Options',
       items: [
-        { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => { this.onClickPreview(this.selectedDesign()); } },
-        { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate(this.selectedDesign()) },
-        { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete(this.selectedDesign(), $event) }  
+        { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => { this.onClickPreview(this.selectedRow()); } },
+        { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate(this.selectedRow()) },
+        { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete(this.selectedRow(), $event) }  
       ]
     }
   ];
@@ -39,6 +39,8 @@ export class DesignLayoutListComponent {
     const design = this.designLayoutService.designs();
     return design;
   })
+
+  selectedRow = signal<DesignLayout | null>(null);
 
   ngOnInit() {
     this.designLayoutService.onGetDesigns();
@@ -77,6 +79,7 @@ export class DesignLayoutListComponent {
       accept: () => {
         this.designLayoutService.onDeleteDesign(design);
         this.message.add({ severity:'success', summary: 'Success', detail: 'Design deleted successfully!' });
+        this.selectedRow.set(null);
         this.selectedDesign.set(null);
         this.designForm.reset();
       },
@@ -91,7 +94,7 @@ export class DesignLayoutListComponent {
   }
   
   onClickOptions(event: Event, design: DesignLayout, menu: Menu) {
-    this.selectedDesign.set(design);
+    this.selectedRow.set(design);
     menu.toggle(event);
   }
 
@@ -110,6 +113,13 @@ export class DesignLayoutListComponent {
   onClickPreview(design: any) {
     this.showPreview.set(true);
     this.selectedDesign.set(design);
+  }
+
+  onClosePreview() {
+    this.showPreview.set(false);
+    this.selectedDesign.set(null);
+    this.designForm.reset();
+    this.designLayoutService.onExitCanvas();
   }
 
   get rows() { return this.designLayoutService.rows; }

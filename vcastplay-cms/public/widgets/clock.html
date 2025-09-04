@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clock Widget</title>
+    <style>
+    body {
+        margin: 0;
+        font-family: monospace;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #clock {
+        font-size: clamp(1.5rem, 8vw, 3rem);
+        font-weight: bold;
+        text-align: center;
+        padding: .5rem;
+    }
+    </style>
+</head>
+<body>
+    <div id="clock">00:00:00</div>
+
+    <script>
+        const clockEl = document.getElementById('clock');
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function updateClock() {
+            const now = new Date();
+            const h = now.getHours();
+            const m = now.getMinutes();
+            const s = now.getSeconds();
+            clockEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>

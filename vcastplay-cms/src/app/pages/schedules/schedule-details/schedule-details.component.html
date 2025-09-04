@@ -88,10 +88,12 @@
     styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false" [resizable]="true">
     @switch (type?.value) {
         @case('asset') {
-            <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
-                <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
-                    [currentContent]="selectedContent()" [showControls]="true" [autoPlay]="false" />
-            </div>
+            <ng-container *ngIf="selectedContent() as content">
+                <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
+                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
+                        [currentContent]="content" [showControls]="true" [autoPlay]="false" />
+                </div>
+            </ng-container>
         }
         @case ('playlist') {
             <ng-container *ngIf="playlistForm?.valid as playlist">

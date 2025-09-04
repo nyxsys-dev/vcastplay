@@ -76,9 +76,10 @@ export class DesignLayoutContentsComponent {
 
   onSelectionChange(event: any) {     
     if (!event) return;
+    const canvas = this.designlayoutService.getCanvas();
     const { loop, ...info } = event;
     this.selectionContent.set(null);
-    this.designlayoutService.onAddHTMLToCanvas({ loop: true, ...info });
+    this.designlayoutService.onAddHTMLToCanvas(canvas, { loop: true, ...info });
   }
 
   onFilterChange(event: any) {

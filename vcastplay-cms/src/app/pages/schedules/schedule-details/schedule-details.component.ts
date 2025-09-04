@@ -16,11 +16,10 @@ import { SchedulesContentListComponent } from '../schedules-content-list/schedul
 import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
 import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player/playlist-main-player.component';
 import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';
-import { PreviewPlaylistComponent } from "../../../components/preview-playlist/preview-playlist.component";
 
 @Component({
   selector: 'app-schedule-details',
-  imports: [PrimengUiModule, ComponentsModule, PreviewAssetsComponent, PlaylistMainPlayerComponent, PreviewDesignLayoutComponent, PreviewPlaylistComponent],
+  imports: [PrimengUiModule, ComponentsModule, PreviewAssetsComponent, PlaylistMainPlayerComponent, PreviewDesignLayoutComponent ],
   templateUrl: './schedule-details.component.html',
   styleUrl: './schedule-details.component.scss',
 })
@@ -345,6 +344,7 @@ export class ScheduleDetailsComponent {
   }
 
   onClosePreview() {
+    this.selectedContent.set(null);
     this.playlistService.onStopAllContents();
     this.playlistForm.reset();
   }

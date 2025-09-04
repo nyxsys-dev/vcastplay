@@ -23,15 +23,14 @@
         }
     }
 
-    <div class="border border-[var(--p-surface-300)] rounded-lg flex-1 min-h-[200px]">
+    <div class="flex-1 min-h-[200px] overflow-y-auto pb-8 border border-[var(--p-surface-300)] rounded-lg">
         <p-table
             #contentTable
             [value]="filteredContentLists()"
             [(selection)]="selectionContent"
             (selectionChange)="onSelectionChange($event)"
             dataKey="id"
-            [scrollable]="true" 
-            scrollHeight="200px"
+            [scrollable]="true"
             [selectionMode]="selectionMode"
             size="small"
             stripedRows
@@ -53,7 +52,7 @@
                     <td>
                         @if (isSelectable) {
                             <div class="text-center">
-                                @if (selectionMode === 'multiple') {
+                                @if (selectionMode == 'multiple') {
                                     <p-tableCheckbox [value]="item" />
                                 } @else {
                                     <p-tableRadioButton [value]="item" />
@@ -67,7 +66,7 @@
                     </td>
                     <td>
                         <div class="flex flex-col">
-                            <p class="line-clamp-1">{{ item.name }}</p>
+                            <p class="w-50 line-clamp-1 truncate" [pTooltip]="item.name" tooltipPosition="bottom">{{ item.name }}</p>
                             @if (['asset'].includes(contentTypeControl.value)) {
                                 <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
                             }

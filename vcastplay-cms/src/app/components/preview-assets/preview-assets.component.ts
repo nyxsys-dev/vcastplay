@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Assets } from '../../core/interfaces/assets';
 import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
 
@@ -10,12 +10,28 @@ import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
 })
 export class PreviewAssetsComponent {
 
-  @Input() currentContent!: Assets | null;
-  @Input() isPlaying: boolean = false;
+  @ViewChild('video', { static: false }) videoRef!: ElementRef<HTMLVideoElement>;
+
+  @Input() currentContent!: Assets | any;
+  @Input() currentPlaying: any
   @Input() showControls: boolean = false;
   @Input() autoPlay: boolean = false;
 
   @Output() timeUpdate = new EventEmitter<any>();
+
+  ngOnChanges() {
+    if (!this.currentPlaying) return;
+
+    const { id } = this.currentPlaying;
+    if (this.currentContent.type == 'video') {
+      this.videoRef.nativeElement.currentTime = 0;
+      if (id == this.currentContent.id) {
+        this.videoRef.nativeElement.play();
+      } else {
+        this.videoRef.nativeElement.pause();
+      }
+    }
+  }
 
   onTimeUpdate(event: Event) {
     const video: HTMLVideoElement = event.target as HTMLVideoElement;

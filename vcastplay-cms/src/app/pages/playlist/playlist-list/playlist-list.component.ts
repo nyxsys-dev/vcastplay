@@ -154,7 +154,6 @@ export class PlaylistListComponent {
 
   get rows() { return this.playlistService.rows; }
   get first() { return this.playlistService.first; }
-  get isPlaying() { return this.playlistService.isPlaying; }
   get playlists() { return this.playlistService.playlists; }
   get isEditMode() { return this.playlistService.isEditMode; }
   get activeStep() { return this.playlistService.activeStep; }
@@ -167,7 +166,6 @@ export class PlaylistListComponent {
   get selectedAssets() { return this.playlistService.selectedAssets; }
   get filteredAssets() { return this.playlistService.filteredAssets; }
   get selectedPlaylist() { return this.playlistService.selectedPlaylist; }
-  get currentTransition() { return this.playlistService.currentTransition(); }
   
   get status() { return this.playlistForm.get('status'); }
   get approvedInfo() { return this.playlistForm.get('approvedInfo'); }

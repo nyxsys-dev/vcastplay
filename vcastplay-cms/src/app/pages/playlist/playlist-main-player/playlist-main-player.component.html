@@ -1,17 +1,31 @@
-<div class="flex h-80 md:h-full w-full justify-center items-center">
-    <div class="relative transition-all duration-{{content().currentTransition()?.speed}} ease-in-out" [ngClass]="getTransitionClasses()">
-        <ng-container *ngIf="content().currentContent() as content">
+<div #mainPlayer class="flex items-center justify-center min-h-full">
+    <div class="relative flex items-center justify-center aspect-video
+        transition-all duration-{{content().currentTransition()?.speed}} ease-in-out" [ngClass]="getTransitionClasses()">
+        <!-- <ng-container *ngIf="content().currentContent() as content">
             @switch (content.type) {
                 @case ('design') {
-                    <app-preview-design-layout class="absolute h-full w-full scale-55" [designLayout]="content" />
+                    <app-preview-design-layout class="absolute h-full w-full inset-0" [designLayout]="content" />
                 }
                 @default {
                     <app-preview-content-renderer class="absolute h-full w-full" [content]="content" />
-                    <!-- <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
-                        [currentContent]="content" (timeUpdate)="onProgressUpdate(content().index, $event)" [autoPlay]="true" /> -->
                 }
             }
-        </ng-container>
+        </ng-container> -->
+        <!-- <div class="flex flex-col items-center justify-center">
+        </div> -->
+        @for (item of playlistContents; track trackById($index, item)) {
+            @switch (item.type) {
+                @case ('design') {
+                    <app-preview-design-layout class="absolute h-full w-full flex items-center justify-center" [currentPlaying]="content().currentContent()"
+                        [ngClass]="{ 'hidden': content().currentContent()?.contentId != item.contentId }" [designLayout]="item" />
+                }
+                @default {
+                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
+                        [ngClass]="{ 'hidden': content().currentContent()?.contentId != item.contentId }" [currentPlaying]="content().currentContent()"
+                        [currentContent]="item" (timeUpdate)="onProgressUpdate(item.id, $event)" [autoPlay]="false" />
+                }
+            }
+        }
     </div>
 </div>
 

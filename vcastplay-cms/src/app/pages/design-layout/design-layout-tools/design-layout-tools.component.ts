@@ -24,18 +24,21 @@ export class DesignLayoutToolsComponent {
   ]
 
   onClickSelection() {
+    const canvas = this.designLayoutService.getCanvas();
     this.resetDragPosition.emit();
-    this.designLayoutService.onSelection();
+    this.designLayoutService.onSelection(canvas);
   }
 
   onClickAddText() {
+    const canvas = this.designLayoutService.getCanvas();
     this.resetDragPosition.emit();
-    this.designLayoutService.onAddTextToCanvas('Enter text here', this.selectedColor());
+    this.designLayoutService.onAddTextToCanvas(canvas, 'Enter text here', this.selectedColor());
   }
 
   onClickAddShape(type: string) {
+    const canvas = this.designLayoutService.getCanvas();
     this.resetDragPosition.emit();
-    this.designLayoutService.onAddShapeToCanvas(type, this.selectedColor());
+    this.designLayoutService.onAddShapeToCanvas(canvas, type, this.selectedColor());
   }
   
   onClickAddContents() {
@@ -45,17 +48,20 @@ export class DesignLayoutToolsComponent {
   }
 
   onClickAddLine() {
+    const canvas = this.designLayoutService.getCanvas();
     this.resetDragPosition.emit();
-    this.designLayoutService.onAddLineToCanvas(this.selectedColor());
+    this.designLayoutService.onAddLineToCanvas(canvas, this.selectedColor());
   }
 
   onClickPan() {
-    this.designLayoutService.onPan();
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onPan(canvas);
   }
 
   onClickMove() {
     this.resetDragPosition.emit();
-    this.designLayoutService.onMove();
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onMove(canvas);
   }
 
   onClickZoom() {

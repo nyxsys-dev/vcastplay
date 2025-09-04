@@ -240,12 +240,13 @@ export class DesignLayoutDetailsComponent {
   }
 
   onClickAddLayer(type: string) {
+    const canvas = this.designLayoutService.getCanvas();
     switch (type) {
       case 'text':
-        this.designLayoutService.onAddTextToCanvas('Enter text here', this.selectedColor());
+        this.designLayoutService.onAddTextToCanvas(canvas, 'Enter text here', this.selectedColor());
         break;
       case 'line':
-        this.designLayoutService.onAddLineToCanvas(this.selectedColor());
+        this.designLayoutService.onAddLineToCanvas(canvas, this.selectedColor());
         break;
       default:
         this.showContents.set(true);
@@ -256,8 +257,9 @@ export class DesignLayoutDetailsComponent {
   }
   
   onClickAddShape(type: string) {
+    const canvas = this.designLayoutService.getCanvas();
     this.onResetCanvasPosition();
-    this.designLayoutService.onAddShapeToCanvas(type, this.selectedColor());
+    this.designLayoutService.onAddShapeToCanvas(canvas, type, this.selectedColor());
   }
 
   onClickCloseCanvasSize() { 
@@ -345,29 +347,32 @@ export class DesignLayoutDetailsComponent {
 
   onSelectedContentChange(event: any) {
     const { loop, type, ...info }: any = event;
+    const canvas = this.designLayoutService.getCanvas();
     switch (type) {
       case 'image':
       case 'clipart':
-        this.designLayoutService.onAddImageToCanvas(event);
+        this.designLayoutService.onAddImageToCanvas(canvas, event);
         break;
       case 'playlist':
-        this.designLayoutService.onAddHTMLToCanvas({ loop: true, type, ...info });
+      case 'web':
+        this.designLayoutService.onAddHTMLToCanvas(canvas, { loop: true, type, ...info });
         break;
       default:
-        this.designLayoutService.onAddVideoToCanvas(event);
+        this.designLayoutService.onAddVideoToCanvas(canvas, event);
         break;
     }
   }
 
   onDropped(event: any) {
-    const { item: { data } } = event;    
+    const { item: { data } } = event;  
+    const canvas = this.designLayoutService.getCanvas();  
     switch (data.type) {
       case 'image':
       case 'clipart':
-        this.designLayoutService.onAddImageToCanvas(data);
+        this.designLayoutService.onAddImageToCanvas(canvas, data);
         break;
       default:
-        this.designLayoutService.onAddVideoToCanvas(data);
+        this.designLayoutService.onAddVideoToCanvas(canvas, data);
         break;
     }
   }

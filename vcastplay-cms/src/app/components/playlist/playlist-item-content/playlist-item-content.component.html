@@ -1,8 +1,8 @@
 <div class="relative w-[140px] h-full bg-[var(--p-surface-300)] flex items-center justify-center group cursor-grab"
-    [ngClass]="{ 'shadow-lg shadow-red-600/70': onCurrentPlaying() }">
+    [ngClass]="{ 'shadow-lg shadow-red-600/70': onCurrentPlaying() }" [pTooltip]="asset.name">
 
     <div class="absolute top-0 right-0 h-full w-full z-10 bg-gradient-to-t from-[var(--p-primary-500)] to-transparent ">
-        <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300/60" [ngClass]="{ 'group-hover:flex': !onCurrentPlaying()}">
+        <div class="flex items-center justify-center h-full gap-2 hidden bg-gray-300/60" [ngClass]="{ 'group-hover:flex': !isPlaying()}">
             @if (!['video', 'audio', 'playlist', 'design'].includes(asset.type)) {
                 <p-button severity="info" icon="pi pi-cog" pTooltip="Configuration" 
                     tooltipPosition="bottom" (onClick)="showConfig.set(true); $event.stopPropagation()" size="small" rounded />
@@ -14,7 +14,7 @@
     <div class="flex items-center justify-center h-full w-full relative">
         @switch (asset.type) {
             @case ('design') {
-                <img [src]="asset.thumbnail ?? 'assets/icons/images.png'" [alt]="asset.name" class="w-15 object-contain">
+                <img [src]="asset.thumbnail ?? 'assets/icons/images.png'" [alt]="asset.name" class="absolute h-full w-full object-contain">
             }
             @default {
                 <img [src]="asset.fileDetails.thumbnail" [alt]="asset.name" class="w-full h-full object-contain">
@@ -22,8 +22,8 @@
         }
     </div>
 
-    <div class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center text-center text-white w-full mb-1 z-50">
-        <p class="text-sm font-semibold">{{ asset.name }}</p>
+    <div class="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-center text-center text-white w-full mb-1 z-50 px-2">
+        <p class="text-sm font-semibold truncate w-full">{{ asset.name }}</p>
         <p class="font-semibold text-sm">{{ utils.timeConversion(asset.duration || 0) }}</p>
     </div>
 

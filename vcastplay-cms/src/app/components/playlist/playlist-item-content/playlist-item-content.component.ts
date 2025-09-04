@@ -39,5 +39,4 @@ export class PlaylistItemContentComponent {
 
   get contents() { return this.playlistService.contents; }
   get isPlaying() { return this.playlistService.isPlaying; }
-  get currentContent() { return this.playlistService.currentContent; }
 }

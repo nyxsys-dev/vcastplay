@@ -79,9 +79,10 @@ export class AssetDetailsComponent {
   }
 
   ngOnDestroy() {
-    this.selectedAsset.set(null);
     this.assetForm.reset();
     this.isEditMode.set(false);
+    this.selectedAsset.set(null);
+    this.assetTypeControl.reset();
   }
   
   hasUnsavedData(): boolean {
@@ -163,10 +164,6 @@ export class AssetDetailsComponent {
         console.log(this.assetForm.value);
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Assets upload successfully!' });
         this.assetService.onSaveAssets(this.assetForm.value);
-        this.selectedAsset.set(null);
-        this.assetForm.reset();
-        this.assetTypeControl.reset();
-        this.isEditMode.set(false);
         this.router.navigate(['/assets/asset-library']);
       },
     });

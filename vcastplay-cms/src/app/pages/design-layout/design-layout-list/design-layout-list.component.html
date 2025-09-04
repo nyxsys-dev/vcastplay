@@ -102,7 +102,7 @@
     </ng-template>
 </p-popover>
 
-<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" appendTo="body" modal>
+<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="onClosePreview()" appendTo="body" modal>
     <ng-container *ngIf="selectedDesign() as design">
         <app-preview-design-layout [designLayout]="design" [isViewOnly]="true"></app-preview-design-layout>
     </ng-container>
