@@ -11,7 +11,6 @@ import { MenuItem } from 'primeng/api';
 })
 export class DesignLayoutToolsComponent {
 
-  @Input() canvasElement!: HTMLCanvasElement;
   @Output() resetDragPosition = new EventEmitter<void>();
 
   designLayoutService = inject(DesignLayoutService);

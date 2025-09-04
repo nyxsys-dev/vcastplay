@@ -35,7 +35,7 @@ export class DesignLayoutService {
   showContents = signal<boolean>(false);
   showPreview = signal<boolean>(false);
 
-  DEFAULT_SCALE = signal<number>(0.45);
+  DEFAULT_SCALE = signal<number>(1.3);
   SELECTION_STYLE = signal<any>({
     borderColor: '#9B5CFA',
     borderScaleFactor: 2,
@@ -51,7 +51,7 @@ export class DesignLayoutService {
   
   rows = signal<number>(8);
   totalRecords = signal<number>(0);
-  zoomLevel = signal<number>(1);
+  zoomLevel: number = 0.5;
 
   designForm: FormGroup = new FormGroup({
     id: new FormControl(0, { nonNullable: true }),
@@ -242,14 +242,24 @@ export class DesignLayoutService {
     /**CALL POST API */
   }
   
-  onCreateCanvas(canvasElement: HTMLCanvasElement, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
+  onCreateCanvas(canvasContainer: any, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
+    const canvasElement = document.createElement('canvas');
+    const { clientWidth, clientHeight } = canvasContainer;
+    canvasContainer.appendChild(canvasElement);
+    
     const canvas = new fabric.Canvas(canvasElement, { 
-      width: resolution.width * this.DEFAULT_SCALE(), 
-      height: resolution.height * this.DEFAULT_SCALE(), 
+      width: resolution.width, // * this.DEFAULT_SCALE(), 
+      height: resolution.height, // * this.DEFAULT_SCALE(), 
       backgroundColor,
       selection: false,
       preserveObjectStacking: true,
     });
+
+    const scale = Math.min(clientWidth / canvas.getWidth(), clientHeight / canvas.getHeight());
+    canvas.set({
+      width: canvas.getWidth() * scale,
+      height: canvas.getHeight() * scale
+    })
 
     this.registerCanvasEvents(canvas);
     this.setCanvas(canvas);
@@ -291,6 +301,31 @@ export class DesignLayoutService {
    * Editor Tools
    * ====================================================================================================================================
    */
+
+  onZoomInCanvas() { 
+    const canvas = this.getCanvas();
+    
+    canvas.setZoom(canvas.getZoom() * this.DEFAULT_SCALE());
+    canvas.set({
+      width: canvas.getWidth() * this.DEFAULT_SCALE(),
+      height: canvas.getHeight() * this.DEFAULT_SCALE(),
+    })
+    // canvas.setHeight(canvas.getHeight() * this.DEFAULT_SCALE());
+    // canvas.setWidth(canvas.getWidth() * this.DEFAULT_SCALE());
+    canvas.renderAll();
+  }
+  onZoomOutCanvas() {
+    const canvas = this.getCanvas();
+    
+    canvas.setZoom(canvas.getZoom() / this.DEFAULT_SCALE());
+    canvas.set({
+      width: canvas.getWidth() / this.DEFAULT_SCALE(),
+      height: canvas.getHeight() / this.DEFAULT_SCALE(),
+    })
+    // canvas.setHeight(canvas.getHeight() * this.DEFAULT_SCALE());
+    // canvas.setWidth(canvas.getWidth() * this.DEFAULT_SCALE());
+    canvas.renderAll();
+  }
 
   onExitCanvas() {
     const canvas = this.getCanvas();

@@ -10,16 +10,17 @@
     </p-menubar>
 
 
-    <div class="relative flex flex-col flex-1 items-center justify-center overflow-hidden h-full" cdkDropListGroup>
+    <div class="relative flex flex-col flex-1 items-center justify-center overflow-hidden h-full w-full" cdkDropListGroup>
 
         @if (designLayoutService.getCanvas()) {
             <div class="absolute top-0 left-0 py-2 px-1 bg-[var(--p-surface-100)] shadow-lg rounded-lg z-10">
-                <app-design-layout-tools [canvasElement]="canvasElement.nativeElement" (resetDragPosition)="onResetCanvasPosition()" />
+                <app-design-layout-tools (resetDragPosition)="onResetCanvasPosition()" />
             </div>
         }
 
-        <div #canvasContainer class="relative" cdkDrag [cdkDragDisabled]="!canvasProps.drag" cdkDropList (cdkDropListDropped)="onDropped($event)">
-            <canvas #canvas></canvas>
+        <div #canvasContainer class="relative w-full h-full flex items-center justify-center px-15" cdkDrag [cdkDragDisabled]="!canvasProps.drag" cdkDropList 
+            (cdkDropListDropped)="onDropped($event)">
+            <!-- <canvas #canvas></canvas> -->
 
             @for (layer of canvasHTMLLayers(); track $index) {
                 <div [id]="layer.id" class="absolute origin-top-left bg-aqua pointer-events-none flex items-center justify-center"
@@ -61,7 +62,7 @@
                 <p class="text-sm italic text-red-500 ml-3">(Ctrl + Scroll to Zoom)</p>
                 <p-button icon="pi pi-search-plus" (onClick)="onClickZoom(1.1)" size="small" />
                 <p-button icon="pi pi-search-minus" (onClick)="onClickZoom(0.9)" severity="secondary" size="small" />
-                <p-button icon="pi pi-sync" (onClick)="onClickResetZoom()" severity="secondary" size="small" />
+                <!-- <p-button icon="pi pi-sync" (onClick)="onClickResetZoom()" severity="secondary" size="small" /> -->
             </div>
         }
         

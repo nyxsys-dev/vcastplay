@@ -20,6 +20,7 @@ export class DesignLayoutDetailsComponent {
 
   @ViewChild('screen') screenElement!: ScreenSelectionComponent;
   @ViewChild('canvas', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('importFile') importFileElement!: ElementRef<HTMLInputElement>;
   @ViewChild(CdkDrag) cdkDrag!: CdkDrag;
   
@@ -116,8 +117,11 @@ export class DesignLayoutDetailsComponent {
   @HostListener('wheel', ['$event']) onWheel(event: WheelEvent) {
     if (!event.ctrlKey) return;
     event.preventDefault();
-    const factor = event.deltaY < 0 ? 1.1 : 0.9;    
-    if(this.canvasProps.zoom) this.designLayoutService.onZoomCanvas(factor);
+    const factor = event.deltaY < 0 ? 1.1 : 0.9;
+    const type = event.deltaY < 0 ? 'in' : 'out';
+    if(this.canvasProps.zoom) {
+      this.designLayoutService.onZoomCanvas(factor);
+    }
   }
 
   @HostListener('document:keydown', ['$event']) onKeyDown(event: KeyboardEvent) {   
@@ -214,7 +218,7 @@ export class DesignLayoutDetailsComponent {
   onClickCreateCanvas() {
     const { screen, color } = this.designForm.value;
     const resolution = screen.displaySettings.resolution.split('x');
-    this.designLayoutService.onCreateCanvas(this.canvasElement.nativeElement, { width: resolution[0], height: resolution[1] }, color);
+    this.designLayoutService.onCreateCanvas(this.canvasContainer.nativeElement, { width: resolution[0], height: resolution[1] }, color);
     this.showCanvasSize.set(false);
     this.screenElement.selectedScreen.set(null);
     this.onUpdateMenus();
@@ -268,7 +272,9 @@ export class DesignLayoutDetailsComponent {
   }
 
   onClickZoom(factor: number) {
-    this.designLayoutService.onZoomCanvas(factor);
+    if (factor == 1.1) this.designLayoutService.onZoomInCanvas();
+    if (factor == 0.9) this.designLayoutService.onZoomOutCanvas();
+    // this.designLayoutService.onZoomCanvas(factor);
   }
 
   onClickResetZoom() {
@@ -396,7 +402,7 @@ export class DesignLayoutDetailsComponent {
   }
 
   onResetCanvasPosition() {
-    this.cdkDrag.reset();
+    // this.cdkDrag.reset();
   }
 
   get isEditMode() { return this.designLayoutService.isEditMode; }
