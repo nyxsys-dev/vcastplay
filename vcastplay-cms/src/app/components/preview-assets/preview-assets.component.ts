@@ -23,14 +23,16 @@ export class PreviewAssetsComponent {
     if (!this.currentPlaying) return;
 
     const { id } = this.currentPlaying;
-    if (this.currentContent.type == 'video') {
-      this.videoRef.nativeElement.currentTime = 0;
-      if (id == this.currentContent.id) {
-        this.videoRef.nativeElement.play();
-      } else {
-        this.videoRef.nativeElement.pause();
+    setTimeout(() => {
+      if (this.currentContent.type == 'video') {
+        this.videoRef.nativeElement.currentTime = 0;
+        if (id == this.currentContent.id) {
+          this.videoRef.nativeElement.play();
+        } else {
+          this.videoRef.nativeElement.pause();
+        }
       }
-    }
+    }, 50);
   }
 
   onTimeUpdate(event: Event) {

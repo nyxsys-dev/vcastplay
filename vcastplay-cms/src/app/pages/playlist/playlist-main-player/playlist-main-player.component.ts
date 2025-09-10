@@ -16,7 +16,7 @@ import { PreviewAssetsComponent } from '../../../components/preview-assets/previ
 })
 export class PlaylistMainPlayerComponent {
 
-  @ViewChild('mainPlayer') mainPlayer!: ElementRef<HTMLDivElement>;
+  @ViewChild('viewport') viewportElement!: ElementRef<HTMLDivElement>;
 
   @Input() playlist!: Playlist;
   @Input() showControls: boolean = true;

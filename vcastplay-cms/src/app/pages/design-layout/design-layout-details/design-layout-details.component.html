@@ -1,5 +1,5 @@
 <div class="flex flex-col gap-1 h-full relative">
-    <p-menubar class="z-20" [model]="layoutItems">
+    <p-menubar class="z-50" [model]="layoutItems">
         <ng-template #item let-item let-root="root">
             <a pRipple class="flex items-center p-menubar-item-link">
                 <span>{{ item.label }}</span>
@@ -13,26 +13,24 @@
     <div class="relative flex flex-col flex-1 items-center justify-center overflow-hidden h-full w-full" cdkDropListGroup>
 
         @if (designLayoutService.getCanvas()) {
-            <div class="absolute top-0 left-0 py-2 px-1 bg-[var(--p-surface-100)] shadow-lg rounded-lg z-10">
+            <div class="absolute top-0 left-0 py-2 px-1 bg-[var(--p-surface-100)] shadow-lg rounded-lg z-40">
                 <app-design-layout-tools (resetDragPosition)="onResetCanvasPosition()" />
             </div>
         }
 
-        <div #canvasContainer class="relative w-full h-full flex items-center justify-center px-15" cdkDrag [cdkDragDisabled]="!canvasProps.drag" cdkDropList 
-            (cdkDropListDropped)="onDropped($event)">
-            <!-- <canvas #canvas></canvas> -->
-
-            @for (layer of canvasHTMLLayers(); track $index) {
-                <div [id]="layer.id" class="absolute origin-top-left bg-aqua pointer-events-none flex items-center justify-center"
-                    [style.top.px]="layer.top" [style.left.px]="layer.left"
-                    [style.width.px]="layer.width" [style.height.px]="layer.height" [style.transform]="'rotate(' + layer.rotation + 'deg)'">
-                    
-                    <div class="relative flex-1 flex h-full w-full">
-                        <app-playlist-main-player class="h-full w-full group bg-stone-800 text-white rounded-lg"
+        <div #viewport class="relative flex w-full h-full flex items-center justify-center">
+            <div #canvasContainer class="relative origin-center flex items-center justify-center z-20 overflow-hidden" 
+                cdkDrag [cdkDragDisabled]="!canvasProps.drag" cdkDropList>
+                <!-- <canvas #canvas></canvas> -->
+                @for (layer of canvasHTMLLayers(); track $index) {
+                    <div class="absolute pointer-events-none z-10" [id]="layer.id" 
+                        [style]="{ top: layer.top + 'px', left: layer.left + 'px', width: layer.width + 'px', 
+                            height: layer.height + 'px', transform: 'rotate(' + layer.rotation + 'deg) translateZ(0)' }">
+                        <app-playlist-main-player class="relative w-full h-full group bg-stone-800 text-white rounded-lg"
                             [playlist]="layer.content" [autoPlay]="true" [showControls]="false" />
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
 
         @if (!designLayoutService.getCanvas()) {
@@ -42,7 +40,7 @@
         }
 
         @if (showContents()) {
-            <div class="absolute top-0 right-0 h-full z-30">
+            <div class="absolute top-0 right-0 h-full z-50">
                 <p-card styleClass="h-full">
                     <ng-template #title>
                         <div class="flex gap-2">
@@ -58,16 +56,18 @@
         }
         
         @if (canvasProps.zoom) {
-            <div class="flex items-center gap-2 absolute top-0 right-0 z-30 bg-[var(--p-surface-50)] shadow-lg rounded-lg p-2" cdkDrag>
+            <div class="flex items-center gap-2 absolute top-0 right-0 z-50 bg-[var(--p-surface-50)] shadow-lg rounded-lg py-2 px-3" cdkDrag>
+                <div class="w-2 h-8 bg-[var(--p-surface-200)] rounded-lg cursor-move" cdkDragHandle></div>
                 <p class="text-sm italic text-red-500 ml-3">(Ctrl + Scroll to Zoom)</p>
-                <p-button icon="pi pi-search-plus" (onClick)="onClickZoom(1.1)" size="small" />
-                <p-button icon="pi pi-search-minus" (onClick)="onClickZoom(0.9)" severity="secondary" size="small" />
-                <!-- <p-button icon="pi pi-sync" (onClick)="onClickResetZoom()" severity="secondary" size="small" /> -->
+                <p-button icon="pi pi-search-plus" (onClick)="onClickZoom(true)" size="small" />
+                <p-button icon="pi pi-search-minus" (onClick)="onClickZoom(false)" severity="secondary" size="small" />
+                <p-button icon="pi pi-sync" (onClick)="onClickResetZoom()" severity="secondary" size="small" />
+                <p class="text-sm">{{ zoomLevel * 100 | number: '1.0-0' }}%</p>
             </div>
         }
         
         @if (canvasProps.selection) {
-            <div class="flex items-center gap-1 absolute top-0 right-0 z-30 bg-[var(--p-surface-50)] shadow-lg rounded-lg p-2" cdkDrag>
+            <div class="flex items-center gap-1 absolute top-0 right-0 z-50 bg-[var(--p-surface-50)] shadow-lg rounded-lg p-2" cdkDrag>
                 <div class="w-2 h-8 bg-[var(--p-surface-200)] rounded-lg cursor-move" cdkDragHandle></div>
                 @for (item of objectAlignments; track $index) {
                     <p-button (onClick)="item.command()" text>

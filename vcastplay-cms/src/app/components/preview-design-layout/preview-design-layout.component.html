@@ -1,29 +1,12 @@
-<!-- <div class="relative flex items-center justify-center w-full h-full overflow-hidden object-contain max-h-full">
-    
-    <canvas #previewCanvas class=" max-w-full max-h-full block h-full"></canvas>
-
+<div #canvasContainer class="flex items-center justify-center overflow-hidden">
+    <!-- <canvas #canvas></canvas> -->
     @for (layer of canvasHTMLLayers(); track $index) {
-        <div [id]="layer.id" class="absolute origin-top-left bg-aqua pointer-events-none flex items-center justify-center"
-            [style.top.px]="layer.top" [style.left.px]="layer.left"
-            [style.width.px]="layer.width" [style.height.px]="layer.height" [style.transform]="'rotate(' + layer.rotation + 'deg)'">
-            
-            <div class="relative flex-1 flex h-full w-full">
+        <div class="absolute pointer-events-none z-10" [id]="layer.id" 
+            [style]="{ top: layer.top + 'px', left: layer.left + 'px', width: layer.width + 'px', 
+                height: layer.height + 'px', transform: 'rotate(' + layer.rotation + 'deg) translateZ(0)' }">
+            <!-- <app-playlist-main-player class="relative w-full h-full group bg-stone-800 text-white rounded-lg"
+                [playlist]="layer.content" [autoPlay]="true" [showControls]="false" /> -->
                 <app-preview-content-renderer [content]="layer.content" />
-            </div>
         </div>
     }
-</div> -->
-
-
-<canvas #previewCanvas></canvas>
-
-@for (layer of canvasHTMLLayers(); track $index) {
-    <div [id]="layer.id" class="absolute origin-top-left bg-aqua pointer-events-none flex items-center justify-center"
-        [style.top.px]="layer.top" [style.left.px]="layer.left"
-        [style.width.px]="layer.width" [style.height.px]="layer.height" [style.transform]="'rotate(' + layer.rotation + 'deg)'">
-        
-        <div class="relative flex-1 flex h-full w-full">
-            <app-preview-content-renderer [content]="layer.content" />
-        </div>
-    </div>
-}
+</div>

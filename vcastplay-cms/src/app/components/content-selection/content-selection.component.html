@@ -2,7 +2,7 @@
     @if (!assetOnly) {
         <p-floatlabel class="w-full" variant="on">
             <p-select inputId="type" [options]="filtereContentTypes()" optionLabel="label" optionValue="value" [formControl]="contentTypeControl" appendTo="body" fluid />
-            <label for="type">Type</label>
+            <label for="type">Select Contents</label>
         </p-floatlabel>
     }
     @switch (contentTypeControl.value) {

@@ -24,6 +24,7 @@ export class DesignLayoutService {
   private undoStack: any[] = [];
   private redoStack: any[] = [];
   private isRestoringState = signal<boolean>(false);
+  private lastDelta = { x: 0, y: 0 };
 
   private designSignal = signal<DesignLayout[]>([]);
   designs = computed(() => this.designSignal());
@@ -51,7 +52,9 @@ export class DesignLayoutService {
   
   rows = signal<number>(8);
   totalRecords = signal<number>(0);
-  zoomLevel: number = 0.5;
+  zoomLevel: number = 1;
+  defaultScale: number = 0;
+  defaultResolution: any;
 
   designForm: FormGroup = new FormGroup({
     id: new FormControl(0, { nonNullable: true }),
@@ -198,7 +201,6 @@ export class DesignLayoutService {
   }
 
   onSaveDesign(design: DesignLayout) {
-    this.onResetZoomCanvas();
     const canvas = this.getCanvas();
     canvas.getObjects().forEach((object: any, index: number) => { object.set('zIndex', index) });
 
@@ -208,18 +210,13 @@ export class DesignLayoutService {
     const thumbnail = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
     
     const curDurations: number[] = [];
-    canvasObjects.forEach((object: any, index: number) => {
-      console.log(object);
-      
+    canvasObjects.forEach((object: any, index: number) => {      
       if (object.html) {
         const content: any = object.html.content;
         curDurations.push(content.duration);
       }
       if (object.data) curDurations.push(object.data.duration);
-    })
-
-    console.log(curDurations);
-    
+    })    
     
     const maxDuration = Math.max(...curDurations);
     const curDuration = maxDuration > 0 ? maxDuration : 5;
@@ -242,40 +239,25 @@ export class DesignLayoutService {
     /**CALL POST API */
   }
   
-  onCreateCanvas(canvasContainer: any, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
-    const canvasElement = document.createElement('canvas');
-    const { clientWidth, clientHeight } = canvasContainer;
-    canvasContainer.appendChild(canvasElement);
-    
-    const canvas = new fabric.Canvas(canvasElement, { 
-      width: resolution.width, // * this.DEFAULT_SCALE(), 
-      height: resolution.height, // * this.DEFAULT_SCALE(), 
-      backgroundColor,
-      selection: false,
-      preserveObjectStacking: true,
-    });
+  onCreateCanvas(viewport: any, canvasContainer: any, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
 
-    const scale = Math.min(clientWidth / canvas.getWidth(), clientHeight / canvas.getHeight());
-    canvas.set({
-      width: canvas.getWidth() * scale,
-      height: canvas.getHeight() * scale
-    })
-
-    this.registerCanvasEvents(canvas);
+    const canvas = this.onInitFabricCanvas(viewport, canvasContainer, resolution, backgroundColor);
+    canvas.setZoom(this.defaultScale);
     this.setCanvas(canvas);
-    this.registerAlignmentGuides(canvas);
+    this.registerCanvasEvents(canvas);
+    // this.registerAlignmentGuides(canvas);
     this.syncDivsWithFabric(canvas);
     canvas.renderAll();
 
     this.saveState();
   }
 
-  onEditDesign(canvasElement: HTMLCanvasElement, design: DesignLayout, isViewOnly: boolean = false) {
-    this.initCanvas(canvasElement, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly, registerEvents: true, scale: this.DEFAULT_SCALE() });
+  onEditDesign(viewport: any, canvasContainer: any, design: DesignLayout, isViewOnly: boolean = false) {
+    this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly, registerEvents: true });
   }
 
-  onPreloadCanvas(canvasElement: HTMLCanvasElement, design: DesignLayout) {
-    return this.initCanvas(canvasElement, design, { renderOnAddRemove: false, autoPlayVideos: false, isViewOnly: false, registerEvents: false, scale: 1 });
+  onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
+    return this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: false, autoPlayVideos: false, isViewOnly: false, registerEvents: false });
   }
 
   onDeleteDesign(design: DesignLayout) {
@@ -301,35 +283,41 @@ export class DesignLayoutService {
    * Editor Tools
    * ====================================================================================================================================
    */
+  onScaleCanvas(parentElement: any, canvasContainer: any) {
+    const canvas = this.getCanvas();
+    if (!canvas) return;
 
-  onZoomInCanvas() { 
-    const canvas = this.getCanvas();
-    
-    canvas.setZoom(canvas.getZoom() * this.DEFAULT_SCALE());
-    canvas.set({
-      width: canvas.getWidth() * this.DEFAULT_SCALE(),
-      height: canvas.getHeight() * this.DEFAULT_SCALE(),
-    })
-    // canvas.setHeight(canvas.getHeight() * this.DEFAULT_SCALE());
-    // canvas.setWidth(canvas.getWidth() * this.DEFAULT_SCALE());
-    canvas.renderAll();
+    const { width, height } = this.defaultResolution;    
+
+    // Calculate scale factor based on parent element
+    const bounds = parentElement.getBoundingClientRect();
+
+    const scaleX = bounds.width / width;
+    const scaleY = bounds.height / height;
+
+    this.defaultScale = Math.min(scaleX, scaleY);;
+
+    const totalScale = this.defaultScale * this.zoomLevel;
+    this.updateCanvasSize(canvasContainer, totalScale, totalScale);
   }
-  onZoomOutCanvas() {
+
+  onZoomCanvas(canvasContainer: any, factor: number, isReset: boolean = false) {
     const canvas = this.getCanvas();
+    if (!canvas) return;
+
+    if (isReset) {
+      this.zoomLevel = 1;
+    } else {
+      this.zoomLevel *= factor;
+      this.zoomLevel = Math.max(0.20, Math.min(2.0, this.zoomLevel));
+    }
     
-    canvas.setZoom(canvas.getZoom() / this.DEFAULT_SCALE());
-    canvas.set({
-      width: canvas.getWidth() / this.DEFAULT_SCALE(),
-      height: canvas.getHeight() / this.DEFAULT_SCALE(),
-    })
-    // canvas.setHeight(canvas.getHeight() * this.DEFAULT_SCALE());
-    // canvas.setWidth(canvas.getWidth() * this.DEFAULT_SCALE());
-    canvas.renderAll();
+    const totalScale = this.defaultScale * this.zoomLevel;
+    this.updateCanvasSize(canvasContainer, totalScale, this.zoomLevel);
   }
 
   onExitCanvas() {
-    const canvas = this.getCanvas();
-    if (canvas) {
+    if (this.canvas) {
       this.canvas.clear();
       this.canvas.dispose();
       this.canvas = undefined as any;
@@ -340,48 +328,6 @@ export class DesignLayoutService {
     this.canvasHTMLLayers.set([]);
   }
 
-  onZoomCanvas(factor: number) {
-    const canvas = this.getCanvas();
-    const zoom = canvas.getZoom() * factor;
-    const { width, height } = this.canvasDimensions(canvas);
-    const canvasWidth = width * factor;
-    const canvasHeight = height * factor;
-
-    if ((canvasWidth * zoom) <= 250) return;
-
-    // Resize the canvas DOM and internal drawing buffer
-    canvas.setDimensions({ width: canvasWidth, height: canvasHeight });
-
-    // Scale every object proportionally
-    canvas.getObjects().forEach(obj => {
-      obj.scaleX! *= factor;
-      obj.scaleY! *= factor;
-      obj.left! *= factor;
-      obj.top! *= factor;
-      obj.setCoords();
-    });
-
-    canvas.renderAll();
-  }
-
-  onResetZoomCanvas() {
-    const canvas = this.getCanvas();
-    const { screen } = this.designForm.value;
-    const [ width, height ] = screen.displaySettings.resolution.split('x');
-    canvas.setDimensions({ width: width * this.DEFAULT_SCALE(), height: height * this.DEFAULT_SCALE() });
-    // Scale every object proportionally
-    canvas.getObjects().forEach((obj: any) => {
-      const def = obj?.defaultState;
-      if (def) {
-        obj.scaleX = def.scaleX;
-        obj.scaleY = def.scaleY;
-        obj.left = def.left;
-        obj.top = def.top;
-        obj.setCoords();
-      }
-    });
-  }
-
   onSelection(canvas: fabric.Canvas) {
     this.onSetCanvasProps('selection', true, 'default');
     this.onDisableLayersProps(canvas, true);
@@ -390,14 +336,14 @@ export class DesignLayoutService {
 
   onPan(canvas: fabric.Canvas) {
     this.onSetCanvasProps('drag', false, 'grab');
-    this.canvas.discardActiveObject();
+    canvas.discardActiveObject();
     this.onDisableLayersProps(canvas, false);
     this.showContents.set(false);
   }
 
   onMove(canvas: fabric.Canvas) {
     this.onSetCanvasProps('move', false, 'pointer');
-    this.canvas.discardActiveObject();
+    canvas.discardActiveObject();
     this.onDisableLayersProps(canvas,true);
     this.showContents.set(false);
   }
@@ -421,7 +367,7 @@ export class DesignLayoutService {
 
   onCutLayers(canvas: fabric.Canvas) {
     const activeObject = canvas.getActiveObjects();
-    if (!activeObject || activeObject.length === 0) return;
+    if (!activeObject || activeObject.length == 0) return;
 
     activeObject.map((object: fabric.Object) =>
       object.clone().then((cloned) => {
@@ -556,7 +502,7 @@ export class DesignLayoutService {
     window.URL.revokeObjectURL(url);
   }
 
-  onImportCanvas(event: Event, canvasElement: HTMLCanvasElement) {
+  onImportCanvas(event: Event, viewport: any, canvasElement: any) {
     if (this.canvas) this.canvas.dispose();
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -569,7 +515,7 @@ export class DesignLayoutService {
       const importData: any = JSON.parse(data);
       this.designForm.patchValue(importData)
       
-      this.onEditDesign(canvasElement, importData);
+      this.onEditDesign(viewport, canvasElement, importData);
     }
     
     reader.readAsText(file);
@@ -585,8 +531,8 @@ export class DesignLayoutService {
     this.onSetCanvasProps('text', true, 'default');
     const tempText = new fabric.FabricText(content, { fontSize: 12, fontFamily: 'Arial', fill });
 
-    this.canvas.discardActiveObject();    
-    const { width, height } = this.canvasDimensions(this.canvas);
+    canvas.discardActiveObject();    
+    const { width, height } = this.canvasDimensions(canvas);
     const left = Math.random() * (width - tempText.width);
     const top = Math.random() * (height - tempText.height);
     const text = new fabric.Textbox(content, {
@@ -599,8 +545,8 @@ export class DesignLayoutService {
       width: tempText.width,
     })
 
-    this.canvas.add(text);
-    this.canvas.setActiveObject(text);
+    canvas.add(text);
+    canvas.setActiveObject(text);
     this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
     this.saveState();
@@ -608,7 +554,7 @@ export class DesignLayoutService {
 
   onAddRectangleToCanvas(canvas: fabric.Canvas, color: string = '#808080') {
     this.onSetCanvasProps('rect', true, 'default');
-    this.canvas.discardActiveObject();
+    canvas.discardActiveObject();
     
     const rect = new fabric.Rect({
       width: 200,
@@ -616,7 +562,7 @@ export class DesignLayoutService {
       fill: color
     });
 
-    this.canvas.add(rect);
+    canvas.add(rect);
     this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
     this.saveState();
@@ -625,7 +571,7 @@ export class DesignLayoutService {
 
   onAddShapeToCanvas(canvas: fabric.Canvas, type: string, color: string = '#808080') {
     this.onSetCanvasProps('rect', true, 'default');
-    this.canvas.discardActiveObject();
+    canvas.discardActiveObject();
 
     let shape: any;
     switch (type) {
@@ -643,7 +589,7 @@ export class DesignLayoutService {
         break;
     }
 
-    this.canvas.add(shape);
+    canvas.add(shape);
     this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
     this.saveState();
@@ -653,16 +599,26 @@ export class DesignLayoutService {
     const resolution: any = data?.fileDetails?.resolution ?? { width: 100, height: 100 };
     
     this.onSetCanvasProps('image', true, 'default');
-    this.canvas.discardActiveObject();
+    canvas.discardActiveObject();
 
-    const { width, height } = this.canvasDimensions(this.canvas);
+    const { width, height } = this.canvasDimensions(canvas);
     const left = Math.random() * (width - resolution.width);
     const top = Math.random() * (height - resolution.height);
     
     fabric.FabricImage.fromURL(data.link, { crossOrigin: 'anonymous' }, { top, left, data }).then((image) => {
-      this.canvas.add(image);
-      this.canvas.setActiveObject(image);
-      this.canvas.requestRenderAll();
+      const scaleX = width / image.width!;
+      const scaleY = height / image.height!;
+      const scale = Math.min(scaleX, scaleY, 1);
+
+      image.scale(scale);
+      image.set({
+        left: ((width - image.width!) * scale) / 2,
+        top: ((height - image.height!) * scale) / 2,
+      })
+
+      canvas.add(image);
+      canvas.setActiveObject(image);
+      canvas.requestRenderAll();
 
       image.set('data', data);
       image.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
@@ -756,15 +712,16 @@ export class DesignLayoutService {
 
     rect.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
 
-    this.canvas.add(rect);
+    canvas.add(rect);
+
     const htmlLayer = this.createHtmlLayerFromObject(rect, length, content);
-    
     this.canvasHTMLLayers().push(htmlLayer);
+    rect.set('html', htmlLayer);
+
     this.playlistService.onPlayContent(content);
 
-    rect.set('html', htmlLayer);
-    this.canvas.setActiveObject(rect);
-    this.canvas.requestRenderAll();
+    canvas.setActiveObject(rect);
+    canvas.requestRenderAll();
     this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
     this.saveState();
@@ -1043,30 +1000,72 @@ export class DesignLayoutService {
    * Private methods insert here
    * ====================================================================================================================================
    */
+  private onInitFabricCanvas(viewport: HTMLElement, container: HTMLElement, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
+    const canvasElement = document.createElement('canvas');
+    // container.style.width = resolution.width + 'px';
+    // container.style.height = resolution.height + 'px';
+    container.appendChild(canvasElement);
+
+    // Calculate scale factor based on parent element
+    const bounds = viewport.getBoundingClientRect();
+    const scaleX = bounds.width / resolution.width;
+    const scaleY = bounds.height / resolution.height;
+    const scale = Math.min(scaleX, scaleY); 
+
+    // Calculate new dimensions for container & canvas
+    const newWidth = resolution.width * scale;
+    const newHeight = resolution.height * scale;
+    
+    // Apply new size to container
+    container.style.width = `${newWidth}px`;
+    container.style.height = `${newHeight}px`;
+  
+    this.defaultScale = scale;
+    this.defaultResolution = resolution;
+    
+    return new fabric.Canvas(canvasElement, { 
+      width: newWidth,
+      height: newHeight,
+      backgroundColor,
+      selection: false,
+      preserveObjectStacking: true,
+    });
+  }
+
+  private updateCanvasSize(canvasContainer: any, totalScale: number, zoomLevel: number) {
+    const canvas = this.getCanvas();
+    if (!canvas) return;
+    const { width, height } = this.defaultResolution;
+
+    const newContainerWidth = width * totalScale;
+    const newContainerHeight = height * totalScale;
+
+    canvasContainer.style.width = `${newContainerWidth}px`;
+    canvasContainer.style.height = `${newContainerHeight}px`;
+
+    const bounds = canvasContainer.getBoundingClientRect();
+    const containerWidth = bounds.width;
+    const containerHeight = bounds.height;
+
+    canvas.setDimensions({ width: containerWidth, height: containerHeight });
+    canvas.setZoom(zoomLevel);
+    canvas.requestRenderAll();
+  }
 
   private initCanvas(
-    canvasElement: HTMLCanvasElement, 
+    viewport: any,
+    canvasElement: any, 
     design: DesignLayout, 
-    options: { 
-      renderOnAddRemove: boolean, 
-      autoPlayVideos: boolean, 
-      isViewOnly?: boolean, 
-      registerEvents?: boolean 
-      scale: number
-    }
+    options: { renderOnAddRemove: boolean, autoPlayVideos: boolean, isViewOnly?: boolean, registerEvents?: boolean }
   ) {
     try {
       const { screen, canvas }: any = design;
-      const [width, height] = screen.displaySettings.resolution.split('x').map(Number);
+      const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
       const canvasData = JSON.parse(canvas);
 
-      const newCanvas = new fabric.Canvas(canvasElement, {
-        width: width,
-        height: height,
-        backgroundColor: canvasData.background,
-        preserveObjectStacking: true,
-        renderOnAddRemove: options.renderOnAddRemove
-      });
+      const newCanvas = this.onInitFabricCanvas(viewport, canvasElement, { width, height }, canvasData.background);
+
+      newCanvas.setZoom(this.defaultScale)
 
       if (!options.isViewOnly) this.setCanvas(newCanvas);
 
@@ -1224,7 +1223,7 @@ export class DesignLayoutService {
     ];
 
     events.forEach((event: any) =>
-      canvas.on(event, () => {
+      canvas.on(event, () => {        
         this.updateHtmlLayers()
       })
     );
@@ -1232,7 +1231,7 @@ export class DesignLayoutService {
 
   private updateHtmlLayers() {
     this.canvasHTMLLayers().forEach((layer, index) => {
-      const obj = layer.fabricObject;
+      const obj = layer.fabricObject;      
       const updated = this.createHtmlLayerFromObject(obj, index, layer.content);
 
       Object.assign(layer, updated);
@@ -1240,26 +1239,40 @@ export class DesignLayoutService {
   }
 
   private createHtmlLayerFromObject(obj: fabric.Object | any, id: any, content: any) {
-    const width = (obj.width || 0) * (obj.scaleX || 1);
-    const height = (obj.height || 0) * (obj.scaleY || 1);
+    const canvas = this.getCanvas();
+    // if (!canvas) return;
+    
+    // const width = obj.getScaledWidth() //(obj.width || 0) * (obj.scaleX || 1);
+    // const height = obj.getScaledHeight() //(obj.height || 0) * (obj.scaleY || 1);
+    // const angle = obj.angle || 0;
+    // const center = obj.getCenterPoint();
+
+    // const rad = fabric.util.degreesToRadians(angle);
+    // const offsetX = -width / 2;
+    // const offsetY = -height / 2;
+    // const rotatedX = offsetX * Math.cos(rad) - offsetY * Math.sin(rad);
+    // const rotatedY = offsetX * Math.sin(rad) + offsetY * Math.cos(rad);
+
+    // const topLeftX = center.x + rotatedX;
+    // const topLeftY = center.y + rotatedY;    
+
+    const zoom = canvas.getZoom();
+
+    // Get real screen bounds
+    const bounds = obj.getBoundingRect();
+    
+    const left = bounds.left * zoom //obj.left * zoom;
+    const top = bounds.top * zoom // obj.top * zoom;
+    const width = bounds.width * zoom // obj.getScaledWidth() * zoom;
+    const height = bounds.height * zoom // obj.getScaledHeight() * zoom;
     const angle = obj.angle || 0;
-    const center = obj.getCenterPoint();
-
-    const rad = fabric.util.degreesToRadians(angle);
-    const offsetX = -width / 2;
-    const offsetY = -height / 2;
-    const rotatedX = offsetX * Math.cos(rad) - offsetY * Math.sin(rad);
-    const rotatedY = offsetX * Math.sin(rad) + offsetY * Math.cos(rad);
-
-    const topLeftX = center.x + rotatedX;
-    const topLeftY = center.y + rotatedY;
 
     if (obj.html) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
     
     return {
       id,
-      top: topLeftY,
-      left: topLeftX,
+      left,
+      top,
       width,
       height,
       rotation: angle,
@@ -1351,33 +1364,33 @@ export class DesignLayoutService {
     //   }
     // })
 
-    canvas.on('object:scaling', (e) => {
-      const { width, height } = this.canvasDimensions(canvas);
-      const obj: any = e.target;      
-      if (!obj || !obj.html) return;
+    // canvas.on('object:scaling', (e) => {
+    //   const { width, height } = this.canvasDimensions(canvas);
+    //   const obj: any = e.target;      
+    //   if (!obj || !obj.html) return;
       
-      const canvasWidth = width;
-      const canvasHeight = height;
+    //   const canvasWidth = width;
+    //   const canvasHeight = height;
 
-      const maxWidth = canvasWidth - (obj.left ?? 0);
-      const maxHeight = canvasHeight - (obj.top ?? 0);
+    //   const maxWidth = canvasWidth - (obj.left ?? 0);
+    //   const maxHeight = canvasHeight - (obj.top ?? 0);
 
-      const scaledWidth = obj.width! * obj.scaleX!;
-      const scaledHeight = obj.height! * obj.scaleY!;
+    //   const scaledWidth = obj.width! * obj.scaleX!;
+    //   const scaledHeight = obj.height! * obj.scaleY!;
 
-      const MIN_WIDTH = 200;
-      const MIN_HEIGHT = 100;
+    //   const MIN_WIDTH = 200;
+    //   const MIN_HEIGHT = 100;
 
-      // ✅ Clamp minimum size
-      if (scaledWidth < MIN_WIDTH) obj.scaleX = MIN_WIDTH / obj.width!;
-      if (scaledHeight < MIN_HEIGHT)obj.scaleY = MIN_HEIGHT / obj.height!;
+    //   // ✅ Clamp minimum size
+    //   if (scaledWidth < MIN_WIDTH) obj.scaleX = MIN_WIDTH / obj.width!;
+    //   if (scaledHeight < MIN_HEIGHT)obj.scaleY = MIN_HEIGHT / obj.height!;
 
-      // ✅ Clamp maximum size (canvas bounds)
-      if (scaledWidth > maxWidth) obj.scaleX = maxWidth / obj.width!;
-      if (scaledHeight > maxHeight) obj.scaleY = maxHeight / obj.height!;
+    //   // ✅ Clamp maximum size (canvas bounds)
+    //   if (scaledWidth > maxWidth) obj.scaleX = maxWidth / obj.width!;
+    //   if (scaledHeight > maxHeight) obj.scaleY = maxHeight / obj.height!;
 
-      canvas.requestRenderAll();
-    })
+    //   canvas.requestRenderAll();
+    // })
   }
 
   private registerAlignmentGuides(canvas: fabric.Canvas) {

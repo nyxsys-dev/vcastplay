@@ -1,9 +1,10 @@
-import { Component, ElementRef, forwardRef, inject, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, HostListener, inject, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { PlaylistMainPlayerComponent } from '../../pages/playlist/playlist-main-player/playlist-main-player.component';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { DesignLayout } from '../../core/interfaces/design-layout';
 import { DesignLayoutService } from '../../core/services/design-layout.service';
-import { PreviewContentRendererComponent } from '../preview-content-renderer/preview-content-renderer.component';
 import * as fabric from 'fabric';
+import { PreviewContentRendererComponent } from '../preview-content-renderer/preview-content-renderer.component';
 
 @Component({
   selector: 'app-preview-design-layout',
@@ -14,7 +15,11 @@ import * as fabric from 'fabric';
 })
 export class PreviewDesignLayoutComponent {
   
-  @ViewChild('previewCanvas', { static: true }) canvasElement!: ElementRef<any>;
+  // @ViewChild('viewport', { static: true }) viewport!: ElementRef<HTMLDivElement>;
+  @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
+
+  @Input() viewport!: any;
+  // @Input() canvasContainer!: ElementRef<HTMLDivElement>;
 
   @Input() designLayout!: DesignLayout;
   @Input() isViewOnly: boolean = false;
@@ -22,6 +27,14 @@ export class PreviewDesignLayoutComponent {
 
   designLayoutService = inject(DesignLayoutService);
   canvas: fabric.Canvas | any = null;
+
+  
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {   
+    const viewport = this.viewport.nativeElement;
+    const canvasContainer = this.canvasContainer.nativeElement; 
+    this.designLayoutService.onScaleCanvas(viewport, canvasContainer);
+  }
 
   ngOnInit(): void { }
 
@@ -37,18 +50,19 @@ export class PreviewDesignLayoutComponent {
     }
   }
 
-  ngAfterViewInit(): void {
-    // if (this.canvas) this.canvas.dispose();
+  ngAfterViewInit(): void {    
     this.onRenderCanvas();
   }
 
   ngOnDestroy(): void {
-    this.canvasElement.nativeElement.remove();
+    this.canvasContainer.nativeElement.remove();
     this.designLayoutService.onStopVideosInCanvas(this.canvas);
   }
 
   onRenderCanvas() {
-    this.canvas = this.designLayoutService.onPreloadCanvas(this.canvasElement.nativeElement, this.designLayout)
+    const viewport = this.viewport.nativeElement;
+    const canvasContainer = this.canvasContainer.nativeElement;
+    this.canvas = this.designLayoutService.onPreloadCanvas(viewport, canvasContainer, this.designLayout);    
   }
 
   get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }

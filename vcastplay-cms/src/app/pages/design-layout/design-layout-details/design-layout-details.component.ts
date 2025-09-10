@@ -7,7 +7,7 @@ import { ScreenSelectionComponent } from '../../../components/screen-selection/s
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { PlaylistService } from '../../../core/services/playlist.service';
-import { CdkDrag } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragEnd, CdkDragMove, CdkDragRelease, CdkDragStart } from '@angular/cdk/drag-drop';
 import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player/playlist-main-player.component';
 
 @Component({
@@ -19,8 +19,10 @@ import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player
 export class DesignLayoutDetailsComponent {
 
   @ViewChild('screen') screenElement!: ScreenSelectionComponent;
-  @ViewChild('canvas', { static: true }) canvasElement!: ElementRef<HTMLCanvasElement>;
+
+  @ViewChild('viewport', { static: true }) viewport!: ElementRef<HTMLDivElement>;
   @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
+
   @ViewChild('importFile') importFileElement!: ElementRef<HTMLInputElement>;
   @ViewChild(CdkDrag) cdkDrag!: CdkDrag;
   
@@ -117,10 +119,9 @@ export class DesignLayoutDetailsComponent {
   @HostListener('wheel', ['$event']) onWheel(event: WheelEvent) {
     if (!event.ctrlKey) return;
     event.preventDefault();
-    const factor = event.deltaY < 0 ? 1.1 : 0.9;
-    const type = event.deltaY < 0 ? 'in' : 'out';
+    const factor = event.deltaY < 0 ? 1.2 : (1 / 1.2);
     if(this.canvasProps.zoom) {
-      this.designLayoutService.onZoomCanvas(factor);
+      this.designLayoutService.onZoomCanvas(this.canvasContainer.nativeElement, factor, false);
     }
   }
 
@@ -191,6 +192,11 @@ export class DesignLayoutDetailsComponent {
     }
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {    
+    this.designLayoutService.onScaleCanvas(this.viewport.nativeElement, this.canvasContainer.nativeElement);
+  }
+
   hasUnsavedChanges!: () => boolean;
 
   ngOnInit() {
@@ -206,7 +212,7 @@ export class DesignLayoutDetailsComponent {
 
   ngAfterViewInit() {
     if (this.isEditMode()) {
-      this.designLayoutService.onEditDesign(this.canvasElement.nativeElement, this.designForm.value);
+      this.designLayoutService.onEditDesign(this.viewport.nativeElement, this.canvasContainer.nativeElement, this.designForm.value);
       this.onUpdateMenus();
     }
   }
@@ -217,8 +223,8 @@ export class DesignLayoutDetailsComponent {
 
   onClickCreateCanvas() {
     const { screen, color } = this.designForm.value;
-    const resolution = screen.displaySettings.resolution.split('x');
-    this.designLayoutService.onCreateCanvas(this.canvasContainer.nativeElement, { width: resolution[0], height: resolution[1] }, color);
+    const [ width, height ]: any = screen.displaySettings.resolution.split('x');
+    this.designLayoutService.onCreateCanvas(this.viewport.nativeElement, this.canvasContainer.nativeElement, { width, height }, color);
     this.showCanvasSize.set(false);
     this.screenElement.selectedScreen.set(null);
     this.onUpdateMenus();
@@ -256,13 +262,13 @@ export class DesignLayoutDetailsComponent {
         this.showContents.set(true);
         break;
     }
-    this.onResetCanvasPosition();
+    // this.onResetCanvasPosition();
     this.designLayoutService.onLayerArrangement('front');
   }
   
   onClickAddShape(type: string) {
     const canvas = this.designLayoutService.getCanvas();
-    this.onResetCanvasPosition();
+    // this.onResetCanvasPosition();
     this.designLayoutService.onAddShapeToCanvas(canvas, type, this.selectedColor());
   }
 
@@ -271,28 +277,28 @@ export class DesignLayoutDetailsComponent {
     this.designForm.reset();
   }
 
-  onClickZoom(factor: number) {
-    if (factor == 1.1) this.designLayoutService.onZoomInCanvas();
-    if (factor == 0.9) this.designLayoutService.onZoomOutCanvas();
-    // this.designLayoutService.onZoomCanvas(factor);
+  onClickZoom(zoomIn: boolean) {
+    const factor = zoomIn ? 1.2 : 1 / 1.2;
+    this.designLayoutService.onZoomCanvas(this.canvasContainer.nativeElement, factor, false);
   }
 
   onClickResetZoom() {
-    this.designLayoutService.onResetZoomCanvas();
+    this.onResetCanvasPosition();
+    this.designLayoutService.onZoomCanvas(this.canvasContainer.nativeElement, 0, true);
   }
 
   onClickLayerArrangement(position: string) {
-    this.onResetCanvasPosition();
+    // this.onResetCanvasPosition();
     this.designLayoutService.onLayerArrangement(position);
   }
 
   onClickLayerAlignment(position: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') {
-    this.onResetCanvasPosition();
+    // this.onResetCanvasPosition();
     this.designLayoutService.onLayerAlignment(position);
   }
 
   onClickLayerSpacing(axis: 'horizontal' | 'vertical') {
-    this.onResetCanvasPosition();
+    // this.onResetCanvasPosition();
     this.designLayoutService.onLayerSpacing(axis);
   }
 
@@ -397,7 +403,7 @@ export class DesignLayoutDetailsComponent {
 
   onImportFile(event: any) {
     this.isEditMode.set(true);
-    this.designLayoutService.onImportCanvas(event, this.canvasElement.nativeElement);
+    this.designLayoutService.onImportCanvas(event, this.viewport.nativeElement, this.canvasContainer.nativeElement);
     this.onUpdateMenus();
   }
 
@@ -418,4 +424,6 @@ export class DesignLayoutDetailsComponent {
 
   get isMobile() { return this.utils.isMobile(); }
   get isTablet() { return this.utils.isTablet(); }
+
+  get zoomLevel() { return this.designLayoutService.zoomLevel; }
 }
