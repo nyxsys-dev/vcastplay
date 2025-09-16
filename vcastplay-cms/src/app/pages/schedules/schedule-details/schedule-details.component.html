@@ -106,8 +106,7 @@
         @case ('design') {
             <ng-container *ngIf="detailContents as content">
                 <div #viewport class="relative flex h-full md:h-100 w-full items-center justify-center group bg-stone-800 text-white rounded-lg">
-                    <app-preview-design-layout class="absolute flex-1 border-2 border-[var(--p-surface-300)]" 
-                        [designLayout]="content" [isViewOnly]="true" [viewport]="viewportElement" />
+                    <app-preview-design-layout class="absolute flex-1" [designLayout]="content" [isViewOnly]="true" [viewport]="viewport" />
                 </div>
             </ng-container>
         }
