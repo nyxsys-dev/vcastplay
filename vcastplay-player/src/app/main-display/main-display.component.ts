@@ -67,14 +67,11 @@ export class MainDisplayComponent {
     })
   }
 
-  ngOnInit() {
-    // this.player.onLoadContents();
-    // const contents = this.player.onGetContents();
-    // if (contents.type == 'playlist') this.onClickPlayPreview();
-  }
+  ngOnInit() { }
 
   async ngAfterViewInit() {
     const platform = this.storage.get('platform');
+    // await this.indexedDB.clearItems();
     // const contents = this.player.onGetContents();
     // contents.forEach(async (content: Playlist) => {
     //   await this.indexedDB.addItem(content)
@@ -123,6 +120,7 @@ export class MainDisplayComponent {
     } else if (this.platform == 'android') {
       const file = ['asset'].includes(type) ? content : content.files;
       this.player.onSendDataToAndroid({ file });
+      this.isPlay.set(true)
     } else {
       this.isPlay.set(true)
     }
