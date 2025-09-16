@@ -118,8 +118,8 @@ export class MainDisplayComponent {
           break;
       }
     } else if (this.platform == 'android') {
-      const file = ['asset'].includes(type) ? content : content.files;
-      this.player.onSendDataToAndroid({ file });
+      const file = ['asset'].includes(type) ? [ content ] : content.files;
+      this.player.onSendDataToAndroid({ file });      
       this.isPlay.set(true)
     } else {
       this.isPlay.set(true)

@@ -730,6 +730,7 @@ export class PlayerService {
   onSendDataToAndroid(data: any) {
     if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {
       const jsonData = JSON.stringify(data);
+      console.log(jsonData);
       (window as any).AndroidBridge.sendCommand(jsonData);
     } else {
       console.warn('AndroidBridge not available.');
