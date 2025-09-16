@@ -1,4 +1,6 @@
-<div #viewport class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden bg-[var(--p-primary-500)]">
+<div #viewport class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden"
+  [ngClass]="{ 'bg-[var(--p-primary-500)]': !isPlay(), 'bg-stone-800': isPlay() }"
+>
 
   <!-- Main Player -->
   <ng-container *ngIf="isPlay()">
@@ -7,7 +9,7 @@
       @switch (contentData?.type) {
         @case ('design') {
           <app-preview-design-layout class="flex-1 h-full w-full flex items-center justify-center" 
-            [viewport]="viewport" [designLayout]="contentData" [autoPlay]="isPlay()" />
+            [viewport]="viewport" [designLayout]="contentData" [autoPlay]="true" />
         }
         @case('playlist') {
               @for (item of contentData.contents; track trackById($index, item)) {

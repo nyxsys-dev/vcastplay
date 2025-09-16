@@ -7,7 +7,7 @@
                         'opacity-0': content().currentContent()?.contentId != item.contentId,
                         'opacity-100': content().currentContent()?.contentId == item.contentId 
                     }"
-                    [viewport]="viewportElement" [currentPlaying]="content().currentContent()" [designLayout]="item" [autoPlay]="autoPlay" />
+                    [viewport]="viewportElement" [currentPlaying]="content().currentContent()" [designLayout]="item" [autoPlay]="true" />
             }
             @default {
                 <app-preview-assets class="absolute h-full w-full flex items-center justify-center" [currentPlaying]="content().currentContent()" 
@@ -15,7 +15,7 @@
                         'opacity-0': content().currentContent()?.contentId != item.contentId,
                         'opacity-100': content().currentContent()?.contentId == item.contentId 
                     }"
-                    [currentContent]="item" (timeUpdate)="onProgressUpdate(item.id, $event)" [autoPlay]="autoPlay" />
+                    [currentContent]="item" (timeUpdate)="onProgressUpdate(item.id, $event)" [autoPlay]="true" />
             }
         }
     }

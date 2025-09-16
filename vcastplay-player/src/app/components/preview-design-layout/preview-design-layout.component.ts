@@ -29,10 +29,9 @@ export class PreviewDesignLayoutComponent {
 
   
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {   
-    const viewport = this.viewport.nativeElement;
+  onResize(event: any) {
     const canvasContainer = this.canvasContainer.nativeElement; 
-    this.designLayoutService.onScaleCanvas(viewport, canvasContainer);
+    this.designLayoutService.onScaleCanvas(this.viewport, canvasContainer);
   }
 
   constructor(private cdr: ChangeDetectorRef) { }
@@ -40,7 +39,7 @@ export class PreviewDesignLayoutComponent {
   ngOnInit(): void { }
 
   ngOnChanges() {
-    Promise.resolve().then(() => this.onPlayVideoInCanvas())
+    // Promise.resolve().then(() => this.onPlayVideoInCanvas())
   }
 
   ngAfterViewInit(): void {  

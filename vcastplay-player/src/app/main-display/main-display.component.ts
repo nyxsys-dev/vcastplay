@@ -144,8 +144,8 @@ export class MainDisplayComponent {
    
     switch (platform) {
       case 'android':
-        const playlist = this.player.onGetContents();
-        this.player.onSendDataToAndroid({ code, platform, playerCode, appVersion, playlist });
+        // const playlist = this.player.onGetContents();
+        this.player.onSendDataToAndroid({ code, platform, playerCode, appVersion });
         this.player.onGetAndroidInformation();
         console.log(this.androidData());
         break;

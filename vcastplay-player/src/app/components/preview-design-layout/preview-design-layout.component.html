@@ -4,7 +4,8 @@
         <div class="absolute pointer-events-none z-10" [id]="layer.id" 
             [style]="{ top: layer.top + 'px', left: layer.left + 'px', width: layer.width + 'px', 
                 height: layer.height + 'px', transform: 'rotate(' + layer.rotation + 'deg) translateZ(0)' }">
-                <app-preview-content-renderer class="relative w-full h-full group bg-stone-800 text-white rounded-lg" [autoPlay]="autoPlay" [contentData]="layer.content" />
+                <app-preview-content-renderer class="relative w-full h-full group bg-stone-800 text-white rounded-lg" 
+                    [autoPlay]="true" [contentData]="layer.content" />
         </div>
     }
 </div>
