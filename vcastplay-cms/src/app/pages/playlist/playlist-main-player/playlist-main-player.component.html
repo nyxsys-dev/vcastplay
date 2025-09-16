@@ -9,10 +9,7 @@
                             'opacity-0': content().currentContent()?.contentId != item.contentId,
                             'opacity-100': content().currentContent()?.contentId == item.contentId 
                         }"
-                        [viewport]="viewportElement" [currentPlaying]="content().currentContent()" [designLayout]="item" />
-                    <!-- <app-preview-design-layout class="absolute flex-1 h-full w-full flex items-center justify-center" 
-                        [viewport]="viewportElement" [currentPlaying]="content().currentContent()"
-                        [ngClass]="{ 'hidden': content().currentContent()?.contentId != item.contentId }" [designLayout]="item" /> -->
+                        [viewport]="viewport" [currentPlaying]="content().currentContent()" [designLayout]="item" [isViewOnly]="true" />
                 }
                 @default {
                     <app-preview-assets class="absolute h-full w-full flex items-center justify-center" [currentPlaying]="content().currentContent()" 

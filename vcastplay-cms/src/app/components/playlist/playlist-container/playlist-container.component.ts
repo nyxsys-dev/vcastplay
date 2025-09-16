@@ -18,14 +18,14 @@ export class PlaylistContainerComponent {
 
   @Input() playListForm!: FormGroup;
 
-  assets = signal<Assets[]>([]);
+  // assets = signal<Assets[]>([]);
 
   assetService = inject(AssetsService);
   playlistService = inject(PlaylistService);
   message = inject(MessageService);
 
   ngOnInit() {
-    this.assets.set(this.assetService.onGetAssets());    
+    // this.assets.set(this.assetService.onGetAssets());    
   }
 
   onDropped(event: CdkDragDrop<string[]>) {

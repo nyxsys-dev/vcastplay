@@ -1,0 +1,22 @@
+<div #viewport class="relative flex items-center justify-center h-full w-full">
+    @for (item of contentData.contents; track trackById($index, item)) {
+        @switch (item.type) {
+            @case ('design') {
+                <app-preview-design-layout class="flex-1 h-full w-full flex items-center justify-center" 
+                    [ngClass]="{ 
+                        'opacity-0': content().currentContent()?.contentId != item.contentId,
+                        'opacity-100': content().currentContent()?.contentId == item.contentId 
+                    }"
+                    [viewport]="viewportElement" [currentPlaying]="content().currentContent()" [designLayout]="item" [autoPlay]="autoPlay" />
+            }
+            @default {
+                <app-preview-assets class="absolute h-full w-full flex items-center justify-center" [currentPlaying]="content().currentContent()" 
+                    [ngClass]="{ 
+                        'opacity-0': content().currentContent()?.contentId != item.contentId,
+                        'opacity-100': content().currentContent()?.contentId == item.contentId 
+                    }"
+                    [currentContent]="item" (timeUpdate)="onProgressUpdate(item.id, $event)" [autoPlay]="autoPlay" />
+            }
+        }
+    }
+</div>

@@ -1,4 +1,4 @@
-import { Component, computed, effect, HostListener, inject, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
@@ -25,6 +25,7 @@ import { PreviewDesignLayoutComponent } from '../../../components/preview-design
 })
 export class ScheduleDetailsComponent {
 
+  @ViewChild('viewport') viewportElement!: ElementRef<HTMLDivElement>;
   @ViewChild('scheduleCalendar') scheduleCalendar!: FullCalendarComponent;
   @ViewChild('scheduleContents') scheduleContents!: SchedulesContentListComponent;
   
@@ -102,6 +103,7 @@ export class ScheduleDetailsComponent {
   }
 
   timeSlots = computed(() => this.generateTimeCode().map((timeSlot: any) => ({ ...timeSlot, value: `${timeSlot.start} - ${timeSlot.end}`})) );
+  detailContents: any;
   
   hasUnsavedChanges!: () => boolean;
 
@@ -177,7 +179,7 @@ export class ScheduleDetailsComponent {
     this.showAddContents.set(false);
     this.showFillerContents.set(false);
     this.contentItemForm.reset();
-    this.selectedContent.set(null);
+    // this.selectedContent.set(null);
     this.arrSelectedContents.set([]);
   }
 
@@ -211,7 +213,7 @@ export class ScheduleDetailsComponent {
   }
 
 
-  onClickEditContent(content: any) {
+  onClickEditContent(content: any) { 
     document.querySelectorAll('.fc-popover').forEach(el => el.remove());
     const data = content.event;
     const { start, end, ...info } = data.extendedProps;
@@ -239,7 +241,10 @@ export class ScheduleDetailsComponent {
         this.message.add({ severity: 'error', summary: 'Error', detail: 'Duplicate events found. Some events were not saved' });
       }
 
-      this.selectedContent.set(null);
+      this.detailContents = this.selectedContent();
+      console.log(this.detailContents);
+      
+      // this.selectedContent.set(null);
       this.contentItemForm.reset();
       this.showAddContents.set(false);
     });
@@ -344,7 +349,7 @@ export class ScheduleDetailsComponent {
   }
 
   onClosePreview() {
-    this.selectedContent.set(null);
+    // this.selectedContent.set(null);
     this.playlistService.onStopAllContents();
     this.playlistForm.reset();
   }

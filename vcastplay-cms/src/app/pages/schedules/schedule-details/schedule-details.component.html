@@ -88,7 +88,7 @@
     styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false" [resizable]="true">
     @switch (type?.value) {
         @case('asset') {
-            <ng-container *ngIf="selectedContent() as content">
+            <ng-container *ngIf="detailContents as content">
                 <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
                     <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
                         [currentContent]="content" [showControls]="true" [autoPlay]="false" />
@@ -96,30 +96,30 @@
             </ng-container>
         }
         @case ('playlist') {
-            <ng-container *ngIf="playlistForm?.valid as playlist">
-                <div class="flex h-full md:h-100">
-                    <app-playlist-main-player class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
-                        [playlist]="playlistForm.value" />
+            <ng-container *ngIf="detailContents as content">
+                <div class="flex h-full w-full">
+                    <app-playlist-main-player class="relative flex-1 border-1 border-[var(--p-surface-300)] group bg-stone-800 text-white"
+                        [playlist]="content" />
                 </div>
             </ng-container>
         }
         @case ('design') {
-            <div class="flex h-full md:h-100">
-                <ng-container *ngIf="selectedContent() as content">
-                    <app-preview-design-layout class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
-                        [designLayout]="content" [isViewOnly]="true" />
-                </ng-container>
-            </div>
+            <ng-container *ngIf="detailContents as content">
+                <div #viewport class="relative flex h-full md:h-100 w-full items-center justify-center group bg-stone-800 text-white rounded-lg">
+                    <app-preview-design-layout class="absolute flex-1 border-2 border-[var(--p-surface-300)]" 
+                        [designLayout]="content" [isViewOnly]="true" [viewport]="viewportElement" />
+                </div>
+            </ng-container>
         }
     }
     <div class="flex flex-col gap-3 mt-3">
         <p class="text-sm italic text-gray-400">Information</p>
         <div class="flex gap-2">
-            <p class="text-lg font-semibold">{{ selectedContent()?.name }}</p>
-            @if (['asset'].includes(type?.value)) { <p-tag class="ml-auto" [value]="selectedContent()?.type.toUpperCase()" severity="info" /> }
+            <p class="text-lg font-semibold">{{ detailContents?.name }}</p>
+            @if (['asset'].includes(type?.value)) { <p-tag class="ml-auto" [value]="detailContents?.type.toUpperCase()" severity="info" /> }
         </div>
         @if (!['asset'].includes(type?.value)) {
-            <p class="text-lg">{{ selectedContent()?.description }}</p>
+            <p class="text-lg">{{ detailContents?.description }}</p>
         }
         @if (!contentValue.allDay) {
             <div class="flex gap-2">

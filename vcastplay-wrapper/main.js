@@ -1,15 +1,15 @@
-const si = require('systeminformation');
-const { app, BrowserWindow, ipcMain, screen, Menu, nativeImage, Tray, desktopCapturer } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, session } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
-const { exec } = require('child_process');
 const path = require('path');
-const os = require('os');
+
+const systemFunc = require('./modules/system')
+const updater = require('./modules/autoUpdater');
+const downloader = require("./modules/downloader");
 
 const isDev = !app.isPackaged;
 
 let win;
-let tray;
 
 /**
  * Creates a new browser window with the specified configuration.
@@ -47,7 +47,7 @@ function createWindow() {
     // Disable menu
     Menu.setApplicationMenu(null);
 
-    setupAutoUpdater();
+    updater.onSetupAutoUpdate();
   }
 
   win.on('close', (event) => {
@@ -57,61 +57,32 @@ function createWindow() {
     }
   })
 
-  createTray();
+  systemFunc.onCreateTray(win).then(tray => {
+    tray.on('click', () => {
+      win.isVisible() ? win.hide() : win.show();
+    });
+  });
 }
 
 ipcMain.handle('control', async (_event, action, appName) => {
-  const commands = {
-    shutdown: "shutdown -s -t 0",
-    restart: "shutdown -r -t 0",
-    open: `start ${appName}`,
-    close: `taskkill /IM ${appName}.exe /F`,
-  };
-  return new Promise((resolve, reject) => {
-    exec(commands[action], (err) => {
-      if (err) reject("Failed");
-      else resolve("OK");
-    });
-  });
+  return await systemFunc.onSystemCommand(action, appName);
 });
 
 ipcMain.handle('getSystemInfo', async () => {
-  const hostname = os.hostname();
-  const net = os.networkInterfaces();
-  const cpu = await si.cpu();
-  const temp = await si.cpuTemperature();
-  const mem = await si.mem();
-  const disk = await si.fsSize();
-  const osInfo = await si.osInfo();
-  const system = await si.system();
-  const display = screen.getPrimaryDisplay();
-  const graphics = await si.graphics();
-
-  return {
-    hostname,
-    ip: Object.values(net)
-      .flat()
-      .filter(i => i.family === 'IPv4' && !i.internal)[0]?.address || 'N/A',
-    cpu: cpu.manufacturer + ' ' + cpu.brand,
-    cpuTemp: temp.main,
-    ram: (mem.total / 1e9).toFixed(2) + ' GB',
-    disk: disk.map(d => ({ mount: d.mount, size: (d.size / 1e9).toFixed(1) + ' GB' })),
-    os: osInfo.distro + ' ' + osInfo.release,
-    serial: system.uuid,
-    browserVersion: process.versions.chrome,
-    screen: {
-      width: display.size.width,
-      height: display.size.height
-    },
-    graphics: graphics,
-    coords: null, // placeholder, will be filled by renderer
-    appVersion: app.getVersion()
-  };
+  return await systemFunc.onGetSystemInfo();
 });
 
 ipcMain.handle('takeScreenshot', async () => {
-  return await takeScreenshot();
+  return await systemFunc.onTakeScreenShot();
 });
+
+ipcMain.handle('downloadFiles', (event, files) => {
+  return downloader.onHandleDownloadFiles(event, files);
+})
+
+ipcMain.handle('onDeleteFolder', async (event, filePath) => {
+  return await systemFunc.onDeleteFolder(filePath);
+})
 
 ipcMain.on('restart_app', () => {
   autoUpdater.quitAndInstall();
@@ -123,112 +94,8 @@ ipcMain.on('check-for-updates', () => {
   autoUpdater.checkForUpdatesAndNotify();
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async () => {
+  await session.defaultSession.setProxy({ mode: "system" });
+  createWindow();
+});
 app.on('window-all-closed', () => app.quit());
-
-function createTray() {
-  const icon = path.join(__dirname, 'assets/favicon.png');
-  const trayIcon = nativeImage.createFromPath(icon);
-  tray = new Tray(trayIcon);
-
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: 'Show App',
-      click: () => win.show()
-    },
-    {
-      label: 'Exit App',
-      click: () => {
-        app.isQuiting = true;
-        tray.destroy();
-        app.quit();
-      }
-    }
-  ])
-
-  tray.setToolTip('VCastPlay');
-  tray.setContextMenu(contextMenu);
-  
-  // Optional: click to toggle window
-  tray.on('double-click', () => {
-    win.isVisible() ? win.hide() : win.show();
-  });
-}
-
-function setupAutoUpdater() {
-  // Logging
-  autoUpdater.logger = log;
-  autoUpdater.logger.transports.file.level = 'info';
-  // Auto download and install after update is downloaded
-  autoUpdater.autoDownload = true;
-
-  // Events
-  autoUpdater.on('checking-for-update', () => {
-    log.info('Checking for updates...');
-  });
-
-  autoUpdater.on('update-available', (info) => {
-    log.info('Update available:', info);
-  });
-
-  autoUpdater.on('update-not-available', (info) => {
-    log.info('No update available:', info);
-  });
-
-  autoUpdater.on('error', (err) => {
-    log.error('Error in auto-updater:', err);
-  });
-
-  autoUpdater.on('download-progress', (progress) => {
-    log.info(`Download speed: ${progress.bytesPerSecond}`);
-    log.info(`Downloaded: ${progress.percent}%`);
-  });
-
-  autoUpdater.on('update-downloaded', (info) => {
-    log.info('Update downloaded. Quitting and installing...');
-    autoUpdater.quitAndInstall();
-  });
-
-  // Initial check
-  autoUpdater.checkForUpdatesAndNotify();
-
-  // Real-time check every 10 minutes
-  setInterval(() => {
-    autoUpdater.checkForUpdatesAndNotify();
-  }, 10 * 60 * 1000); // 10 minutes
-}
-
-async function takeScreenshot() {
-  const sources = await desktopCapturer.getSources({ types: ['window', 'screen'] });
-
-  for (const source of sources) {
-    if (source.name === 'Entire Screen' || source.name === 'Screen 1') {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          mandatory: {
-            chromeMediaSource: 'desktop',
-            chromeMediaSourceId: source.id
-          }
-        }
-      });
-
-      const video = document.createElement('video');
-      video.srcObject = stream;
-      await video.play();
-
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const image = canvas.toDataURL('image/png');
-      stream.getTracks()[0].stop();
-
-      console.log(image);
-      
-      return image;
-    }
-  }
-}

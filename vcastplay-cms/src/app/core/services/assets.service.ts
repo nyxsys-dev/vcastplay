@@ -91,6 +91,7 @@ export class AssetsService {
         name: 'pexels-photo-355465.jpeg',
         type: 'image',
         link: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg',
+        thumbnail: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,
@@ -100,7 +101,6 @@ export class AssetsService {
             width: 326,
             height: 195
           },
-          thumbnail: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg'
         },
         duration: 5,
         audienceTag: {
@@ -122,6 +122,7 @@ export class AssetsService {
         name: 'ForBiggerBlazes.mp4',
         type: 'video',
         link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        thumbnail: 'https://placehold.co/600x400',
         fileDetails: {
           name: 'ForBiggerBlazes.mp4',
           size: 2498125,
@@ -131,7 +132,6 @@ export class AssetsService {
             width: 1280,
             height: 720
           },
-          thumbnail: 'https://placehold.co/600x400'
         },
         duration: 15,
         audienceTag: {
@@ -153,6 +153,7 @@ export class AssetsService {
         name: 'ForBiggerJoyrides.mp4',
         type: 'video',
         link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+        thumbnail: 'https://placehold.co/600x400',
         fileDetails: {
           name: 'ForBiggerBlazes.mp4',
           size: 2498125,
@@ -162,7 +163,6 @@ export class AssetsService {
             width: 1280,
             height: 720
           },
-          thumbnail: 'https://placehold.co/600x400'
         },
         duration: 15,
         audienceTag: {
@@ -184,6 +184,7 @@ export class AssetsService {
         name: 'photo-1464822759023-fed622ff2c3b.avif',
         type: 'image',
         link: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,
@@ -193,7 +194,6 @@ export class AssetsService {
             width: 326,
             height: 195
           },
-          thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         },
         duration: 10,
         audienceTag: {
@@ -215,6 +215,7 @@ export class AssetsService {
         name: '1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
         type: 'image',
         link: 'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
+        thumbnail: 'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,
@@ -224,7 +225,6 @@ export class AssetsService {
             width: 326,
             height: 195
           },
-          thumbnail: 'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
         },
         duration: 8,
         audienceTag: {

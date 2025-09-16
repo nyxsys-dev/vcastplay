@@ -8,6 +8,7 @@ export interface Assets {
     link: string;
     category?: string;
     subCategory?: string;
+    thumbnail?: string
     fileDetails: AssestInfo;
     dateRange?: { 
         start: Date | null;
@@ -18,6 +19,7 @@ export interface Assets {
     duration: number;
     audienceTag: AudienceTag;
     status: string;
+    contentId?: any;
     createdOn: Date;
     updatedOn: Date;
 }
@@ -33,5 +35,4 @@ export interface AssestInfo {
     size: number;
     orientation: string;
     resolution: { width: number; height: number };
-    thumbnail?: string
 }

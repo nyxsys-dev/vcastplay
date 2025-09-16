@@ -9,8 +9,9 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { v7 as uuidv7 } from 'uuid';
-import moment from 'moment';
+import moment, { duration } from 'moment';
 import { PlaylistMainPlayerComponent } from '../playlist-main-player/playlist-main-player.component';
+import { DesignLayout } from '../../../core/interfaces/design-layout';
 
 @Component({
   selector: 'app-playlist-details',
@@ -133,9 +134,24 @@ export class PlaylistDetailsComponent {
     this.audienceTagSignal.set(audienceTag);
   }
 
-  onSelectionChange(event: any) {
-    const { contents } = this.playlistForm.value;    
-    this.playlistForm.patchValue({ contents: [...contents, { ...event, contentId: uuidv7() }]});
+  onSelectionChange(event: Assets | DesignLayout | any) {
+    const { contents, files } = this.playlistForm.value;   
+    
+    switch (event.type) {
+      case 'design':
+        this.playlistForm.patchValue({ 
+          contents: [...contents, { ...event, contentId: uuidv7() }],
+          files: [...files, ...event.files ]
+        });
+        break;
+    
+      default:
+        this.playlistForm.patchValue({ 
+          contents: [...contents, { ...event, contentId: uuidv7() }],
+          files: [...files, { id: event.id, name: event.name, link: event.link, duration: event.duration  } ]
+        });
+        break;
+    }
   }
 
   onContentTypeChange(event: any) {

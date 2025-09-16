@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
@@ -16,6 +16,8 @@ import { PreviewDesignLayoutComponent } from '../../../components/preview-design
   styleUrl: './design-layout-list.component.scss',
 })
 export class DesignLayoutListComponent {
+
+  @ViewChild('viewport', { static: true }) viewportElement!: ElementRef<HTMLDivElement>;
 
   pageInfo: MenuItem = [ { label: 'Designs' }, { label: 'Lists' } ];
   actionItems: MenuItem[] = [

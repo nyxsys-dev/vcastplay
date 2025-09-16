@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
+import { Component, ElementRef, forwardRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { DesignLayoutService } from '../../../core/services/design-layout.service';
 import { UtilityService } from '../../../core/services/utility.service';
@@ -7,12 +7,14 @@ import { ScreenSelectionComponent } from '../../../components/screen-selection/s
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { PlaylistService } from '../../../core/services/playlist.service';
-import { CdkDrag, CdkDragEnd, CdkDragMove, CdkDragRelease, CdkDragStart } from '@angular/cdk/drag-drop';
+import { CdkDrag } from '@angular/cdk/drag-drop';
 import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player/playlist-main-player.component';
+import { Assets } from '../../../core/interfaces/assets';
+import { DesignLayout } from '../../../core/interfaces/design-layout';
 
 @Component({
   selector: 'app-design-layout-details',
-  imports: [ PrimengUiModule, ComponentsModule, PlaylistMainPlayerComponent ],
+  imports: [ PrimengUiModule, ComponentsModule, forwardRef(() => PlaylistMainPlayerComponent) ],
   templateUrl: './design-layout-details.component.html',
   styleUrl: './design-layout-details.component.scss',
 })
@@ -357,34 +359,24 @@ export class DesignLayoutDetailsComponent {
     this.designForm.patchValue({ screen: event });
   }
 
-  onSelectedContentChange(event: any) {
+  onSelectedContentChange(event: Assets | DesignLayout | any) {
     const { loop, type, ...info }: any = event;
     const canvas = this.designLayoutService.getCanvas();
+    const { files } = this.designForm.value;
     switch (type) {
       case 'image':
       case 'clipart':
         this.designLayoutService.onAddImageToCanvas(canvas, event);
+        this.designForm.patchValue({ files: [...files, { id: event.id, name: event.name, link: event.link }] });
         break;
       case 'playlist':
       case 'web':
         this.designLayoutService.onAddHTMLToCanvas(canvas, { loop: true, type, ...info });
+        this.designForm.patchValue({ files: [...files, ...event.files] });
         break;
       default:
         this.designLayoutService.onAddVideoToCanvas(canvas, event);
-        break;
-    }
-  }
-
-  onDropped(event: any) {
-    const { item: { data } } = event;  
-    const canvas = this.designLayoutService.getCanvas();  
-    switch (data.type) {
-      case 'image':
-      case 'clipart':
-        this.designLayoutService.onAddImageToCanvas(canvas, data);
-        break;
-      default:
-        this.designLayoutService.onAddVideoToCanvas(canvas, data);
+        this.designForm.patchValue({ files: [...files, { id: event.id, name: event.name, link: event.link }] });
         break;
     }
   }
@@ -409,6 +401,10 @@ export class DesignLayoutDetailsComponent {
 
   onResetCanvasPosition() {
     // this.cdkDrag.reset();
+  }
+
+  trackById(index: number, item: any) {
+    return item.id; // unique ID
   }
 
   get isEditMode() { return this.designLayoutService.isEditMode; }

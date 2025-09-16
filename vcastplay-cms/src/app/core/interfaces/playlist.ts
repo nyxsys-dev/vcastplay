@@ -18,6 +18,7 @@ export interface Playlist {
     isAuto: boolean;
     isActive: boolean;
     approvedInfo?: ApprovedInfo;
+    files?: any[];
     createdOn: Date;
     updatedOn: Date;
 }

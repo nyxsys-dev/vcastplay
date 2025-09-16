@@ -3,6 +3,7 @@ import { Location } from '../interfaces/player';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { v7 as uuidv7 } from 'uuid';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -46,5 +47,21 @@ export class UtilsService {
       code += characters.charAt(randomIndex);
     }
     return code;
+  }
+
+  onDeleteFolder(path: string) {
+    return window.system.onDeleteFolder(path);
+  }
+
+  onDownloadFiles(files: any[]): Promise<string> {
+    return window.system.downloadFiles(files);
+  }
+
+  onGetDownloadProgessa(): Observable<any> {
+    return new Observable((observer) => {
+      window.system.onDownloadProgress((data) => {
+        observer.next(data);
+      });
+    })
   }
 }

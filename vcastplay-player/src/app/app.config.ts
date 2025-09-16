@@ -21,6 +21,9 @@ declare global {
       // onUpdateDownloaded: (callback: () => void) => void;
       restartApp: () => void;
       takeScreenshot: () => Promise<any>;
+      downloadFiles: (files: any[]) => Promise<string>;
+      onDownloadProgress: (callback: (data: any) => void) => void;
+      onDeleteFolder: (path: string) => void;
       isElectron: boolean;
     },
     getDeviceDetails: (data: any) => void;

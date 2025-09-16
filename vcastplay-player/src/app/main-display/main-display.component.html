@@ -1,20 +1,51 @@
-<div class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden bg-[var(--p-primary-500)]" 
-  (mousemove)="onMouseMove()" >
+<div #viewport class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden bg-[var(--p-primary-500)]">
 
-  <ng-container *ngIf="currentContent()">
-    <app-content-container class="absolute h-full w-full flex items-center justify-center" [ngClass]="{ 'cursor-none': hideCursor() }"
-        [currentContent]="currentContent()" [isPlaying]="isPlaying()" (timeUpdate)="onTimeUpdate($event)" [autoPlay]="true" />
-
+  <!-- Main Player -->
+  <ng-container *ngIf="isPlay()">
+    
+    <ng-container *ngIf="playerContent() as contentData">
+      @switch (contentData?.type) {
+        @case ('design') {
+          <app-preview-design-layout class="flex-1 h-full w-full flex items-center justify-center" 
+            [ngClass]="{ 
+                'opacity-0': !isPlay(),
+                'opacity-100': isPlay() 
+            }"
+            [viewport]="viewportElement" [designLayout]="contentData" [autoPlay]="true" />
+        }
+        @case('playlist') {
+          <div #viewport class="relative flex items-center justify-center h-full w-full object-fit">
+              @for (item of contentData.contents; track trackById($index, item)) {
+                  @switch (item.type) {
+                      @case ('design') {
+                          <app-preview-design-layout class="absolute flex-1 h-full w-full flex items-center justify-center" 
+                              [ngClass]="{ 
+                                  'opacity-0': content().currentContent()?.contentId != item.contentId,
+                                  'opacity-100': content().currentContent()?.contentId == item.contentId 
+                              }"
+                              [viewport]="viewportElement" [currentPlaying]="content().currentContent()" [designLayout]="item" [autoPlay]="true" />
+                      }
+                      @default {
+                          <app-preview-assets class="absolute h-full w-full flex items-center justify-center" [currentPlaying]="content().currentContent()" 
+                              [ngClass]="{ 
+                                  'opacity-0': content().currentContent()?.contentId != item.contentId,
+                                  'opacity-100': content().currentContent()?.contentId == item.contentId 
+                              }"
+                              [currentContent]="item" (timeUpdate)="onProgressUpdate(item.id, $event)" [autoPlay]="true" />
+                      }
+                  }
+              }
+          </div>
+        }
+        @default {
+          <app-preview-assets class="absolute h-full w-full flex items-center justify-center" 
+            [currentContent]="contentData" (timeUpdate)="onProgressUpdate(contentData.id, $event)" [autoPlay]="true" [loop]="true" />
+        }
+      }
+    </ng-container>
   </ng-container>
 
-  <!-- <div class="absolute bottom-0 z-50 w-full opacity-0 translate-y-2 transition-all duration-300 
-    group-hover:opacity-100 group-hover:translate-y-0" >
-    <div class="w-full flex flex-col justify-center gap-2">
-      <p-progressbar styleClass="!rounded-none" [value]="player.progress()" [style]="{ height: '0.5rem' }" [showValue]="false"></p-progressbar>
-    </div>
-  </div> -->
-
-  <ng-container *ngIf="!currentContent() && !isPlaying()">
+  <ng-container *ngIf="!playerContent()">
     <div class="absolute top-0 start-0 flex items-center justify-center p-6">
       <img class="w-30" src="assets/vcastplay.png" alt="vcastplay 2.0 logo">
     </div>
@@ -26,10 +57,23 @@
   </ng-container>
   
 
-  <div class="absolute bottom-3 right-3 flex items-center gap-1 m-2">
-    <p class="text-[10px] md:text-sm text-zinc-300">{{ systemInfo()?.code ?? '000000000' }}: {{ systemInfo()?.appVersion ?? '0.0.0' }}</p>
+  <div class="absolute bottom-0 left-0 flex items-center gap-1 p-2 w-full">
+    <div class="flex gap-3">
+      <p-button label="Asset" (onClick)="onClickSetContent('asset')" severity="secondary" size="small" />
+      <p-button label="Playlist" (onClick)="onClickSetContent('playlist')" severity="secondary" size="small" />
+      <p-button label="Design" (onClick)="onClickSetContent('design')" severity="secondary" size="small" />
+      <p-button label="Stop" (onClick)="onClikcStopPreview()" severity="secondary" size="small" />
+      @if (platform == 'desktop') {
+        <p-button label="Notepad" (onClick)="onClickNotepad()" severity="secondary" size="small" />
+      }
+      
+    </div>
+    <p class="text-[10px] md:text-sm text-zinc-300 ml-auto">{{ systemInfo()?.code ?? '000000000' }}: {{ systemInfo()?.appVersion ?? '0.0.0' }}</p>
   </div>
 
+  @if (platform == 'desktop') {
+    <app-progress-bar class="absolute bottom-10 left-0 w-full px-4 mb-4" />
+  }
   <!-- @if (isDev()) {
     <div class="absolute top-3 right-3 p-2 flex flex-col items-center gap-3">
       @if (networkService.isOnline()) {

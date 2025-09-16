@@ -60,6 +60,7 @@ export class PlaylistMainPlayerComponent {
       [`${type?.opacity ? 'opacity-100' : ''} ${type?.y ?? ''}`]: fadeIn
     };
   }
+  
   trackById(index: number, item: any): any {
     return { id: index, contentId: item.contentId } //item.contentId; // must be unique per item
   }

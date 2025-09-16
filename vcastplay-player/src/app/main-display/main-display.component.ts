@@ -1,37 +1,63 @@
-import { Component, effect, HostListener, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, ElementRef, forwardRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { PrimengModule } from '../core/modules/primeng/primeng.module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NetworkService } from '../core/services/network.service';
 import { UtilsService } from '../core/services/utils.service';
 import { PlayerService } from '../core/services/player.service';
 import { IndexedDbService } from '../core/services/indexed-db.service';
-import { Playlist } from '../core/interfaces/playlist';
+import { ContentState, Playlist } from '../core/interfaces/playlist';
 import { ComponentsModule } from '../core/modules/components/components.module';
 import { StorageService } from '../core/services/storage.service';
+import { PreviewAssetsComponent } from '../components/preview-assets/preview-assets.component';
+import { PlaylistsService } from '../core/services/playlists.service';
+import { PreviewDesignLayoutComponent } from '../components/preview-design-layout/preview-design-layout.component';
+import { PlatformService } from '../core/services/platform.service';
+import { environment } from '../../environments/environment.development';
 
 @Component({
   selector: 'app-main-display',
-  imports: [ PrimengModule, ComponentsModule ],
+  imports: [ 
+    PrimengModule, 
+    ComponentsModule,
+    forwardRef(() => PreviewAssetsComponent),
+    forwardRef(() => PreviewDesignLayoutComponent)
+  ],
   templateUrl: './main-display.component.html',
   styleUrl: './main-display.component.scss'
 })
 export class MainDisplayComponent {
+  
+  @ViewChild('viewport') viewportElement!: ElementRef<HTMLDivElement>;
 
   networkService = inject(NetworkService);
   indexedDB = inject(IndexedDbService);
   player = inject(PlayerService);
+  playlistService = inject(PlaylistsService);
+  platformService = inject(PlatformService);
   utils = inject(UtilsService);
   storage = inject(StorageService);
+
+  desktopFilePath: string = environment.desktopFilePath;
 
   @HostListener('window:keydown', ['$event'])
   onKeydown(event: KeyboardEvent) {
     // if (event.key === 'Backspace') this.player.onStopPreview();
     // if (event.key === 'Enter') this.onClickPlayPreview();
     // if (event.key === 'p') this.player.screenShot();
-    
   }
 
-  constructor() {
+  content = signal<ContentState>({
+    index: 0,
+    currentContent: signal<any>(null),
+    isPlaying: signal<boolean>(false),
+    fadeIn: signal<boolean>(false),
+    progress: signal<number>(0),
+    currentTransition: signal<any>(null),
+  });
+  
+  isPlay = signal<boolean>(false);
+
+  constructor(private cdr: ChangeDetectorRef) { 
     const platform = this.storage.get('platform');
     window.addEventListener('online', () => this.networkStat.set(true));
     window.addEventListener('offline', () => this.networkStat.set(false));
@@ -43,9 +69,10 @@ export class MainDisplayComponent {
     })
   }
 
-  async ngOnInit() {
-    // this.indexedDB.clearItems();
+  ngOnInit() {
     // this.player.onLoadContents();
+    // const contents = this.player.onGetContents();
+    // if (contents.type == 'playlist') this.onClickPlayPreview();
   }
 
   async ngAfterViewInit() {
@@ -60,15 +87,55 @@ export class MainDisplayComponent {
     
     this.onGetPlayerInformation();
     this.player.onGetReceiveData();
+    this.cdr.detectChanges();
+  }
+  
+  onClickPlayPreview() {
+    if (!this.isPlaying()) {
+      this.playlistService.onPlayContent(this.playerContent());
+      this.content.set(this.playlistService.onGetCurrentContent(this.playerContent().id)());
+    } else {
+      this.playlistService.onStopContent(this.playerContent().id);
+    }
   }
 
-  onClickPlayPreview() {
-    if (this.isPlaying()) this.player.onStopPreview();
-    else this.player.onPlayPreview();
+  onClikcStopPreview() {
+    this.playlistService.onStopAllContents();
+    this.player.onSetContent('stop');
+    if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
+    this.isPlay.set(false)
+  }
+
+  onClickSetContent(type: string) {
+    if (type == 'playlist' && this.playerContent()) this.playlistService.onStopAllContents();
+    const content = this.player.onSetContent(type);
+    if (this.platform == 'desktop') {
+      switch (type) {
+        case 'asset':
+          this.utils.onDownloadFiles([ content ]).then((response: any) => {
+            this.isPlay.set(true)
+          });
+          break;
+        default:
+          this.utils.onDownloadFiles(content.files).then((response: any) => {
+            this.isPlay.set(true)
+          });;
+          break;
+      }
+    } else if (this.platform == 'android') {
+      this.player.onSendDataToAndroid({ files: content.files });
+    } else {
+      this.isPlay.set(true)
+    }
+    if (type == 'playlist') this.onClickPlayPreview();
   }
 
   onClickCheckUpdates() {
     window.system.checkForUpdates();
+  }
+
+  onClickNotepad() {
+    this.player.sendApp('notepad')
   }
 
   onGetPlayerInformation() {
@@ -76,7 +143,7 @@ export class MainDisplayComponent {
     const code = this.storage.get('code');
     const playerCode = this.storage.get('playerCode');
     const appVersion = this.storage.get('appVersion');
-    this.systemInfo.set({ code, platform, playerCode, appVersion })
+    this.systemInfo.set({ code, platform, playerCode, appVersion })   
    
     switch (platform) {
       case 'android':
@@ -93,6 +160,21 @@ export class MainDisplayComponent {
         break;
     }
   }
+  
+  getTransitionClasses() {    
+    const { type } = this.playerContent().currentTransition() ?? '';
+    const fadeIn = this.playerContent().fadeIn();    
+    return {
+      'transition-all duration-500 ease-in-out': true,
+      'w-full h-full flex justify-center items-center': true,
+      [`${type?.opacity ? 'opacity-0' : ''} ${type?.x ?? ''}`]: !fadeIn,
+      [`${type?.opacity ? 'opacity-100' : ''} ${type?.y ?? ''}`]: fadeIn
+    };
+  }
+  
+  trackById(index: number, item: any): any {
+    return { id: index, contentId: item.contentId } 
+  }
 
   get isDev() { return this.utils.isDev; }
 
@@ -100,13 +182,13 @@ export class MainDisplayComponent {
   
   get networkStat() { return this.networkService.networkStat; }
 
-  get isPlaying() { return this.player.isPlaying; }
-  get onTimeUpdate() { return this.player.onTimeUpdate; }
-  get currentContent() { return this.player.currentContent; }
-  get currentTransition() { return this.player.currentTransition; }
-  get onMouseMove() { return this.player.onMouseMove; }
-  get hideCursor() { return this.player.hideCursor; }
   get playerCode() { return this.player.playerCode; }
   get systemInfo() { return this.player.systemInfo; }
   get androidData() { return this.player.androidData; }
+  get playerContent() { return this.player.playerContent; }
+
+  get isPlaying() { return this.playlistService.isPlaying; }
+  get onProgressUpdate() { return this.playlistService.onProgressUpdate; }
+
+  get platform() { return this.platformService.platform; }
 }

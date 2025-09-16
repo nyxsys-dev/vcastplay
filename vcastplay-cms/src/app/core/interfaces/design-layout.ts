@@ -17,13 +17,13 @@ export interface DesignLayout {
     hasPlaylist: boolean;
     screen?: Screen;
     contentId?: any;
-    preloaded?: any;
+    files?: any[];
     createdOn: Date;
     updatedOn: Date;
 }
 
 export interface HtmlLayer {
-    id: number;
+    id: string;
     left: number;
     top: number;
     width: number;
