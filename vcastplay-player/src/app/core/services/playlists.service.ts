@@ -1,11 +1,14 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { ContentState, Playlists } from '../interfaces/playlist';
 import { environment } from '../../../environments/environment.development';
+import { PlatformService } from './platform.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlaylistsService {
+
+  platform = inject(PlatformService);
   
   private states = new Map<number, ContentState>();
   private videoElement = signal<HTMLVideoElement | null>(null);
@@ -57,7 +60,7 @@ export class PlaylistsService {
 
     const playNextContent = () => {
       const { link, ...content } = contents[state.index];
-      const item = { link: `${this.desktopFilePath}${content.name}` , ...content};
+      const item = this.platform.platform == 'desktop' ? { link: `${this.desktopFilePath}${content.name}` , ...content} : contents[state.index];
       const { hasGap, type, speed } = playlist.transition;
       const transitionSpeed = speed * 100;
       const gapDuration = hasGap ? 500 : 0;
