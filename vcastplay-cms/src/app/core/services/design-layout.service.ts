@@ -81,6 +81,7 @@ export class DesignLayoutService {
   });
   
   textPropsForm: FormGroup = new FormGroup({
+    font: new FormControl('Arial', { nonNullable: true}),
     size: new FormControl(12, { nonNullable: true }),
     weight: new FormControl(false, { nonNullable: true }),
     italic: new FormControl(false, { nonNullable: true }),
@@ -961,7 +962,7 @@ export class DesignLayoutService {
   }
 
   onUpdateTextProperty(value: any) {
-    const { size, weight, italic, underline, alignment, color } = value;
+    const { size, weight, italic, underline, alignment, color, font } = value;
     
     const activeObj: any = this.canvas.getActiveObject();
     if (!activeObj) return;
@@ -970,6 +971,7 @@ export class DesignLayoutService {
       fontSize: size,
       fontWeight: !weight ? 'normal' : 'bold',
       fontStyle: italic ? 'italic' : 'normal',
+      fontFamily: font,
       underline: underline,
       textAlign: alignment,
       fill: color,

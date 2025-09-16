@@ -1,7 +1,10 @@
-<div class="flex items-center gap-4 absolute top-0 right-0 z-30 bg-[var(--p-surface-50)] shadow-lg rounded-lg p-2" [formGroup]="textPropsForm" cdkDrag>
+<div class="flex items-center gap-4 absolute top-0 right-0 z-30 bg-[var(--p-surface-50)] shadow-lg rounded-lg p-2 select-none" [formGroup]="textPropsForm" cdkDrag>
     <div class="w-2 h-8 bg-[var(--p-surface-200)] rounded-lg cursor-move" cdkDragHandle></div>
     <div class="w-20">
         <p-inputnumber formControlName="size" [min]="8" size="small" showButtons fluid />
+    </div>
+    <div class="w-30">
+        <p-select formControlName="font" [options]="fontOptions" size="small" filter fluid />
     </div>
     <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isBold() }" (onClick)="onClickBold()" size="small" text>
         <img src="assets/icons/bold.png" alt="bold" pTooltip="Bold" width="12">

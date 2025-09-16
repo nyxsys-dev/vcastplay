@@ -25,6 +25,24 @@ export class TextPropertiesComponent {
     { icon: 'pi pi-align-justify', value: 'justify' }
   ];
 
+  fontOptions: string[] = [ 
+    'Arial', 
+    'Britannic',
+    'Calibri',
+    'Cooper',
+    'Courier New', 
+    'Comic Sans MS',
+    'Elephant',
+    'Franklin Gothic',
+    'Georgia',
+    'Impact',
+    'Lucida Calligraphy',
+    'Lucida Sans',
+    'Segoe Print',
+    'Times New Roman', 
+    'Verdana', 
+  ]
+
   constructor() {
     this.textPropsForm.valueChanges.subscribe(value => {
       this.isBold.set(value.weight);
