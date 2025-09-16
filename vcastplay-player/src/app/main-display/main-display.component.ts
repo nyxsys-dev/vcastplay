@@ -26,8 +26,6 @@ import { environment } from '../../environments/environment.development';
   styleUrl: './main-display.component.scss'
 })
 export class MainDisplayComponent {
-  
-  @ViewChild('viewport') viewportElement!: ElementRef<HTMLDivElement>;
 
   networkService = inject(NetworkService);
   indexedDB = inject(IndexedDbService);
@@ -119,11 +117,12 @@ export class MainDisplayComponent {
         default:
           this.utils.onDownloadFiles(content.files).then((response: any) => {
             this.isPlay.set(true)
-          });;
+          });
           break;
       }
     } else if (this.platform == 'android') {
-      this.player.onSendDataToAndroid({ files: content.files });
+      const file = ['asset'].includes(type) ? content : content.files;
+      this.player.onSendDataToAndroid({ file });
     } else {
       this.isPlay.set(true)
     }

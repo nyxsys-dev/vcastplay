@@ -40,22 +40,11 @@ export class PreviewDesignLayoutComponent {
   ngOnInit(): void { }
 
   ngOnChanges() {
-    if (!this.currentPlaying) {
-      this.designLayoutService.onStopVideosInCanvas(this.canvas);
-      return;
-    }
-    const { contentId } = this.currentPlaying;
-    if (contentId == this.designLayout.contentId) {
-      console.log('Now playing', this.designLayout.name);
-      this.designLayoutService.onPlayVideosInCanvas(this.canvas);
-    }
+    Promise.resolve().then(() => this.onPlayVideoInCanvas())
   }
 
   ngAfterViewInit(): void {  
-    setTimeout(() => {
-      this.onRenderCanvas();
-      this.cdr.detectChanges();
-    }, 50);
+    this.onRenderCanvas()  
   }
 
   ngOnDestroy(): void {
@@ -64,9 +53,24 @@ export class PreviewDesignLayoutComponent {
   }
 
   onRenderCanvas() {
-    const viewport = this.viewport.nativeElement;
-    const canvasContainer = this.canvasContainer.nativeElement;
-    this.canvas = this.designLayoutService.onPreloadCanvas(viewport, canvasContainer, this.designLayout);    
+    Promise.resolve().then(() => {
+      this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout)
+    })
+  }
+
+  onPlayVideoInCanvas() {    
+    if (!this.viewport || !this.canvas) return;    
+    
+    if (!this.currentPlaying) {
+      this.designLayoutService.onStopVideosInCanvas(this.canvas);
+      return;
+    }
+
+    const { contentId } = this.currentPlaying;
+    
+    if (contentId == this.designLayout.contentId) {
+      this.designLayoutService.onPlayVideosInCanvas(this.canvas);
+    }
   }
 
   get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }
