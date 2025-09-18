@@ -70,6 +70,11 @@ export class DesignLayoutToolsComponent {
     this.designLayoutService.onSetCanvasProps('zoom', true, 'default');
   }
 
+  onClickTextMarquee() {
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onAddTextMarquee(canvas);
+  }
+
   onUnSelectAllLayers() {
     const canvas = this.designLayoutService.getCanvas();
     this.designLayoutService.onUnSelectAllLayers(canvas);

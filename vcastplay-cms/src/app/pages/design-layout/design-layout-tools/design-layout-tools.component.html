@@ -23,6 +23,7 @@
     <p-button (onClick)="onClickZoom()" text>
         <img src="assets/icons/zoom.png" alt="zoom" pTooltip="Zoom" width="20">
     </p-button>
+    <p-button (onClick)="onClickTextMarquee()" icon="pi pi-plus" text  />
     <p-divider />
     <p-colorpicker [(ngModel)]="selectedColor" (onChange)="onChangeColor($event)" appendTo="body" (onShow)="onUnSelectAllLayers()" />
 </div>

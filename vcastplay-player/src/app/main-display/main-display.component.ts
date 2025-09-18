@@ -13,6 +13,7 @@ import { PlaylistsService } from '../core/services/playlists.service';
 import { PreviewDesignLayoutComponent } from '../components/preview-design-layout/preview-design-layout.component';
 import { PlatformService } from '../core/services/platform.service';
 import { environment } from '../../environments/environment.development';
+import { PreviewContentRendererComponent } from '../components/preview-content-renderer/preview-content-renderer.component';
 
 @Component({
   selector: 'app-main-display',
@@ -20,7 +21,8 @@ import { environment } from '../../environments/environment.development';
     PrimengModule, 
     ComponentsModule,
     forwardRef(() => PreviewAssetsComponent),
-    forwardRef(() => PreviewDesignLayoutComponent)
+    forwardRef(() => PreviewDesignLayoutComponent),
+    forwardRef(() => PreviewContentRendererComponent),
   ],
   templateUrl: './main-display.component.html',
   styleUrl: './main-display.component.scss'
@@ -43,15 +45,6 @@ export class MainDisplayComponent {
     // if (event.key === 'Enter') this.onClickPlayPreview();
     // if (event.key === 'p') this.player.screenShot();
   }
-
-  content = signal<ContentState>({
-    index: 0,
-    currentContent: signal<any>(null),
-    isPlaying: signal<boolean>(false),
-    fadeIn: signal<boolean>(false),
-    progress: signal<number>(0),
-    currentTransition: signal<any>(null),
-  });
   
   isPlay = signal<boolean>(false);
 
@@ -88,7 +81,6 @@ export class MainDisplayComponent {
   onClickPlayPreview() {
     if (!this.isPlaying()) {
       this.playlistService.onPlayContent(this.playerContent());
-      this.content.set(this.playlistService.onGetCurrentContent(this.playerContent().id)());
     } else {
       this.playlistService.onStopContent(this.playerContent().id);
     }
@@ -102,7 +94,6 @@ export class MainDisplayComponent {
   }
 
   onClickSetContent(type: string) {
-    if (type == 'playlist' && this.playerContent()) this.playlistService.onStopAllContents();
     const content = this.player.onSetContent(type);
     if (this.platform == 'desktop') {
       switch (type) {
@@ -124,7 +115,6 @@ export class MainDisplayComponent {
     } else {
       this.isPlay.set(true)
     }
-    if (type == 'playlist') this.onClickPlayPreview();
   }
 
   onClickCheckUpdates() {

@@ -49,7 +49,7 @@ export class DesignLayoutService {
     this.updateCanvasSize(canvasContainer, totalScale, totalScale);
   }
 
-  onAddVideoToCanvas(canvas: fabric.Canvas, data: any, autoPlay: boolean = true, fabricObject?: fabric.Object | any) {
+  onAddVideoToCanvas(canvas: fabric.Canvas, data: any, fabricObject?: fabric.Object | any) {
     const { width, height }: any = data.fileDetails.resolution;
     
     const video = document.createElement('video');
@@ -62,10 +62,11 @@ export class DesignLayoutService {
     video.height = height;
     video.loop = true;
     video.muted = true;
-    video.autoplay = autoPlay;
+    video.autoplay = true;
     video.playsInline = true;
     video.crossOrigin = 'anonymous';
     video.preload = 'auto';
+    video.play();
 
     const videoObj: any = new fabric.FabricImage(video, { 
       left: fabricObject?.left ?? 0,
@@ -88,7 +89,7 @@ export class DesignLayoutService {
       canvas.renderAll();
     });
 
-    if (autoPlay) this.onStartVideoRender(canvas);
+    this.onStartVideoRender(canvas);
   }
   
   onStartVideoRender(canvas: fabric.Canvas) {
@@ -199,7 +200,7 @@ export class DesignLayoutService {
               const data: any = obj.data;
 
               if (data.type === 'video') {
-                this.onAddVideoToCanvas(newCanvas, data, options.autoPlayVideos, obj);
+                this.onAddVideoToCanvas(newCanvas, data, obj);
                 newCanvas.remove(obj);
               }
             }

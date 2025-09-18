@@ -549,6 +549,98 @@ export class DesignLayoutService {
     this.saveState();
   }
 
+
+  onAddTextMarquee(canvas: fabric.Canvas) {
+    const { width } = this.defaultResolution;
+    const marqueeWidth = 400; // 👈 define marquee width (instead of canvas width)
+    const textString = 'Warning:';
+    const spacing: number =  50;
+
+    // temporary text for width measurement
+    const temp = new fabric.Textbox(textString, { fontSize: 24, fontFamily: 'Arial' });
+    const textWidth = temp.getScaledWidth()!;
+
+    // how many repeats fit inside marquee width
+    const repeatCount = Math.ceil(marqueeWidth / (textWidth + 50)) + 2;
+
+    const fabricTexts: fabric.Textbox[] = [];
+    for (let i = 0; i < repeatCount; i++) {
+      const text = new fabric.Textbox(textString, {
+        left: i * (textWidth + spacing),
+        top: 0,
+        fontSize: 24,
+        fill: 'blue',
+        selectable: false,
+        textAlign: 'center',
+        width: textWidth
+      });
+      fabricTexts.push(text);
+    }
+
+    const textGroups = new fabric.Group(fabricTexts, {
+      selectable: false,
+      evented: false
+    })
+
+    textGroups.left = marqueeWidth;
+
+    const rect = new fabric.Rect({
+      left: textGroups.left,
+      top: textGroups.top,
+      width: textGroups.width,
+      height: textGroups.height,
+      fill: 'transparent',
+      stroke: '#333',
+      strokeWidth: 2,
+      rx: 10,
+      ry: 10,
+      selectable: false,
+      evented: false
+    });
+
+    const marquee = new fabric.Group([ rect, textGroups ], {
+      left: 50,
+      top: 30,
+      selectable: true,
+      hasControls: true,
+    })
+
+    canvas.add(marquee);
+    this.onStartMarquee(canvas, marquee, spacing, textGroups);
+  }
+
+  onStartMarquee(canvas: fabric.Canvas, marquee: fabric.Group, spacing: number, textGroup: fabric.Group) {
+    const speed: number = 2;
+    const marqueeBounds = marquee.getBoundingRect();
+    
+    const step = () => {
+      // const objects: fabric.FabricObject[] = marquee.getObjects();
+      // objects.forEach((text: any) => {
+
+      //   if (text.type !== 'textbox') return;
+
+      //   text.left -= speed;
+        
+
+        
+      //   text.setCoords();
+      // });
+      
+      textGroup.left -= speed;
+      
+      if (textGroup.left < -marqueeBounds.width) {
+        textGroup.left = marqueeBounds.width;
+      }
+      // textGroup.left = textGroup.left - marqueeBounds.width;
+
+      marquee.dirty = true;
+      canvas.requestRenderAll();
+      this.animFrameId = requestAnimationFrame(step);
+    };
+
+    step();
+  }
+
   onAddRectangleToCanvas(canvas: fabric.Canvas, color: string = '#808080') {
     this.onSetCanvasProps('rect', true, 'default');
     canvas.discardActiveObject();
