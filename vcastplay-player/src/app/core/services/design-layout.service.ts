@@ -98,7 +98,9 @@ export class DesignLayoutService {
       this.animFrameId = fabric.util.requestAnimFrame(render);
     }
 
-    this.animFrameId = fabric.util.requestAnimFrame(render);
+    if (!this.animFrameId) {
+      this.animFrameId = fabric.util.requestAnimFrame(render);
+    }
   }
   
   onPlayVideosInCanvas(canvas: fabric.Canvas) {
@@ -124,8 +126,12 @@ export class DesignLayoutService {
         data.element.currentTime = 0;
       }
     });
-    cancelAnimationFrame(this.animFrameId);
-    this.animFrameId = 0;
+
+    if (this.animFrameId) {
+      fabric.util.cancelAnimFrame(this.animFrameId);
+      // cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = 0;
+    }
     canvas.requestRenderAll();
   }
 
