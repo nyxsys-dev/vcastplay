@@ -93,14 +93,13 @@ export class DesignLayoutService {
   }
   
   onStartVideoRender(canvas: fabric.Canvas) {
+    // if (this.animFrameId) return;
     const render = () => {      
       canvas.requestRenderAll();
-      this.animFrameId = fabric.util.requestAnimFrame(render);
+      this.animFrameId = requestAnimationFrame(render);
     }
 
-    if (!this.animFrameId) {
-      this.animFrameId = fabric.util.requestAnimFrame(render);
-    }
+    if (!this.animFrameId) this.animFrameId = requestAnimationFrame(render);
   }
   
   onPlayVideosInCanvas(canvas: fabric.Canvas) {
@@ -128,8 +127,8 @@ export class DesignLayoutService {
     });
 
     if (this.animFrameId) {
-      fabric.util.cancelAnimFrame(this.animFrameId);
-      // cancelAnimationFrame(this.animFrameId);
+      // fabric.util.cancelAnimFrame(this.animFrameId);
+      cancelAnimationFrame(this.animFrameId);
       this.animFrameId = 0;
     }
     canvas.requestRenderAll();

@@ -71,6 +71,10 @@ export class PreviewDesignLayoutComponent {
       this.designLayoutService.onPlayVideosInCanvas(this.canvas);
     }
   }
+  
+  trackById(index: number, item: any) {
+    return item.id; // unique ID
+  }
 
   get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }
 }

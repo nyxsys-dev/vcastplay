@@ -1083,10 +1083,10 @@ export class DesignLayoutService {
     // if (this.animFrameId) return;
     const render = () => {      
       canvas.requestRenderAll();
-      this.animFrameId = fabric.util.requestAnimFrame(render);
+      this.animFrameId = requestAnimationFrame(render);
     }
 
-    this.animFrameId = fabric.util.requestAnimFrame(render);
+    if (!this.animFrameId) this.animFrameId = requestAnimationFrame(render);
   }
 
   onUpdateTextProperty(value: any) {

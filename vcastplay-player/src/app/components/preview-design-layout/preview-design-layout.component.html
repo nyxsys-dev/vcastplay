@@ -1,11 +1,27 @@
-<div #canvasContainer class="relative flex items-center justify-center overflow-hidden">
+<div #canvasContainer class="relative origin-center flex items-center justify-center overflow-hidden">
     <!-- <canvas #canvas></canvas> -->
-    @for (layer of canvasHTMLLayers(); track $index) {
+    @for (layer of canvasHTMLLayers(); track trackById($index, layer)) {
         <div class="absolute pointer-events-none z-10" [id]="layer.id" 
             [style]="{ top: layer.top + 'px', left: layer.left + 'px', width: layer.width + 'px', 
                 height: layer.height + 'px', transform: 'rotate(' + layer.rotation + 'deg) translateZ(0)' }">
-                <app-preview-content-renderer class="relative w-full h-full group bg-stone-800 text-white rounded-lg" 
-                    [autoPlay]="true" [contentData]="layer.content" />
+                @if (!layer.content.marquee) {
+                    <app-preview-content-renderer [contentData]="layer.content" />
+                } @else {
+                    <div class="relative overflow-hidden w-full h-full border border-gray-300 bg-transparent">
+                        <div id="marquee" class="animate-marquee items-center justify-center h-full gap-3 text-white">
+                            <div class="flex gap-3">
+                                @for (item of layer.content.repeat; track $index) {
+                                    <p class="font-semibold">{{ layer.content.text }}</p>
+                                }
+                            </div>
+                            <div class="flex gap-3">
+                                @for (item of layer.content.repeat; track $index) {
+                                    <p class="font-semibold">{{ layer.content.text }}</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
         </div>
     }
 </div>
