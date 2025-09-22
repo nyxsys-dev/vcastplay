@@ -123,7 +123,8 @@ export class DesignLayoutDetailsComponent {
     event.preventDefault();
     const factor = event.deltaY < 0 ? 1.2 : (1 / 1.2);
     if(this.canvasProps.zoom) {
-      this.designLayoutService.onZoomCanvas(this.canvasContainer.nativeElement, factor, false);
+      const canvas = this.designLayoutService.getCanvas();
+      this.designLayoutService.onZoomCanvas(canvas, this.canvasContainer.nativeElement, factor, false);
     }
   }
 
@@ -196,7 +197,8 @@ export class DesignLayoutDetailsComponent {
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {    
-    this.designLayoutService.onScaleCanvas(this.viewport.nativeElement, this.canvasContainer.nativeElement);
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onScaleCanvas(canvas, this.viewport.nativeElement, this.canvasContainer.nativeElement);
   }
 
   hasUnsavedChanges!: () => boolean;
@@ -245,7 +247,7 @@ export class DesignLayoutDetailsComponent {
       rejectButtonProps: { label: 'Cancel', severity: 'secondary', outlined: true },
       accept: () => {
         this.message.add({ severity: 'success', summary: 'Success', detail: 'Design saved successfully!' });
-        this.designLayoutService.onSaveDesign(this.designForm.value);
+        this.designLayoutService.onSaveDesign(this.canvasContainer.nativeElement, this.designForm.value);
         this.router.navigate([ '/layout/design-layout-library' ]);
       },
     });
@@ -281,12 +283,14 @@ export class DesignLayoutDetailsComponent {
 
   onClickZoom(zoomIn: boolean) {
     const factor = zoomIn ? 1.2 : 1 / 1.2;
-    this.designLayoutService.onZoomCanvas(this.canvasContainer.nativeElement, factor, false);
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onZoomCanvas(canvas, this.canvasContainer.nativeElement, factor, false);
   }
 
   onClickResetZoom() {
     this.onResetCanvasPosition();
-    this.designLayoutService.onZoomCanvas(this.canvasContainer.nativeElement, 0, true);
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onZoomCanvas(canvas, this.canvasContainer.nativeElement, 1, true);
   }
 
   onClickLayerArrangement(position: string) {

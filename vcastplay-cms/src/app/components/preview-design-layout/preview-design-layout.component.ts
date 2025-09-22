@@ -28,10 +28,9 @@ export class PreviewDesignLayoutComponent {
 
   
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {   
-    const viewport = this.viewport.nativeElement;
+  onResize(event: any) {
     const canvasContainer = this.canvasContainer.nativeElement; 
-    this.designLayoutService.onScaleCanvas(viewport, canvasContainer);
+    this.designLayoutService.onScaleCanvas(this.canvas, this.viewport, canvasContainer);
   }
 
   ngOnInit(): void { }
@@ -51,7 +50,7 @@ export class PreviewDesignLayoutComponent {
 
   onRenderCanvas() {
     Promise.resolve().then(() => {
-      this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout)
+      this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout);
     })
   }
 
@@ -68,6 +67,10 @@ export class PreviewDesignLayoutComponent {
     if (contentId == this.designLayout.contentId) {
       this.designLayoutService.onPlayVideosInCanvas(this.canvas);
     }
+  }
+
+  trackById(index: number, item: any) {
+    return item.id; // unique ID
   }
 
   get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }

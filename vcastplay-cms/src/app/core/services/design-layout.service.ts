@@ -25,6 +25,7 @@ export class DesignLayoutService {
   private undoStack: any[] = [];
   private redoStack: any[] = [];
   private isRestoringState = signal<boolean>(false);
+  private lastWidth: number = 0;
 
   private designSignal = signal<DesignLayout[]>([]);
   designs = computed(() => this.designSignal());
@@ -214,11 +215,14 @@ export class DesignLayoutService {
     return this.designs();
   }
 
-  onSaveDesign(design: DesignLayout) {
+  onSaveDesign(canvasContainer: any, design: DesignLayout) {
     const canvas = this.getCanvas();
+     
+    // this.onZoomCanvas(canvas, canvasContainer, 1, true);
+
     canvas.getObjects().forEach((object: any, index: number) => { object.set('zIndex', index) });
 
-    const htmlLayers = this.canvasHTMLLayers();
+    const htmlLayers = this.canvasHTMLLayers().filter(item => !item.content.marquee);
     const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp', 'defaultState', 'zIndex']);
     const canvasObjects = canvas.getObjects(); //canvasData.objects;
     const thumbnail = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
@@ -276,37 +280,28 @@ export class DesignLayoutService {
    * Editor Tools
    * ====================================================================================================================================
    */
-  onScaleCanvas(parentElement: any, canvasContainer: any) {
-    const canvas = this.getCanvas();
+  onScaleCanvas(canvas: fabric.Canvas, parentElement: any, canvasContainer: any) {
     if (!canvas) return;
 
-    const { width, height } = this.defaultResolution;    
-
-    // Calculate scale factor based on parent element
+    const { width, height } = this.defaultResolution;
     const bounds = parentElement.getBoundingClientRect();
-
-    const scaleX = bounds.width / width;
-    const scaleY = bounds.height / height;
-
-    this.defaultScale = Math.min(scaleX, scaleY);;
-
-    const totalScale = this.defaultScale * this.zoomLevel;
-    this.updateCanvasSize(canvasContainer, totalScale, totalScale);
+    const fitScale = Math.min(bounds.width / width, bounds.height / height);
+    
+    // this.onZoomCanvas(canvas, canvasContainer, factor, true);
+    const totalZoom = fitScale * this.zoomLevel;
+    this.updateCanvasSize(canvas, canvasContainer, totalZoom);
   }
 
-  onZoomCanvas(canvasContainer: any, factor: number, isReset: boolean = false) {
-    const canvas = this.getCanvas();
-    if (!canvas) return;
-
+  onZoomCanvas(canvas: fabric.Canvas, canvasContainer: any, factor: number, isReset: boolean = false) {
     if (isReset) {
-      this.zoomLevel = 1;
+      this.zoomLevel = factor;
     } else {
       this.zoomLevel *= factor;
       this.zoomLevel = Math.max(0.20, Math.min(2.0, this.zoomLevel));
     }
     
-    const totalScale = this.defaultScale * this.zoomLevel;
-    this.updateCanvasSize(canvasContainer, totalScale, this.zoomLevel);
+    // const totalScale = this.defaultScale * this.zoomLevel;
+    this.updateCanvasSize(canvas, canvasContainer, this.zoomLevel);
   }
 
   onExitCanvas() {
@@ -549,97 +544,135 @@ export class DesignLayoutService {
     this.saveState();
   }
 
+  // onAddTextMarquee(canvas: fabric.Canvas) {
+  //   const { width } = this.defaultResolution;
+  //   const marqueeWidth = 400; // 👈 define marquee width (instead of canvas width)
+  //   const textString = 'Warning:';
+  //   const spacing: number =  50;
 
+  //   // temporary text for width measurement
+  //   const temp = new fabric.Textbox(textString, { fontSize: 24, fontFamily: 'Arial' });
+  //   const textWidth = temp.getScaledWidth()!;
+
+  //   // how many repeats fit inside marquee width
+  //   const repeatCount = Math.ceil(marqueeWidth / (textWidth + 50)) + 2;
+
+  //   const fabricTexts: fabric.Textbox[] = [];
+  //   for (let i = 0; i < 10; i++) {
+  //     const text = new fabric.Textbox(textString, {
+  //       left: i * (textWidth + spacing),
+  //       top: 0,
+  //       fontSize: 24,
+  //       fill: 'blue',
+  //       selectable: false,
+  //       textAlign: 'center',
+  //       width: textWidth
+  //     });
+  //     fabricTexts.push(text);
+  //   }
+
+  //   const textGroups = new fabric.Group(fabricTexts, {
+  //     selectable: false,
+  //     evented: false
+  //   })
+
+  //   textGroups.left = marqueeWidth;
+
+  //   const rect = new fabric.Rect({
+  //     left: textGroups.left,
+  //     top: textGroups.top,
+  //     width: textGroups.width,
+  //     height: textGroups.height,
+  //     fill: 'transparent',
+  //     stroke: '#333',
+  //     strokeWidth: 2,
+  //     rx: 10,
+  //     ry: 10,
+  //     selectable: false,
+  //     evented: false
+  //   });
+
+  //   const marquee = new fabric.Group([ rect, textGroups ], {
+  //     left: 50,
+  //     top: 30,
+  //     selectable: true,
+  //     hasControls: true,
+  //   })
+
+  //   canvas.add(marquee);
+  //   this.onStartMarquee(canvas, marquee, spacing, textGroups);
+  // }
+
+  // onStartMarquee(canvas: fabric.Canvas, marquee: fabric.Group, spacing: number, textGroup: fabric.Group) {
+  //   const speed: number = 2;
+  //   const marqueeBounds = marquee.getBoundingRect();
+    
+  //   const step = () => {
+  //     // const objects: fabric.FabricObject[] = marquee.getObjects();
+  //     // objects.forEach((text: any) => {
+
+  //     //   if (text.type !== 'textbox') return;
+
+  //     //   text.left -= speed;
+        
+
+        
+  //     //   text.setCoords();
+  //     // });
+      
+  //     textGroup.left -= speed;
+      
+  //     if (textGroup.left < -marqueeBounds.width) {
+  //       textGroup.left = marqueeBounds.width;
+  //     }
+  //     // textGroup.left = textGroup.left - marqueeBounds.width;
+
+  //     marquee.dirty = true;
+  //     canvas.requestRenderAll();
+  //     this.animFrameId = requestAnimationFrame(step);
+  //   };
+
+  //   step();
+  // }
+
+  // Start Marquee
   onAddTextMarquee(canvas: fabric.Canvas) {
-    const { width } = this.defaultResolution;
-    const marqueeWidth = 400; // 👈 define marquee width (instead of canvas width)
-    const textString = 'Warning:';
-    const spacing: number =  50;
-
-    // temporary text for width measurement
-    const temp = new fabric.Textbox(textString, { fontSize: 24, fontFamily: 'Arial' });
-    const textWidth = temp.getScaledWidth()!;
-
-    // how many repeats fit inside marquee width
-    const repeatCount = Math.ceil(marqueeWidth / (textWidth + 50)) + 2;
-
-    const fabricTexts: fabric.Textbox[] = [];
-    for (let i = 0; i < repeatCount; i++) {
-      const text = new fabric.Textbox(textString, {
-        left: i * (textWidth + spacing),
-        top: 0,
-        fontSize: 24,
-        fill: 'blue',
-        selectable: false,
-        textAlign: 'center',
-        width: textWidth
-      });
-      fabricTexts.push(text);
-    }
-
-    const textGroups = new fabric.Group(fabricTexts, {
-      selectable: false,
-      evented: false
+    const temp = new fabric.FabricText('Exported so we can tweak default values', {
+      fill: 'white',
+      fontSize: 24,
     })
 
-    textGroups.left = marqueeWidth;
+    const textWidth = temp.getScaledWidth()!;
+    const textHeight = temp.getScaledHeight()!;
+    const repeatCount = Math.ceil((textWidth + textHeight) / 50) + 2;
 
     const rect = new fabric.Rect({
-      left: textGroups.left,
-      top: textGroups.top,
-      width: textGroups.width,
-      height: textGroups.height,
-      fill: 'transparent',
-      stroke: '#333',
-      strokeWidth: 2,
-      rx: 10,
-      ry: 10,
-      selectable: false,
-      evented: false
+      left: 100 + length * 50,
+      top: 100 + length * 50,
+      width: canvas.getWidth(),
+      height: textHeight,
+      fill: '#0e0e0e',
+      stroke: null,
+      strokeWidth: 0,
+      hasControls: true,
+      selectable: true,
+      lockRotation: true,
     });
 
-    const marquee = new fabric.Group([ rect, textGroups ], {
-      left: 50,
-      top: 30,
-      selectable: true,
-      hasControls: true,
-    })
+    rect.setControlsVisibility({ tl: false, tr: false, bl: false, br: false });
 
-    canvas.add(marquee);
-    this.onStartMarquee(canvas, marquee, spacing, textGroups);
-  }
-
-  onStartMarquee(canvas: fabric.Canvas, marquee: fabric.Group, spacing: number, textGroup: fabric.Group) {
-    const speed: number = 2;
-    const marqueeBounds = marquee.getBoundingRect();
+    canvas.add(rect);
+    const htmlLayer: any = this.createHtmlLayerFromObject(rect, uuidv7(), { text: temp.text, marquee: true, repeat: Array(repeatCount).fill(temp.text) }, canvas);
     
-    const step = () => {
-      // const objects: fabric.FabricObject[] = marquee.getObjects();
-      // objects.forEach((text: any) => {
-
-      //   if (text.type !== 'textbox') return;
-
-      //   text.left -= speed;
+    this.canvasHTMLLayers().push(htmlLayer);
         
+    rect.set('html', htmlLayer);
 
-        
-      //   text.setCoords();
-      // });
-      
-      textGroup.left -= speed;
-      
-      if (textGroup.left < -marqueeBounds.width) {
-        textGroup.left = marqueeBounds.width;
-      }
-      // textGroup.left = textGroup.left - marqueeBounds.width;
-
-      marquee.dirty = true;
-      canvas.requestRenderAll();
-      this.animFrameId = requestAnimationFrame(step);
-    };
-
-    step();
+    canvas.setActiveObject(rect);
+    canvas.requestRenderAll();
   }
+
+  // End Marquee
 
   onAddRectangleToCanvas(canvas: fabric.Canvas, color: string = '#808080') {
     this.onSetCanvasProps('rect', true, 'default');
@@ -709,7 +742,7 @@ export class DesignLayoutService {
       canvas.requestRenderAll();
 
       image.set('data', data);
-      image.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
+      // image.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false,  bl: false,  });
       this.onDisableLayersProps(canvas, true);
       this.saveState();
     });
@@ -801,10 +834,9 @@ export class DesignLayoutService {
 
     canvas.add(rect);
 
-    const htmlLayer: any = this.createHtmlLayerFromObject(rect, uuidv7(), content);
+    const htmlLayer: any = this.createHtmlLayerFromObject(rect, uuidv7(), content, canvas);
     this.canvasHTMLLayers().push(htmlLayer);
-    console.log(this.canvasHTMLLayers());
-    
+
     rect.set('html', htmlLayer);
 
     this.playlistService.onPlayContent(content);
@@ -824,21 +856,25 @@ export class DesignLayoutService {
   onCreateCanvas(viewport: any, canvasContainer: any, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
     const canvas = this.onInitFabricCanvas(viewport, canvasContainer, resolution, backgroundColor);
     canvas.setZoom(this.defaultScale);
-    this.setCanvas(canvas);
+
+    this.setCanvas(canvas);  
+
     this.registerCanvasEvents(canvas);
     // this.registerAlignmentGuides(canvas);
     this.syncDivsWithFabric(canvas);
-    canvas.renderAll();
 
+    canvas.requestRenderAll();
     this.saveState();
   }
 
   onEditDesign(viewport: any, canvasContainer: any, design: DesignLayout, isViewOnly: boolean = false) {
-    this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly, registerEvents: true });
+    return this.initCanvas(viewport, canvasContainer, design, { autoPlayVideos: true, isViewOnly, registerEvents: true });
   }
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
-    return this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: false, autoPlayVideos: true, isViewOnly: true, registerEvents: false });
+    return this.initCanvas(viewport, canvasContainer, design, { autoPlayVideos: true, isViewOnly: true, registerEvents: true });
+    // this.setCanvas(canvas);
+    // return canvas;
   }
 
   onSetCanvasProps(props: string, canvasSelection: boolean, cursor: string) {
@@ -1139,13 +1175,11 @@ export class DesignLayoutService {
     });
   }
 
-  private updateCanvasSize(canvasContainer: any, totalScale: number, zoomLevel: number) {
-    const canvas = this.getCanvas();
-    if (!canvas) return;
+  private updateCanvasSize(canvas: fabric.Canvas, canvasContainer: any, zoomLevel: number) {
     const { width, height } = this.defaultResolution;
 
-    const newContainerWidth = width * totalScale;
-    const newContainerHeight = height * totalScale;
+    const newContainerWidth = width * zoomLevel;
+    const newContainerHeight = height * zoomLevel;
 
     canvasContainer.style.width = `${newContainerWidth}px`;
     canvasContainer.style.height = `${newContainerHeight}px`;
@@ -1163,16 +1197,15 @@ export class DesignLayoutService {
     viewport: any,
     canvasElement: any, 
     design: DesignLayout, 
-    options: { renderOnAddRemove: boolean, autoPlayVideos: boolean, isViewOnly?: boolean, registerEvents?: boolean }
+    options: { autoPlayVideos: boolean, isViewOnly?: boolean, registerEvents?: boolean }
   ) {
     try {
       const { screen, canvas }: any = design;
       const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
       const canvasData = JSON.parse(canvas);
-
+      
       const newCanvas = this.onInitFabricCanvas(viewport, canvasElement, { width, height }, canvasData.background);
-
-      newCanvas.setZoom(this.defaultScale)
+      newCanvas.setZoom(this.defaultScale);
 
       if (!options.isViewOnly) this.setCanvas(newCanvas);
 
@@ -1189,9 +1222,9 @@ export class DesignLayoutService {
               const alreadyExists = this.canvasHTMLLayers().find(item => item.id === html.id);
 
               if (!alreadyExists) {
-                const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
+                const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content, newCanvas);
                 this.canvasHTMLLayers().push(htmlLayer);
-                this.playlistService.onPlayContent(html.content);
+                if (!htmlLayer.content.marquee) this.playlistService.onPlayContent(html.content);
               }
 
             } else if (obj.data) {
@@ -1202,27 +1235,31 @@ export class DesignLayoutService {
                 newCanvas.remove(obj);
               }
             }
+
+            obj.setCoords();
           });
-        }, 0);
 
-        // View-only canvas tweaks
-        if (options.isViewOnly) {
-          newCanvas.selection = false;
-          newCanvas.skipTargetFind = true;
-        }
-
-        // Register events if required
-        if (options.registerEvents) {
-          this.registerCanvasEvents(newCanvas);
-          this.registerAlignmentGuides(newCanvas);
-          if (this.canvasHTMLLayers().length > 0) {
-            this.syncDivsWithFabric(newCanvas);
+          // View-only canvas tweaks
+          if (options.isViewOnly) {          
+            newCanvas.selection = false;
+            newCanvas.skipTargetFind = true;
           }
-          
-          if (!options.isViewOnly) this.saveState();
-        }
 
-        newCanvas.requestRenderAll();
+          // Register events if required
+          if (options.registerEvents) {
+            this.registerCanvasEvents(newCanvas);
+            // this.registerAlignmentGuides(newCanvas);
+            
+            if (this.canvasHTMLLayers().length > 0) {
+              this.syncDivsWithFabric(newCanvas);
+            }
+            
+            if (!options.isViewOnly) this.saveState();
+          }
+
+
+          newCanvas.requestRenderAll();
+        }, 10);
       });
 
       return newCanvas;
@@ -1331,22 +1368,22 @@ export class DesignLayoutService {
 
     events.forEach((event: any) =>
       canvas.on(event, () => {        
-        this.updateHtmlLayers()
+        this.updateHtmlLayers(canvas)
       })
     );
   }
 
-  private updateHtmlLayers() {
+  private updateHtmlLayers(canvas: fabric.Canvas) {
     this.canvasHTMLLayers().forEach((layer, index) => {
       const obj = layer.fabricObject;      
-      const updated = this.createHtmlLayerFromObject(obj, layer.id, layer.content);
+      const updated = this.createHtmlLayerFromObject(obj, layer.id, layer.content, canvas);
 
       Object.assign(layer, updated);
     });
   }
 
-  private createHtmlLayerFromObject(obj: fabric.Object | any, id: string, content: any) {
-    const canvas = this.getCanvas();
+  private createHtmlLayerFromObject(obj: fabric.Object | any, id: string, content: any, canvas: fabric.Canvas) {
+    // const canvas = this.getCanvas();
     // if (!canvas) return;
     
     // const width = obj.getScaledWidth() //(obj.width || 0) * (obj.scaleX || 1);
@@ -1363,10 +1400,10 @@ export class DesignLayoutService {
     // const topLeftX = center.x + rotatedX;
     // const topLeftY = center.y + rotatedY;    
 
-    const zoom = canvas.getZoom();
+    const zoom = canvas.getZoom();    
 
     // Get real screen bounds
-    const bounds = obj.getBoundingRect();
+    const bounds = obj.getBoundingRect();    
     
     const left = bounds.left * zoom //obj.left * zoom;
     const top = bounds.top * zoom // obj.top * zoom;
@@ -1374,7 +1411,7 @@ export class DesignLayoutService {
     const height = bounds.height * zoom // obj.getScaledHeight() * zoom;
     const angle = obj.angle || 0;
 
-    if (obj.html) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
+    if (obj.html && !obj.html.content.marquee) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
     
     return {
       id,

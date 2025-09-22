@@ -70,8 +70,6 @@ html {
     display: inline-block;
 }
 
-
-
 .marker-dot {
     position: relative;
     background: var(--color-red-500);
@@ -143,6 +141,18 @@ html {
 .fc .fc-timegrid-slot-label {
   font-size: 12px !important;
   color: #666;
+}
+
+.animate-marquee {
+    display: flex;
+    animation: marquee 20s linear infinite;
+    will-change: transform;
+    width: max-content;
+}
+
+@keyframes marquee {
+    0%   { transform: translateX(0); }   /* start fully off-screen right */
+    100% { transform: translateX(-50%); }  /* move fully off-screen left */
 }
 
 /* Scrollbar effect */
