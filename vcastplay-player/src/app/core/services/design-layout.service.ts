@@ -97,10 +97,10 @@ export class DesignLayoutService {
     // if (this.animFrameId) return;
     const render = () => {      
       canvas.requestRenderAll();
-      this.animFrameId = fabric.util.requestAnimFrame(render); //requestAnimationFrame(render);
+      this.animFrameId = requestAnimationFrame(render);
     }
 
-    if (!this.animFrameId) this.animFrameId = fabric.util.requestAnimFrame(render); //requestAnimationFrame(render);
+    if (!this.animFrameId) this.animFrameId = requestAnimationFrame(render);
   }
   
   onPlayVideosInCanvas(canvas: fabric.Canvas) {
@@ -127,11 +127,8 @@ export class DesignLayoutService {
       }
     });
 
-    if (this.animFrameId) {
-      fabric.util.cancelAnimFrame(this.animFrameId);
-      // cancelAnimationFrame(this.animFrameId);
-      this.animFrameId = 0;
-    }
+    if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
+    this.animFrameId = 0;
     canvas.requestRenderAll();
   }
 
