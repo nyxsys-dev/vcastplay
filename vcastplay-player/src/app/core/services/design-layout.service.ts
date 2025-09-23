@@ -76,9 +76,9 @@ export class DesignLayoutService {
       video.autoplay = true;
       video.playsInline = true;
       video.crossOrigin = 'anonymous';
-      video.preload = 'auto';
-      video.load();
-      video.play().catch(err => alert(err));
+      video.preload = 'metadata';
+      // video.load();
+      // video.play().catch(err => console.warn('Video play failed:', err));
 
       const videoObj: any = new fabric.FabricImage(video, { 
         left: fabricObject?.left ?? 0,
@@ -94,15 +94,16 @@ export class DesignLayoutService {
 
       videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
       // canvas.insertAt(videoObj.zIndex, videoObj);
-      canvas.add(videoObj);
-
-      videoObj.set('data', { ...data, element: video });
       
       video.addEventListener('loadeddata', () => {
-        canvas.renderAll();
-      });
+        videoObj.set('data', { ...data, element: video });
+        canvas.add(videoObj);
 
-      this.onStartVideoRender(canvas);
+        canvas.requestRenderAll();
+        video.play().catch(err => console.warn('Video play failed:', err));
+        
+        this.onStartVideoRender(canvas);
+      });
     } catch (error) {
       alert(error);
     }
@@ -236,7 +237,7 @@ export class DesignLayoutService {
           }
 
           newCanvas.requestRenderAll();
-        }, 800);
+        }, 10);
       });
 
       return newCanvas;

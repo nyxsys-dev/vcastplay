@@ -27,6 +27,7 @@ export class PreviewAssetsComponent {
   //   setTimeout(() => {      
       if (this.currentContent.type == 'video' && this.videoRef) {
         this.videoRef.nativeElement.currentTime = 0;
+        this.videoRef.nativeElement.play();
   //       if (id == this.currentContent.id) {
   //         this.videoRef.nativeElement.play();
   //       } else {
