@@ -78,7 +78,7 @@ export class DesignLayoutService {
       video.crossOrigin = 'anonymous';
       video.preload = 'auto';
       video.load();
-      video.play().catch(err => console.warn('Video play failed:', err));;
+      video.play().catch(err => alert(err));
 
       const videoObj: any = new fabric.FabricImage(video, { 
         left: fabricObject?.left ?? 0,
