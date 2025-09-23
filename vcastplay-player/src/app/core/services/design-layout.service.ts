@@ -60,48 +60,52 @@ export class DesignLayoutService {
   }
 
   onAddVideoToCanvas(canvas: fabric.Canvas, data: any, fabricObject?: fabric.Object | any) {
-    const { width, height }: any = data.fileDetails.resolution;
+    try {
+      const { width, height }: any = data.fileDetails.resolution;
     
-    const video = document.createElement('video');
-    const videoSource = document.createElement('source');
+      const video = document.createElement('video');
+      const videoSource = document.createElement('source');
 
-    video.appendChild(videoSource);
-    videoSource.src = data.link;
+      video.appendChild(videoSource);
+      videoSource.src = data.link;
 
-    video.width = width;
-    video.height = height;
-    video.loop = true;
-    video.muted = true;
-    video.autoplay = true;
-    video.playsInline = true;
-    video.crossOrigin = 'anonymous';
-    video.preload = 'auto';
-    video.load();
-    video.play().catch(err => console.warn('Video play failed:', err));;
+      video.width = width;
+      video.height = height;
+      video.loop = true;
+      video.muted = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.crossOrigin = 'anonymous';
+      video.preload = 'auto';
+      video.load();
+      video.play().catch(err => console.warn('Video play failed:', err));;
 
-    const videoObj: any = new fabric.FabricImage(video, { 
-      left: fabricObject?.left ?? 0,
-      top: fabricObject?.top ?? 0,
-      originX: fabricObject?.originX ?? 'top',
-      originY: fabricObject?.originY ?? 'left',
-      scaleX: fabricObject?.scaleX ?? 0.2,
-      scaleY: fabricObject?.scaleY ?? 0.2,
-      objectCaching: false,
-      data,
-      zIndex: fabricObject?.zIndex ?? 0
-    });
+      const videoObj: any = new fabric.FabricImage(video, { 
+        left: fabricObject?.left ?? 0,
+        top: fabricObject?.top ?? 0,
+        originX: fabricObject?.originX ?? 'top',
+        originY: fabricObject?.originY ?? 'left',
+        scaleX: fabricObject?.scaleX ?? 0.2,
+        scaleY: fabricObject?.scaleY ?? 0.2,
+        objectCaching: false,
+        data,
+        zIndex: fabricObject?.zIndex ?? 0
+      });
 
-    videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
-    // canvas.insertAt(videoObj.zIndex, videoObj);
-    canvas.add(videoObj);
+      videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
+      // canvas.insertAt(videoObj.zIndex, videoObj);
+      canvas.add(videoObj);
 
-    videoObj.set('data', { ...data, element: video });
-    
-    video.addEventListener('loadeddata', () => {
-      canvas.renderAll();
-    });
+      videoObj.set('data', { ...data, element: video });
+      
+      video.addEventListener('loadeddata', () => {
+        canvas.renderAll();
+      });
 
-    this.onStartVideoRender(canvas);
+      this.onStartVideoRender(canvas);
+    } catch (error) {
+      alert(error);
+    }
   }
   
   onStartVideoRender(canvas: fabric.Canvas) {
@@ -237,7 +241,8 @@ export class DesignLayoutService {
 
       return newCanvas;
     } catch (error) {
-      console.log('error on initCanvas', error);
+      alert(error);
+      // console.log('error on initCanvas', error);
       return null;
     }
   }
