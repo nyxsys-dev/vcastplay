@@ -219,20 +219,20 @@ export class DesignLayoutService {
               }
             }
           });
-        }, 0);
 
-        // View-only canvas tweaks
-        if (options.isViewOnly) {
-          newCanvas.selection = false;
-          newCanvas.skipTargetFind = true;
-        }
+          // View-only canvas tweaks
+          if (options.isViewOnly) {
+            newCanvas.selection = false;
+            newCanvas.skipTargetFind = true;
+          }
 
-        // Register events if required
-        if (options.registerEvents) {
-          this.syncDivsWithFabric(newCanvas);
-        }
+          // Register events if required
+          if (options.registerEvents) {
+            this.syncDivsWithFabric(newCanvas);
+          }
 
-        newCanvas.requestRenderAll();
+          newCanvas.requestRenderAll();
+        }, 100);
       });
 
       return newCanvas;
