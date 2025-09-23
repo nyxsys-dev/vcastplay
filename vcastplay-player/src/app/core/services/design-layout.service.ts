@@ -232,7 +232,7 @@ export class DesignLayoutService {
           }
 
           newCanvas.requestRenderAll();
-        }, 100);
+        }, 800);
       });
 
       return newCanvas;
