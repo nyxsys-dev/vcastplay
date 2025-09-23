@@ -26,7 +26,13 @@ export class DesignLayoutService {
   }
 
   removeCanvas() {
-    if (this.canvas) this.canvas.dispose();    
+    if (this.canvas) {
+      this.canvas.clear();
+      this.canvas.dispose();
+      this.canvas = undefined as any;
+    }
+    cancelAnimationFrame(this.animFrameId);
+    this.canvasHTMLLayers.set([]);
   }
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
