@@ -1,6 +1,6 @@
 @switch (currentContent?.type) {
     @case ('video') {
-        <video #video class="max-h-full w-full h-full object-fill" [src]="currentContent?.link | safeurl" preload="metadata"
+        <video #video class="max-h-full w-full h-full object-fill" [src]="currentContent?.link | safeurl" preload="metadata" crossorigin="anonymous"
             [attr.poster]="null" [controls]="showControls" [autoplay]="true" [muted]="true" [loop]="true"></video>
     }
     @case ('web') {
