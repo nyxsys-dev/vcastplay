@@ -49,6 +49,8 @@ export class PreviewDesignLayoutComponent {
   ngOnDestroy(): void {
     this.canvasContainer.nativeElement.remove();
     this.designLayoutService.onStopVideosInCanvas(this.canvas);
+    this.designLayoutService.removeCanvas();
+    this.canvas = null;
   }
 
   onRenderCanvas() {

@@ -25,6 +25,10 @@ export class DesignLayoutService {
     return this.canvas;
   }
 
+  removeCanvas() {
+    if (this.canvas) this.canvas.dispose();    
+  }
+
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
     const canvas: any = this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly: true, registerEvents: true });
     this.setCanvas(canvas);
@@ -67,7 +71,7 @@ export class DesignLayoutService {
     video.crossOrigin = 'anonymous';
     video.preload = 'auto';
     video.load();
-    video.play();
+    video.play().catch(err => console.warn('Video play failed:', err));;
 
     const videoObj: any = new fabric.FabricImage(video, { 
       left: fabricObject?.left ?? 0,
