@@ -3,13 +3,17 @@
 >
 
   <!-- Main Player -->
-  <ng-container *ngIf="isPlay()">
+  <!-- <ng-container *ngIf="isPlay()"> -->
     
     <ng-container *ngIf="playerContent() as contentData">
       @switch (contentData?.type) {
         @case ('design') {
           <app-preview-design-layout class="flex-1 h-full w-full flex items-center justify-center" 
-            [viewport]="viewport" [designLayout]="contentData" [autoPlay]="true" />
+            [ngClass]="{
+              'opacity-100': isPlay(),
+              'opacity-0': !isPlay()
+            }"
+            [viewport]="viewport" [designLayout]="contentData" [autoPlay]="true" (isDoneRendering)="onDoneRendering($event)" />
         }
         @case('playlist') {
           <app-preview-content-renderer class="relative w-full h-full group bg-stone-800 text-white rounded-lg" 
@@ -21,7 +25,7 @@
         }
       }
     </ng-container>
-  </ng-container>
+  <!-- </ng-container> -->
 
   <ng-container *ngIf="!playerContent()">
     <div class="absolute top-0 start-0 flex items-center justify-center p-6">

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, forwardRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, HostListener, inject, Input, Output, ViewChild } from '@angular/core';
 import { DesignLayout } from '../../core/interfaces/design-layout';
 import { DesignLayoutService } from '../../core/services/design-layout.service';
 import { PrimengModule } from '../../core/modules/primeng/primeng.module';
@@ -23,6 +23,8 @@ export class PreviewDesignLayoutComponent {
   @Input() isViewOnly: boolean = false;
   @Input() currentPlaying: any;
   @Input() autoPlay: boolean = false;
+
+  @Output() isDoneRendering = new EventEmitter<any>();
 
   designLayoutService = inject(DesignLayoutService);
   canvas: fabric.Canvas | any = null;
@@ -56,6 +58,8 @@ export class PreviewDesignLayoutComponent {
   onRenderCanvas() {
     Promise.resolve().then(() => {
       this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout)
+      this.isDoneRendering.emit(this.canvas);
+      this.cdr.detectChanges();
     })
   }
 

@@ -36,6 +36,13 @@ export class PreviewAssetsComponent {
   //   }, 50);
   }
 
+  ngOnDestroy() {
+    if (this.currentContent.type == 'video' && this.videoRef) {
+      this.videoRef.nativeElement.currentTime = 0;
+      this.videoRef.nativeElement.remove();
+    }
+  }
+
   onTimeUpdate(event: Event) {
     const video: HTMLVideoElement = event.target as HTMLVideoElement;
     const currentTime = video.currentTime;

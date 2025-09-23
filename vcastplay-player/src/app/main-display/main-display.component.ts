@@ -112,8 +112,6 @@ export class MainDisplayComponent {
       const file = ['asset'].includes(type) ? [ content ] : content.files;
       this.player.onSendDataToAndroid({ file });      
       this.isPlay.set(true)
-    } else {
-      this.isPlay.set(true)
     }
   }
 
@@ -161,6 +159,12 @@ export class MainDisplayComponent {
   
   trackById(index: number, item: any): any {
     return { id: index, contentId: item.contentId } 
+  }
+
+  onDoneRendering(event: any) {
+    this.isPlay.set(true)
+    console.log('Is Done Rendering', this.isPlay());
+    
   }
 
   get isDev() { return this.utils.isDev; }
