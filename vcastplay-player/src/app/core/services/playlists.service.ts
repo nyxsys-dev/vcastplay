@@ -84,7 +84,8 @@ export class PlaylistsService {
           this.onTriggerIntervals(state, duration);
           break;
         case 'video':
-          this.videoElement()?.play();
+          // this.videoElement().currentTime = 0;
+          // this.videoElement()?.play();
           this.onTriggerIntervals(state, duration);
           break;
         case 'playlist':

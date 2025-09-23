@@ -461,7 +461,8 @@ export class PlayerService {
             {
                 "id": 2,
                 "name": "ForBiggerJoyrides.mp4",
-                "link": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+                "link": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+                "duration": 15
             },
             {
                 "id": 2,

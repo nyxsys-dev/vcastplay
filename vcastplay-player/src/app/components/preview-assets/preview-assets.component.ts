@@ -24,16 +24,16 @@ export class PreviewAssetsComponent {
     if (!this.currentPlaying) return;
 
     const { id } = this.currentPlaying;
-    setTimeout(() => {      
-      if (this.currentContent.type == 'video') {
+  //   setTimeout(() => {      
+      if (this.currentContent.type == 'video' && this.videoRef) {
         this.videoRef.nativeElement.currentTime = 0;
-        if (id == this.currentContent.id) {
-          this.videoRef.nativeElement.play();
-        } else {
-          this.videoRef.nativeElement.pause();
-        }
+  //       if (id == this.currentContent.id) {
+  //         this.videoRef.nativeElement.play();
+  //       } else {
+  //         this.videoRef.nativeElement.pause();
+  //       }
       }
-    }, 50);
+  //   }, 50);
   }
 
   onTimeUpdate(event: Event) {
