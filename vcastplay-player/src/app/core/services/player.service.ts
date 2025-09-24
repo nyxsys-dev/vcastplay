@@ -707,7 +707,7 @@ export class PlayerService {
         window.receiveDataFromAndroid = (data: any) => {
             if (data) {
                 resolve('Received from android:' + data,);
-                window.receiveDataFromAndroid = undefined;
+                // delete window.receiveDataFromAndroid;
             } else {
                 reject(new Error('No data received from android.'));
             }
