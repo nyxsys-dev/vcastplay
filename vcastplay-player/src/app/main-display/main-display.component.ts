@@ -76,6 +76,7 @@ export class MainDisplayComponent {
     this.onGetPlayerInformation();
     this.player.onGetReceiveData().then((result: any) => {
       console.log(result);
+      setTimeout(() => this.isPlay.set(true), 500);
     });
     this.cdr.detectChanges();
   }
@@ -106,14 +107,13 @@ export class MainDisplayComponent {
           break;
         default:
           this.utils.onDownloadFiles(content.files).then((response: any) => {
-            this.isPlay.set(true)
+            setTimeout(() => this.isPlay.set(true), 500);
           });
           break;
       }
     } else if (this.platform == 'android') {
       const file = ['asset'].includes(type) ? [ content ] : content.files;
-      this.player.onSendDataToAndroid({ file });      
-      this.isPlay.set(true)
+      this.player.onSendDataToAndroid({ file });
     }
   }
 
@@ -163,7 +163,9 @@ export class MainDisplayComponent {
   }
 
   onDoneRendering(event: any) {
-    setTimeout(() => this.isPlay.set(true), 200);
+    const platform = this.storage.get('platform');
+    if (!['android', 'desktop'].includes(platform)) setTimeout(() => this.isPlay.set(true), 500);
+    // setTimeout(() => this.isPlay.set(true), 200);
   }
 
   get isDev() { return this.utils.isDev; }

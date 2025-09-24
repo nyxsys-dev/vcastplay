@@ -39,4 +39,10 @@ export class PreviewAssetsComponent {
     this.timeUpdate.emit({ currentTime, duration });
   }
 
+  onVideoEnded(event: Event) {
+    const video: HTMLVideoElement = event.target as HTMLVideoElement;
+    // video.currentTime = 0;
+    video.pause();
+  }
+
 }

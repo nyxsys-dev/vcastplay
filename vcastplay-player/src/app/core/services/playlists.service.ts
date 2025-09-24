@@ -119,11 +119,8 @@ export class PlaylistsService {
             }
             state.index++;
           }
-          
-          // state.fadeIn.set(true);
-          // state.currentContent.set(contents[state.index]);
           playNextContent();
-        }, gapDuration);
+        }, gapDuration + 80);
 
       }, duration);
     }

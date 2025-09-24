@@ -1,7 +1,7 @@
 @switch (currentContent?.type) {
     @case ('video') {
         <video #video class="max-h-full w-full h-full object-fill" [src]="currentContent?.link | safeurl" preload="metadata"
-            [attr.poster]="null" [controls]="false" [autoplay]="true" [muted]="true" [loop]="true"></video>
+            [attr.poster]="null" [controls]="false" [autoplay]="true" [muted]="true" [loop]="true" (ended)="onVideoEnded($event)"></video>
     }
     @case ('web') {
         <iframe class="w-full h-full border-none" [src]="currentContent?.link | safeurl"></iframe>
