@@ -22,7 +22,6 @@ export class PreviewDesignLayoutComponent {
   @Input() designLayout!: DesignLayout;
   @Input() isViewOnly: boolean = false;
   @Input() currentPlaying: any;
-  @Input() autoPlay: boolean = false;
 
   @Output() isDoneRendering = new EventEmitter<any>();
 
@@ -61,21 +60,6 @@ export class PreviewDesignLayoutComponent {
       this.isDoneRendering.emit(this.canvas);
       this.cdr.detectChanges();
     })
-  }
-
-  onPlayVideoInCanvas() {    
-    if (!this.viewport || !this.canvas) return;    
-    
-    if (!this.currentPlaying) {
-      this.designLayoutService.onStopVideosInCanvas(this.canvas);
-      return;
-    }
-
-    const { contentId } = this.currentPlaying;
-    
-    if (contentId == this.designLayout.contentId) {
-      this.designLayoutService.onPlayVideosInCanvas(this.canvas);
-    }
   }
   
   trackById(index: number, item: any) {

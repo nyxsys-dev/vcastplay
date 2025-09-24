@@ -74,7 +74,9 @@ export class MainDisplayComponent {
     // this.player.onPlayPreview();
     
     this.onGetPlayerInformation();
-    this.player.onGetReceiveData();
+    this.player.onGetReceiveData().then((result: any) => {
+      console.log(result);
+    });
     this.cdr.detectChanges();
   }
   
@@ -132,7 +134,6 @@ export class MainDisplayComponent {
    
     switch (platform) {
       case 'android':
-        // const playlist = this.player.onGetContents();
         this.player.onSendDataToAndroid({ code, platform, playerCode, appVersion });
         this.player.onGetAndroidInformation();
         console.log(this.androidData());
@@ -163,7 +164,6 @@ export class MainDisplayComponent {
 
   onDoneRendering(event: any) {
     setTimeout(() => this.isPlay.set(true), 200);
-    
   }
 
   get isDev() { return this.utils.isDev; }

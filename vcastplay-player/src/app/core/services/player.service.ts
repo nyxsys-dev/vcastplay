@@ -703,13 +703,15 @@ export class PlayerService {
   }
 
   onGetReceiveData() {
-    window.receiveDataFromAndroid = (data: any) => {
-      if (data) {
-        console.log('Received from android:', data);
-      } else {
-        console.log('No data received from android.');
-      }
-    };
+    return new Promise((resolve, reject) => {
+        window.receiveDataFromAndroid = (data: any) => {
+            if (data) {
+                resolve('Received from android:' + data,);
+            } else {
+                reject(new Error('No data received from android.'));
+            }
+        };
+    })
   }
 
   onGetBrowserInformation() {

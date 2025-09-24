@@ -14,9 +14,6 @@ export class PreviewAssetsComponent {
 
   @Input() currentContent!: Assets | any;
   @Input() currentPlaying: any
-  @Input() showControls: boolean = false;
-  @Input() autoPlay: boolean = false;
-  @Input() loop: boolean = false;
 
   @Output() timeUpdate = new EventEmitter<any>();
 

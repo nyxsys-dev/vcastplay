@@ -125,7 +125,7 @@ export class PlaylistsService {
           playNextContent();
         }, gapDuration);
 
-      }, duration + 50);
+      }, duration);
     }
 
     playNextContent();
