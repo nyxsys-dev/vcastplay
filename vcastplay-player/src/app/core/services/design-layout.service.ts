@@ -77,6 +77,7 @@ export class DesignLayoutService {
       video.playsInline = true;
       video.crossOrigin = 'anonymous';
       video.preload = 'metadata';
+      video.poster = '';
       // video.load();
       // video.play().catch(err => console.warn('Video play failed:', err));
 
@@ -110,7 +111,7 @@ export class DesignLayoutService {
   }
   
   onStartVideoRender(canvas: fabric.Canvas) {
-    // if (this.animFrameId) return;
+    if (this.animFrameId) return;
     const render = () => {      
       canvas.requestRenderAll();
       this.animFrameId = requestAnimationFrame(render);
@@ -237,7 +238,7 @@ export class DesignLayoutService {
           }
 
           newCanvas.requestRenderAll();
-        }, 10);
+        }, 20);
       });
 
       return newCanvas;
