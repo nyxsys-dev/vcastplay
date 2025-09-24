@@ -112,8 +112,6 @@ export class PlaylistsService {
             state.index = nextIndex;
           } else {
             if (state.index + 1 >= contents.length) {
-              console.log('Playlist completed');
-
               // Clear content
               state.currentContent.set(null);
               this.onStopContent(playlist.id);
@@ -127,7 +125,7 @@ export class PlaylistsService {
           playNextContent();
         }, gapDuration);
 
-      }, duration);
+      }, duration + 50);
     }
 
     playNextContent();
