@@ -162,8 +162,7 @@ export class MainDisplayComponent {
   }
 
   onDoneRendering(event: any) {
-    this.isPlay.set(true)
-    console.log('Is Done Rendering', this.isPlay());
+    setTimeout(() => this.isPlay.set(true), 200);
     
   }
 
