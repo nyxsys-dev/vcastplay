@@ -706,8 +706,8 @@ export class PlayerService {
     return new Promise((resolve, reject) => {
         window.receiveDataFromAndroid = (data: any) => {
             if (data) {
-                resolve('Received from android:' + data,);
-                // delete window.receiveDataFromAndroid;
+                resolve('Received from android:' + data);
+                delete window.receiveDataFromAndroid;
             } else {
                 reject(new Error('No data received from android.'));
             }
