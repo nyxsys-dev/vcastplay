@@ -34,9 +34,9 @@
 
   <div class="absolute bottom-0 left-0 flex items-center gap-1 p-2 w-full">
     <div class="flex gap-3">
-      <p-button label="Asset" (onClick)="onClickSetContent('asset')" severity="secondary" size="small" />
-      <p-button label="Playlist" (onClick)="onClickSetContent('playlist')" severity="secondary" size="small" />
-      <p-button label="Design" (onClick)="onClickSetContent('design')" severity="secondary" size="small" />
+      <p-button label="Asset" (onClick)="onClickSetContent('asset')" [disabled]="playerContent()" severity="secondary" size="small" />
+      <p-button label="Playlist" (onClick)="onClickSetContent('playlist')" [disabled]="playerContent()" severity="secondary" size="small" />
+      <p-button label="Design" (onClick)="onClickSetContent('design')" [disabled]="playerContent()" severity="secondary" size="small" />
       <p-button label="Stop" (onClick)="onClikcStopPreview()" severity="secondary" size="small" />
       @if (platform == 'desktop') {
         <p-button label="Notepad" (onClick)="onClickNotepad()" severity="secondary" size="small" />

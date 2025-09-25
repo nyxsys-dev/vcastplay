@@ -97,7 +97,6 @@ export class MainDisplayComponent {
   }
 
   onClickSetContent(type: string) {
-    this.onClikcStopPreview();
     const content = this.player.onSetContent(type);
     if (this.platform == 'desktop') {
       switch (type) {
@@ -165,7 +164,7 @@ export class MainDisplayComponent {
 
   onDoneRendering(event: any) {
     const platform = this.storage.get('platform');
-    if (!['android', 'desktop'].includes(platform)) setTimeout(() => this.isPlay.set(true), 500);
+    if (!['android', 'desktop'].includes(platform)) this.isPlay.set(true)//setTimeout(() => this.isPlay.set(true), 800);
     // setTimeout(() => this.isPlay.set(true), 200);
   }
 

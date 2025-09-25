@@ -48,10 +48,12 @@ export class PreviewDesignLayoutComponent {
 
   onRenderCanvas() {
     Promise.resolve().then(() => {
-      this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout)
-      this.designLayoutService.onPlayVideosInCanvas(this.canvas);
-      this.isDoneRendering.emit(this.canvas);
-      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout)
+        // this.designLayoutService.onPlayVideosInCanvas(this.canvas);
+        this.isDoneRendering.emit(this.canvas);
+        this.cdr.detectChanges();
+      }, 800);
     })
   }
   

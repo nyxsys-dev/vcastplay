@@ -31,10 +31,7 @@ export class DesignLayoutService {
       canvas = undefined as any;
     }
     cancelAnimationFrame(this.animFrameId);
-    
   }
-
-  
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
     const canvas: any = this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly: true, registerEvents: true });
@@ -70,34 +67,41 @@ export class DesignLayoutService {
       video.autoplay = true;
       video.playsInline = true;
       video.crossOrigin = 'anonymous';
-      video.preload = 'metadata';
+      video.preload = 'auto';
       video.poster = '';
-
-      const videoObj: any = new fabric.FabricImage(video, { 
-        left: fabricObject?.left ?? 0,
-        top: fabricObject?.top ?? 0,
-        originX: fabricObject?.originX ?? 'top',
-        originY: fabricObject?.originY ?? 'left',
-        scaleX: fabricObject?.scaleX ?? 0.2,
-        scaleY: fabricObject?.scaleY ?? 0.2,
-        objectCaching: false,
-        data,
-        zIndex: fabricObject?.zIndex ?? 0
-      });
-
-      videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
+      // video.currentTime = 0.5;
       
       video.addEventListener('loadeddata', () => {
-        videoObj.set('data', { ...data, element: video });
-        // canvas.add(videoObj);
-        canvas.insertAt(videoObj.zIndex, videoObj);
-        video.play().catch(err => console.warn('Video play failed:', err));
-        
-        // this.onStartVideoRender(canvas);
-      });
-      
 
-      canvas.requestRenderAll();
+        const videoObj: any = new fabric.FabricImage(video, { 
+          left: fabricObject?.left ?? 0,
+          top: fabricObject?.top ?? 0,
+          originX: fabricObject?.originX ?? 'top',
+          originY: fabricObject?.originY ?? 'left',
+          scaleX: fabricObject?.scaleX ?? 0.2,
+          scaleY: fabricObject?.scaleY ?? 0.2,
+          objectCaching: false,
+          data, 
+          zIndex: fabricObject?.zIndex ?? 0
+        });
+
+        videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
+        videoObj.set('data', { ...data, element: video });
+
+        video.play().catch(err => console.warn('Video play failed:', err));
+
+        canvas.insertAt(videoObj.zIndex, videoObj);
+        canvas.requestRenderAll();
+        // this.onStartVideoRender(canvas);  
+      });
+      // canvas.add(videoObj);
+
+      // video.load();
+      // video.play().catch(err => console.warn('Video play failed:', err));
+       
+
+      // this.onStartVideoRender(canvas);    
+      // video.remove();
     } catch (error) {
       console.error('Error adding video to canvas', error);
     }
@@ -219,9 +223,10 @@ export class DesignLayoutService {
           newCanvas.skipTargetFind = true;
 
           newCanvas.requestRenderAll();
-        }, 50);
+        }, 10);
       });
 
+      this.onPlayVideosInCanvas(newCanvas);
       return newCanvas;
     } catch (error) {
       alert(error);
