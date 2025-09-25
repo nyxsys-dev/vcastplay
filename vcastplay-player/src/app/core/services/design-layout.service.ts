@@ -69,9 +69,11 @@ export class DesignLayoutService {
       video.crossOrigin = 'anonymous';
       video.preload = 'auto';
       video.poster = '';
-      // video.currentTime = 0.5;
+      video.currentTime = 1;
+      video.load();
       
       video.addEventListener('loadeddata', () => {
+        video.currentTime = 0;
 
         const videoObj: any = new fabric.FabricImage(video, { 
           left: fabricObject?.left ?? 0,
@@ -92,7 +94,7 @@ export class DesignLayoutService {
 
         canvas.insertAt(videoObj.zIndex, videoObj);
         canvas.requestRenderAll();
-        // this.onStartVideoRender(canvas);  
+        // this.onStartVideoRender(canvas);
       });
       // canvas.add(videoObj);
 
@@ -205,16 +207,15 @@ export class DesignLayoutService {
               const html: any = obj.html;
               const alreadyExists = htmlLayers.find((item: HtmlLayer) => item.id === html.id);
 
-              if (alreadyExists) {
-                this.syncDivsWithFabric(newCanvas, design);
-              }
+              if (alreadyExists) this.syncDivsWithFabric(newCanvas, design);
 
             } else if (obj.data) {
               const data: any = obj.data;
 
-              if (data.type === 'video') {
-                this.onAddVideoToCanvas(newCanvas, data, obj);
-                newCanvas.remove(obj);
+              if (data.type == 'video') {
+                  
+                  this.onAddVideoToCanvas(newCanvas, data, obj);
+                  // newCanvas.remove(obj);
               }
             }
           });
