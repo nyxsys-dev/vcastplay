@@ -797,18 +797,24 @@ export class PlayerService {
         // Assign a one-time callback
         this.dataFromAndroid.set('Waiting for data from android...');
         (window as any).receiveDataFromAndroid = (data: any) => {
-            try {
-                if (data) {
-                    this.dataFromAndroid.set('Received from android:' + data);
-                    resolve('Received from android: ' + data);
-                } else {
-                     this.dataFromAndroid.set('Received from android: Nothing');
-                    reject(new Error('No data received from android.'));
-                }
-            } finally {
-                // Clean up after resolving/rejecting to avoid duplicate triggers
-                delete (window as any).receiveDataFromAndroid;
+            if (data) {
+                this.dataFromAndroid.set('Received from android:' + data);
+                resolve('Received from android: ' + data);
+            } else {
+                    this.dataFromAndroid.set('Received from android: Nothing');
+                reject(new Error('No data received from android.'));
             }
+
+            
+            // Instead of delete, replace with a no-op
+            (window as any).receiveDataFromAndroid = () => {
+                console.warn('receiveDataFromAndroid called again before new promise created');
+            };
+            // try {
+            // } finally {
+            //     // Clean up after resolving/rejecting to avoid duplicate triggers
+            //     delete (window as any).receiveDataFromAndroid;
+            // }
         };
     });
   }
