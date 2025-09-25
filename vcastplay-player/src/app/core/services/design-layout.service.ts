@@ -222,14 +222,14 @@ export class DesignLayoutService {
                 const data: any = obj.data;
 
                 if (data.type == 'video') {
-                    this.onAddVideoToCanvas(newCanvas, data, obj);
-                    // newCanvas.remove(obj);
+                  this.onAddVideoToCanvas(newCanvas, data, obj);
+                  // newCanvas.remove(obj);
                 }
               }
             });
 
-            // newCanvas.selection = false;
-            // newCanvas.skipTargetFind = true;
+            newCanvas.selection = false;
+            newCanvas.skipTargetFind = true;
 
             this.syncDivsWithFabric(newCanvas, design);
             newCanvas.requestRenderAll();

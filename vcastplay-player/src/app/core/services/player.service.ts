@@ -785,16 +785,14 @@ export class PlayerService {
   }
 
   onGetReceiveData() {
-    return new Promise((resolve, reject) => {
-        window.receiveDataFromAndroid = (data: any) => {
-            if (data) {
-                resolve('Received from android:' + data);
-            } else {
-                reject(new Error('No data received from android.'));
-            }
-            // window.receiveDataFromAndroid = undefined;
-        };
-    })
+    window.receiveDataFromAndroid = (data: any) => {
+        if (data) {
+            return 'Received from android:' + data;
+        } else {
+            return(new Error('No data received from android.'));
+        }
+        // window.receiveDataFromAndroid = undefined;
+    };
   }
 
   onGetBrowserInformation() {

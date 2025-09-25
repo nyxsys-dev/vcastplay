@@ -75,10 +75,9 @@ export class MainDisplayComponent {
     // this.player.onPlayPreview();
     
     this.onGetPlayerInformation();
-    this.player.onGetReceiveData().then((result: any) => {
-      console.log(result);
-      setTimeout(() => this.isPlay.set(true), 500);
-    });
+    const result = this.player.onGetReceiveData();
+    console.log(result);
+    
     this.cdr.detectChanges();
   }
   
