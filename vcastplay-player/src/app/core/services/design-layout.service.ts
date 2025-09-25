@@ -86,7 +86,8 @@ export class DesignLayoutService {
       
       video.addEventListener('loadeddata', () => {
         videoObj.set('data', { ...data, element: video });
-        canvas.add(videoObj);
+        // canvas.add(videoObj);
+        canvas.insertAt(videoObj.zIndex, videoObj);
 
         canvas.requestRenderAll();
         video.play().catch(err => console.warn('Video play failed:', err));
@@ -94,7 +95,7 @@ export class DesignLayoutService {
         this.onStartVideoRender(canvas);
       });
     } catch (error) {
-      alert(error);
+      console.error('Error adding video to canvas', error);
     }
   }
   
@@ -214,7 +215,7 @@ export class DesignLayoutService {
           newCanvas.skipTargetFind = true;
 
           newCanvas.requestRenderAll();
-        }, 20);
+        }, 50);
       });
 
       return newCanvas;

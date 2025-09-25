@@ -10,3 +10,19 @@
 video {
     background-image: none;
 }
+
+
+.animate-marquee {
+    display: flex;
+    will-change: transform;
+    width: max-content;
+    animation-name: marquee;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    white-space: nowrap;
+}
+
+@keyframes marquee {
+    0%   { transform: translateX(0); }   /* start fully off-screen right */
+    100% { transform: translateX(-50%); }  /* move fully off-screen left */
+}
