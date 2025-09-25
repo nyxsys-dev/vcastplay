@@ -22,16 +22,7 @@ export class PlayerService {
   androidData = signal<any>(null);
   dataFromAndroid = signal<any>(null);
 
-  constructor() {
-    window.receiveDataFromAndroid = (data: any) => {
-        this.dataFromAndroid.set(null);
-        if (data) {
-            this.dataFromAndroid.set('Received from android:' + data);
-        } else {
-            this.dataFromAndroid.set('Received from android: Nothing');
-        }
-    };
-  }
+  constructor() { }
 
   onLoadContents() { 
     this.contentSignal.set(null); 
@@ -795,13 +786,31 @@ export class PlayerService {
   }
 
   onGetReceiveData() {
-    window.receiveDataFromAndroid = (data: any) => {
-        if (data) {
-            this.dataFromAndroid.set('Received from android:' + data);
-        } else {
-            this.dataFromAndroid.set('Received from android: Nothing');
-        }
-    };
+    // window.receiveDataFromAndroid = (data: any) => {
+    //     if (data) {
+    //         this.dataFromAndroid.set('Received from android:' + data);
+    //     } else {
+    //         this.dataFromAndroid.set('Received from android: Nothing');
+    //     }
+    // };
+    return new Promise((resolve, reject) => {
+        // Assign a one-time callback
+        this.dataFromAndroid.set('Waiting for data from android...');
+        window.receiveDataFromAndroid = (data: any) => {
+            try {
+                if (data) {
+                    this.dataFromAndroid.set('Received from android:' + data);
+                    resolve('Received from android: ' + data);
+                } else {
+                     this.dataFromAndroid.set('Received from android: Nothing');
+                    reject(new Error('No data received from android.'));
+                }
+            } finally {
+                // Clean up after resolving/rejecting to avoid duplicate triggers
+                delete window.receiveDataFromAndroid;
+            }
+        };
+    });
   }
 
   onGetBrowserInformation() {

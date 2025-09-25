@@ -80,7 +80,9 @@ export class MainDisplayComponent {
     // this.player.onPlayPreview();
     
     this.onGetPlayerInformation();
-    this.player.onGetReceiveData();
+    this.player.onGetReceiveData().then((response) => {
+      console.log(response);
+    });
     this.cdr.detectChanges();
   }
   
