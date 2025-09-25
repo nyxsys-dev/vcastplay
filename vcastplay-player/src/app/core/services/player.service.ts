@@ -796,7 +796,7 @@ export class PlayerService {
     return new Promise((resolve, reject) => {
         // Assign a one-time callback
         this.dataFromAndroid.set('Waiting for data from android...');
-        window.receiveDataFromAndroid = (data: any) => {
+        (window as any).receiveDataFromAndroid = (data: any) => {
             try {
                 if (data) {
                     this.dataFromAndroid.set('Received from android:' + data);
@@ -807,7 +807,7 @@ export class PlayerService {
                 }
             } finally {
                 // Clean up after resolving/rejecting to avoid duplicate triggers
-                delete window.receiveDataFromAndroid;
+                delete (window as any).receiveDataFromAndroid;
             }
         };
     });
