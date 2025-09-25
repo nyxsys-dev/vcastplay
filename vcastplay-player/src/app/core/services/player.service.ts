@@ -23,7 +23,14 @@ export class PlayerService {
   dataFromAndroid = signal<any>(null);
 
   constructor() {
-    this.onGetReceiveData();
+    window.receiveDataFromAndroid = (data: any) => {
+        this.dataFromAndroid.set(null);
+        if (data) {
+            this.dataFromAndroid.set('Received from android:' + data);
+        } else {
+            this.dataFromAndroid.set('Received from android: Nothing');
+        }
+    };
   }
 
   onLoadContents() { 

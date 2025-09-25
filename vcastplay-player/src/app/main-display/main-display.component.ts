@@ -58,7 +58,9 @@ export class MainDisplayComponent {
     effect(() => {
       console.log('🧭 Network status changed:', this.networkStat());
       console.log(`System has been initialized in ${platform.toUpperCase()}`); 
-      console.log(this.dataFromAndroid());
+      if (this.dataFromAndroid()) {
+        console.log(this.androidData());
+      }
        
       // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
