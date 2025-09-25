@@ -24,14 +24,17 @@ export class DesignLayoutService {
     return this.canvas;
   }
 
-  removeCanvas() {
-    if (this.canvas) {
-      this.canvas.clear();
-      this.canvas.dispose();
-      this.canvas = undefined as any;
+  removeCanvas(canvas?: fabric.Canvas) {
+    if (canvas) {
+      canvas.clear();
+      canvas.dispose();
+      canvas = undefined as any;
     }
     cancelAnimationFrame(this.animFrameId);
+    
   }
+
+  
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
     const canvas: any = this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly: true, registerEvents: true });
@@ -88,12 +91,13 @@ export class DesignLayoutService {
         videoObj.set('data', { ...data, element: video });
         // canvas.add(videoObj);
         canvas.insertAt(videoObj.zIndex, videoObj);
-
-        canvas.requestRenderAll();
         video.play().catch(err => console.warn('Video play failed:', err));
         
-        this.onStartVideoRender(canvas);
+        // this.onStartVideoRender(canvas);
       });
+      
+
+      canvas.requestRenderAll();
     } catch (error) {
       console.error('Error adding video to canvas', error);
     }

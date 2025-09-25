@@ -42,13 +42,14 @@ export class PreviewDesignLayoutComponent {
   ngOnDestroy(): void {
     this.canvasContainer.nativeElement.remove();
     this.designLayoutService.onStopVideosInCanvas(this.canvas);
-    this.designLayoutService.removeCanvas();
+    this.designLayoutService.removeCanvas(this.canvas);
     this.canvas = null;
   }
 
   onRenderCanvas() {
     Promise.resolve().then(() => {
       this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout)
+      this.designLayoutService.onPlayVideosInCanvas(this.canvas);
       this.isDoneRendering.emit(this.canvas);
       this.cdr.detectChanges();
     })

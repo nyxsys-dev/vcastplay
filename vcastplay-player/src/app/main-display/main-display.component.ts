@@ -97,6 +97,7 @@ export class MainDisplayComponent {
   }
 
   onClickSetContent(type: string) {
+    this.onClikcStopPreview();
     const content = this.player.onSetContent(type);
     if (this.platform == 'desktop') {
       switch (type) {

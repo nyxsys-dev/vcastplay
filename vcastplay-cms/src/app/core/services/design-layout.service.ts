@@ -710,8 +710,8 @@ export class DesignLayoutService {
     });
 
     videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
-    canvas.add(videoObj);
-    // canvas.insertAt(videoObj.zIndex, videoObj);
+    // canvas.add(videoObj);
+    canvas.insertAt(videoObj.zIndex, videoObj);
 
     videoObj.set('data', { ...data, element: video });
     
