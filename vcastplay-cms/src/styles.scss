@@ -1,6 +1,8 @@
 @use "tailwindcss";
 @use "primeicons/primeicons.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 html {    
     font-size: 14px;
 }
@@ -145,9 +147,12 @@ html {
 
 .animate-marquee {
     display: flex;
-    animation: marquee 20s linear infinite;
     will-change: transform;
     width: max-content;
+    animation-name: marquee;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    white-space: nowrap;
 }
 
 @keyframes marquee {

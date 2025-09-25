@@ -38,6 +38,8 @@ export class PlaylistListComponent {
   showPreview = signal<boolean>(false);
   showApprove = signal<boolean>(false);
 
+  previewContent: any;
+
   playlistFilters = signal<any>(this.playlistFilterForm.valueChanges);
   filterPlaylist = computed(() => {
     const { status, keywords, isAuto } = this.playlistFilters();
@@ -99,7 +101,8 @@ export class PlaylistListComponent {
 
   onClickPreview(playlist: any) {
     this.showPreview.set(true);
-    this.playlistForm.patchValue(playlist);
+    this.previewContent = playlist;
+    // this.playlistForm.patchValue(playlist);
   }
 
   onClickOptions(event: Event, playlist: Playlist, menu: Menu) {

@@ -17,6 +17,7 @@ export class UtilityService {
 
   filterValues = signal<any>({});
   drawerVisible = signal<boolean>(false);
+  isDarkTheme = signal<boolean>(false);
   tableSkeletonRows = Array(5).fill({});
 
   icons = signal<SelectOption[]>([
@@ -142,9 +143,39 @@ export class UtilityService {
     { label: 'Mobile', value: 'mobile' },
     { label: 'Desktop', value: 'desktop' },
   ]
+  
+  fontOptions: string[] = [ 
+    'Arial', 
+    'Britannic',
+    'Calibri',
+    'Cooper',
+    'Courier New', 
+    'Comic Sans MS',
+    'Elephant',
+    'Franklin Gothic',
+    'Georgia',
+    'Impact',
+    'Lucida Calligraphy',
+    'Lucida Sans',
+    'Segoe Print',
+    'Times New Roman', 
+    'Verdana', 
+  ]
 
   isEmpty(value: any) {
     return value === null || value === undefined || value === '' || Object.keys(value).length === 0 || !value;
+  }
+
+  setLightTheme() {
+    const element: any = document.querySelector('html');
+    element.classList.remove('dark');
+    this.isDarkTheme.set(false);
+  }
+
+  setDarkTheme() {
+    const element: any = document.querySelector('html');
+    element.classList.toggle('dark');
+    this.isDarkTheme.set(true);
   }
 
   /**

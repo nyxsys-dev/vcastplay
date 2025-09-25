@@ -112,7 +112,7 @@
 <p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="onClosePreview()" appendTo="body" [resizable]="false" modal>
     <ng-container *ngIf="selectedDesign() as design">
         <div #viewport class="flex-1 flex items-center justify-center bg-stone-800 text-white rounded-lg p-2 aspect-video">
-            <app-preview-design-layout  [designLayout]="design" [isViewOnly]="true" [viewport]="viewport" [currentPlaying]="design" />
+            <app-preview-design-layout [designLayout]="design" [isViewOnly]="true" [viewport]="viewport" [currentPlaying]="design" (canvasData)="onGetCanvasData($event)" />
         </div>
     </ng-container>
 </p-dialog>

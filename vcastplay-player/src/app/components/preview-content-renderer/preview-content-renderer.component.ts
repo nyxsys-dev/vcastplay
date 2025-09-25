@@ -1,4 +1,4 @@
-import { Component, ElementRef, forwardRef, inject, Input, signal, ViewChild } from '@angular/core';
+import { Component, forwardRef, inject, Input, signal } from '@angular/core';
 import { PlaylistsService } from '../../core/services/playlists.service';
 import { CommonModule } from '@angular/common';
 import { PreviewAssetsComponent } from '../preview-assets/preview-assets.component';
@@ -13,8 +13,7 @@ import { ContentState } from '../../core/interfaces/playlist';
 })
 export class PreviewContentRendererComponent {
   
-  @ViewChild('viewport') viewportElement!: ElementRef<HTMLDivElement>;
-  
+  @Input() viewport: any;
   @Input() contentData: any;
   @Input() autoPlay: boolean = false;
 

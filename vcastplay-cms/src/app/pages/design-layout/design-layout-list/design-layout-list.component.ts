@@ -124,6 +124,13 @@ export class DesignLayoutListComponent {
     this.designLayoutService.onExitCanvas();
   }
 
+  onGetCanvasData(event: any) {
+    setTimeout(() => {
+      
+    this.designLayoutService.onPlayVideosInCanvas(event);
+    }, 200);
+  }
+
   get rows() { return this.designLayoutService.rows; }
   get isEditMode() { return this.designLayoutService.isEditMode; }
   get designForm() { return this.designLayoutService.designForm; }

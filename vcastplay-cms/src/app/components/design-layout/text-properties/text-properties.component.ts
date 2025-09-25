@@ -3,6 +3,7 @@ import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.mod
 import { DesignLayoutService } from '../../../core/services/design-layout.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MenuItem } from 'primeng/api';
+import { UtilityService } from '../../../core/services/utility.service';
 
 @Component({
   selector: 'app-text-properties',
@@ -13,6 +14,7 @@ import { MenuItem } from 'primeng/api';
 export class TextPropertiesComponent {
 
   designlayoutService = inject(DesignLayoutService);
+  utils = inject(UtilityService);
 
   isBold = signal<boolean>(false);
   isItalic = signal<boolean>(false);
@@ -24,24 +26,6 @@ export class TextPropertiesComponent {
     { icon: 'pi pi-align-center', value: 'center' },
     { icon: 'pi pi-align-justify', value: 'justify' }
   ];
-
-  fontOptions: string[] = [ 
-    'Arial', 
-    'Britannic',
-    'Calibri',
-    'Cooper',
-    'Courier New', 
-    'Comic Sans MS',
-    'Elephant',
-    'Franklin Gothic',
-    'Georgia',
-    'Impact',
-    'Lucida Calligraphy',
-    'Lucida Sans',
-    'Segoe Print',
-    'Times New Roman', 
-    'Verdana', 
-  ]
 
   constructor() {
     this.textPropsForm.valueChanges.subscribe(value => {
@@ -67,5 +51,6 @@ export class TextPropertiesComponent {
     this.textPropsForm.patchValue({ underline: !underline })
   }
 
+  get fontOptions() { return this.utils.fontOptions; }
   get textPropsForm() { return this.designlayoutService.textPropsForm; }
 }

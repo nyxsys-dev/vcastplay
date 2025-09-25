@@ -1,4 +1,4 @@
-import { Component, ElementRef, forwardRef, HostListener, inject, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, forwardRef, HostListener, inject, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { DesignLayoutService } from '../../../core/services/design-layout.service';
 import { UtilityService } from '../../../core/services/utility.service';
@@ -14,7 +14,7 @@ import { DesignLayout } from '../../../core/interfaces/design-layout';
 
 @Component({
   selector: 'app-design-layout-details',
-  imports: [ PrimengUiModule, ComponentsModule, forwardRef(() => PlaylistMainPlayerComponent) ],
+  imports: [PrimengUiModule, ComponentsModule, forwardRef(() => PlaylistMainPlayerComponent)],
   templateUrl: './design-layout-details.component.html',
   styleUrl: './design-layout-details.component.scss',
 })
@@ -203,9 +203,13 @@ export class DesignLayoutDetailsComponent {
 
   hasUnsavedChanges!: () => boolean;
 
+  constructor(private cdr: ChangeDetectorRef) { }
+
   ngOnInit() {
     this.designLayoutService.onGetDesigns();
   }
+
+  ngOnChanges() { }
 
   ngOnDestroy() {
     this.isEditMode.set(false);
@@ -232,7 +236,6 @@ export class DesignLayoutDetailsComponent {
     this.showCanvasSize.set(false);
     this.screenElement.selectedScreen.set(null);
     this.onUpdateMenus();
-    // this.designLayoutService.onDisableMenu();
   }
 
   onClickSaveDesign(event: Event) {
@@ -282,7 +285,7 @@ export class DesignLayoutDetailsComponent {
   }
 
   onClickZoom(zoomIn: boolean) {
-    const factor = zoomIn ? 1.2 : 1 / 1.2;
+    const factor = zoomIn ? 1.2 : 0.8;
     const canvas = this.designLayoutService.getCanvas();
     this.designLayoutService.onZoomCanvas(canvas, this.canvasContainer.nativeElement, factor, false);
   }
@@ -363,6 +366,14 @@ export class DesignLayoutDetailsComponent {
     this.designForm.patchValue({ screen: event });
   }
 
+  onClickAddMarquee() {
+    const value = this.marqueeControl.value;
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onAddTextMarquee(canvas, value, this.selectedColor());
+    this.marqueeControl.reset();
+    this.showInputMarquee.set(false);
+  }
+
   onSelectedContentChange(event: Assets | DesignLayout | any) {
     const { loop, type, ...info }: any = event;
     const canvas = this.designLayoutService.getCanvas();
@@ -417,8 +428,9 @@ export class DesignLayoutDetailsComponent {
   get showContents() { return this.designLayoutService.showContents; }
   get selectedColor() { return this.designLayoutService.selectedColor; }
   get showCanvasSize() { return this.designLayoutService.showCanvasSize; }
+  get marqueeControl() { return this.designLayoutService.marqueeControl; }
   get designFormValue() { return this.designLayoutService.designForm.value; }
-  get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }
+  get showInputMarquee() { return this.designLayoutService.showInputMarquee; }
 
   get colors() { return this.utils.colors; }
 
@@ -426,4 +438,6 @@ export class DesignLayoutDetailsComponent {
   get isTablet() { return this.utils.isTablet(); }
 
   get zoomLevel() { return this.designLayoutService.zoomLevel; }
+
+  get htmlLayers() { return this.designForm.get('htmlLayers'); }
 }

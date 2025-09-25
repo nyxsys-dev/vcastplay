@@ -1,22 +1,37 @@
 <div #canvasContainer class="relative origin-center flex items-center justify-center z-20 overflow-hidden">
     <!-- <canvas #canvas></canvas> -->
-    @for (layer of canvasHTMLLayers(); track trackById($index, layer)) {
-        <div class="absolute pointer-events-none z-10" [id]="layer.id" 
+    @for (layer of designLayout.htmlLayers; track trackById($index, layer)) {
+        <div class="absolute pointer-events-none z-10 overflow-hidden flex items-center justify-center" [id]="layer.id" 
             [style]="{ top: layer.top + 'px', left: layer.left + 'px', width: layer.width + 'px', 
                 height: layer.height + 'px', transform: 'rotate(' + layer.rotation + 'deg) translateZ(0)' }">
                 @if (!layer.content.marquee) {
                     <app-preview-content-renderer [content]="layer.content" />
                 } @else {
-                    <div class="relative overflow-hidden w-full h-full border border-gray-300 bg-transparent">
-                        <div id="marquee" class="animate-marquee items-center justify-center h-full gap-3 text-white">
+                    <div class="overflow-hidden w-full h-full">
+                        <div id="marquee" class="animate-marquee items-center justify-center w-full h-full gap-3 text-white"
+                            [ngStyle]="{ 'animation-duration': layer.style.duration + 's' }">
                             <div class="flex gap-3">
                                 @for (item of layer.content.repeat; track $index) {
-                                    <p class="font-semibold">{{ layer.content.text }}</p>
+                                    <p class="font-semibold" [ngStyle]="{ 
+                                        'font-size.px': layer.style.size,
+                                        'font-family': layer.style.font,
+                                        'font-weight': layer.style.weight ? 'bold' : 'normal',
+                                        'font-style': layer.style.italic ? 'italic' : 'normal',
+                                        'text-decoration': layer.style.underline ? 'underline' : 'none',
+                                        'color': layer.style.color,
+                                    }">{{ layer.content.text }}</p>
                                 }
                             </div>
                             <div class="flex gap-3">
                                 @for (item of layer.content.repeat; track $index) {
-                                    <p class="font-semibold">{{ layer.content.text }}</p>
+                                    <p class="font-semibold" [ngStyle]="{ 
+                                        'font-size.px': layer.style.size,
+                                        'font-family': layer.style.font,
+                                        'font-weight': layer.style.weight ? 'bold' : 'normal',
+                                        'font-style': layer.style.italic ? 'italic' : 'normal',
+                                        'text-decoration': layer.style.underline ? 'underline' : 'none',
+                                        'color': layer.style.color,
+                                    }">{{ layer.content.text }}</p>
                                 }
                             </div>
                         </div>

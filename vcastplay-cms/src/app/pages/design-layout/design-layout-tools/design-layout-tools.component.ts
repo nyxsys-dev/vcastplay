@@ -22,6 +22,11 @@ export class DesignLayoutToolsComponent {
     { label: 'Ellipse', command: () => this.onClickAddShape('ellipse'), image: 'assets/icons/ellipse.png' },
   ]
 
+  textItems: MenuItem[] = [
+    { label: 'Text', command: () => this.onClickAddText() },
+    { label: 'Marquee', command: () => this.onClickTextMarquee() },
+  ]
+
   onClickSelection() {
     const canvas = this.designLayoutService.getCanvas();
     this.resetDragPosition.emit();
@@ -71,8 +76,7 @@ export class DesignLayoutToolsComponent {
   }
 
   onClickTextMarquee() {
-    const canvas = this.designLayoutService.getCanvas();
-    this.designLayoutService.onAddTextMarquee(canvas);
+    this.showInputMarquee.set(true)
   }
 
   onUnSelectAllLayers() {
@@ -86,4 +90,6 @@ export class DesignLayoutToolsComponent {
   
   get selectedColor() { return this.designLayoutService.selectedColor; }
   get showContents() { return this.designLayoutService.showContents; }
+  get showInputMarquee() { return this.designLayoutService.showInputMarquee; }
+  get objectPropsForm() { return this.designLayoutService.objectPropsForm; }
 }

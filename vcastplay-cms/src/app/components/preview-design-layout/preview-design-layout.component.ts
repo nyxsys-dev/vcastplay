@@ -1,4 +1,4 @@
-import { Component, ElementRef, forwardRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, forwardRef, HostListener, inject, Input, Output, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { DesignLayout } from '../../core/interfaces/design-layout';
 import { DesignLayoutService } from '../../core/services/design-layout.service';
@@ -13,15 +13,15 @@ import { PreviewContentRendererComponent } from '../preview-content-renderer/pre
 })
 export class PreviewDesignLayoutComponent {
   
-  // @ViewChild('viewport', { static: true }) viewport!: ElementRef<HTMLDivElement>;
   @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
 
   @Input() viewport!: any;
-  // @Input() canvasContainer!: ElementRef<HTMLDivElement>;
 
   @Input() designLayout!: DesignLayout;
   @Input() isViewOnly: boolean = false;
   @Input() currentPlaying: any;
+
+  @Output() canvasData: EventEmitter<any> = new EventEmitter<any>();
 
   designLayoutService = inject(DesignLayoutService);
   canvas: fabric.Canvas | any = null;
@@ -35,7 +35,7 @@ export class PreviewDesignLayoutComponent {
 
   ngOnInit(): void { }
 
-  ngOnChanges() {
+  ngOnChanges() {    
     Promise.resolve().then(() => this.onPlayVideoInCanvas())
   }
 
@@ -45,12 +45,13 @@ export class PreviewDesignLayoutComponent {
 
   ngOnDestroy(): void {
     this.canvasContainer.nativeElement.remove();
-    this.designLayoutService.onStopVideosInCanvas(this.canvas);
+    this.designLayoutService.onStopVideosInCanvas(this.canvas);    
   }
 
   onRenderCanvas() {
     Promise.resolve().then(() => {
       this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout);
+      this.canvasData.emit(this.canvas);
     })
   }
 
@@ -72,6 +73,4 @@ export class PreviewDesignLayoutComponent {
   trackById(index: number, item: any) {
     return item.id; // unique ID
   }
-
-  get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }
 }

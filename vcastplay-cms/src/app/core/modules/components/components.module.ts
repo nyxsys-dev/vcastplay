@@ -35,10 +35,8 @@ import { ContentSelectionComponent } from '../../../components/content-selection
 import { ScreenDetailsComponent } from '../../../pages/screen-management/screen-details/screen-details.component';
 import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
 import { DesignLayoutToolsComponent } from '../../../pages/design-layout/design-layout-tools/design-layout-tools.component';
-import { DesignLayoutContentsComponent } from '../../../pages/design-layout/design-layout-contents/design-layout-contents.component';
-import { TextPropertiesComponent } from '../../../components/design-layout/text-properties/text-properties.component';
-import { RectPropertiesComponent } from '../../../components/design-layout/rect-properties/rect-properties.component';
 import { DesignLayoutListItemComponent } from '../../../pages/design-layout/design-layout-list-item/design-layout-list-item.component';
+import { ObjectPropertiesComponent } from '../../../components/design-layout/object-properties/object-properties.component';
 
 
 const COMPONENT_MODULES = [
@@ -96,10 +94,8 @@ const COMPONENT_MODULES = [
 
   // Design Layout Components
   DesignLayoutToolsComponent,
-  DesignLayoutContentsComponent,
   DesignLayoutListItemComponent,
-  TextPropertiesComponent,
-  RectPropertiesComponent,
+  ObjectPropertiesComponent,
 ]
 
 @NgModule({

@@ -13,12 +13,9 @@ import * as fabric from 'fabric';
 })
 export class PreviewDesignLayoutComponent {
 
-  // @ViewChild('viewport', { static: true }) viewport!: ElementRef<HTMLDivElement>;
   @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
 
-  @Input() viewport!: any;
-  // @Input() canvasContainer!: ElementRef<HTMLDivElement>;
-
+  @Input() viewport: any;
   @Input() designLayout!: DesignLayout;
   @Input() isViewOnly: boolean = false;
   @Input() currentPlaying: any;
@@ -30,18 +27,13 @@ export class PreviewDesignLayoutComponent {
 
   
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    const canvasContainer = this.canvasContainer.nativeElement; 
-    this.designLayoutService.onScaleCanvas(this.viewport, canvasContainer);
+  onResize(event: any) {    
+    this.designLayoutService.onScaleCanvas(this.canvas, this.viewport, this.canvasContainer.nativeElement);
   }
 
   constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void { }
-
-  ngOnChanges() {
-    // Promise.resolve().then(() => this.onPlayVideoInCanvas())
-  }
 
   ngAfterViewInit(): void {  
     this.onRenderCanvas()  
@@ -65,6 +57,4 @@ export class PreviewDesignLayoutComponent {
   trackById(index: number, item: any) {
     return item.id; // unique ID
   }
-
-  get canvasHTMLLayers() { return this.designLayoutService.canvasHTMLLayers; }
 }

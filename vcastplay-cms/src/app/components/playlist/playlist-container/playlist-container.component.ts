@@ -52,6 +52,8 @@ export class PlaylistContainerComponent {
     this.contents?.setValue([...contents]);
   }
 
+  trackByFn(index: number, item: any) { return item.contentId; }
+
   get contents() { return this.playListForm.get('contents'); }
   get isPlaying() { return this.playlistService.isPlaying; }
 }

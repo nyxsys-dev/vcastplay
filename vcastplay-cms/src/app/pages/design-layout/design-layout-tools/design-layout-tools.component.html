@@ -5,7 +5,7 @@
     <p-button (onClick)="onClickSelection()" text>
         <img src="assets/icons/selection.png" alt="selection" pTooltip="Selection" width="20">
     </p-button>
-    <p-button (onClick)="onClickAddText()" text>
+    <p-button (onClick)="text.toggle($event)" text>
         <img src="assets/icons/text.png" alt="text" pTooltip="Text" width="20">
     </p-button>
     <p-button (onClick)="shapes.toggle($event)" text>
@@ -23,7 +23,6 @@
     <p-button (onClick)="onClickZoom()" text>
         <img src="assets/icons/zoom.png" alt="zoom" pTooltip="Zoom" width="20">
     </p-button>
-    <p-button (onClick)="onClickTextMarquee()" icon="pi pi-plus" text  />
     <p-divider />
     <p-colorpicker [(ngModel)]="selectedColor" (onChange)="onChangeColor($event)" appendTo="body" (onShow)="onUnSelectAllLayers()" />
 </div>
@@ -36,3 +35,5 @@
         </a>
     </ng-template>
 </p-menu>
+
+<p-menu [model]="textItems" popup #text appendTo="body" />

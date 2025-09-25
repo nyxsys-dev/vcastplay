@@ -13,7 +13,6 @@ export class DesignLayoutService {
   zoomLevel: number = 1;
   defaultScale: number = 0;
   defaultResolution: any;
-  canvasHTMLLayers = signal<HtmlLayer[]>([]);
 
   constructor() { }
 
@@ -32,7 +31,6 @@ export class DesignLayoutService {
       this.canvas = undefined as any;
     }
     cancelAnimationFrame(this.animFrameId);
-    this.canvasHTMLLayers.set([]);
   }
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
@@ -41,22 +39,15 @@ export class DesignLayoutService {
     return canvas;
   }
   
-  onScaleCanvas(parentElement: any, canvasContainer: any) {
-    const canvas = this.getCanvas();
+  onScaleCanvas(canvas: fabric.Canvas, parentElement: any, canvasContainer: any) {
     if (!canvas) return;
 
-    const { width, height } = this.defaultResolution;    
-
-    // Calculate scale factor based on parent element
+    const { width, height } = this.defaultResolution;
     const bounds = parentElement.getBoundingClientRect();
+    const fitScale = Math.min(bounds.width / width, bounds.height / height);
 
-    const scaleX = bounds.width / width;
-    const scaleY = bounds.height / height;
-
-    this.defaultScale = Math.min(scaleX, scaleY);;
-
-    const totalScale = this.defaultScale * this.zoomLevel;
-    this.updateCanvasSize(canvasContainer, totalScale, totalScale);
+    const totalZoom = fitScale * this.zoomLevel;
+    this.updateCanvasSize(canvas, canvasContainer, totalZoom);
   }
 
   onAddVideoToCanvas(canvas: fabric.Canvas, data: any, fabricObject?: fabric.Object | any) {
@@ -78,8 +69,6 @@ export class DesignLayoutService {
       video.crossOrigin = 'anonymous';
       video.preload = 'metadata';
       video.poster = '';
-      // video.load();
-      // video.play().catch(err => console.warn('Video play failed:', err));
 
       const videoObj: any = new fabric.FabricImage(video, { 
         left: fabricObject?.left ?? 0,
@@ -94,7 +83,6 @@ export class DesignLayoutService {
       });
 
       videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
-      // canvas.insertAt(videoObj.zIndex, videoObj);
       
       video.addEventListener('loadeddata', () => {
         videoObj.set('data', { ...data, element: video });
@@ -151,8 +139,6 @@ export class DesignLayoutService {
 
   private onInitFabricCanvas(viewport: HTMLElement, container: HTMLElement, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
     const canvasElement = document.createElement('canvas');
-    // container.style.width = resolution.width + 'px';
-    // container.style.height = resolution.height + 'px';
     container.appendChild(canvasElement);
 
     // Calculate scale factor based on parent element
@@ -188,7 +174,7 @@ export class DesignLayoutService {
     options: { renderOnAddRemove: boolean, autoPlayVideos: boolean, isViewOnly?: boolean, registerEvents?: boolean }
   ) {
     try {
-      const { screen, canvas }: any = design;
+      const { screen, canvas, htmlLayers }: any = design;
       const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
       const canvasData = JSON.parse(canvas);
 
@@ -208,12 +194,10 @@ export class DesignLayoutService {
           objects.forEach((obj: any) => {
             if (obj.html) {
               const html: any = obj.html;
-              const alreadyExists = this.canvasHTMLLayers().find(item => item.id === html.id);
+              const alreadyExists = htmlLayers.find((item: HtmlLayer) => item.id === html.id);
 
-              if (!alreadyExists) {
-                const htmlLayer = this.createHtmlLayerFromObject(obj, html.id, html.content);
-                this.canvasHTMLLayers().push(htmlLayer);
-                // this.playlistService.onPlayContent(html.content);
+              if (alreadyExists) {
+                this.syncDivsWithFabric(newCanvas, design);
               }
 
             } else if (obj.data) {
@@ -226,16 +210,8 @@ export class DesignLayoutService {
             }
           });
 
-          // View-only canvas tweaks
-          if (options.isViewOnly) {
-            newCanvas.selection = false;
-            newCanvas.skipTargetFind = true;
-          }
-
-          // Register events if required
-          if (options.registerEvents) {
-            this.syncDivsWithFabric(newCanvas);
-          }
+          newCanvas.selection = false;
+          newCanvas.skipTargetFind = true;
 
           newCanvas.requestRenderAll();
         }, 20);
@@ -249,13 +225,11 @@ export class DesignLayoutService {
     }
   }
   
-  private updateCanvasSize(canvasContainer: any, totalScale: number, zoomLevel: number) {
-    const canvas = this.getCanvas();
-    if (!canvas) return;
+  private updateCanvasSize(canvas: fabric.Canvas, canvasContainer: any, zoomLevel: number) {
     const { width, height } = this.defaultResolution;
 
-    const newContainerWidth = width * totalScale;
-    const newContainerHeight = height * totalScale;
+    const newContainerWidth = width * zoomLevel;
+    const newContainerHeight = height * zoomLevel;
 
     canvasContainer.style.width = `${newContainerWidth}px`;
     canvasContainer.style.height = `${newContainerHeight}px`;
@@ -269,7 +243,7 @@ export class DesignLayoutService {
     canvas.requestRenderAll();
   }
   
-  private syncDivsWithFabric(canvas: fabric.Canvas) {
+  private syncDivsWithFabric(canvas: fabric.Canvas, design: DesignLayout) {
     const events = [
       'object:added',
       'object:moving',
@@ -285,35 +259,44 @@ export class DesignLayoutService {
 
     events.forEach((event: any) =>
       canvas.on(event, () => {        
-        this.updateHtmlLayers()
+        this.updateHtmlLayers(canvas, design)
       })
     );
   }
 
-  private updateHtmlLayers() {
-    this.canvasHTMLLayers().forEach((layer, index) => {
-      const obj = layer.fabricObject;      
-      const updated = this.createHtmlLayerFromObject(obj, index, layer.content);
+  private updateHtmlLayers(canvas: fabric.Canvas, design: DesignLayout) {
+    const { htmlLayers }: any = design; 
+    const activeObjects: fabric.Object[] = canvas.getObjects();
+    
+    activeObjects.forEach((object: fabric.Object) => {
+      const html = object.get('html');
+      if (!html) return;
 
-      Object.assign(layer, updated);
-    });
+      const layer = htmlLayers.find((item: any) => item.id === html.id);
+
+      if (layer) {        
+        const updated = this.createHtmlLayerFromObject(object, layer.id, layer.content, layer.style, canvas);
+        Object.assign(layer, updated);
+      }
+    })
   }
-  
-  private createHtmlLayerFromObject(obj: fabric.Object | any, id: any, content: any) {
-    const canvas = this.getCanvas();
 
-    const zoom = canvas.getZoom();
+  private createHtmlLayerFromObject(obj: fabric.FabricObject, id: string, content: any, style: any, canvas: fabric.Canvas) {
+
+    const zoom = canvas.getZoom();    
 
     // Get real screen bounds
     const bounds = obj.getBoundingRect();
+
+    const html = obj.get('html');
     
-    const left = bounds.left * zoom;
-    const top = bounds.top * zoom;
-    const width = bounds.width * zoom;
-    const height = bounds.height * zoom;
+    const left = bounds.left * zoom
+    const top = bounds.top * zoom
+    const width = bounds.width * zoom
+    const height = bounds.height * zoom
     const angle = obj.angle || 0;
 
-    if (obj.html) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
+    if (html && !html.content.marquee) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
     
     return {
       id,
@@ -323,6 +306,7 @@ export class DesignLayoutService {
       height,
       rotation: angle,
       content,
+      style,
       fabricObject: obj,
     };
   }
