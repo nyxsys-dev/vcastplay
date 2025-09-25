@@ -792,7 +792,7 @@ export class PlayerService {
             } else {
                 reject(new Error('No data received from android.'));
             }
-            window.receiveDataFromAndroid = undefined;
+            // window.receiveDataFromAndroid = undefined;
         };
     })
   }
