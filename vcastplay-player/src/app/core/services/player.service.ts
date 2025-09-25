@@ -22,7 +22,9 @@ export class PlayerService {
   androidData = signal<any>(null);
   dataFromAndroid = signal<any>(null);
 
-  constructor() { }
+  constructor() {
+    this.onGetReceiveData();
+  }
 
   onLoadContents() { 
     this.contentSignal.set(null); 

@@ -50,6 +50,7 @@ export class MainDisplayComponent {
   isPlay = signal<boolean>(false);
 
   constructor(private cdr: ChangeDetectorRef) { 
+    // this.player.onGetReceiveData();
     const platform = this.storage.get('platform');
     window.addEventListener('online', () => this.networkStat.set(true));
     window.addEventListener('offline', () => this.networkStat.set(false));
