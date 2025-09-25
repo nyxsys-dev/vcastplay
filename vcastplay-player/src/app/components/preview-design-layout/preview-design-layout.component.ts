@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, HostListener, inject, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, HostListener, inject, Input, Output, signal, ViewChild } from '@angular/core';
 import { DesignLayout } from '../../core/interfaces/design-layout';
 import { DesignLayoutService } from '../../core/services/design-layout.service';
 import { PrimengModule } from '../../core/modules/primeng/primeng.module';
@@ -24,7 +24,7 @@ export class PreviewDesignLayoutComponent {
 
   designLayoutService = inject(DesignLayoutService);
   canvas: fabric.Canvas | any = null;
-
+  playing = signal<boolean>(false);
   
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {    
@@ -47,12 +47,16 @@ export class PreviewDesignLayoutComponent {
   }
 
   onRenderCanvas() {
-    Promise.resolve().then(() => {
-      this.canvas = this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout)
-      // this.designLayoutService.onPlayVideosInCanvas(this.canvas);
-      this.isDoneRendering.emit(this.canvas);
+    this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.designLayout).then((canvas: any) => {
+      this.playing.set(true);
+      this.canvas = canvas;
+      this.designLayoutService.onPlayVideosInCanvas(canvas);
+      this.isDoneRendering.emit(canvas);
       this.cdr.detectChanges();
     })
+    // Promise.resolve().then(() => {
+    //   // this.designLayoutService.onPlayVideosInCanvas(this.canvas);
+    // })
   }
   
   trackById(index: number, item: any) {

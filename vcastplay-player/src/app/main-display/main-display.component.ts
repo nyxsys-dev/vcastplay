@@ -38,6 +38,7 @@ export class MainDisplayComponent {
   storage = inject(StorageService);
 
   desktopFilePath: string = environment.desktopFilePath;
+  timeout: number = environment.timeout;
 
   @HostListener('window:keydown', ['$event'])
   onKeydown(event: KeyboardEvent) {
@@ -164,7 +165,7 @@ export class MainDisplayComponent {
 
   onDoneRendering(event: any) {
     const platform = this.storage.get('platform');
-    if (!['android', 'desktop'].includes(platform)) setTimeout(() => this.isPlay.set(true), 500);
+    if (!['android', 'desktop'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
     // setTimeout(() => this.isPlay.set(true), 200);
   }
 

@@ -5,7 +5,7 @@
             [style]="{ top: layer.top + 'px', left: layer.left + 'px', width: layer.width + 'px', 
                 height: layer.height + 'px', transform: 'rotate(' + layer.rotation + 'deg) translateZ(0)' }">
                 @if (!layer.content.marquee) {
-                    <app-preview-content-renderer [contentData]="layer.content" />
+                    <app-preview-content-renderer [contentData]="layer.content" [autoPlay]="playing()" />
                 } @else {
                     <div class="overflow-hidden w-full h-full">
                         <div id="marquee" class="animate-marquee items-center justify-center w-full h-full gap-3 text-white"

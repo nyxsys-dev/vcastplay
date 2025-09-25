@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { PreviewAssetsComponent } from '../preview-assets/preview-assets.component';
 import { PreviewDesignLayoutComponent } from '../preview-design-layout/preview-design-layout.component';
 import { ContentState } from '../../core/interfaces/playlist';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-preview-content-renderer',
@@ -19,6 +20,7 @@ export class PreviewContentRendererComponent {
 
   playlistService = inject(PlaylistsService);
   
+  timeout: number = environment.timeout;
   content = signal<ContentState>({
     index: 0,
     currentContent: signal<any>(null),
@@ -28,7 +30,16 @@ export class PreviewContentRendererComponent {
     currentTransition: signal<any>(null),
   });
 
-  ngOnInit() {
+  ngOnChanges() {
+    // if (this.autoPlay) {
+    //   // setTimeout(() => {
+    //     this.playlistService.onPlayContent(this.contentData);
+    //     this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
+    //   // }, this.timeout);
+    // }
+  }
+
+  ngAfterViewInit() {
     this.playlistService.onPlayContent(this.contentData);
     this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
   }

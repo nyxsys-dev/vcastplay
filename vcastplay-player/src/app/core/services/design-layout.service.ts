@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { DesignLayout, HtmlLayer } from '../interfaces/design-layout';
 import * as fabric from 'fabric';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ export class DesignLayoutService {
   private canvas!: fabric.Canvas;
   private animFrameId!: number;
   
+  timeout: number = environment.timeout;
   zoomLevel: number = 1;
   defaultScale: number = 0;
   defaultResolution: any;
@@ -34,9 +36,12 @@ export class DesignLayoutService {
   }
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
-    const canvas: any = this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly: true, registerEvents: true });
-    this.setCanvas(canvas);
-    return canvas;
+    return new Promise((resolve) => {
+      this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly: true, registerEvents: true }).then((canvas: any) => {
+        this.setCanvas(canvas);
+        resolve(canvas);
+      });
+    })
   }
   
   onScaleCanvas(canvas: fabric.Canvas, parentElement: any, canvasContainer: any) {
@@ -184,56 +189,59 @@ export class DesignLayoutService {
     design: DesignLayout, 
     options: { renderOnAddRemove: boolean, autoPlayVideos: boolean, isViewOnly?: boolean, registerEvents?: boolean }
   ) {
-    try {
-      const { screen, canvas, htmlLayers }: any = design;
-      const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
-      const canvasData = JSON.parse(canvas);
+    return new Promise((resolve, reject) => {
+      try {
+        const { screen, canvas, htmlLayers }: any = design;
+        const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
+        const canvasData = JSON.parse(canvas);
 
-      const newCanvas = this.onInitFabricCanvas(viewport, canvasElement, { width, height }, canvasData.background);
+        const newCanvas = this.onInitFabricCanvas(viewport, canvasElement, { width, height }, canvasData.background);
 
-      newCanvas.setZoom(this.defaultScale)
+        newCanvas.setZoom(this.defaultScale)
 
-      if (!options.isViewOnly) this.setCanvas(newCanvas);
+        if (!options.isViewOnly) this.setCanvas(newCanvas);
 
-      newCanvas.loadFromJSON(canvasData, () => {
-        setTimeout(() => {
-          const objects = newCanvas.getObjects();
+        // setTimeout(() => {
+          
+        // }, this.timeout);
+        newCanvas.loadFromJSON(canvasData, () => {
+          requestAnimationFrame(() => {
+            const objects = newCanvas.getObjects();
 
-          // Sort objects by zIndex
-          objects.sort((a: any, b: any) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
+            // Sort objects by zIndex
+            objects.sort((a: any, b: any) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
 
-          objects.forEach((obj: any) => {
-            if (obj.html) {
-              const html: any = obj.html;
-              const alreadyExists = htmlLayers.find((item: HtmlLayer) => item.id === html.id);
+            objects.forEach((obj: any) => {
+              if (obj.html) {
+                const html: any = obj.html;
+                const alreadyExists = htmlLayers.find((item: HtmlLayer) => item.id === html.id);
 
-              if (alreadyExists) this.syncDivsWithFabric(newCanvas, design);
+                if (alreadyExists) this.syncDivsWithFabric(newCanvas, design);
 
-            } else if (obj.data) {
-              const data: any = obj.data;
+              } else if (obj.data) {
+                const data: any = obj.data;
 
-              if (data.type == 'video') {
-                  
-                  this.onAddVideoToCanvas(newCanvas, data, obj);
-                  // newCanvas.remove(obj);
+                if (data.type == 'video') {
+                    this.onAddVideoToCanvas(newCanvas, data, obj);
+                    // newCanvas.remove(obj);
+                }
               }
-            }
-          });
+            });
 
-          newCanvas.selection = false;
-          newCanvas.skipTargetFind = true;
+            // newCanvas.selection = false;
+            // newCanvas.skipTargetFind = true;
 
-          newCanvas.requestRenderAll();
-        }, 10);
-      });
+            this.syncDivsWithFabric(newCanvas, design);
+            newCanvas.requestRenderAll();
+            this.onPlayVideosInCanvas(newCanvas);
+          })
+        });
 
-      this.onPlayVideosInCanvas(newCanvas);
-      return newCanvas;
-    } catch (error) {
-      alert(error);
-      // console.log('error on initCanvas', error);
-      return null;
-    }
+        resolve(newCanvas);
+      } catch (error) {
+        reject('Error initializing canvas: ' + error);
+      }
+    })
   }
   
   private updateCanvasSize(canvas: fabric.Canvas, canvasContainer: any, zoomLevel: number) {
