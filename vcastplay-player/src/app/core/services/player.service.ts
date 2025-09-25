@@ -801,14 +801,16 @@ export class PlayerService {
                 this.dataFromAndroid.set('Received from android:' + data);
                 resolve('Received from android: ' + data);
             } else {
-                    this.dataFromAndroid.set('Received from android: Nothing');
+                this.dataFromAndroid.set('Received from android: Nothing');
                 reject(new Error('No data received from android.'));
             }
 
             
             // Instead of delete, replace with a no-op
-            (window as any).receiveDataFromAndroid = () => {
-                console.warn('receiveDataFromAndroid called again before new promise created');
+            (window as any).receiveDataFromAndroid = (data: any) => {
+                this.dataFromAndroid.set('Received from android:' + data);
+                resolve('Received from android: ' + data);
+                // console.warn('receiveDataFromAndroid called again before new promise created');
             };
             // try {
             // } finally {
