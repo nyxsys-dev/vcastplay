@@ -56,7 +56,9 @@ export class MainDisplayComponent {
 
     effect(() => {
       console.log('🧭 Network status changed:', this.networkStat());
-      console.log(`System has been initialized in ${platform.toUpperCase()}`);      
+      console.log(`System has been initialized in ${platform.toUpperCase()}`); 
+      console.log(this.dataFromAndroid());
+       
       // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
   }
@@ -75,9 +77,7 @@ export class MainDisplayComponent {
     // this.player.onPlayPreview();
     
     this.onGetPlayerInformation();
-    const result = this.player.onGetReceiveData();
-    console.log(result);
-    
+    this.player.onGetReceiveData();
     this.cdr.detectChanges();
   }
   
@@ -183,4 +183,5 @@ export class MainDisplayComponent {
   get onProgressUpdate() { return this.playlistService.onProgressUpdate; }
 
   get platform() { return this.platformService.platform; }
+  get dataFromAndroid() { return this.player.dataFromAndroid; }
 }

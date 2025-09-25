@@ -20,6 +20,7 @@ export class PlayerService {
   playerCode = signal<string>('');
 
   androidData = signal<any>(null);
+  dataFromAndroid = signal<any>(null);
 
   constructor() { }
 
@@ -787,11 +788,10 @@ export class PlayerService {
   onGetReceiveData() {
     window.receiveDataFromAndroid = (data: any) => {
         if (data) {
-            return 'Received from android:' + data;
+            this.dataFromAndroid.set('Received from android:' + data);
         } else {
-            return(new Error('No data received from android.'));
+            this.dataFromAndroid.set('Received from android: Nothing');
         }
-        // window.receiveDataFromAndroid = undefined;
     };
   }
 
