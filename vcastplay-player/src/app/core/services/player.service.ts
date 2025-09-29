@@ -808,9 +808,9 @@ export class PlayerService {
             
             // Instead of delete, replace with a no-op
             (window as any).receiveDataFromAndroid = () => {
-                console.warn('receiveDataFromAndroid called again before new promise created');
                 this.dataFromAndroid.set('Received from android:' + data);
                 resolve('Received from android: ' + data);
+                console.warn('receiveDataFromAndroid called again before new promise created');
             };
             // try {
             // } finally {

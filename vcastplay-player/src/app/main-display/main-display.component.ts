@@ -64,6 +64,15 @@ export class MainDisplayComponent {
        
       // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
+
+    // Receive data from Android
+    window.receiveDataFromAndroid = (data: any) => {
+      if (data) {
+        console.log('🧭 Data received from Android:', data);
+      } else {
+        console.log('🧭 Data received from Android is empty');
+      }
+    }
   }
 
   ngOnInit() { }
@@ -80,10 +89,10 @@ export class MainDisplayComponent {
     // this.player.onPlayPreview();
     
     this.onGetPlayerInformation();
-    this.player.onGetReceiveData().then((response) => {
-      console.log(response);
-      this.isPlay.set(true);
-    });
+    // this.player.onGetReceiveData().then((response) => {
+    //   console.log(response);
+    //   this.isPlay.set(true);
+    // });
     this.cdr.detectChanges();
   }
   
