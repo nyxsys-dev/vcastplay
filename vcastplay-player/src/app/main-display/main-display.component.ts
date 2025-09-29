@@ -66,9 +66,11 @@ export class MainDisplayComponent {
     })
 
     // Receive data from Android
+    // Play content on Android
     window.receiveDataFromAndroid = (data: any) => {
       if (data) {
         console.log('🧭 Data received from Android:', data);
+        setTimeout(() => this.isPlay.set(true), this.timeout);
       } else {
         console.log('🧭 Data received from Android is empty');
       }
