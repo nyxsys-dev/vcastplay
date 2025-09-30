@@ -16,6 +16,7 @@ export class PlaylistsService {
   isPlaying = signal<boolean>(false);
 
   desktopFilePath: string = environment.desktopFilePath;
+  androidFilePath: string = environment.androidFilePath;
 
   constructor() { }
 
@@ -38,7 +39,8 @@ export class PlaylistsService {
     }
   }
 
-  onPlayContent(playlist: Playlists | any) {    
+  onPlayContent(playlist: Playlists | any) {
+    const platform: string = this.platform.platform;
     this.isPlaying.set(true);
 
     // Register state for this playlist only
@@ -59,8 +61,24 @@ export class PlaylistsService {
     // this.onStopContent(playlist.id);
 
     const playNextContent = () => {
+      let tempItem: any;
+      
       const { link, ...content } = contents[state.index];
-      const item = this.platform.platform == 'desktop' ? { link: `${this.desktopFilePath}${content.name}` , ...content} : contents[state.index];
+
+      switch (platform) {
+        case 'desktop':
+          tempItem = { link: `${this.desktopFilePath}${content.name}` , ...content};
+          break;
+        case 'android':
+          tempItem = { link: `${this.androidFilePath}${content.name}` , ...content};
+          break;
+        default:
+          tempItem = contents[state.index];
+          break;
+      }
+
+      const item = tempItem;
+
       const { hasGap, type, speed } = playlist.transition;
       const transitionSpeed = speed * 100;
       const gapDuration = hasGap ? 500 : 0;
