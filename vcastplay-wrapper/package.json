@@ -19,7 +19,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "breadnut1906",
+        "owner": "nyxsys-dev",
         "repo": "vcastplay",
         "releaseType": "release"
       }

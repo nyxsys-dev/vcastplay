@@ -13,8 +13,8 @@ export class DesignLayoutService {
   
   timeout: number = environment.timeout;
   zoomLevel: number = 1;
-  defaultScale: number = 0;
-  defaultResolution: any;
+  DEFAULT_SCALE: number = 0;
+  DEFAULT_RESOLUTION: any;
 
   constructor() { }
 
@@ -37,7 +37,7 @@ export class DesignLayoutService {
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
     return new Promise((resolve) => {
-      this.initCanvas(viewport, canvasContainer, design, { renderOnAddRemove: true, autoPlayVideos: true, isViewOnly: true, registerEvents: true }).then((canvas: any) => {
+      this.initCanvas(viewport, canvasContainer, design).then((canvas: any) => {
         this.setCanvas(canvas);
         resolve(canvas);
       });
@@ -47,12 +47,10 @@ export class DesignLayoutService {
   onScaleCanvas(canvas: fabric.Canvas, parentElement: any, canvasContainer: any) {
     if (!canvas) return;
 
-    const { width, height } = this.defaultResolution;
+    const { width, height } = this.DEFAULT_RESOLUTION;
     const bounds = parentElement.getBoundingClientRect();
     const fitScale = Math.min(bounds.width / width, bounds.height / height);
-
-    const totalZoom = fitScale * this.zoomLevel;
-    this.updateCanvasSize(canvas, canvasContainer, totalZoom);
+    this.updateCanvasSize(canvas, canvasContainer, fitScale);
   }
 
   onAddVideoToCanvas(canvas: fabric.Canvas, data: any, fabricObject?: fabric.Object | any) {
@@ -103,14 +101,6 @@ export class DesignLayoutService {
       });
 
       video.onended = () => video.play().catch(err => console.warn('Video play failed:', err));
-      // canvas.add(videoObj);
-
-      // video.load();
-      // video.play().catch(err => console.warn('Video play failed:', err));
-       
-
-      // this.onStartVideoRender(canvas);    
-      // video.remove();
     } catch (error) {
       console.error('Error adding video to canvas', error);
     }
@@ -173,8 +163,8 @@ export class DesignLayoutService {
     container.style.width = `${newWidth}px`;
     container.style.height = `${newHeight}px`;
   
-    this.defaultScale = scale;
-    this.defaultResolution = resolution;
+    this.DEFAULT_SCALE = scale;
+    this.DEFAULT_RESOLUTION = resolution;
     
     return new fabric.Canvas(canvasElement, { 
       width: newWidth,
@@ -188,8 +178,7 @@ export class DesignLayoutService {
   private initCanvas(
     viewport: any,
     canvasElement: any, 
-    design: DesignLayout, 
-    options: { renderOnAddRemove: boolean, autoPlayVideos: boolean, isViewOnly?: boolean, registerEvents?: boolean }
+    design: DesignLayout,
   ) {
     return new Promise((resolve, reject) => {
       try {
@@ -199,9 +188,7 @@ export class DesignLayoutService {
 
         const newCanvas = this.onInitFabricCanvas(viewport, canvasElement, { width, height }, canvasData.background);
 
-        newCanvas.setZoom(this.defaultScale)
-
-        if (!options.isViewOnly) this.setCanvas(newCanvas);
+        newCanvas.setZoom(this.DEFAULT_SCALE);
 
         // setTimeout(() => {
           
@@ -247,7 +234,7 @@ export class DesignLayoutService {
   }
   
   private updateCanvasSize(canvas: fabric.Canvas, canvasContainer: any, zoomLevel: number) {
-    const { width, height } = this.defaultResolution;
+    const { width, height } = this.DEFAULT_RESOLUTION;
 
     const newContainerWidth = width * zoomLevel;
     const newContainerHeight = height * zoomLevel;

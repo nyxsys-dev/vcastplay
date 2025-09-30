@@ -11,7 +11,6 @@ export class PlaylistsService {
   platform = inject(PlatformService);
   
   private states = new Map<number, ContentState>();
-  private videoElement = signal<HTMLVideoElement | null>(null);
   
   isPlaying = signal<boolean>(false);
 
@@ -57,8 +56,6 @@ export class PlaylistsService {
     state.isPlaying.set(false);
     state.progress.set(0);
     state.fadeIn.set(false);
-    
-    // this.onStopContent(playlist.id);
 
     const playNextContent = () => {
       let tempItem: any;
@@ -102,8 +99,6 @@ export class PlaylistsService {
           this.onTriggerIntervals(state, duration);
           break;
         case 'video':
-          // this.videoElement().currentTime = 0;
-          // this.videoElement()?.play();
           this.onTriggerIntervals(state, duration);
           break;
         case 'playlist':
