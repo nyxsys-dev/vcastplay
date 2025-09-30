@@ -101,6 +101,8 @@ export class DesignLayoutService {
         canvas.requestRenderAll();
         // this.onStartVideoRender(canvas);
       });
+
+      video.onended = () => video.play().catch(err => console.warn('Video play failed:', err));
       // canvas.add(videoObj);
 
       // video.load();

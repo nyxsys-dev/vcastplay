@@ -49,19 +49,14 @@ export class MainDisplayComponent {
   
   isPlay = signal<boolean>(false);
 
-  constructor(private cdr: ChangeDetectorRef) { 
-    // this.player.onGetReceiveData();
+  constructor(private cdr: ChangeDetectorRef) {
     const platform = this.storage.get('platform');
     window.addEventListener('online', () => this.networkStat.set(true));
     window.addEventListener('offline', () => this.networkStat.set(false));
 
     effect(() => {
       console.log('🧭 Network status changed:', this.networkStat());
-      console.log(`System has been initialized in ${platform.toUpperCase()}`); 
-      if (this.dataFromAndroid()) {
-        console.log(this.androidData());
-      }
-       
+      console.log(`System has been initialized in ${platform.toUpperCase()}`);       
       // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
     })
 
@@ -91,10 +86,6 @@ export class MainDisplayComponent {
     // this.player.onPlayPreview();
     
     this.onGetPlayerInformation();
-    // this.player.onGetReceiveData().then((response) => {
-    //   console.log(response);
-    //   this.isPlay.set(true);
-    // });
     this.cdr.detectChanges();
   }
   

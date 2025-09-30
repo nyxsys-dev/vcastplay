@@ -118,16 +118,6 @@ export class DesignLayoutDetailsComponent {
     { label: 'Spacing Middle', command: () => this.onClickLayerSpacing('vertical'), image: 'assets/icons/spacing-middle.png' },
   ]
 
-  @HostListener('wheel', ['$event']) onWheel(event: WheelEvent) {
-    if (!event.ctrlKey) return;
-    event.preventDefault();
-    const factor = event.deltaY < 0 ? 1.2 : (1 / 1.2);
-    if(this.canvasProps.zoom) {
-      const canvas = this.designLayoutService.getCanvas();
-      this.designLayoutService.onZoomCanvas(canvas, this.canvasContainer.nativeElement, factor, false);
-    }
-  }
-
   @HostListener('document:keydown', ['$event']) onKeyDown(event: KeyboardEvent) {   
     if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'n') {
       event.preventDefault();
@@ -240,6 +230,15 @@ export class DesignLayoutDetailsComponent {
 
   onClickSaveDesign(event: Event) {
     if (this.designForm.invalid) return;
+
+    const canvas = this.designLayoutService.getCanvas();
+    if (!canvas) return;
+
+    const objects: any[] = canvas.getObjects();
+    if (objects.length === 0) {
+      this.message.add({ severity: 'error', summary: 'Error', detail: 'Please add at least one layer to the design' });
+      return;
+    }
     
     this.confirmation.confirm({
       target: event.target as EventTarget,
@@ -400,8 +399,8 @@ export class DesignLayoutDetailsComponent {
     this.layoutItems.forEach(menu => {
       const items = menu.items;
       if (items) {
-        items.forEach(item => {
-          if (item.label == 'Export') item.disabled = !this.isEditMode();
+        items.forEach((item: any) => {
+          if (['New', 'Export'].includes(item.label)) item.disabled = !this.isEditMode();
           else item.disabled = false;
         });
       }
@@ -412,6 +411,12 @@ export class DesignLayoutDetailsComponent {
     this.isEditMode.set(true);
     this.designLayoutService.onImportCanvas(event, this.viewport.nativeElement, this.canvasContainer.nativeElement);
     this.onUpdateMenus();
+  }
+
+  onZoomChange(event: any) {
+    const { value } = event;
+    const canvas = this.designLayoutService.getCanvas();
+    this.designLayoutService.onZoomCanvas(canvas, this.canvasContainer.nativeElement, value, false);
   }
 
   onResetCanvasPosition() {
@@ -425,8 +430,10 @@ export class DesignLayoutDetailsComponent {
   get isEditMode() { return this.designLayoutService.isEditMode; }
   get designForm() { return this.designLayoutService.designForm; }
   get canvasProps() { return this.designLayoutService.canvasProps; }
+  get zoomControl() { return this.designLayoutService.zoomControl; }
   get showContents() { return this.designLayoutService.showContents; }
   get selectedColor() { return this.designLayoutService.selectedColor; }
+  get DEFAULT_SCALE() { return this.designLayoutService.DEFAULT_SCALE; }
   get showCanvasSize() { return this.designLayoutService.showCanvasSize; }
   get marqueeControl() { return this.designLayoutService.marqueeControl; }
   get designFormValue() { return this.designLayoutService.designForm.value; }

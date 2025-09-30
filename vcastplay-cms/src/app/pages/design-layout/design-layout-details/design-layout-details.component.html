@@ -10,7 +10,7 @@
     </p-menubar>
 
 
-    <div class="relative flex flex-col flex-1 items-center justify-center overflow-hidden h-full w-full" cdkDropListGroup>
+    <div class="relative flex flex-col flex-1 items-center justify-center overflow-hidden h-full w-full canvas-boundary" cdkDropListGroup>
 
         @if (designLayoutService.getCanvas()) {
             <div class="absolute top-0 left-0 py-2 px-1 bg-[var(--p-surface-100)] shadow-lg rounded-lg z-40">
@@ -88,18 +88,16 @@
         }
         
         @if (canvasProps.zoom) {
-            <div class="flex items-center gap-2 absolute top-0 right-0 z-50 bg-[var(--p-surface-50)] shadow-lg rounded-lg py-2 px-3" cdkDrag>
+            <div class="flex items-center gap-5 absolute bottom-0 right-0 z-50 bg-[var(--p-surface-50)] shadow-lg rounded-lg py-2 px-3" cdkDragBoundary=".canvas-boundary" cdkDrag>
                 <div class="w-2 h-8 bg-[var(--p-surface-200)] rounded-lg cursor-move" cdkDragHandle></div>
-                <p class="text-sm italic text-red-500 ml-3">(Ctrl + Scroll to Zoom)</p>
-                <p-button icon="pi pi-search-plus" (onClick)="onClickZoom(true)" size="small" />
-                <p-button icon="pi pi-search-minus" (onClick)="onClickZoom(false)" severity="secondary" size="small" />
+                <p-slider min="0.10" max="2.0" step="0.01" [formControl]="zoomControl" class="w-30" (onChange)="onZoomChange($event)" animate />
                 <p-button icon="pi pi-sync" (onClick)="onClickResetZoom()" severity="secondary" size="small" />
-                <p class="text-sm">{{ zoomLevel * 100 | number: '1.0-0' }}%</p>
+                <p class="text-sm">{{ zoomControl.value * 100 | number: '1.0-0' }}%</p>
             </div>
         }
         
         @if (canvasProps.selection) {
-            <div class="flex items-center gap-1 absolute top-0 right-0 z-50 bg-[var(--p-surface-50)] shadow-lg rounded-lg p-2" cdkDrag>
+            <div class="flex items-center gap-1 absolute top-0 right-0 z-50 bg-[var(--p-surface-50)] shadow-lg rounded-lg p-2" cdkDragBoundary=".canvas-boundary" cdkDrag>
                 <div class="w-2 h-8 bg-[var(--p-surface-200)] rounded-lg cursor-move" cdkDragHandle></div>
                 @for (item of objectAlignments; track $index) {
                     <p-button (onClick)="item.command()" text>
@@ -113,11 +111,6 @@
         @if (canvasProps.rect) { <app-object-properties propsType="rect" /> }
         @if (canvasProps.line) { <app-object-properties propsType="line" /> }
         @if (canvasProps.marquee) { <app-object-properties propsType="marquee" /> }
-        
-        <!-- @if (canvasProps.text) { <app-text-properties /> }
-        @if (canvasProps.rect) { <app-rect-properties /> }
-        @if (canvasProps.line) { <app-rect-properties [lineProps]="true" /> }
-        @if (canvasProps.marquee) { <app-marquee-properties /> } -->
     </div>
     <input #importFile type="file" name="importFile" id="importFile" accept=".json" hidden (change)="onImportFile($event)">
 </div>
@@ -172,6 +165,10 @@
         <div class="flex items-center gap-2">
             <p>Description:</p>
             <span class="font-semibold">{{ designFormValue.description }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <p>Duration:</p>
+            <p-tag severity="info" [value]="utils.timeConversion(designFormValue.duration)" />
         </div>
         <div class="flex items-center gap-2">
             <p>Date Created:</p>

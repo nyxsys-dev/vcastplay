@@ -39,7 +39,7 @@ export class DesignLayoutService {
 
   marqueeControl: FormControl = new FormControl(null);
 
-  DEFAULT_SCALE = signal<number>(1.3);
+  DEFAULT_SCALE = signal<number>(1);
   SELECTION_STYLE = signal<any>({
     borderColor: '#9B5CFA',
     borderScaleFactor: 2,
@@ -55,9 +55,9 @@ export class DesignLayoutService {
   
   rows = signal<number>(8);
   totalRecords = signal<number>(0);
-  zoomLevel: number = 1;
-  defaultScale: number = 0;
-  defaultResolution: any;
+  zoomLevel: number = 0.6;
+  DEFAULT_RESOLUTION: any;
+  zoomControl: FormControl = new FormControl(1, { nonNullable: true });
 
   designForm: FormGroup = new FormGroup({
     id: new FormControl(0, { nonNullable: true }),
@@ -82,23 +82,6 @@ export class DesignLayoutService {
     updatedOn: new FormControl(new Date()),
     files: new FormControl([], { nonNullable: true }),
   });
-  
-  // textPropsForm: FormGroup = new FormGroup({
-  //   font: new FormControl('Arial', { nonNullable: true}),
-  //   size: new FormControl(12, { nonNullable: true }),
-  //   weight: new FormControl(false, { nonNullable: true }),
-  //   italic: new FormControl(false, { nonNullable: true }),
-  //   underline: new FormControl(false, { nonNullable: true }),
-  //   alignment: new FormControl('left', { nonNullable: true }),
-  //   color: new FormControl('#000000', { nonNullable: true })
-  // })
-
-  // rectPropsForm: FormGroup = new FormGroup({
-  //   color: new FormControl('#000000', { nonNullable: true }),
-  //   transparent: new FormControl(false, { nonNullable: true }),
-  //   style: new FormControl('fill', { nonNullable: true }),
-  //   strokeWidth: new FormControl(1, { nonNullable: true }),
-  // })
 
   objectPropsForm: FormGroup = new FormGroup({
     font: new FormControl('Arial', { nonNullable: true}),
@@ -234,7 +217,6 @@ export class DesignLayoutService {
 
   onSaveDesign(canvasContainer: any, design: DesignLayout) {
     const canvas = this.getCanvas();
-
     canvas.getObjects().forEach((object: any, index: number) => { object.set('zIndex', index) });
 
     // const htmlLayers = this.canvasHTMLLayers() //.filter(item => !item.content.marquee);
@@ -298,24 +280,20 @@ export class DesignLayoutService {
   onScaleCanvas(canvas: fabric.Canvas, parentElement: any, canvasContainer: any) {
     if (!canvas) return;
 
-    const { width, height } = this.defaultResolution;
+    const { width, height } = this.DEFAULT_RESOLUTION;
     const bounds = parentElement.getBoundingClientRect();
     const fitScale = Math.min(bounds.width / width, bounds.height / height);
     
     // this.onZoomCanvas(canvas, canvasContainer, factor, true);
-    const totalZoom = fitScale * this.zoomLevel;
+    const totalZoom = fitScale;
+    this.zoomControl.patchValue(totalZoom);
     this.updateCanvasSize(canvas, canvasContainer, totalZoom);
   }
 
   onZoomCanvas(canvas: fabric.Canvas, canvasContainer: any, factor: number, isReset: boolean = false) {
-    if (isReset) {
-      this.zoomLevel = this.defaultScale;
-    } else {
-      this.zoomLevel *= factor;
-    }
-    
-    // const totalScale = this.defaultScale * this.zoomLevel;
-    this.updateCanvasSize(canvas, canvasContainer, this.zoomLevel);
+    const totalScale = isReset ? this.DEFAULT_SCALE() : factor;
+    if (isReset) this.zoomControl.patchValue(totalScale);
+    this.updateCanvasSize(canvas, canvasContainer, totalScale);
   }
 
   onExitCanvas() {
@@ -530,12 +508,13 @@ export class DesignLayoutService {
   /**
    * ====================================================================================================================================
    * Adding layers
-   * Text, Rectangle, Image, Line, Video and HTML
+   * Text, Rectangle, Image, Line, Video, Marquee and HTML
    * ====================================================================================================================================
    */
-  onAddTextToCanvas(canvas: fabric.Canvas, content: string = 'Enter text here', fill: string = '#000000') {
+  onAddTextToCanvas(canvas: fabric.Canvas, content: string = 'Enter text here', color: string = '#000000') {
     this.onSetCanvasProps('text', true, 'default');
-    const tempText = new fabric.FabricText(content, { fontSize: 12, fontFamily: 'Arial', fill });
+    const tempText = new fabric.FabricText(content, { fontSize: 12, fontFamily: 'Arial', color });
+    this.objectPropsForm.patchValue({ color });
 
     canvas.discardActiveObject();    
     const { width, height } = this.canvasDimensions(canvas);
@@ -546,7 +525,7 @@ export class DesignLayoutService {
       top,
       fontSize: 12,
       fontFamily: 'Arial',
-      fill,
+      fill: color,
       editable: true,
       width: tempText.width,
     })
@@ -599,48 +578,32 @@ export class DesignLayoutService {
     canvas.requestRenderAll();
   }
 
-  // End Marquee
-
-  onAddRectangleToCanvas(canvas: fabric.Canvas, color: string = '#808080') {
+  onAddShapeToCanvas(canvas: fabric.Canvas, type: string, fill: string = '#808080') {
     this.onSetCanvasProps('rect', true, 'default');
     canvas.discardActiveObject();
-    
-    const rect = new fabric.Rect({
-      width: 200,
-      height: 100,
-      fill: color
-    });
 
-    canvas.add(rect);
-    this.onDisableLayersProps(canvas, true);
-    this.showContents.set(false);
-    this.saveState();
-  }
-
-  onAddShapeToCanvas(canvas: fabric.Canvas, type: string, color: string = '#808080') {
-    this.onSetCanvasProps('rect', true, 'default');
-    canvas.discardActiveObject();
+    this.objectPropsForm.patchValue({ fill });
 
     let shape: any;
     switch (type) {
       case 'circle':
-        shape = new fabric.Circle({ radius: 50, width: 100, height: 100, fill: color })
+        shape = new fabric.Circle({ radius: 50, width: 100, height: 100, fill })
         break;
       case 'triangle':
-        shape = new fabric.Triangle({ width: 100, height: 100, fill: color, left: 200, top: 100 });
+        shape = new fabric.Triangle({ width: 100, height: 100, left: 200, top: 100, fill });
         break;
       case 'ellipse':
-        shape = new fabric.Ellipse({ rx: 50, ry: 25, width: 100, height: 100, fill: color });
+        shape = new fabric.Ellipse({ rx: 50, ry: 25, width: 100, height: 100, fill });
         break;
       default:
-        shape = new fabric.Rect({ width: 200, height: 100, fill: color });
+        shape = new fabric.Rect({ width: 200, height: 100, fill });
         break;
     }
 
     canvas.add(shape);
+    canvas.setActiveObject(shape);
     this.onDisableLayersProps(canvas, true);
     this.showContents.set(false);
-    canvas.setActiveObject(shape);
     this.saveState();
   }
 
@@ -719,6 +682,8 @@ export class DesignLayoutService {
     video.addEventListener('loadeddata', () => {
       canvas.requestRenderAll(); // show first frame
     });
+    
+    video.onended = () => video.play().catch(err => console.warn('Video play failed:', err));
 
     if (autoPlay) this.onStartVideoRender(canvas);
     this.onDisableLayersProps(canvas, true);
@@ -785,7 +750,9 @@ export class DesignLayoutService {
    */
   onCreateCanvas(viewport: any, canvasContainer: any, resolution: { width: number, height: number }, backgroundColor: string = '#ffffff') {
     const canvas = this.onInitFabricCanvas(viewport, canvasContainer, resolution, backgroundColor);
-    canvas.setZoom(this.defaultScale);
+    canvas.setZoom(this.DEFAULT_SCALE());
+
+    this.zoomControl.patchValue(this.DEFAULT_SCALE());
 
     this.setCanvas(canvas);  
 
@@ -1039,7 +1006,7 @@ export class DesignLayoutService {
   }
 
   onUpdateRectProperty(canvas: fabric.Canvas, value: any) {
-    const { color, transparent, style, strokeWidth } = value;
+    const { fill, transparent, style, strokeWidth } = value;
     const activeObj = canvas.getActiveObject();
     if (!activeObj) return;
     
@@ -1047,10 +1014,10 @@ export class DesignLayoutService {
     activeObj.set('strokeDashArray', undefined)
     switch (style) {
       case 'fill':
-        activeObj.set({ stroke: 'transparent', fill: transparent ? 'transparent' : color, strokeWidth: 0, strokeUniform: false });
+        activeObj.set({ stroke: 'transparent', fill: transparent ? 'transparent' : fill, strokeWidth: 0, strokeUniform: false });
         break;
       case 'outline':
-        activeObj.set({ stroke: color, strokeWidth, fill: 'transparent', strokeUniform: true });
+        activeObj.set({ stroke: fill, strokeWidth, fill: 'transparent', strokeUniform: true });
         break;
       case 'dashed':
         activeObj.set('strokeDashArray', [5, 5]);
@@ -1062,10 +1029,10 @@ export class DesignLayoutService {
   }
 
   onUpdateLineProperty(canvas: fabric.Canvas, value: any) {
-    const { color, strokeWidth } = value;
+    const { fill, strokeWidth } = value;
     const activeObj = canvas.getActiveObject();
     if (!activeObj) return;
-    activeObj.set({ stroke: color, strokeWidth });
+    activeObj.set({ stroke: fill, strokeWidth });
     activeObj.set('lineProp', value);
     canvas.requestRenderAll();
   }
@@ -1127,8 +1094,8 @@ export class DesignLayoutService {
     container.style.width = `${newWidth}px`;
     container.style.height = `${newHeight}px`;
   
-    this.defaultScale = scale;
-    this.defaultResolution = resolution;
+    this.DEFAULT_SCALE.set(scale);
+    this.DEFAULT_RESOLUTION = resolution;
     
     return new fabric.Canvas(canvasElement, { 
       width: newWidth,
@@ -1140,7 +1107,7 @@ export class DesignLayoutService {
   }
 
   private updateCanvasSize(canvas: fabric.Canvas, canvasContainer: any, zoomLevel: number) {
-    const { width, height } = this.defaultResolution;
+    const { width, height } = this.DEFAULT_RESOLUTION;
 
     const newContainerWidth = width * zoomLevel;
     const newContainerHeight = height * zoomLevel;
@@ -1169,7 +1136,7 @@ export class DesignLayoutService {
       const canvasData = JSON.parse(canvas);
       
       const newCanvas = this.onInitFabricCanvas(viewport, canvasElement, { width, height }, canvasData.background);
-      newCanvas.setZoom(this.defaultScale);
+      newCanvas.setZoom(this.DEFAULT_SCALE());
 
       if (!options.isViewOnly) this.setCanvas(newCanvas);
 
@@ -1362,6 +1329,7 @@ export class DesignLayoutService {
       } else {
         const selected: any = e.selected?.[0];
         if (selected) {
+          this.showContents.set(selected.html ? true : false);
           selected.set(this.SELECTION_STYLE());
           if (selected.type === 'image') {
             this.onSetCanvasProps('image', true, 'default');
@@ -1369,7 +1337,7 @@ export class DesignLayoutService {
             this.objectPropsForm.patchValue(selected.textBoxProp)
             this.onSetCanvasProps('text', true, 'default');
           } else if (['rect', 'circle', 'triangle', 'ellipse'].includes(selected.type) && !selected.html) {
-            this.objectPropsForm.patchValue(selected.rectProp)
+            this.objectPropsForm.patchValue(selected.rectProp);            
             this.onSetCanvasProps('rect', true, 'default');
           } else if (selected.type == 'line') {
             this.objectPropsForm.patchValue(selected.lineProp)
@@ -1377,6 +1345,7 @@ export class DesignLayoutService {
           } else {
             const { content, style } = selected.html;            
             if (content.type == 'marquee') {
+              this.showContents.set(false);
               this.objectPropsForm.patchValue(style);
               this.onSetCanvasProps('marquee', true, 'default');
             } else {
@@ -1390,6 +1359,7 @@ export class DesignLayoutService {
     canvas.on('selection:updated', (e) => {
       const selected: any = e.selected?.[0];      
       if (selected) {
+        this.showContents.set(selected.html ? true : false);
         selected.set(this.SELECTION_STYLE());
         if (selected.type === 'image') {
           this.onSetCanvasProps('image', true, 'default');
@@ -1405,6 +1375,7 @@ export class DesignLayoutService {
         } else {
           const { content, style } = selected.html;
           if (content.type == 'marquee') {
+            this.showContents.set(false);
             this.objectPropsForm.patchValue(style)
             this.onSetCanvasProps('marquee', true, 'default');
           } else {
@@ -1415,7 +1386,6 @@ export class DesignLayoutService {
     });
 
     canvas.on('selection:cleared', () => {
-      // this.onMove();
       this.objectPropsForm.reset();
       this.onSetCanvasProps('cleared', true, 'default');
     });

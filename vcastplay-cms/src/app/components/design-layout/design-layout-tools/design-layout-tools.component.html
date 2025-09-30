@@ -27,7 +27,7 @@
     <p-colorpicker [(ngModel)]="selectedColor" (onChange)="onChangeColor($event)" appendTo="body" (onShow)="onUnSelectAllLayers()" />
 </div>
 
-<p-menu [model]="shapeItems" popup #shapes appendTo="body">
+<p-menu [model]="shapeItems" popup #shapes appendTo="body" class="left-5">
     <ng-template #item let-item>
         <a pRipple class="flex items-center p-menu-item-link">
             <p>{{ item.label }}</p>

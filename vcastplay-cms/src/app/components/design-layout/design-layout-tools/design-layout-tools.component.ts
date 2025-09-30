@@ -71,6 +71,7 @@ export class DesignLayoutToolsComponent {
   onClickZoom() {
     this.resetDragPosition.emit();
     const canvas = this.designLayoutService.getCanvas();
+    this.zoomControl.patchValue(canvas.getZoom());
     canvas.discardActiveObject();
     this.designLayoutService.onSetCanvasProps('zoom', true, 'default');
   }
@@ -88,8 +89,9 @@ export class DesignLayoutToolsComponent {
     this.designLayoutService.onChangeColor(event.value);
   }
   
-  get selectedColor() { return this.designLayoutService.selectedColor; }
+  get zoomControl() { return this.designLayoutService.zoomControl; }
   get showContents() { return this.designLayoutService.showContents; }
-  get showInputMarquee() { return this.designLayoutService.showInputMarquee; }
+  get selectedColor() { return this.designLayoutService.selectedColor; }
   get objectPropsForm() { return this.designLayoutService.objectPropsForm; }
+  get showInputMarquee() { return this.designLayoutService.showInputMarquee; }
 }

@@ -578,7 +578,7 @@ export class PlayerService {
             "link": "https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg"
         }
     ]
-}); 
+        }); 
         break;
       case 'playlist':
         this.contentSignal.set({
@@ -784,43 +784,7 @@ export class PlayerService {
       this.androidData.set(data);
     };
   }
-
-  onGetReceiveData() {
-    // window.receiveDataFromAndroid = (data: any) => {
-    //     if (data) {
-    //         this.dataFromAndroid.set('Received from android:' + data);
-    //     } else {
-    //         this.dataFromAndroid.set('Received from android: Nothing');
-    //     }
-    // };
-    return new Promise((resolve, reject) => {
-        // Assign a one-time callback
-        this.dataFromAndroid.set('Waiting for data from android...');
-        (window as any).receiveDataFromAndroid = (data: any) => {
-            if (data) {
-                this.dataFromAndroid.set('Received from android:' + data);
-                resolve('Received from android: ' + data);
-            } else {
-                this.dataFromAndroid.set('Received from android: Nothing');
-                reject(new Error('No data received from android.'));
-            }
-
-            
-            // Instead of delete, replace with a no-op
-            (window as any).receiveDataFromAndroid = () => {
-                this.dataFromAndroid.set('Received from android:' + data);
-                resolve('Received from android: ' + data);
-                console.warn('receiveDataFromAndroid called again before new promise created');
-            };
-            // try {
-            // } finally {
-            //     // Clean up after resolving/rejecting to avoid duplicate triggers
-            //     delete (window as any).receiveDataFromAndroid;
-            // }
-        };
-    });
-  }
-
+  
   onGetBrowserInformation() {
     const { appVersion, appName, platform, userAgent }: any = navigator;
     const height = screen.height;
@@ -828,14 +792,6 @@ export class PlayerService {
     const orientation = screen.orientation;
     console.log({ appVersion, appName, platform, userAgent, height, width, orientation });
   }
-
-  // onSendDataToAndroid(data: any) {
-  //   if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {
-  //     (window as any).AndroidBridge.sendCommand(data);
-  //   } else {
-  //     console.warn('AndroidBridge not available.');
-  //   }
-  // }
 
   onSendDataToAndroid(data: any) {
     if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {

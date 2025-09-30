@@ -34,7 +34,7 @@ import { ScreenSettingsComponent } from '../../../pages/screen-management/screen
 import { ContentSelectionComponent } from '../../../components/content-selection/content-selection.component';
 import { ScreenDetailsComponent } from '../../../pages/screen-management/screen-details/screen-details.component';
 import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
-import { DesignLayoutToolsComponent } from '../../../pages/design-layout/design-layout-tools/design-layout-tools.component';
+import { DesignLayoutToolsComponent } from '../../../components/design-layout/design-layout-tools/design-layout-tools.component';
 import { DesignLayoutListItemComponent } from '../../../pages/design-layout/design-layout-list-item/design-layout-list-item.component';
 import { ObjectPropertiesComponent } from '../../../components/design-layout/object-properties/object-properties.component';
 
