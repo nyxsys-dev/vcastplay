@@ -106,7 +106,7 @@ export class PlaylistsService {
           break;
       }
 
-      console.log("Current Playing:", item.name);
+      console.log("Current Playing:", { name: item.name, link: item.link });
       
       state.timeoutId = setTimeout(() => {
 
