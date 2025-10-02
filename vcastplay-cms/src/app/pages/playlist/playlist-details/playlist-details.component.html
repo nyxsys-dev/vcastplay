@@ -15,7 +15,7 @@
                 <p-button class="flex md:hidden gap-2" icon="pi pi-save" (onClick)="onClickSave($event)" />
             </div>
         </ng-template>
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-5 h-full mt-2">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-5 h-full py-2">
             <div class="col-span-1 md:col-span-6 xl:col-span-8 flex flex-col gap-2">
                 <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4">
                     <div class="col-span-1 md:col-span-3">
@@ -43,8 +43,9 @@
 
             <!-- Assets Lists -->
             <div class="col-span-1 md:col-span-6 xl:col-span-4">
-                <div class="flex flex-col h-80 md:h-full">
-                    <app-content-selection class="flex-1" #contents [selectedTypes]="['asset', 'design']" [isSelectable]="false" (selectedContents)="onSelectionChange($event)" />
+                <div class="relative flex flex-col h-80 md:h-full">
+                    <app-content-selection class="absolute flex-1 w-full h-full" #contents [selectedTypes]="['asset', 'design']" 
+                        [isSelectable]="false" (selectedContents)="onSelectionChange($event)" />
                 </div>
             </div>
         </div>

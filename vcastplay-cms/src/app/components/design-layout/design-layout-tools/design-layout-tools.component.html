@@ -24,7 +24,8 @@
         <img src="assets/icons/zoom.png" alt="zoom" pTooltip="Zoom" width="20">
     </p-button>
     <p-divider />
-    <p-colorpicker [(ngModel)]="selectedColor" (onChange)="onChangeColor($event)" appendTo="body" (onShow)="onUnSelectAllLayers()" />
+    <p-colorpicker [(ngModel)]="selectedColor" class="border-2 border-[var(--p-surface-300)] rounded-lg"
+        (onChange)="onChangeColor($event)" appendTo="body" (onShow)="onUnSelectAllLayers()" />
 </div>
 
 <p-menu [model]="shapeItems" popup #shapes appendTo="body" class="left-5">

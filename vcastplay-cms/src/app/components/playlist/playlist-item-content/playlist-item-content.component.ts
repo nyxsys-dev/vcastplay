@@ -24,7 +24,7 @@ export class PlaylistItemContentComponent {
 
   onCurrentPlaying() {
     const content: any = this.playlistService.onGetCurrentContent(this.playlist.id)(); 
-    const currentContent: any = content?.currentContent() ?? null;
+    const currentContent: any = content?.currentContent() ?? null;    
     return content ? currentContent?.contentId == this.content.contentId : false;
   }
 

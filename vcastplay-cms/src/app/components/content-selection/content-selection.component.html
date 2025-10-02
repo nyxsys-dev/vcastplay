@@ -31,6 +31,7 @@
             (selectionChange)="onSelectionChange($event)"
             dataKey="id"
             [scrollable]="true"
+            scrollHeight="flex"
             [selectionMode]="selectionMode"
             size="small"
             stripedRows
@@ -48,7 +49,7 @@
                 </tr>
             </ng-template>
             <ng-template #body let-item>
-                <tr [pSelectableRow]="item" [pSelectableRowDisabled]="!isSelectable">
+                <tr class="text-sm" [pSelectableRow]="item" [pSelectableRowDisabled]="!isSelectable">
                     <td>
                         @if (isSelectable) {
                             <div class="text-center">

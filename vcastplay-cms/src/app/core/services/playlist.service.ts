@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Assets } from '../interfaces/assets';
 import { ContentState, Playlist } from '../interfaces/playlist';
 import { SelectOption } from '../interfaces/general';
+import { DesignLayout } from '../interfaces/design-layout';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,7 @@ export class PlaylistService {
   
   filteredAssets = signal<Assets[]>([]);
   selectedAssets = signal<Assets[]>([]);
+  currentPlaying = signal<Assets | DesignLayout | any>(null);
   
   playlistStatus = signal<SelectOption[]>([
     { label: 'Approved', value: 'approved' },
@@ -43,8 +45,8 @@ export class PlaylistService {
 
   playListForm: FormGroup = new FormGroup({
     id: new FormControl(0),
-    name: new FormControl('', [ Validators.required ]),
-    description: new FormControl('', [ Validators.required ]),
+    name: new FormControl(null, [ Validators.required ]),
+    description: new FormControl(null, [ Validators.required ]),
     type: new FormControl('playlist', { nonNullable: true, validators: [ Validators.required ] }),
     transition: new FormGroup({
       hasGap: new FormControl(false),
@@ -52,12 +54,12 @@ export class PlaylistService {
       speed: new FormControl(5, { nonNullable: true }),
     }),
     contents: new FormControl<any[]>([], { nonNullable: true }),
-    status: new FormControl(''),
+    status: new FormControl(null),
     loop: new FormControl(false),
     approvedInfo: new FormGroup({
       approvedBy: new FormControl('Admin'),
       approvedOn: new FormControl(new Date()),
-      remarks: new FormControl(''),
+      remarks: new FormControl(null),
     }),
     isAuto: new FormControl(false),
     isActive: new FormControl(false),
@@ -517,6 +519,7 @@ export class PlaylistService {
           break;
       }
 
+      this.currentPlaying.set(item);
       console.log("Current Playing:", item.name);
       
       state.timeoutId = setTimeout(() => {
@@ -578,6 +581,7 @@ export class PlaylistService {
     state.intervalId = undefined;
 
     this.isPlaying.set(false);
+    this.currentPlaying.set(null);
   }
 
   onStopAllContents() {
@@ -586,6 +590,7 @@ export class PlaylistService {
     });
 
     this.isPlaying.set(false);
+    this.currentPlaying.set(null);
   }
 
   /** Expose current content signal */

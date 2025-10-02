@@ -444,7 +444,5 @@ export class DesignLayoutDetailsComponent {
   get isMobile() { return this.utils.isMobile(); }
   get isTablet() { return this.utils.isTablet(); }
 
-  get zoomLevel() { return this.designLayoutService.zoomLevel; }
-
   get htmlLayers() { return this.designForm.get('htmlLayers'); }
 }

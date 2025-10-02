@@ -30,8 +30,8 @@ export class ObjectPropertiesComponent {
   
   alignmentOptions: MenuItem[] = [ 
     { icon: 'pi pi-align-left', value: 'left' },
-    { icon: 'pi pi-align-right', value: 'right' },
     { icon: 'pi pi-align-center', value: 'center' },
+    { icon: 'pi pi-align-right', value: 'right' },
     { icon: 'pi pi-align-justify', value: 'justify' }
   ];
   
