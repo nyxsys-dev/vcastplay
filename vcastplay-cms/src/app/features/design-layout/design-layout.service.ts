@@ -1,47 +1,48 @@
-import { ChangeDetectorRef, computed, inject, Injectable, signal } from '@angular/core';
-import { DesignLayout, HtmlLayer } from '../../core/interfaces/design-layout';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { PlaylistService } from '../playlist/playlist.service';
-import { v7 as uuidv7 } from 'uuid';
-import * as fabric from 'fabric';
+import { computed, inject, Injectable, signal } from '@angular/core'
+import { DesignLayout, HtmlLayer } from '../../core/interfaces/design-layout'
+import { FormControl, FormGroup, Validators } from '@angular/forms'
+import { PlaylistService } from '../playlist/playlist.service'
+import { v7 as uuidv7 } from 'uuid'
+import * as fabric from 'fabric'
+import { initAligningGuidelines } from 'fabric/extensions'
 
 interface GuideLine {
-  line: fabric.Line;
+  line: fabric.Line
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class DesignLayoutService {
-  playlistService = inject(PlaylistService);
+  playlistService = inject(PlaylistService)
 
-  private canvas!: fabric.Canvas;
-  private guides: GuideLine[] = [];
-  private guidelines: fabric.Line[] = [];
-  private alignThreshold: number = 5;
-  private animFrameId: number = 0;
-  private clipboard: any;
-  private undoStack: any[] = [];
-  private redoStack: any[] = [];
-  private isRestoringState = signal<boolean>(false);
-  private snap = 5; // snap threshold in px
+  private canvas!: fabric.Canvas
+  private guides: GuideLine[] = []
+  private guidelines: fabric.Line[] = []
+  private animFrameId: number = 0
+  private clipboard: any
+  private undoStack: any[] = []
+  private redoStack: any[] = []
+  private isRestoringState = signal<boolean>(false)
+  private snap = 5 // snap threshold in px
 
-  private designSignal = signal<DesignLayout[]>([]);
-  designs = computed(() => this.designSignal());
+  private designSignal = signal<DesignLayout[]>([])
+  designs = computed(() => this.designSignal())
 
-  isEditMode = signal<boolean>(false);
-  loadingSignal = signal<boolean>(false);
-  showApprove = signal<boolean>(false);
-  showCanvasSize = signal<boolean>(false);
-  showContents = signal<boolean>(false);
-  showPreview = signal<boolean>(false);
-  showInputMarquee = signal<boolean>(false);
+  isEditMode = signal<boolean>(false)
+  loadingSignal = signal<boolean>(false)
+  showApprove = signal<boolean>(false)
+  showCanvasSize = signal<boolean>(false)
+  showContents = signal<boolean>(false)
+  showPreview = signal<boolean>(false)
+  showInputMarquee = signal<boolean>(false)
+  showGridLines = signal<boolean>(false)
 
-  rows = signal<number>(8);
-  totalRecords = signal<number>(0);
+  rows = signal<number>(8)
+  totalRecords = signal<number>(0)
 
-  DEFAULT_RESOLUTION: any;
-  DEFAULT_SCALE = signal<number>(1);
+  DEFAULT_RESOLUTION: any
+  DEFAULT_SCALE = signal<number>(1)
   SELECTION_STYLE = signal<any>({
     borderColor: '#9B5CFA',
     borderScaleFactor: 2,
@@ -50,7 +51,15 @@ export class DesignLayoutService {
     cornerStyle: 'circle',
     cornerSize: 12,
     transparentCorners: false,
-  });
+  })
+  GUIDELINES_CONFIG = signal<any>({
+    /** At what distance from the shape does alignment begin? */
+    margin: 4,
+    /** Aligning line dimensions */
+    width: 1,
+    /** Aligning line color */
+    color: '#FF00AA',
+  })
 
   HTMLCONTROL_STYLE = {
     mtr: false,
@@ -61,15 +70,15 @@ export class DesignLayoutService {
     mb: false,
     mr: false,
     bl: false,
-  };
-  LINECONTROL_STYLE = { tl: false, tr: false, bl: false, br: false, mt: false, mb: false };
-  TEXTMARQUEECONTROL_STYLE = { tl: false, tr: false, bl: false, br: false, mtr: false };
+  }
+  LINECONTROL_STYLE = { tl: false, tr: false, bl: false, br: false, mt: false, mb: false }
+  TEXTMARQUEECONTROL_STYLE = { tl: false, tr: false, bl: false, br: false, mtr: false }
 
-  selectedDesign = signal<DesignLayout | null>(null);
-  selectedArrDesign = signal<DesignLayout[]>([]);
+  selectedDesign = signal<DesignLayout | null>(null)
+  selectedArrDesign = signal<DesignLayout[]>([])
 
-  marqueeControl: FormControl = new FormControl(null);
-  zoomControl: FormControl = new FormControl(1, { nonNullable: true });
+  marqueeControl: FormControl = new FormControl(null)
+  zoomControl: FormControl = new FormControl(1, { nonNullable: true })
 
   designForm: FormGroup = new FormGroup({
     id: new FormControl(0, { nonNullable: true }),
@@ -93,7 +102,7 @@ export class DesignLayoutService {
     createdOn: new FormControl(new Date()),
     updatedOn: new FormControl(new Date()),
     files: new FormControl([], { nonNullable: true }),
-  });
+  })
 
   objectPropsForm: FormGroup = new FormGroup({
     font: new FormControl('Arial', { nonNullable: true }),
@@ -108,7 +117,7 @@ export class DesignLayoutService {
     style: new FormControl('fill', { nonNullable: true }),
     strokeWidth: new FormControl(1, { nonNullable: true }),
     duration: new FormControl(20, { nonNullable: true }),
-  });
+  })
 
   canvasProps: any = {
     zoom: false,
@@ -122,10 +131,10 @@ export class DesignLayoutService {
     video: false,
     content: false,
     marquee: false,
-  };
+  }
 
-  selectedColor = signal<string>('#000000');
-  canvasActiveObject = signal<any>(null);
+  selectedColor = signal<string>('#000000')
+  canvasActiveObject = signal<any>(null)
 
   cliparts: { name: string; link: string; type: string }[] = [
     { name: 'circle', link: 'assets/cliparts/circle.svg', type: 'image' },
@@ -148,16 +157,16 @@ export class DesignLayoutService {
     { name: 'butterfly', link: 'assets/cliparts/butterfly.svg', type: 'image' },
     { name: 'tree2', link: 'assets/cliparts/tree2.svg', type: 'image' },
     { name: 'cup', link: 'assets/cliparts/cup.svg', type: 'image' },
-  ];
+  ]
 
   constructor() {}
 
   setCanvas(canvas: fabric.Canvas) {
-    this.canvas = canvas;
+    this.canvas = canvas
   }
 
   getCanvas(): fabric.Canvas {
-    return this.canvas;
+    return this.canvas
   }
 
   onLoadDesigns() {
@@ -222,19 +231,19 @@ export class DesignLayoutService {
           },
         ],
       },
-    ]);
+    ])
   }
 
   onGetDesigns() {
-    if (this.designs().length == 0) this.onLoadDesigns();
-    return this.designs();
+    if (this.designs().length == 0) this.onLoadDesigns()
+    return this.designs()
   }
 
   onSaveDesign(canvasContainer: any, design: DesignLayout) {
-    const canvas = this.getCanvas();
+    const canvas = this.getCanvas()
     canvas.getObjects().forEach((object: any, index: number) => {
-      object.set('zIndex', index);
-    });
+      object.set('zIndex', index)
+    })
 
     // const htmlLayers = this.canvasHTMLLayers() //.filter(item => !item.content.marquee);
     const canvasData = canvas.toObject([
@@ -244,30 +253,28 @@ export class DesignLayoutService {
       'rectProp',
       'defaultState',
       'zIndex',
-    ]);
-    const canvasObjects = canvas.getObjects(); //canvasData.objects;
-    const thumbnail = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 });
+    ])
+    const canvasObjects = canvas.getObjects() //canvasData.objects;
+    const thumbnail = canvas.toDataURL({ format: 'png', quality: 1, multiplier: 2 })
 
-    const curDurations: number[] = [];
+    const curDurations: number[] = []
     canvasObjects.forEach((object: any, index: number) => {
       if (object.html) {
-        const content: any = object.html.content;
-        curDurations.push(content.duration);
+        const content: any = object.html.content
+        curDurations.push(content.duration)
       }
-      if (object.data) curDurations.push(object.data.duration);
-    });
+      if (object.data) curDurations.push(object.data.duration)
+    })
 
-    const maxDuration = Math.max(...curDurations.filter((duration: number) => duration));
-    const curDuration = maxDuration > 0 ? maxDuration : 5;
+    const maxDuration = Math.max(...curDurations.filter((duration: number) => duration))
+    const curDuration = maxDuration > 0 ? maxDuration : 5
 
-    const tempData = this.designs();
-    const { id, status, duration, ...info } = design;
-    const index = tempData.findIndex((item) => item.id == design.id);
+    const tempData = this.designs()
+    const { id, status, duration, ...info } = design
+    const index = tempData.findIndex((item) => item.id == design.id)
 
     const hasPlaylist =
-      design.htmlLayers.filter((item: HtmlLayer) => !item.content.marquee).length > 0
-        ? true
-        : false;
+      design.htmlLayers.filter((item: HtmlLayer) => !item.content.marquee).length > 0 ? true : false
 
     if (index !== -1)
       tempData[index] = {
@@ -277,7 +284,7 @@ export class DesignLayoutService {
         hasPlaylist,
         thumbnail,
         updatedOn: new Date(),
-      };
+      }
     else
       tempData.push({
         id: tempData.length + 1,
@@ -290,25 +297,25 @@ export class DesignLayoutService {
         createdOn: new Date(),
         updatedOn: new Date(),
         approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' },
-      });
+      })
 
-    this.designSignal.set([...tempData]);
-    console.log(this.designSignal());
+    this.designSignal.set([...tempData])
+    console.log(this.designSignal())
 
-    this.totalRecords.set(this.designs().length);
+    this.totalRecords.set(this.designs().length)
     /**CALL POST API */
   }
 
   onDeleteDesign(design: DesignLayout) {
-    const tempData = this.designs().filter((item) => item.id !== design.id);
-    this.designSignal.set([...tempData]);
+    const tempData = this.designs().filter((item) => item.id !== design.id)
+    this.designSignal.set([...tempData])
 
-    this.totalRecords.set(this.designs().length);
+    this.totalRecords.set(this.designs().length)
     /**CALL DELETE API */
   }
 
   onDuplicateDesign(design: DesignLayout) {
-    const tempData = this.designs();
+    const tempData = this.designs()
     tempData.push({
       ...design,
       id: tempData.length + 1,
@@ -317,10 +324,10 @@ export class DesignLayoutService {
       createdOn: new Date(),
       updatedOn: new Date(),
       approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' },
-    });
-    this.designSignal.set([...tempData]);
+    })
+    this.designSignal.set([...tempData])
 
-    this.totalRecords.set(this.designs().length);
+    this.totalRecords.set(this.designs().length)
     /**CALL POST API */
   }
 
@@ -330,16 +337,16 @@ export class DesignLayoutService {
    * ====================================================================================================================================
    */
   onScaleCanvas(canvas: fabric.Canvas, parentElement: any, canvasContainer: any) {
-    if (!canvas) return;
+    if (!canvas) return
 
-    const { width, height } = this.DEFAULT_RESOLUTION;
-    const bounds = parentElement.getBoundingClientRect();
-    const fitScale = Math.min(bounds.width / width, bounds.height / height);
+    const { width, height } = this.DEFAULT_RESOLUTION
+    const bounds = parentElement.getBoundingClientRect()
+    const fitScale = Math.min(bounds.width / width, bounds.height / height)
 
     // this.onZoomCanvas(canvas, canvasContainer, factor, true);
-    const totalZoom = fitScale;
-    this.zoomControl.patchValue(totalZoom);
-    this.updateCanvasSize(canvas, canvasContainer, totalZoom);
+    const totalZoom = fitScale
+    this.zoomControl.patchValue(totalZoom)
+    this.updateCanvasSize(canvas, canvasContainer, totalZoom)
   }
 
   onZoomCanvas(
@@ -348,92 +355,92 @@ export class DesignLayoutService {
     factor: number,
     isReset: boolean = false
   ) {
-    const totalScale = isReset ? this.DEFAULT_SCALE() : factor;
-    if (isReset) this.zoomControl.patchValue(totalScale);
-    this.updateCanvasSize(canvas, canvasContainer, totalScale);
+    const totalScale = isReset ? this.DEFAULT_SCALE() : factor
+    if (isReset) this.zoomControl.patchValue(totalScale)
+    this.updateCanvasSize(canvas, canvasContainer, totalScale)
   }
 
   onExitCanvas() {
-    this.onStopVideosInCanvas(this.canvas);
+    this.onStopVideosInCanvas(this.canvas)
     if (this.canvas) {
-      this.canvas.clear();
-      this.canvas.dispose();
-      this.canvas = undefined as any;
+      this.canvas.clear()
+      this.canvas.dispose()
+      this.canvas = undefined as any
     }
-    cancelAnimationFrame(this.animFrameId);
-    this.designForm.reset();
-    this.showContents.set(false);
+    cancelAnimationFrame(this.animFrameId)
+    this.designForm.reset()
+    this.showContents.set(false)
   }
 
   onSelection(canvas: fabric.Canvas) {
-    this.onSetCanvasProps('selection', true, 'default');
-    this.onDisableLayersProps(canvas, true);
-    this.showContents.set(false);
+    this.onSetCanvasProps('selection', true, 'default')
+    this.onDisableLayersProps(canvas, true)
+    this.showContents.set(false)
   }
 
   onPan(canvas: fabric.Canvas) {
-    this.onSetCanvasProps('drag', false, 'grab');
-    canvas.discardActiveObject();
-    this.onDisableLayersProps(canvas, false);
-    this.showContents.set(false);
+    this.onSetCanvasProps('drag', false, 'grab')
+    canvas.discardActiveObject()
+    this.onDisableLayersProps(canvas, false)
+    this.showContents.set(false)
   }
 
   onMove(canvas: fabric.Canvas) {
-    this.onSetCanvasProps('move', false, 'pointer');
-    canvas.discardActiveObject();
-    this.onDisableLayersProps(canvas, true);
-    this.showContents.set(false);
+    this.onSetCanvasProps('move', false, 'pointer')
+    canvas.discardActiveObject()
+    this.onDisableLayersProps(canvas, true)
+    this.showContents.set(false)
   }
 
   onChangeColor(color: string) {
-    const activeObject: any = this.canvas.getActiveObjects();
+    const activeObject: any = this.canvas.getActiveObjects()
     activeObject.forEach((object: fabric.FabricObject) => {
-      if (object.type === 'rect') object.set('fill', color);
-    });
-    this.canvas.requestRenderAll();
+      if (object.type === 'rect') object.set('fill', color)
+    })
+    this.canvas.requestRenderAll()
   }
 
   onCopyLayers(canvas: fabric.Canvas) {
-    const activeObjects = canvas.getActiveObjects();
-    if (!activeObjects || activeObjects.length === 0) return;
+    const activeObjects = canvas.getActiveObjects()
+    if (!activeObjects || activeObjects.length === 0) return
 
     // clone all selected objects
     Promise.all(activeObjects.map((obj) => obj.clone())).then((clones) => {
       clones.forEach((cloned, i) => {
-        (cloned as any).html = activeObjects[i].get('html');
-      });
-      this.clipboard = clones; // store array
-    });
+        ;(cloned as any).html = activeObjects[i].get('html')
+      })
+      this.clipboard = clones // store array
+    })
   }
 
   onCutLayers(canvas: fabric.Canvas) {
-    const activeObjects = canvas.getActiveObjects();
-    if (!activeObjects || activeObjects.length === 0) return;
+    const activeObjects = canvas.getActiveObjects()
+    if (!activeObjects || activeObjects.length === 0) return
 
     Promise.all(activeObjects.map((obj) => obj.clone())).then((clones) => {
       clones.forEach((cloned, i) => {
-        (cloned as any).html = activeObjects[i].get('html');
-      });
-      this.clipboard = clones; // store array of clones
-      activeObjects.forEach((obj) => canvas.remove(obj));
-      canvas.discardActiveObject();
-      canvas.requestRenderAll();
-    });
+        ;(cloned as any).html = activeObjects[i].get('html')
+      })
+      this.clipboard = clones // store array of clones
+      activeObjects.forEach((obj) => canvas.remove(obj))
+      canvas.discardActiveObject()
+      canvas.requestRenderAll()
+    })
   }
 
   onPasteLayers(canvas: fabric.Canvas) {
-    const { htmlLayers } = this.designForm.value;
-    if (!this.clipboard) return;
+    const { htmlLayers } = this.designForm.value
+    if (!this.clipboard) return
 
-    canvas.discardActiveObject();
+    canvas.discardActiveObject()
 
     // always treat clipboard as an array
-    const clipboardItems = Array.isArray(this.clipboard) ? this.clipboard : [this.clipboard];
+    const clipboardItems = Array.isArray(this.clipboard) ? this.clipboard : [this.clipboard]
 
     Promise.all(clipboardItems.map((obj) => obj.clone())).then((clones) => {
       clones.forEach((cloned, i) => {
         // ✅ get html from the original clipboard item
-        const html = (clipboardItems[i] as any).html;
+        const html = (clipboardItems[i] as any).html
 
         cloned.set({
           left: (cloned.left += 10),
@@ -441,53 +448,47 @@ export class DesignLayoutService {
           evented: true,
           selectable: true,
           ...this.SELECTION_STYLE(),
-        });
+        })
 
         if (html) {
-          const { content, style } = html;
-          const htmlLayer = this.createHtmlLayerFromObject(
-            cloned,
-            uuidv7(),
-            content,
-            style,
-            canvas
-          );
-          htmlLayers.push(htmlLayer);
-          cloned.set('html', htmlLayer);
-          cloned.setControlsVisibility(this.HTMLCONTROL_STYLE);
-          cloned.set(this.SELECTION_STYLE());
-          this.syncDivsWithFabric(canvas);
+          const { content, style } = html
+          const htmlLayer = this.createHtmlLayerFromObject(cloned, uuidv7(), content, style, canvas)
+          htmlLayers.push(htmlLayer)
+          cloned.set('html', htmlLayer)
+          cloned.setControlsVisibility(this.HTMLCONTROL_STYLE)
+          cloned.set(this.SELECTION_STYLE())
+          this.syncDivsWithFabric(canvas)
         }
 
-        cloned.setCoords();
-        canvas.add(cloned);
-      });
+        cloned.setCoords()
+        canvas.add(cloned)
+      })
 
       // if multiple objects, select them all
       if (clones.length > 1) {
-        const sel = new fabric.ActiveSelection(clones, { canvas });
-        canvas.setActiveObject(sel);
+        const sel = new fabric.ActiveSelection(clones, { canvas })
+        canvas.setActiveObject(sel)
       } else {
-        canvas.setActiveObject(clones[0]);
+        canvas.setActiveObject(clones[0])
       }
 
-      canvas.requestRenderAll();
-      this.saveState();
-    });
+      canvas.requestRenderAll()
+      this.saveState()
+    })
   }
 
   onDuplicateLayer(canvas: fabric.Canvas) {
-    const { htmlLayers } = this.designForm.value;
-    const activeObject = canvas.getActiveObjects();
-    if (!activeObject || activeObject.length === 0) return;
+    const { htmlLayers } = this.designForm.value
+    const activeObject = canvas.getActiveObjects()
+    if (!activeObject || activeObject.length === 0) return
 
-    const clones: fabric.FabricObject[] = [];
+    const clones: fabric.FabricObject[] = []
 
-    canvas.discardActiveObject();
+    canvas.discardActiveObject()
     Promise.all(
       activeObject.map((object: fabric.FabricObject) =>
         object.clone().then((cloned) => {
-          const html = object.get('html');
+          const html = object.get('html')
 
           cloned.set({
             left: (object.left += 10),
@@ -495,141 +496,141 @@ export class DesignLayoutService {
             evented: true,
             selectable: true,
             ...this.SELECTION_STYLE(),
-          });
+          })
 
           if (html) {
-            const { content, style } = html;
+            const { content, style } = html
             const htmlLayer = this.createHtmlLayerFromObject(
               cloned,
               uuidv7(),
               content,
               style,
               canvas
-            );
-            htmlLayers.push(htmlLayer);
-            cloned.set('html', htmlLayer);
-            cloned.setControlsVisibility(this.HTMLCONTROL_STYLE);
-            cloned.set(this.SELECTION_STYLE());
+            )
+            htmlLayers.push(htmlLayer)
+            cloned.set('html', htmlLayer)
+            cloned.setControlsVisibility(this.HTMLCONTROL_STYLE)
+            cloned.set(this.SELECTION_STYLE())
           }
 
-          cloned.setCoords();
-          canvas.add(cloned);
-          clones.push(cloned);
+          cloned.setCoords()
+          canvas.add(cloned)
+          clones.push(cloned)
         })
       )
     ).then(() => {
-      const selection = new fabric.ActiveSelection(clones, { canvas });
+      const selection = new fabric.ActiveSelection(clones, { canvas })
 
       selection.forEachObject((object: fabric.FabricObject) => {
-        const html = object.get('html');
-        if (html) object.setControlsVisibility(this.HTMLCONTROL_STYLE);
-      });
+        const html = object.get('html')
+        if (html) object.setControlsVisibility(this.HTMLCONTROL_STYLE)
+      })
 
-      selection.set(this.SELECTION_STYLE());
-      selection.setCoords();
-      this.syncDivsWithFabric(canvas);
-      canvas.setActiveObject(selection);
-      canvas.requestRenderAll();
-    });
+      selection.set(this.SELECTION_STYLE())
+      selection.setCoords()
+      this.syncDivsWithFabric(canvas)
+      canvas.setActiveObject(selection)
+      canvas.requestRenderAll()
+    })
   }
 
   onSelectAllLayers(canvas: fabric.Canvas) {
-    const objects = canvas.getObjects().filter((object: any) => !object.gridLine);
+    const objects = canvas.getObjects().filter((object: any) => !object.gridLine)
     if (objects && objects.length > 0) {
-      const selection = new fabric.ActiveSelection(objects, { canvas });
-      selection.set(this.SELECTION_STYLE());
-      selection.setCoords();
-      canvas.setActiveObject(selection);
-      canvas.requestRenderAll();
+      const selection = new fabric.ActiveSelection(objects, { canvas })
+      selection.set(this.SELECTION_STYLE())
+      selection.setCoords()
+      canvas.setActiveObject(selection)
+      canvas.requestRenderAll()
     }
   }
 
   onUnSelectAllLayers(canvas: fabric.Canvas) {
-    canvas.discardActiveObject();
-    canvas.requestRenderAll();
+    canvas.discardActiveObject()
+    canvas.requestRenderAll()
   }
 
   onRemoveLayer(canvas: fabric.Canvas) {
-    const { htmlLayers } = this.designForm.value;
-    const activeObject = canvas.getActiveObjects();
-    if (!activeObject || activeObject.length == 0) return;
+    const { htmlLayers } = this.designForm.value
+    const activeObject = canvas.getActiveObjects()
+    if (!activeObject || activeObject.length == 0) return
 
     activeObject.forEach((obj: fabric.FabricObject) => {
       // Intended for Playlist object
-      const html = obj.get('html');
+      const html = obj.get('html')
       if (html) {
-        const index = htmlLayers.findIndex((item: HtmlLayer) => item.id == html.id);
-        htmlLayers.splice(index, 1);
-        this.playlistService.onStopContent(html.content.id);
+        const index = htmlLayers.findIndex((item: HtmlLayer) => item.id == html.id)
+        htmlLayers.splice(index, 1)
+        this.playlistService.onStopContent(html.content.id)
       }
 
-      canvas.remove(obj);
-    });
+      canvas.remove(obj)
+    })
 
-    canvas.discardActiveObject();
-    canvas.requestRenderAll();
-    this.onSetCanvasProps('remove', false, 'default');
-    this.saveState();
+    canvas.discardActiveObject()
+    canvas.requestRenderAll()
+    this.onSetCanvasProps('remove', false, 'default')
+    this.saveState()
   }
 
   onUndoLayer() {
     if (this.undoStack.length > 1) {
-      const currentState = this.undoStack.pop()!;
-      this.redoStack.push(currentState);
+      const currentState = this.undoStack.pop()!
+      this.redoStack.push(currentState)
 
-      const prevState = this.undoStack[this.undoStack.length - 1]!;
-      this.restoreState(prevState);
+      const prevState = this.undoStack[this.undoStack.length - 1]!
+      this.restoreState(prevState)
     }
   }
 
   onRedoLayer() {
     if (this.redoStack.length > 0) {
-      const state = this.redoStack.pop()!;
-      this.undoStack.push(state);
-      this.restoreState(state);
+      const state = this.redoStack.pop()!
+      this.undoStack.push(state)
+      this.restoreState(state)
     }
   }
 
   onExportCanvas(canvas: fabric.Canvas) {
-    const { name, htmlLayers } = this.designForm.value;
-    const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp', 'defaultState']);
+    const { name, htmlLayers } = this.designForm.value
+    const canvasData = canvas.toObject(['html', 'data', 'textBoxProp', 'rectProp', 'defaultState'])
 
-    const length = this.designs().length + 1;
+    const length = this.designs().length + 1
 
     this.designForm.patchValue({
       id: length,
       canvas: JSON.stringify(canvasData),
       htmlLayers,
       createdOn: new Date(),
-    });
-    const data = JSON.stringify(this.designForm.value);
+    })
+    const data = JSON.stringify(this.designForm.value)
 
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${name}.json`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${name}.json`
+    a.click()
+    window.URL.revokeObjectURL(url)
   }
 
   onImportCanvas(event: Event, viewport: any, canvasElement: any) {
-    if (this.canvas) this.canvas.dispose();
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+    if (this.canvas) this.canvas.dispose()
+    const input = event.target as HTMLInputElement
+    if (!input.files || input.files.length === 0) return
 
-    const file = input.files[0];
-    const reader = new FileReader();
+    const file = input.files[0]
+    const reader = new FileReader()
 
     reader.onload = (e) => {
-      const data: any = e.target?.result as string;
-      const importData: any = JSON.parse(data);
-      this.designForm.patchValue(importData);
+      const data: any = e.target?.result as string
+      const importData: any = JSON.parse(data)
+      this.designForm.patchValue(importData)
 
-      this.onEditDesign(viewport, canvasElement, importData);
-    };
+      this.onEditDesign(viewport, canvasElement, importData)
+    }
 
-    reader.readAsText(file);
+    reader.readAsText(file)
   }
 
   /**
@@ -643,13 +644,13 @@ export class DesignLayoutService {
     content: string = 'Enter text here',
     color: string = '#000000'
   ) {
-    this.onSetCanvasProps('text', true, 'default');
-    const tempText = new fabric.FabricText(content, { fontFamily: 'Arial', color });
+    this.onSetCanvasProps('text', true, 'default')
+    const tempText = new fabric.FabricText(content, { fontFamily: 'Arial', color })
 
-    canvas.discardActiveObject();
-    const { width, height } = this.canvasDimensions(canvas);
-    const left = Math.random() * (width - tempText.width);
-    const top = Math.random() * (height - tempText.height);
+    canvas.discardActiveObject()
+    const { width, height } = this.canvasDimensions(canvas)
+    const left = Math.random() * (width - tempText.width)
+    const top = Math.random() * (height - tempText.height)
     const text = new fabric.Textbox(content, {
       left,
       top,
@@ -657,36 +658,36 @@ export class DesignLayoutService {
       fill: color,
       editable: true,
       width: tempText.width,
-    });
+    })
 
-    this.objectPropsForm.patchValue({ color, size: text.fontSize });
+    this.objectPropsForm.patchValue({ color, size: text.fontSize })
 
-    text.set('textBoxProp', this.objectPropsForm.value);
+    text.set('textBoxProp', this.objectPropsForm.value)
 
-    canvas.add(text);
-    canvas.setActiveObject(text);
-    canvas.requestRenderAll();
-    this.onDisableLayersProps(canvas, true);
-    this.showContents.set(false);
-    this.saveState();
+    canvas.add(text)
+    canvas.setActiveObject(text)
+    canvas.requestRenderAll()
+    this.onDisableLayersProps(canvas, true)
+    this.showContents.set(false)
+    this.saveState()
   }
 
   onAddTextMarquee(canvas: fabric.Canvas, value: string, background: string = '#0e0e0e') {
-    const { htmlLayers }: any = this.designForm.value;
-    this.onSetCanvasProps('marquee', true, 'default');
-    canvas.discardActiveObject();
+    const { htmlLayers }: any = this.designForm.value
+    this.onSetCanvasProps('marquee', true, 'default')
+    canvas.discardActiveObject()
 
-    this.objectPropsForm.reset();
+    this.objectPropsForm.reset()
 
-    const tempText = new fabric.FabricText(value, { fill: 'white', fontSize: 24 });
+    const tempText = new fabric.FabricText(value, { fill: 'white', fontSize: 24 })
 
-    const { width, height } = this.canvasDimensions(canvas);
-    const left = Math.random() * (width - tempText.width);
-    const top = Math.random() * (height - tempText.height);
+    const { width, height } = this.canvasDimensions(canvas)
+    const left = Math.random() * (width - tempText.width)
+    const top = Math.random() * (height - tempText.height)
 
-    const textWidth = tempText.getScaledWidth()!;
-    const textHeight = tempText.getScaledHeight()!;
-    const repeatCount = Math.ceil((textWidth + textHeight) / 50) + 2;
+    const textWidth = tempText.getScaledWidth()!
+    const textHeight = tempText.getScaledHeight()!
+    const repeatCount = Math.ceil((textWidth + textHeight) / 50) + 2
 
     const rect = new fabric.Rect({
       left,
@@ -697,11 +698,11 @@ export class DesignLayoutService {
       hasControls: true,
       selectable: true,
       lockRotation: true,
-    });
+    })
 
-    rect.setControlsVisibility(this.TEXTMARQUEECONTROL_STYLE);
+    rect.setControlsVisibility(this.TEXTMARQUEECONTROL_STYLE)
 
-    canvas.add(rect);
+    canvas.add(rect)
     const htmlLayer: any = this.createHtmlLayerFromObject(
       rect,
       uuidv7(),
@@ -713,83 +714,100 @@ export class DesignLayoutService {
       },
       this.objectPropsForm.value,
       canvas
-    );
+    )
 
-    htmlLayers.push(htmlLayer);
+    htmlLayers.push(htmlLayer)
 
-    Object.assign(htmlLayer, { style: this.objectPropsForm.value });
-    rect.set('html', htmlLayer);
+    Object.assign(htmlLayer, { style: this.objectPropsForm.value })
+    rect.set('html', htmlLayer)
 
-    this.syncDivsWithFabric(canvas);
-    canvas.setActiveObject(rect);
-    canvas.requestRenderAll();
+    this.syncDivsWithFabric(canvas)
+    canvas.setActiveObject(rect)
+    canvas.requestRenderAll()
   }
 
   onAddShapeToCanvas(canvas: fabric.Canvas, type: string, fill: string = '#808080') {
-    this.onSetCanvasProps('rect', true, 'default');
-    canvas.discardActiveObject();
+    this.onSetCanvasProps('rect', true, 'default')
+    canvas.discardActiveObject()
 
-    this.objectPropsForm.patchValue({ fill });
+    this.objectPropsForm.patchValue({ fill })
 
-    let shape!: fabric.Rect | fabric.Circle | fabric.Triangle | fabric.Ellipse;
+    let shape!: fabric.Rect | fabric.Circle | fabric.Triangle | fabric.Ellipse
     switch (type) {
       case 'circle':
-        shape = new fabric.Circle({ radius: 50, width: 100, height: 100, fill });
-        break;
+        shape = new fabric.Circle({ radius: 50, width: 100, height: 100, fill })
+        break
       case 'triangle':
-        shape = new fabric.Triangle({ width: 100, height: 100, fill });
-        break;
+        shape = new fabric.Triangle({ width: 100, height: 100, fill })
+        break
       case 'ellipse':
-        shape = new fabric.Ellipse({ rx: 50, ry: 25, width: 100, height: 100, fill });
-        break;
+        shape = new fabric.Ellipse({ rx: 50, ry: 25, width: 100, height: 100, fill })
+        break
       default:
-        shape = new fabric.Rect({ width: 100, height: 100, fill });
-        break;
+        shape = new fabric.Rect({ width: 100, height: 100, fill })
+        break
     }
 
-    const { width, height } = this.canvasDimensions(canvas);
-    const left = Math.random() * (width - shape.getScaledWidth());
-    const top = Math.random() * (height - shape.getScaledHeight());
+    const { width, height } = this.canvasDimensions(canvas)
+    const left = Math.random() * (width - shape.getScaledWidth())
+    const top = Math.random() * (height - shape.getScaledHeight())
 
-    shape.set({ left, top });
+    shape.set({ left, top })
 
-    canvas.add(shape);
-    canvas.setActiveObject(shape);
-    canvas.requestRenderAll();
+    canvas.add(shape)
+    canvas.setActiveObject(shape)
+    canvas.requestRenderAll()
 
-    shape.set('rectProp', this.objectPropsForm.value);
-    this.onDisableLayersProps(canvas, true);
-    this.showContents.set(false);
-    this.saveState();
+    shape.set('rectProp', this.objectPropsForm.value)
+    this.onDisableLayersProps(canvas, true)
+    this.showContents.set(false)
+    this.saveState()
   }
 
   onAddImageToCanvas(canvas: fabric.Canvas, data: any) {
-    this.onSetCanvasProps('image', true, 'default');
-    canvas.discardActiveObject();
+    this.onSetCanvasProps('image', true, 'default')
+    canvas.discardActiveObject()
 
-    const { width, height } = this.canvasDimensions(canvas);
-    const { width: canvasWidth, height: canvasHeight } = this.DEFAULT_RESOLUTION;
-    const left = Math.random() * (width - canvasWidth);
-    const top = Math.random() * (height - canvasHeight);
+    fabric.FabricImage.fromURL(data.link, { crossOrigin: 'anonymous' }, { data }).then((image) => {
+      const { width, height } = this.canvasDimensions(canvas) // make sure this gets the canvas size
 
-    fabric.FabricImage.fromURL(data.link, { crossOrigin: 'anonymous' }, { top, left, data }).then(
-      (image) => {
-        const scaleX = width / image.width!;
-        const scaleY = height / image.height!;
-        const scale = Math.min(scaleX, scaleY, 1);
+      // Ensure the image has dimensions
+      const imgWidth = image.width ?? 100
+      const imgHeight = image.height ?? 100
 
-        image.scale(scale);
-        image.set({ left, top });
+      // Compute scale so image fits within canvas
+      const scaleX = width / imgWidth
+      const scaleY = height / imgHeight
+      const scale = Math.min(1, scaleX, scaleY)
+      image.scale(scale)
 
-        canvas.add(image);
-        canvas.setActiveObject(image);
-        canvas.requestRenderAll();
+      // Compute scaled dimensions
+      const scaledWidth = imgWidth * scale
+      const scaledHeight = imgHeight * scale
 
-        image.set('data', data);
-        this.onDisableLayersProps(canvas, true);
-        this.saveState();
-      }
-    );
+      // Position within canvas (safe inside bounds)
+      const left = Math.random() * (width - scaledWidth)
+      const top = Math.random() * (height - scaledHeight)
+
+      image.set({
+        left,
+        top,
+        selectable: true,
+        hasControls: true,
+      })
+
+      // Store extra data if needed
+      image.set('data', data)
+
+      // Add to canvas
+      canvas.add(image)
+      canvas.setActiveObject(image)
+      canvas.requestRenderAll()
+
+      // Your custom logic
+      this.onDisableLayersProps(canvas, true)
+      this.saveState()
+    })
   }
 
   onAddVideoToCanvas(
@@ -799,23 +817,23 @@ export class DesignLayoutService {
     fabricObject?: fabric.FabricObject | any,
     isViewOnly: boolean = false
   ) {
-    const { width, height }: any = data.fileDetails.resolution;
-    this.onSetCanvasProps('video', true, 'default');
+    const { width, height }: any = data.fileDetails.resolution
+    this.onSetCanvasProps('video', true, 'default')
 
-    const video = document.createElement('video');
-    const videoSource = document.createElement('source');
+    const video = document.createElement('video')
+    const videoSource = document.createElement('source')
 
-    video.appendChild(videoSource);
-    videoSource.src = data.link;
+    video.appendChild(videoSource)
+    videoSource.src = data.link
 
-    video.width = width;
-    video.height = height;
-    video.loop = true;
-    video.muted = true;
-    video.autoplay = autoPlay;
-    video.playsInline = true;
-    video.crossOrigin = 'anonymous';
-    video.preload = 'auto';
+    video.width = width
+    video.height = height
+    video.loop = true
+    video.muted = true
+    video.autoplay = autoPlay
+    video.playsInline = true
+    video.crossOrigin = 'anonymous'
+    video.preload = 'auto'
     // video.load();
     // video.play();
 
@@ -829,50 +847,50 @@ export class DesignLayoutService {
       objectCaching: false,
       data,
       zIndex: fabricObject?.zIndex ?? 0,
-    });
+    })
 
-    videoObj.setControlsVisibility(this.HTMLCONTROL_STYLE);
+    videoObj.setControlsVisibility(this.HTMLCONTROL_STYLE)
     // canvas.add(videoObj);
-    canvas.insertAt(videoObj.zIndex, videoObj);
+    canvas.insertAt(videoObj.zIndex, videoObj)
 
-    videoObj.set('data', { ...data, element: video });
+    videoObj.set('data', { ...data, element: video })
 
     // ⚡ Wait until first frame is ready
     video.addEventListener('loadeddata', () => {
-      canvas.setActiveObject(videoObj);
-      canvas.requestRenderAll(); // show first frame
-    });
+      canvas.setActiveObject(videoObj)
+      canvas.requestRenderAll() // show first frame
+    })
 
-    video.onended = () => video.play().catch((err) => console.warn('Video play failed:', err));
+    video.onended = () => video.play().catch((err) => console.warn('Video play failed:', err))
 
-    if (autoPlay) this.onStartVideoRender(canvas);
-    this.onDisableLayersProps(canvas, true);
-    if (!isViewOnly) this.saveState();
+    if (autoPlay) this.onStartVideoRender(canvas)
+    this.onDisableLayersProps(canvas, true)
+    if (!isViewOnly) this.saveState()
   }
 
   onAddLineToCanvas(canvas: fabric.Canvas, color: string = '#808080') {
-    this.onSetCanvasProps('line', true, 'default');
-    canvas.discardActiveObject();
+    this.onSetCanvasProps('line', true, 'default')
+    canvas.discardActiveObject()
     const line = new fabric.Line([50, 100, 250, 100], {
       stroke: color,
       strokeWidth: 1,
-    });
+    })
 
-    line.set('lineProp', this.objectPropsForm.value);
+    line.set('lineProp', this.objectPropsForm.value)
 
-    canvas.add(line);
-    canvas.setActiveObject(line);
-    canvas.requestRenderAll();
+    canvas.add(line)
+    canvas.setActiveObject(line)
+    canvas.requestRenderAll()
 
-    line.setControlsVisibility(this.LINECONTROL_STYLE);
-    this.onDisableLayersProps(canvas, true);
-    this.showContents.set(false);
-    this.saveState();
+    line.setControlsVisibility(this.LINECONTROL_STYLE)
+    this.onDisableLayersProps(canvas, true)
+    this.showContents.set(false)
+    this.saveState()
   }
 
   onAddHTMLToCanvas(canvas: fabric.Canvas, content: any) {
-    const { htmlLayers }: any = this.designForm.value;
-    this.onSetCanvasProps('content', true, 'default');
+    const { htmlLayers }: any = this.designForm.value
+    this.onSetCanvasProps('content', true, 'default')
     const rect = new fabric.Rect({
       left: 100 + length * 50,
       top: 100 + length * 50,
@@ -884,26 +902,26 @@ export class DesignLayoutService {
       hasControls: true,
       selectable: true,
       lockRotation: true,
-    });
+    })
 
-    rect.setControlsVisibility(this.HTMLCONTROL_STYLE);
+    rect.setControlsVisibility(this.HTMLCONTROL_STYLE)
 
-    canvas.add(rect);
+    canvas.add(rect)
 
-    const htmlLayer: any = this.createHtmlLayerFromObject(rect, uuidv7(), content, null, canvas);
-    htmlLayers.push(htmlLayer);
+    const htmlLayer: any = this.createHtmlLayerFromObject(rect, uuidv7(), content, null, canvas)
+    htmlLayers.push(htmlLayer)
 
-    rect.set('html', htmlLayer);
+    rect.set('html', htmlLayer)
 
-    this.playlistService.onPlayContent(content);
+    this.playlistService.onPlayContent(content)
 
-    this.syncDivsWithFabric(canvas);
-    canvas.setActiveObject(rect);
-    canvas.requestRenderAll();
+    this.syncDivsWithFabric(canvas)
+    canvas.setActiveObject(rect)
+    canvas.requestRenderAll()
 
-    this.onDisableLayersProps(canvas, true);
-    this.showContents.set(false);
-    this.saveState();
+    this.onDisableLayersProps(canvas, true)
+    this.showContents.set(false)
+    this.saveState()
   }
 
   /**
@@ -917,16 +935,17 @@ export class DesignLayoutService {
     resolution: { width: number; height: number },
     backgroundColor: string = '#ffffff'
   ) {
-    const canvas = this.onInitFabricCanvas(viewport, canvasContainer, resolution, backgroundColor);
-    canvas.requestRenderAll();
+    const canvas = this.onInitFabricCanvas(viewport, canvasContainer, resolution, backgroundColor)
+    canvas.requestRenderAll()
 
-    this.drawGrid(canvas);
-    canvas.setZoom(this.DEFAULT_SCALE());
+    // this.drawGrid(canvas)
+    canvas.setZoom(this.DEFAULT_SCALE())
+    // initAligningGuidelines(canvas, this.GUIDELINES_CONFIG())
 
-    this.zoomControl.patchValue(this.DEFAULT_SCALE());
-    this.registerCanvasEvents(canvas);
-    this.setCanvas(canvas);
-    this.saveState();
+    this.zoomControl.patchValue(this.DEFAULT_SCALE())
+    this.registerCanvasEvents(canvas)
+    this.setCanvas(canvas)
+    this.saveState()
   }
 
   onEditDesign(viewport: any, canvasContainer: any, design: DesignLayout) {
@@ -934,7 +953,7 @@ export class DesignLayoutService {
       autoPlayVideos: true,
       isViewOnly: false,
       registerEvents: true,
-    });
+    })
   }
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
@@ -942,227 +961,227 @@ export class DesignLayoutService {
       autoPlayVideos: true,
       isViewOnly: true,
       registerEvents: true,
-    });
+    })
   }
 
   onSetCanvasProps(props: string, canvasSelection: boolean, cursor: string) {
-    const keys = Object.keys(this.canvasProps);
-    keys.forEach((key) => (this.canvasProps[key] = false));
-    if (keys.includes(props)) this.canvasProps[props] = true;
+    const keys = Object.keys(this.canvasProps)
+    keys.forEach((key) => (this.canvasProps[key] = false))
+    if (keys.includes(props)) this.canvasProps[props] = true
     if (this.canvas) {
-      this.canvas.selection = canvasSelection;
-      this.canvas.defaultCursor = cursor;
+      this.canvas.selection = canvasSelection
+      this.canvas.defaultCursor = cursor
     }
   }
 
   onLayerArrangement(position: string) {
-    const object: any = this.canvas.getActiveObject();
+    const object: any = this.canvas.getActiveObject()
     switch (position) {
       case 'forward':
-        this.canvas.bringObjectForward(object, true);
-        break;
+        this.canvas.bringObjectForward(object, true)
+        break
       case 'backward':
-        this.canvas.sendObjectBackwards(object, true);
-        break;
+        this.canvas.sendObjectBackwards(object, true)
+        break
       case 'front':
-        this.canvas.bringObjectToFront(object);
-        break;
+        this.canvas.bringObjectToFront(object)
+        break
       default:
-        this.canvas.sendObjectToBack(object);
-        break;
+        this.canvas.sendObjectToBack(object)
+        break
     }
 
-    this.canvas.discardActiveObject();
-    this.canvas.setActiveObject(object);
-    this.canvas.requestRenderAll();
+    this.canvas.discardActiveObject()
+    this.canvas.setActiveObject(object)
+    this.canvas.requestRenderAll()
   }
 
   onLayerAlignment(direction: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') {
-    const canvas = this.getCanvas();
+    const canvas = this.getCanvas()
 
-    const selected = canvas.getActiveObjects();
-    if (selected.length < 2) return;
+    const selected = canvas.getActiveObjects()
+    if (selected.length < 2) return
 
-    const boundsList = selected.map((obj) => ({ obj, bounds: obj.getBoundingRect() }));
+    const boundsList = selected.map((obj) => ({ obj, bounds: obj.getBoundingRect() }))
 
-    if (!boundsList.length) return;
-    let refItem;
+    if (!boundsList.length) return
+    let refItem
 
     switch (direction) {
       case 'left':
-        refItem = boundsList.reduce((a, b) => (b.bounds.left < a.bounds.left ? b : a));
-        break;
+        refItem = boundsList.reduce((a, b) => (b.bounds.left < a.bounds.left ? b : a))
+        break
       case 'center':
         refItem = boundsList.reduce((a, b) =>
           b.bounds.left + b.bounds.width / 2 < a.bounds.left + a.bounds.width / 2 ? b : a
-        );
-        break;
+        )
+        break
       case 'right':
         refItem = boundsList.reduce((a, b) =>
           b.bounds.left + b.bounds.width > a.bounds.left + a.bounds.width ? b : a
-        );
-        break;
+        )
+        break
       case 'top':
-        refItem = boundsList.reduce((a, b) => (b.bounds.top < a.bounds.top ? b : a));
-        break;
+        refItem = boundsList.reduce((a, b) => (b.bounds.top < a.bounds.top ? b : a))
+        break
       case 'middle':
         refItem = boundsList.reduce((a, b) =>
           b.bounds.top + b.bounds.height / 2 < a.bounds.top + a.bounds.height / 2 ? b : a
-        );
-        break;
+        )
+        break
       case 'bottom':
         refItem = boundsList.reduce((a, b) =>
           b.bounds.top + b.bounds.height > a.bounds.top + a.bounds.height ? b : a
-        );
-        break;
+        )
+        break
     }
 
-    if (!refItem) return;
-    const refBounds = refItem.bounds;
+    if (!refItem) return
+    const refBounds = refItem.bounds
 
     boundsList.forEach(({ obj, bounds }) => {
       switch (direction) {
         case 'left':
-          obj.left += refBounds.left - bounds.left;
-          break;
+          obj.left += refBounds.left - bounds.left
+          break
         case 'center':
-          obj.left += refBounds.left + refBounds.width / 2 - (bounds.left + bounds.width / 2);
-          break;
+          obj.left += refBounds.left + refBounds.width / 2 - (bounds.left + bounds.width / 2)
+          break
         case 'right':
-          obj.left += refBounds.left + refBounds.width - (bounds.left + bounds.width);
-          break;
+          obj.left += refBounds.left + refBounds.width - (bounds.left + bounds.width)
+          break
         case 'top':
-          obj.top += refBounds.top - bounds.top;
-          break;
+          obj.top += refBounds.top - bounds.top
+          break
         case 'middle':
-          obj.top += refBounds.top + refBounds.height / 2 - (bounds.top + bounds.height / 2);
-          break;
+          obj.top += refBounds.top + refBounds.height / 2 - (bounds.top + bounds.height / 2)
+          break
         case 'bottom':
-          obj.top += refBounds.top + refBounds.height - (bounds.top + bounds.height);
-          break;
+          obj.top += refBounds.top + refBounds.height - (bounds.top + bounds.height)
+          break
       }
-      obj.setCoords();
-    });
+      obj.setCoords()
+    })
 
-    canvas.discardActiveObject();
-    const newSelection = new fabric.ActiveSelection(selected, { canvas });
-    canvas.setActiveObject(newSelection);
-    canvas.requestRenderAll();
+    canvas.discardActiveObject()
+    const newSelection = new fabric.ActiveSelection(selected, { canvas })
+    canvas.setActiveObject(newSelection)
+    canvas.requestRenderAll()
   }
 
   onLayerSpacing(axis: 'horizontal' | 'vertical') {
-    const canvas = this.getCanvas();
-    const selected = canvas.getActiveObjects();
-    if (selected.length < 3) return; // need at least 3
+    const canvas = this.getCanvas()
+    const selected = canvas.getActiveObjects()
+    if (selected.length < 3) return // need at least 3
 
     // 1) Capture bounds once (absolute AABB, includes rotation/scale)
-    const items = selected.map((obj) => ({ obj, b: obj.getBoundingRect() }));
+    const items = selected.map((obj) => ({ obj, b: obj.getBoundingRect() }))
 
     // 2) Sort by axis
     const sorted = items.sort((a, b) =>
       axis === 'horizontal' ? a.b.left - b.b.left : a.b.top - b.b.top
-    );
+    )
 
-    const first = sorted[0];
-    const last = sorted[sorted.length - 1];
+    const first = sorted[0]
+    const last = sorted[sorted.length - 1]
 
     // 3) Compute available segment between extremes (first's far edge to last's near edge)
     const start =
-      axis === 'horizontal' ? first.b.left + first.b.width : first.b.top + first.b.height;
-    const end = axis === 'horizontal' ? last.b.left : last.b.top;
+      axis === 'horizontal' ? first.b.left + first.b.width : first.b.top + first.b.height
+    const end = axis === 'horizontal' ? last.b.left : last.b.top
 
-    const numGaps = sorted.length - 1;
+    const numGaps = sorted.length - 1
 
     // 4) Sum widths/heights of all *middle* items (indices 1..n-2)
     const sumMiddleSizes = sorted
       .slice(1, -1)
-      .reduce((acc, it) => acc + (axis === 'horizontal' ? it.b.width : it.b.height), 0);
+      .reduce((acc, it) => acc + (axis === 'horizontal' ? it.b.width : it.b.height), 0)
 
     // 5) Gap size formula:
     // (end - start) = sumMiddleSizes + numGaps * gap
-    const available = end - start;
-    const gap = (available - sumMiddleSizes) / numGaps; // can be negative if things overlap
+    const available = end - start
+    const gap = (available - sumMiddleSizes) / numGaps // can be negative if things overlap
 
     // 6) Walk from left/top to right/bottom, placing each middle item
-    let cursor = start; // this is the right/bottom edge of the "previous" piece initially
+    let cursor = start // this is the right/bottom edge of the "previous" piece initially
 
     for (let i = 1; i < sorted.length - 1; i++) {
-      const it = sorted[i];
-      const b = it.b;
+      const it = sorted[i]
+      const b = it.b
 
       // target left/top = cursor + gap
-      const targetPos = cursor + gap;
+      const targetPos = cursor + gap
 
       if (axis === 'horizontal') {
         // move by delta between current bounds.left and target left
-        it.obj.left += targetPos - b.left;
-        it.obj.setCoords();
-        cursor = targetPos + b.width; // update cursor to this item's right edge
+        it.obj.left += targetPos - b.left
+        it.obj.setCoords()
+        cursor = targetPos + b.width // update cursor to this item's right edge
       } else {
-        it.obj.top += targetPos - b.top;
-        it.obj.setCoords();
-        cursor = targetPos + b.height; // update cursor to this item's bottom edge
+        it.obj.top += targetPos - b.top
+        it.obj.setCoords()
+        cursor = targetPos + b.height // update cursor to this item's bottom edge
       }
     }
 
     // 7) Reselect so selection box fits new positions
-    canvas.discardActiveObject();
-    canvas.setActiveObject(new fabric.ActiveSelection(selected, { canvas }));
-    canvas.requestRenderAll();
+    canvas.discardActiveObject()
+    canvas.setActiveObject(new fabric.ActiveSelection(selected, { canvas }))
+    canvas.requestRenderAll()
   }
 
   onDisableLayersProps(canvas: fabric.Canvas, value: boolean) {
-    const objects = canvas.getObjects();
+    const objects = canvas.getObjects()
     objects.forEach((object) => {
-      object.selectable = value;
-      object.evented = value;
-    });
+      object.selectable = value
+      object.evented = value
+    })
   }
 
   onPlayVideosInCanvas(canvas: fabric.Canvas) {
-    const objects = canvas.getObjects();
+    const objects = canvas.getObjects()
     objects.forEach((object: any) => {
-      const data = object.data;
+      const data = object.data
       if (data && data?.type == 'video' && data.element instanceof HTMLVideoElement) {
         data.element.play().catch((err: any) => {
-          console.warn('Autoplay blocked for video:', err);
-        });
+          console.warn('Autoplay blocked for video:', err)
+        })
       }
-    });
-    this.onStartVideoRender(canvas);
+    })
+    this.onStartVideoRender(canvas)
   }
 
   onStopVideosInCanvas(canvas: fabric.Canvas) {
-    if (!canvas) return;
-    const objects = canvas.getObjects();
+    if (!canvas) return
+    const objects = canvas.getObjects()
     objects.forEach((object: any) => {
-      const data = object.data;
+      const data = object.data
       if (data && data?.type == 'video' && data.element instanceof HTMLVideoElement) {
-        data.element.pause();
-        data.element.currentTime = 0;
+        data.element.pause()
+        data.element.currentTime = 0
       }
-    });
+    })
 
-    if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
-    this.animFrameId = 0;
-    canvas.requestRenderAll();
+    if (this.animFrameId) cancelAnimationFrame(this.animFrameId)
+    this.animFrameId = 0
+    canvas.requestRenderAll()
   }
 
   onStartVideoRender(canvas: fabric.Canvas) {
     // if (this.animFrameId) return;
     const render = () => {
-      canvas.requestRenderAll();
-      this.animFrameId = requestAnimationFrame(render);
-    };
+      canvas.requestRenderAll()
+      this.animFrameId = requestAnimationFrame(render)
+    }
 
-    if (!this.animFrameId) this.animFrameId = requestAnimationFrame(render);
+    if (!this.animFrameId) this.animFrameId = requestAnimationFrame(render)
   }
 
   onUpdateTextProperty(canvas: fabric.Canvas, value: any) {
-    const { size, weight, italic, underline, alignment, color, font } = value;
+    const { size, weight, italic, underline, alignment, color, font } = value
 
-    const activeObj: any = canvas.getActiveObject();
-    if (!activeObj) return;
+    const activeObj: any = canvas.getActiveObject()
+    if (!activeObj) return
 
     activeObj.set({
       fontSize: size,
@@ -1173,17 +1192,17 @@ export class DesignLayoutService {
       textAlign: alignment,
       fill: color,
       textBoxProp: value,
-    });
+    })
 
-    canvas.requestRenderAll();
+    canvas.requestRenderAll()
   }
 
   onUpdateRectProperty(canvas: fabric.Canvas, value: any) {
-    const { fill, transparent, style, strokeWidth } = value;
-    const activeObj = canvas.getActiveObject();
-    if (!activeObj) return;
+    const { fill, transparent, style, strokeWidth } = value
+    const activeObj = canvas.getActiveObject()
+    if (!activeObj) return
 
-    activeObj.set('strokeDashArray', undefined);
+    activeObj.set('strokeDashArray', undefined)
     switch (style) {
       case 'fill':
         activeObj.set({
@@ -1191,46 +1210,46 @@ export class DesignLayoutService {
           fill: transparent ? 'transparent' : fill,
           strokeWidth: 0,
           strokeUniform: false,
-        });
-        break;
+        })
+        break
       case 'outline':
-        activeObj.set({ stroke: fill, strokeWidth, fill: 'transparent', strokeUniform: true });
-        break;
+        activeObj.set({ stroke: fill, strokeWidth, fill: 'transparent', strokeUniform: true })
+        break
       case 'dashed':
-        activeObj.set('strokeDashArray', [5, 5]);
-        activeObj.set({ fill: 'transparent', strokeUniform: true });
-        break;
+        activeObj.set('strokeDashArray', [5, 5])
+        activeObj.set({ fill: 'transparent', strokeUniform: true })
+        break
     }
-    activeObj.set('rectProp', value);
-    canvas.requestRenderAll();
+    activeObj.set('rectProp', value)
+    canvas.requestRenderAll()
   }
 
   onUpdateLineProperty(canvas: fabric.Canvas, value: any) {
-    const { fill, strokeWidth } = value;
-    const activeObj = canvas.getActiveObject();
-    if (!activeObj) return;
-    activeObj.set({ stroke: fill, strokeWidth });
-    activeObj.set('lineProp', value);
-    canvas.requestRenderAll();
+    const { fill, strokeWidth } = value
+    const activeObj = canvas.getActiveObject()
+    if (!activeObj) return
+    activeObj.set({ stroke: fill, strokeWidth })
+    activeObj.set('lineProp', value)
+    canvas.requestRenderAll()
   }
 
   onUpdateMarqueeProperty(canvas: fabric.Canvas, value: any) {
-    const { fill, transparent, style, strokeWidth } = value;
-    const { htmlLayers } = this.designForm.value;
-    const activeObj = canvas.getActiveObject();
-    if (!activeObj) return;
+    const { fill, transparent, style, strokeWidth } = value
+    const { htmlLayers } = this.designForm.value
+    const activeObj = canvas.getActiveObject()
+    if (!activeObj) return
 
-    const html = activeObj.get('html');
+    const html = activeObj.get('html')
     if (html) {
-      Object.assign(html, { style: value });
-      const layer = htmlLayers.find((layer: HtmlLayer) => layer.id == html.id);
+      Object.assign(html, { style: value })
+      const layer = htmlLayers.find((layer: HtmlLayer) => layer.id == html.id)
 
-      if (layer) Object.assign(layer, { style: value });
+      if (layer) Object.assign(layer, { style: value })
 
-      const activeObj: any = canvas.getActiveObject();
-      if (!activeObj) return;
+      const activeObj: any = canvas.getActiveObject()
+      if (!activeObj) return
 
-      activeObj.set('strokeDashArray', undefined);
+      activeObj.set('strokeDashArray', undefined)
       switch (style) {
         case 'fill':
           activeObj.set({
@@ -1238,19 +1257,28 @@ export class DesignLayoutService {
             fill: transparent ? 'transparent' : fill,
             strokeWidth: 0,
             strokeUniform: false,
-          });
-          break;
+          })
+          break
         case 'outline':
-          activeObj.set({ stroke: fill, strokeWidth, fill: 'transparent', strokeUniform: true });
-          break;
+          activeObj.set({ stroke: fill, strokeWidth, fill: 'transparent', strokeUniform: true })
+          break
         case 'dashed':
-          activeObj.set('strokeDashArray', [5, 5]);
-          activeObj.set({ fill: 'transparent', strokeUniform: true });
-          break;
+          activeObj.set('strokeDashArray', [5, 5])
+          activeObj.set({ fill: 'transparent', strokeUniform: true })
+          break
       }
     }
 
-    canvas.requestRenderAll();
+    canvas.requestRenderAll()
+  }
+
+  onShowGridLines(canvas: fabric.Canvas, value: boolean) {
+    if (!value) {
+      canvas.set('backgroundColor', '#ffffff')
+    } else {
+      this.drawGrid(canvas)
+    }
+    canvas.requestRenderAll()
   }
 
   /**
@@ -1264,25 +1292,25 @@ export class DesignLayoutService {
     resolution: { width: number; height: number },
     backgroundColor: string = '#ffffff'
   ) {
-    const canvasElement = document.createElement('canvas');
-    container.appendChild(canvasElement);
+    const canvasElement = document.createElement('canvas')
+    container.appendChild(canvasElement)
 
     // Calculate scale factor based on parent element
-    const bounds = viewport.getBoundingClientRect();
-    const scaleX = bounds.width / resolution.width;
-    const scaleY = bounds.height / resolution.height;
-    const scale = Math.min(scaleX, scaleY);
+    const bounds = viewport.getBoundingClientRect()
+    const scaleX = bounds.width / resolution.width
+    const scaleY = bounds.height / resolution.height
+    const scale = Math.min(scaleX, scaleY)
 
     // Calculate new dimensions for container & canvas
-    const newWidth = resolution.width * scale;
-    const newHeight = resolution.height * scale;
+    const newWidth = resolution.width * scale
+    const newHeight = resolution.height * scale
 
     // Apply new size to container
-    container.style.width = `${newWidth}px`;
-    container.style.height = `${newHeight}px`;
+    container.style.width = `${newWidth}px`
+    container.style.height = `${newHeight}px`
 
-    this.DEFAULT_SCALE.set(scale);
-    this.DEFAULT_RESOLUTION = resolution;
+    this.DEFAULT_SCALE.set(scale)
+    this.DEFAULT_RESOLUTION = resolution
 
     return new fabric.Canvas(canvasElement, {
       width: newWidth,
@@ -1290,25 +1318,25 @@ export class DesignLayoutService {
       backgroundColor,
       selection: false,
       preserveObjectStacking: true,
-    });
+    })
   }
 
   private updateCanvasSize(canvas: fabric.Canvas, canvasContainer: any, zoomLevel: number) {
-    const { width, height } = this.DEFAULT_RESOLUTION;
+    const { width, height } = this.DEFAULT_RESOLUTION
 
-    const newContainerWidth = width * zoomLevel;
-    const newContainerHeight = height * zoomLevel;
+    const newContainerWidth = width * zoomLevel
+    const newContainerHeight = height * zoomLevel
 
-    canvasContainer.style.width = `${newContainerWidth}px`;
-    canvasContainer.style.height = `${newContainerHeight}px`;
+    canvasContainer.style.width = `${newContainerWidth}px`
+    canvasContainer.style.height = `${newContainerHeight}px`
 
-    const bounds = canvasContainer.getBoundingClientRect();
-    const containerWidth = bounds.width;
-    const containerHeight = bounds.height;
+    const bounds = canvasContainer.getBoundingClientRect()
+    const containerWidth = bounds.width
+    const containerHeight = bounds.height
 
-    canvas.setDimensions({ width: containerWidth, height: containerHeight });
-    canvas.setZoom(zoomLevel);
-    canvas.requestRenderAll();
+    canvas.setDimensions({ width: containerWidth, height: containerHeight })
+    canvas.setZoom(zoomLevel)
+    canvas.requestRenderAll()
   }
 
   private initCanvas(
@@ -1318,38 +1346,38 @@ export class DesignLayoutService {
     options: { autoPlayVideos: boolean; isViewOnly?: boolean; registerEvents?: boolean }
   ) {
     try {
-      const { screen, canvas, htmlLayers }: any = design;
-      const [width, height] = screen.displaySettings.resolution.split('x').map(Number);
-      const canvasData = JSON.parse(canvas);
+      const { screen, canvas, htmlLayers }: any = design
+      const [width, height] = screen.displaySettings.resolution.split('x').map(Number)
+      const canvasData = JSON.parse(canvas)
 
       const newCanvas = this.onInitFabricCanvas(
         viewport,
         canvasElement,
         { width, height },
         canvasData.background
-      );
-      newCanvas.setZoom(this.DEFAULT_SCALE());
+      )
+      newCanvas.setZoom(this.DEFAULT_SCALE())
 
-      if (!options.isViewOnly) this.setCanvas(newCanvas);
+      if (!options.isViewOnly) this.setCanvas(newCanvas)
 
       newCanvas.loadFromJSON(canvasData, () => {
         setTimeout(() => {
-          const objects = newCanvas.getObjects();
+          const objects = newCanvas.getObjects()
 
           // Sort objects by zIndex
-          objects.sort((a: any, b: any) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
+          objects.sort((a: any, b: any) => (a.zIndex ?? 0) - (b.zIndex ?? 0))
 
           objects.forEach((obj: any) => {
             if (obj.html) {
-              const html: any = obj.html;
-              const alreadyExists = htmlLayers.find((item: any) => item.id === html.id);
+              const html: any = obj.html
+              const alreadyExists = htmlLayers.find((item: any) => item.id === html.id)
 
               if (alreadyExists) {
-                this.syncDivsWithFabric(newCanvas);
-                if (!html.content.marquee) this.playlistService.onPlayContent(html.content);
+                this.syncDivsWithFabric(newCanvas)
+                if (!html.content.marquee) this.playlistService.onPlayContent(html.content)
               }
             } else if (obj.data) {
-              const data: any = obj.data;
+              const data: any = obj.data
 
               if (data.type === 'video') {
                 this.onAddVideoToCanvas(
@@ -1358,36 +1386,36 @@ export class DesignLayoutService {
                   options.autoPlayVideos,
                   obj,
                   options.isViewOnly
-                );
-                newCanvas.remove(obj);
+                )
+                newCanvas.remove(obj)
               }
             }
 
-            obj.setCoords();
-          });
+            obj.setCoords()
+          })
 
           // View-only canvas tweaks
           if (options.isViewOnly) {
-            newCanvas.selection = false;
-            newCanvas.skipTargetFind = true;
+            newCanvas.selection = false
+            newCanvas.skipTargetFind = true
           }
 
           // Register events if required
           if (options.registerEvents) {
-            this.registerCanvasEvents(newCanvas);
+            this.registerCanvasEvents(newCanvas)
             // this.registerAlignmentGuides(newCanvas);
 
-            if (!options.isViewOnly) this.saveState();
+            if (!options.isViewOnly) this.saveState()
           }
 
-          newCanvas.requestRenderAll();
-        }, 10);
-      });
+          newCanvas.requestRenderAll()
+        }, 10)
+      })
 
-      return newCanvas;
+      return newCanvas
     } catch (error) {
-      console.log('error on initCanvas', error);
-      return null;
+      console.log('error on initCanvas', error)
+      return null
     }
   }
 
@@ -1398,54 +1426,54 @@ export class DesignLayoutService {
       left: obj.left,
       top: obj.top,
       angle: obj.angle,
-    };
+    }
   }
 
   private saveState() {
-    const canvas = this.getCanvas();
-    const { htmlLayers }: any = this.designForm.value;
+    const canvas = this.getCanvas()
+    const { htmlLayers }: any = this.designForm.value
     const canvasState: any = {
       canvas: JSON.stringify(canvas.toObject()),
       htmlLayers: JSON.stringify(htmlLayers),
-    };
+    }
 
-    const lastState: any = this.undoStack[this.undoStack.length - 1];
+    const lastState: any = this.undoStack[this.undoStack.length - 1]
 
     if (
       !lastState ||
       lastState.canvas !== canvasState.canvas ||
       lastState.htmlLayers !== canvasState.htmlLayers
     ) {
-      this.undoStack.push(canvasState);
-      this.redoStack = [];
+      this.undoStack.push(canvasState)
+      this.redoStack = []
     }
   }
 
   private restoreState(state: any) {
-    const { screen, color, htmlLayers } = this.designForm.value;
-    const [width, height] = screen.displaySettings.resolution.split('x');
+    const { screen, color, htmlLayers } = this.designForm.value
+    const [width, height] = screen.displaySettings.resolution.split('x')
 
-    const canvas = this.getCanvas();
-    this.isRestoringState.set(true);
+    const canvas = this.getCanvas()
+    this.isRestoringState.set(true)
 
-    const canvasData = JSON.parse(state.canvas);
+    const canvasData = JSON.parse(state.canvas)
 
     canvas.setDimensions({
       width: width * this.DEFAULT_SCALE(),
       height: height * this.DEFAULT_SCALE(),
-    });
-    canvas.set({ backgroundColor: color });
-    canvas.set('preserveObjectStacking', true);
-    canvas.set('selection', false);
+    })
+    canvas.set({ backgroundColor: color })
+    canvas.set('preserveObjectStacking', true)
+    canvas.set('selection', false)
 
     canvas.loadFromJSON(canvasData, () => {
-      canvas.requestRenderAll();
-    });
-    if (htmlLayers.length > 0) htmlLayers.set(JSON.parse(state.htmlLayers));
+      canvas.requestRenderAll()
+    })
+    if (htmlLayers.length > 0) htmlLayers.set(JSON.parse(state.htmlLayers))
   }
 
   private canvasDimensions(canvas: fabric.Canvas) {
-    return { width: canvas.getWidth(), height: canvas.getHeight() };
+    return { width: canvas.getWidth(), height: canvas.getHeight() }
   }
 
   private syncDivsWithFabric(canvas: fabric.Canvas) {
@@ -1460,24 +1488,24 @@ export class DesignLayoutService {
       'selection:updated',
       'selection:cleared',
       'after:render',
-    ];
+    ]
 
     events.forEach((event: any) =>
       canvas.on(event, () => {
-        this.updateHtmlLayers(canvas);
+        this.updateHtmlLayers(canvas)
       })
-    );
+    )
   }
 
   private updateHtmlLayers(canvas: fabric.Canvas) {
-    const { htmlLayers }: any = this.designForm.value;
-    const activeObjects: fabric.FabricObject[] = canvas.getObjects();
+    const { htmlLayers }: any = this.designForm.value
+    const activeObjects: fabric.FabricObject[] = canvas.getObjects()
 
     activeObjects.forEach((object: fabric.FabricObject) => {
-      const html = object.get('html');
-      if (!html) return;
+      const html = object.get('html')
+      if (!html) return
 
-      const layer = htmlLayers.find((item: any) => item.id === html.id);
+      const layer = htmlLayers.find((item: any) => item.id === html.id)
 
       if (layer) {
         const updated = this.createHtmlLayerFromObject(
@@ -1486,10 +1514,10 @@ export class DesignLayoutService {
           layer.content,
           layer.style,
           canvas
-        );
-        Object.assign(layer, updated);
+        )
+        Object.assign(layer, updated)
       }
-    });
+    })
   }
 
   private createHtmlLayerFromObject(
@@ -1499,18 +1527,18 @@ export class DesignLayoutService {
     style: any,
     canvas: fabric.Canvas
   ) {
-    const zoom = canvas.getZoom();
+    const zoom = canvas.getZoom()
 
     // Get real screen bounds
-    const bounds = obj.getBoundingRect();
+    const bounds = obj.getBoundingRect()
 
-    const html = obj.get('html');
+    const html = obj.get('html')
 
-    const left = bounds.left * zoom; //obj.left * zoom;
-    const top = bounds.top * zoom; // obj.top * zoom;
-    const width = bounds.width * zoom; // obj.getScaledWidth() * zoom;
-    const height = bounds.height * zoom; // obj.getScaledHeight() * zoom;
-    const angle = obj.angle || 0;
+    const left = bounds.left * zoom //obj.left * zoom;
+    const top = bounds.top * zoom // obj.top * zoom;
+    const width = bounds.width * zoom // obj.getScaledWidth() * zoom;
+    const height = bounds.height * zoom // obj.getScaledHeight() * zoom;
+    const angle = obj.angle || 0
 
     if (html && !html.content.marquee)
       obj.setControlsVisibility({
@@ -1522,7 +1550,7 @@ export class DesignLayoutService {
         mb: false,
         mr: false,
         bl: false,
-      });
+      })
 
     return {
       id,
@@ -1534,107 +1562,107 @@ export class DesignLayoutService {
       content,
       style,
       fabricObject: obj,
-    };
+    }
   }
 
   private registerCanvasEvents(canvas: fabric.Canvas): void {
     canvas.on('selection:created', (e) => {
-      const selectedObjects = e.selected || [];
-      if (selectedObjects.length === 0) return;
+      const selectedObjects = e.selected || []
+      if (selectedObjects.length === 0) return
 
       if (selectedObjects.length > 1) {
-        const activeSelection = canvas.getActiveObject() as fabric.ActiveSelection;
+        const activeSelection = canvas.getActiveObject() as fabric.ActiveSelection
         if (activeSelection) {
-          activeSelection.set(this.SELECTION_STYLE());
+          activeSelection.set(this.SELECTION_STYLE())
         }
       } else {
-        const selected: any = e.selected?.[0];
+        const selected: any = e.selected?.[0]
         if (selected) {
-          this.showContents.set(selected.html ? true : false);
-          selected.set(this.SELECTION_STYLE());
+          this.showContents.set(selected.html ? true : false)
+          selected.set(this.SELECTION_STYLE())
           if (selected.type === 'image') {
-            this.onSetCanvasProps('image', true, 'default');
+            this.onSetCanvasProps('image', true, 'default')
           } else if (selected.type === 'textbox') {
-            this.objectPropsForm.patchValue(selected.textBoxProp);
-            this.onSetCanvasProps('text', true, 'default');
+            this.objectPropsForm.patchValue(selected.textBoxProp)
+            this.onSetCanvasProps('text', true, 'default')
           } else if (
             ['rect', 'circle', 'triangle', 'ellipse'].includes(selected.type) &&
             !selected.html
           ) {
-            this.objectPropsForm.patchValue(selected.rectProp);
-            this.onSetCanvasProps('rect', true, 'default');
+            this.objectPropsForm.patchValue(selected.rectProp)
+            this.onSetCanvasProps('rect', true, 'default')
           } else if (selected.type == 'line') {
-            this.objectPropsForm.patchValue(selected.lineProp);
-            this.onSetCanvasProps('line', true, 'default');
+            this.objectPropsForm.patchValue(selected.lineProp)
+            this.onSetCanvasProps('line', true, 'default')
           } else {
-            const { content, style } = selected.html;
+            const { content, style } = selected.html
             if (content.type == 'marquee') {
-              this.showContents.set(false);
-              this.objectPropsForm.patchValue(style);
-              this.onSetCanvasProps('marquee', true, 'default');
+              this.showContents.set(false)
+              this.objectPropsForm.patchValue(style)
+              this.onSetCanvasProps('marquee', true, 'default')
             } else {
-              this.onSetCanvasProps('content', true, 'default');
+              this.onSetCanvasProps('content', true, 'default')
             }
           }
         }
       }
-    });
+    })
 
     canvas.on('selection:updated', (e) => {
-      const selected: any = e.selected?.[0];
+      const selected: any = e.selected?.[0]
       if (selected) {
-        this.showContents.set(selected.html ? true : false);
-        selected.set(this.SELECTION_STYLE());
+        this.showContents.set(selected.html ? true : false)
+        selected.set(this.SELECTION_STYLE())
         if (selected.type === 'image') {
-          this.onSetCanvasProps('image', true, 'default');
+          this.onSetCanvasProps('image', true, 'default')
         } else if (selected.type === 'textbox') {
-          this.objectPropsForm.patchValue(selected.textBoxProp);
-          this.onSetCanvasProps('text', true, 'default');
+          this.objectPropsForm.patchValue(selected.textBoxProp)
+          this.onSetCanvasProps('text', true, 'default')
         } else if (
           ['rect', 'circle', 'triangle', 'ellipse'].includes(selected.type) &&
           !selected.html
         ) {
-          this.objectPropsForm.patchValue(selected.rectProp);
-          this.onSetCanvasProps('rect', true, 'default');
+          this.objectPropsForm.patchValue(selected.rectProp)
+          this.onSetCanvasProps('rect', true, 'default')
         } else if (selected.type == 'line') {
-          this.objectPropsForm.patchValue(selected.lineProp);
-          this.onSetCanvasProps('line', true, 'default');
+          this.objectPropsForm.patchValue(selected.lineProp)
+          this.onSetCanvasProps('line', true, 'default')
         } else {
-          const { content, style } = selected.html;
+          const { content, style } = selected.html
           if (content.type == 'marquee') {
-            this.showContents.set(false);
-            this.objectPropsForm.patchValue(style);
-            this.onSetCanvasProps('marquee', true, 'default');
+            this.showContents.set(false)
+            this.objectPropsForm.patchValue(style)
+            this.onSetCanvasProps('marquee', true, 'default')
           } else {
-            this.onSetCanvasProps('content', true, 'default');
+            this.onSetCanvasProps('content', true, 'default')
           }
         }
       }
-    });
+    })
 
     canvas.on('selection:cleared', () => {
-      this.objectPropsForm.reset();
+      this.objectPropsForm.reset()
       // this.onSetCanvasProps('cleared', true, 'default');
-    });
+    })
 
     canvas.on('object:added', (e) => {
-      const obj: any = e.target;
-      if (!obj) return;
+      const obj: any = e.target
+      if (!obj) return
 
       if (!obj.defaultState) {
-        obj.defaultState = this.captureState(obj);
+        obj.defaultState = this.captureState(obj)
       }
-    });
+    })
 
     canvas.on('object:modified', (e) => {
-      const obj: any = e.target;
-      if (!obj) return;
-      obj.defaultState = this.captureState(obj);
-    });
+      const obj: any = e.target
+      if (!obj) return
+      obj.defaultState = this.captureState(obj)
+    })
 
-    canvas.on('object:moving', (e) => this.showGuidelines(e, canvas));
-    canvas.on('object:scaling', (e) => this.showGuidelines(e, canvas));
-    canvas.on('mouse:up', () => this.clearGuidelines(canvas));
+    canvas.on('object:moving', (e) => this.showGuidelines(e, canvas))
+    canvas.on('object:scaling', (e) => this.showGuidelines(e, canvas))
+    canvas.on('mouse:up', () => this.clearGuidelines(canvas))
   }
 
   /**
@@ -1642,142 +1670,168 @@ export class DesignLayoutService {
    */
 
   private showGuidelines(e: any, canvas: fabric.Canvas): void {
-    const { width, height } = this.DEFAULT_RESOLUTION; // this.canvasDimensions(canvas);
-    this.clearGuidelines(canvas);
+    const { width, height } = this.DEFAULT_RESOLUTION // this.canvasDimensions(canvas);
+    this.clearGuidelines(canvas)
 
-    const movingObj = e.target as fabric.FabricObject;
-    if (!movingObj) return;
+    const movingObj = e.target as fabric.FabricObject
+    if (!movingObj) return
 
     // moving object bounds
-    const mLeft = movingObj.left!;
-    const mTop = movingObj.top!;
-    const mRight = mLeft + movingObj.getScaledWidth();
-    const mBottom = mTop + movingObj.getScaledHeight();
-    const mCenterX = mLeft + movingObj.getScaledWidth() / 2;
-    const mCenterY = mTop + movingObj.getScaledHeight() / 2;
+    const mLeft = movingObj.left!
+    const mTop = movingObj.top!
+    const mRight = mLeft + movingObj.getScaledWidth()
+    const mBottom = mTop + movingObj.getScaledHeight()
+    const mCenterX = mLeft + movingObj.getScaledWidth() / 2
+    const mCenterY = mTop + movingObj.getScaledHeight() / 2
 
     // === Snap to canvas edges ===
     const canvasEdges = {
       left: 0,
-      right: width,
+      right: width - 2,
       top: 0,
-      bottom: height,
+      bottom: height - 2,
       centerX: width / 2,
       centerY: height / 2,
-    };
+    }
 
     // Compare against canvas edges
-    this.checkAndSnap(mLeft, 'left', movingObj, canvasEdges.left, 'left', canvas);
-    this.checkAndSnap(mRight, 'right', movingObj, canvasEdges.right, 'right', canvas);
-    this.checkAndSnap(mTop, 'top', movingObj, canvasEdges.top, 'top', canvas);
-    this.checkAndSnap(mBottom, 'bottom', movingObj, canvasEdges.bottom, 'bottom', canvas);
-    this.checkAndSnap(mCenterX, 'centerX', movingObj, canvasEdges.centerX, 'centerX', canvas);
-    this.checkAndSnap(mCenterY, 'centerY', movingObj, canvasEdges.centerY, 'centerY', canvas);
+    this.checkAndSnap(mLeft, 'left', movingObj, canvasEdges.left, 'left', canvas)
+    this.checkAndSnap(mRight, 'right', movingObj, canvasEdges.right, 'right', canvas)
+    this.checkAndSnap(mTop, 'top', movingObj, canvasEdges.top, 'top', canvas)
+    this.checkAndSnap(mBottom, 'bottom', movingObj, canvasEdges.bottom, 'bottom', canvas)
+    this.checkAndSnap(mCenterX, 'centerX', movingObj, canvasEdges.centerX, 'centerX', canvas)
+    this.checkAndSnap(mCenterY, 'centerY', movingObj, canvasEdges.centerY, 'centerY', canvas)
 
     canvas.getObjects().forEach((obj) => {
-      if (obj === movingObj) return;
+      if (obj === movingObj) return
 
-      const oLeft = obj.left!;
-      const oTop = obj.top!;
-      const oRight = oLeft + obj.getScaledWidth();
-      const oBottom = oTop + obj.getScaledHeight();
-      const oCenterX = oLeft + obj.getScaledWidth() / 2;
-      const oCenterY = oTop + obj.getScaledHeight() / 2;
+      const oLeft = obj.left!
+      const oTop = obj.top!
+      const oRight = oLeft + obj.getScaledWidth()
+      const oBottom = oTop + obj.getScaledHeight()
+      const oCenterX = oLeft + obj.getScaledWidth() / 2
+      const oCenterY = oTop + obj.getScaledHeight() / 2
 
       // ---------------- VERTICAL CHECKS ----------------
-      this.checkAndSnap(mLeft, 'left', movingObj, oLeft, 'left', canvas);
-      this.checkAndSnap(mLeft, 'left', movingObj, oCenterX, 'centerX', canvas);
-      this.checkAndSnap(mLeft, 'left', movingObj, oRight, 'right', canvas);
+      this.checkAndSnap(mLeft, 'left', movingObj, oLeft, 'left', canvas)
+      this.checkAndSnap(mLeft, 'left', movingObj, oCenterX, 'centerX', canvas)
+      this.checkAndSnap(mLeft, 'left', movingObj, oRight, 'right', canvas)
 
-      this.checkAndSnap(mCenterX, 'centerX', movingObj, oLeft, 'left', canvas);
-      this.checkAndSnap(mCenterX, 'centerX', movingObj, oCenterX, 'centerX', canvas);
-      this.checkAndSnap(mCenterX, 'centerX', movingObj, oRight, 'right', canvas);
+      this.checkAndSnap(mCenterX, 'centerX', movingObj, oLeft, 'left', canvas)
+      this.checkAndSnap(mCenterX, 'centerX', movingObj, oCenterX, 'centerX', canvas)
+      this.checkAndSnap(mCenterX, 'centerX', movingObj, oRight, 'right', canvas)
 
-      this.checkAndSnap(mRight, 'right', movingObj, oLeft, 'left', canvas);
-      this.checkAndSnap(mRight, 'right', movingObj, oCenterX, 'centerX', canvas);
-      this.checkAndSnap(mRight, 'right', movingObj, oRight, 'right', canvas);
+      this.checkAndSnap(mRight, 'right', movingObj, oLeft, 'left', canvas)
+      this.checkAndSnap(mRight, 'right', movingObj, oCenterX, 'centerX', canvas)
+      this.checkAndSnap(mRight, 'right', movingObj, oRight, 'right', canvas)
 
       // ---------------- HORIZONTAL CHECKS ----------------
-      this.checkAndSnap(mTop, 'top', movingObj, oTop, 'top', canvas);
-      this.checkAndSnap(mTop, 'top', movingObj, oCenterY, 'centerY', canvas);
-      this.checkAndSnap(mTop, 'top', movingObj, oBottom, 'bottom', canvas);
+      this.checkAndSnap(mTop, 'top', movingObj, oTop, 'top', canvas)
+      this.checkAndSnap(mTop, 'top', movingObj, oCenterY, 'centerY', canvas)
+      this.checkAndSnap(mTop, 'top', movingObj, oBottom, 'bottom', canvas)
 
-      this.checkAndSnap(mCenterY, 'centerY', movingObj, oTop, 'top', canvas);
-      this.checkAndSnap(mCenterY, 'centerY', movingObj, oCenterY, 'centerY', canvas);
-      this.checkAndSnap(mCenterY, 'centerY', movingObj, oBottom, 'bottom', canvas);
+      this.checkAndSnap(mCenterY, 'centerY', movingObj, oTop, 'top', canvas)
+      this.checkAndSnap(mCenterY, 'centerY', movingObj, oCenterY, 'centerY', canvas)
+      this.checkAndSnap(mCenterY, 'centerY', movingObj, oBottom, 'bottom', canvas)
 
-      this.checkAndSnap(mBottom, 'bottom', movingObj, oTop, 'top', canvas);
-      this.checkAndSnap(mBottom, 'bottom', movingObj, oCenterY, 'centerY', canvas);
-      this.checkAndSnap(mBottom, 'bottom', movingObj, oBottom, 'bottom', canvas);
-    });
+      this.checkAndSnap(mBottom, 'bottom', movingObj, oTop, 'top', canvas)
+      this.checkAndSnap(mBottom, 'bottom', movingObj, oCenterY, 'centerY', canvas)
+      this.checkAndSnap(mBottom, 'bottom', movingObj, oBottom, 'bottom', canvas)
+    })
 
-    movingObj.setCoords();
-    canvas.requestRenderAll();
+    movingObj.setCoords()
+    canvas.requestRenderAll()
   }
 
   private checkAndSnap(
     mVal: number,
     mType: string,
-    obj: fabric.FabricObject,
+    obj: fabric.Object,
     oVal: number,
     oType: string,
     canvas: fabric.Canvas
   ) {
-    if (Math.abs(mVal - oVal) < this.snap) {
-      // VERTICAL SNAP
-      if (mType === 'left' || mType === 'centerX' || mType === 'right') {
-        this.drawGuidelines(canvas, oVal, 'vertical');
+    const snapDist = this.snap ?? 5;
+    const tolerance = Math.abs(mVal - oVal);
 
-        if (obj.__corner) {
-          // Resizing case
-          if (mType === 'right') {
-            const newWidth = oVal - obj.left!;
-            obj.set({ scaleX: newWidth / (obj.width ?? 1) });
-          }
+    if (tolerance >= snapDist) return;
 
-          if (mType === 'left') {
-            const newWidth = obj.left! + obj.getScaledWidth() - oVal;
-            obj.set({ left: oVal, scaleX: newWidth / (obj.width ?? 1) });
-          }
-        } else {
-          // Moving case
-          if (mType === 'left') obj.set({ left: oVal });
-          if (mType === 'centerX') obj.set({ left: oVal - obj.getScaledWidth() / 2 });
-          if (mType === 'right') obj.set({ left: oVal - obj.getScaledWidth() });
+    // Draw guide
+    const isVertical = mType === 'left' || mType === 'centerX' || mType === 'right';
+    const isHorizontal = mType === 'top' || mType === 'centerY' || mType === 'bottom';
+    if (isVertical) this.drawGuidelines(canvas, oVal, 'vertical');
+    if (isHorizontal) this.drawGuidelines(canvas, oVal, 'horizontal');
+
+    const width = obj.width ?? 0;
+    const height = obj.height ?? 0;
+    const scaleX = obj.scaleX ?? 1;
+    const scaleY = obj.scaleY ?? 1;
+
+    if (obj.__corner) {
+      // --- Resizing case ---
+      if (isVertical) {
+        const currentLeft = obj.left ?? 0;
+        const rightEdge = currentLeft + width * scaleX;
+
+        if (mType === 'right') {
+          const newWidth = oVal - currentLeft;
+          obj.set({
+            scaleX: Math.max(newWidth / width, 0.01),
+          });
+        }
+
+        if (mType === 'left') {
+          const newWidth = rightEdge - oVal;
+          obj.set({
+            left: oVal,
+            scaleX: Math.max(newWidth / width, 0.01),
+          });
         }
       }
 
-      // HORIZONTAL SNAP
-      if (mType === 'top' || mType === 'centerY' || mType === 'bottom') {
-        this.drawGuidelines(canvas, oVal, 'horizontal');
+      if (isHorizontal) {
+        const currentTop = obj.top ?? 0;
+        const bottomEdge = currentTop + height * scaleY;
 
-        if (obj.__corner) {
-          // Resizing case
-          if (mType === 'bottom') {
-            const newHeight = oVal - obj.top!;
-            obj.set({ scaleY: newHeight / (obj.height ?? 1) });
-          }
-
-          if (mType === 'top') {
-            const newHeight = obj.top! + obj.getScaledHeight() - oVal;
-            obj.set({ top: oVal, scaleY: newHeight / (obj.height ?? 1) });
-          }
-        } else {
-          // Moving case
-          if (mType === 'top') obj.set({ top: oVal });
-          if (mType === 'centerY') obj.set({ top: oVal - obj.getScaledHeight() / 2 });
-          if (mType === 'bottom') obj.set({ top: oVal - obj.getScaledHeight() });
+        if (mType === 'bottom') {
+          const newHeight = oVal - currentTop;
+          obj.set({
+            scaleY: Math.max(newHeight / height, 0.01),
+          });
         }
+
+        if (mType === 'top') {
+          const newHeight = bottomEdge - oVal;
+          obj.set({
+            top: oVal,
+            scaleY: Math.max(newHeight / height, 0.01),
+          });
+        }
+      }
+    } else {
+      // --- Moving case ---
+      if (isVertical) {
+        if (mType === 'left') obj.set({ left: oVal });
+        if (mType === 'centerX') obj.set({ left: oVal - (width * scaleX) / 2 });
+        if (mType === 'right') obj.set({ left: oVal - width * scaleX });
+      }
+
+      if (isHorizontal) {
+        if (mType === 'top') obj.set({ top: oVal });
+        if (mType === 'centerY') obj.set({ top: oVal - (height * scaleY) / 2 });
+        if (mType === 'bottom') obj.set({ top: oVal - height * scaleY });
       }
     }
 
+    obj.setCoords();
     canvas.requestRenderAll();
   }
 
+
   private drawGuidelines(canvas: fabric.Canvas, value: number, position: string): void {
-    const { width, height } = this.DEFAULT_RESOLUTION;
+    const { width, height } = this.DEFAULT_RESOLUTION
     const lineValue: any =
-      position === 'vertical' ? [value, 0, value, height] : [0, value, width, value];
+      position === 'vertical' ? [value, 0, value, height] : [0, value, width, value]
     const line = new fabric.Line(lineValue, {
       stroke: '#FF00AA',
       strokeWidth: 2,
@@ -1786,58 +1840,53 @@ export class DesignLayoutService {
       selectable: false,
       evented: false,
       excludeFromExport: true,
-    });
-    canvas.add(line);
-    canvas.requestRenderAll();
-    this.guidelines.push(line);
+    })
+    canvas.add(line)
+    canvas.requestRenderAll()
+    this.guidelines.push(line)
   }
 
   private clearGuidelines(canvas: fabric.Canvas): void {
-    this.guidelines.forEach((line) => canvas.remove(line));
-    this.guidelines = [];
-    canvas.requestRenderAll();
+    this.guidelines.forEach((line) => canvas.remove(line))
+    this.guidelines = []
+    canvas.requestRenderAll()
   }
 
-  private drawGrid(canvas: fabric.Canvas, gridSize: number = 55) {
-    const { width, height } = this.DEFAULT_RESOLUTION;
+  private drawGrid(canvas: fabric.Canvas, gridSize: number = 54) {
+    const gridCanvas = document.createElement('canvas')
+    gridCanvas.width = gridSize
+    gridCanvas.height = gridSize
 
-    const gridCanvas = document.createElement('canvas');
-    gridCanvas.width = gridSize;
-    gridCanvas.height = gridSize;
-
-    const ctx = gridCanvas.getContext('2d');
-    if (!ctx) return;
+    const ctx = gridCanvas.getContext('2d')
+    if (!ctx) return
 
     // Background color (white)
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, gridSize, gridSize);
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, gridSize, gridSize)
 
     // Grid line (light gray)
-    ctx.strokeStyle = '#e0e0e0';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e0e0e0'
+    ctx.lineWidth = 2
 
     // Vertical line
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0, gridSize);
-    ctx.stroke();
+    ctx.beginPath()
+    ctx.moveTo(0, 0)
+    ctx.lineTo(0, gridSize + 1)
+    ctx.stroke()
 
     // Horizontal line
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(gridSize, 0);
-    ctx.stroke();
+    ctx.beginPath()
+    ctx.moveTo(0, 0)
+    ctx.lineTo(gridSize - 1, 0)
+    ctx.stroke()
 
     // Apply as background pattern
     const pattern = new fabric.Pattern({
       source: gridCanvas,
       repeat: 'repeat',
-    });
+    })
 
-    canvas.set('backgroundColor', pattern);
-    canvas.requestRenderAll();
-    // canvas.setBackgroundColor(pattern, () => {
-    //   canvas.requestRenderAll();
-    // });
+    canvas.set('backgroundColor', pattern)
+    canvas.requestRenderAll()
   }
 }

@@ -1,117 +1,217 @@
-<div class="flex items-center gap-4 absolute top-0 right-0 z-30 bg-[var(--p-surface-50)] dark:bg-black shadow-lg rounded-lg p-2 select-none" 
-    [formGroup]="objectPropsForm" cdkDragBoundary=".canvas-boundary" cdkDrag>
-    <div class="w-2 h-8 bg-[var(--p-surface-200)] rounded-lg cursor-move" cdkDragHandle></div>
+<div
+  class="flex items-center gap-4 absolute top-0 right-0 z-30 bg-[var(--p-surface-50)] dark:bg-[var(--p-surface-800)] shadow-lg rounded-lg p-2 select-none"
+  [formGroup]="objectPropsForm"
+  cdkDragBoundary=".canvas-boundary"
+  cdkDrag
+>
+  <div class="w-2 h-8 bg-[var(--p-surface-200)] dark:bg-[var(--p-surface-600)] rounded-lg cursor-move" cdkDragHandle></div>
 
-    @switch (propsType) {
-        @case ('text') {
-            <div class="w-20">
-                <p-inputnumber formControlName="size" [min]="8" size="small" showButtons fluid />
-            </div>
-            <div class="w-30">
-                <p-select formControlName="font" [options]="fontOptions" size="small" filter fluid />
-            </div>
-            <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isBold() }" (onClick)="onClickBold()" size="small" text>
-                <img src="assets/icons/bold.png" alt="bold" pTooltip="Bold" width="12">
-            </p-button>
-            <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isItalic() }" (onClick)="onClickItalic()" size="small" text>
-                <img src="assets/icons/italic.png" alt="italic" pTooltip="Italic" width="12">
-            </p-button>
-            <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isUnderline() }" (onClick)="onClickUnderline()" size="small" text>
-                <img src="assets/icons/underline.png" alt="underline" pTooltip="Underline" width="12">
-            </p-button>
-            <p-selectbutton [options]="alignmentOptions" formControlName="alignment" optionValue="value" [allowEmpty]="false">
-                <ng-template #item let-item>
-                    <i [class]="item.icon"></i>
-                </ng-template>
-            </p-selectbutton>
-            <p-colorpicker formControlName="color" appendTo="body" class="border-2 border-[var(--p-surface-300)] rounded-lg" />
-        }
-
-        @case ('rect') {
-            <p-selectbutton styleClass="!bg-[var(--p-surface-200)]" [options]="rectPropOptions" formControlName="style" optionValue="value" [allowEmpty]="false">
-                <ng-template #item let-item>
-                    @switch (item.value) {
-                        @case('fill') {
-                            <div class="w-5 h-5 bg-[var(--p-surface-600)]" [pTooltip]="item.label" tooltipPosition="bottom"></div>
-                        }
-                        @case('outline') {
-                            <div class="w-5 h-5 border-2 border-[var(--p-surface-600)]" [pTooltip]="item.label" tooltipPosition="bottom"></div>
-                        }
-                        @case('dashed') {
-                            <div class="w-5 h-5 border-2 border-dashed border-[var(--p-surface-600)]" [pTooltip]="item.label" tooltipPosition="bottom"></div>
-                        }
-                    }
-                </ng-template>
-            </p-selectbutton>
-            <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isTransparent() }" (onClick)="onClickTransparent()" size="small" text>
-                <img src="assets/icons/transparent.png" alt="transparent" pTooltip="Transparent" tooltipPosition="bottom" width="20">
-            </p-button>
-            <p-colorpicker formControlName="fill" appendTo="body" class="border-2 border-[var(--p-surface-300)] rounded-lg" />
-        }
-
-        @case ('line') {
-            <div class="flex gap-4 items-center w-50">
-                <p class="text-sm">Stroke:</p>
-                <p-slider formControlName="strokeWidth" min="1" max="100" class="w-full" />
-            </div>
-            <p-colorpicker formControlName="fill" appendTo="body" class="border-2 border-[var(--p-surface-300)] rounded-lg" />
-        }
-
-        @case ('marquee') {
-            <div class="flex flex-col gap-2 p-2">
-                <p class="text-sm">Text Properties:</p>
-                <div class="flex gap-2 items-center">
-                    <div class="w-20">
-                        <p-inputnumber formControlName="size" [min]="8" size="small" showButtons fluid />
-                    </div>
-                    <div class="w-40">
-                        <p-select formControlName="font" [options]="fontOptions" size="small" filter fluid />
-                    </div>
-                    <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isBold() }" (onClick)="onClickBold()" size="small" text>
-                        <img src="assets/icons/bold.png" alt="bold" pTooltip="Bold" width="12">
-                    </p-button>
-                    <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isItalic() }" (onClick)="onClickItalic()" size="small" text>
-                        <img src="assets/icons/italic.png" alt="italic" pTooltip="Italic" width="12">
-                    </p-button>
-                    <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isUnderline() }" (onClick)="onClickUnderline()" size="small" text>
-                        <img src="assets/icons/underline.png" alt="underline" pTooltip="Underline" width="12">
-                    </p-button>
-                    <p-colorpicker formControlName="color" appendTo="body" class="border-2 border-[var(--p-surface-300)] rounded-lg" />
-                </div>
-                <p-divider />
-                <p class="text-sm">Shape Properties:</p>
-                <div class="flex gap-2 items-center">
-                    <p-selectbutton styleClass="!bg-[var(--p-surface-200)]" [options]="rectPropOptions" formControlName="style" optionValue="value" [allowEmpty]="false">
-                        <ng-template #item let-item>
-                            @switch (item.value) {
-                                @case('fill') {
-                                    <div class="w-5 h-5 bg-[var(--p-surface-600)]" [pTooltip]="item.label" tooltipPosition="bottom"></div>
-                                }
-                                @case('outline') {
-                                    <div class="w-5 h-5 border-2 border-[var(--p-surface-600)]" [pTooltip]="item.label" tooltipPosition="bottom"></div>
-                                }
-                                @case('dashed') {
-                                    <div class="w-5 h-5 border-2 border-dashed border-[var(--p-surface-600)]" [pTooltip]="item.label" tooltipPosition="bottom"></div>
-                                }
-                            }
-                        </ng-template>
-                    </p-selectbutton>
-                    <div class="flex gap-4 items-center w-full">
-                        <p class="text-sm">Stroke:</p>
-                        <p-slider formControlName="strokeWidth" min="10" max="100" class="w-full" />
-                    </div>
-                    <p-button [ngClass]="{ 'bg-[var(--p-surface-300)] rounded-lg' : isTransparent() }" (onClick)="onClickTransparent()" size="small" text>
-                        <img src="assets/icons/transparent.png" alt="transparent" pTooltip="Transparent" tooltipPosition="bottom" width="100">
-                    </p-button>
-                    <p-colorpicker formControlName="fill" appendTo="body" class="border-2 border-[var(--p-surface-300)] rounded-lg" />
-                </div>
-                <p-divider />
-                <div class="flex gap-2 items-center">
-                    <p class="text-sm">Speed:</p>
-                    <p-slider formControlName="duration" min="10" max="100" class="w-full" />
-                </div>
-            </div>
-        }
-    }
-
+  @switch (propsType) { @case ('text') {
+  <div class="w-20">
+    <p-inputnumber formControlName="size" [min]="8" size="small" showButtons fluid />
+  </div>
+  <div class="w-30">
+    <p-select formControlName="font" [options]="fontOptions" size="small" filter fluid />
+  </div>
+  <p-button
+    [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isBold() }"
+    (onClick)="onClickBold()"
+    size="small"
+    text
+  >
+    <img src="assets/icons/bold.png" alt="bold" pTooltip="Bold" width="12" />
+  </p-button>
+  <p-button
+    [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isItalic() }"
+    (onClick)="onClickItalic()"
+    size="small"
+    text
+  >
+    <img src="assets/icons/italic.png" alt="italic" pTooltip="Italic" width="12" />
+  </p-button>
+  <p-button
+    [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isUnderline() }"
+    (onClick)="onClickUnderline()"
+    size="small"
+    text
+  >
+    <img src="assets/icons/underline.png" alt="underline" pTooltip="Underline" width="12" />
+  </p-button>
+  <p-selectbutton
+    [options]="alignmentOptions"
+    formControlName="alignment"
+    optionValue="value"
+    [allowEmpty]="false"
+  >
+    <ng-template #item let-item>
+      <i [class]="item.icon"></i>
+    </ng-template>
+  </p-selectbutton>
+  <p-colorpicker
+    formControlName="color"
+    appendTo="body"
+    class="border-2 border-[var(--p-surface-300)] rounded-lg"
+  />
+  } @case ('rect') {
+  <p-selectbutton
+    styleClass="!bg-[var(--p-surface-200)] !dark:bg-[var(--p-surface-800)]"
+    [options]="rectPropOptions"
+    formControlName="style"
+    optionValue="value"
+    [allowEmpty]="false"
+  >
+    <ng-template #item let-item>
+      @switch (item.value) { @case('fill') {
+      <div
+        class="w-5 h-5 bg-[var(--p-surface-600)] dark:bg-[var(--p-surface-400)]"
+        [pTooltip]="item.label"
+        tooltipPosition="bottom"
+      ></div>
+      } @case('outline') {
+      <div
+        class="w-5 h-5 border-2 border-[var(--p-surface-600)] dark:border-[var(--p-surface-400)]"
+        [pTooltip]="item.label"
+        tooltipPosition="bottom"
+      ></div>
+      } @case('dashed') {
+      <div
+        class="w-5 h-5 border-2 border-dashed border-[var(--p-surface-600)] dark:border-[var(--p-surface-400)]"
+        [pTooltip]="item.label"
+        tooltipPosition="bottom"
+      ></div>
+      } }
+    </ng-template>
+  </p-selectbutton>
+  <p-button
+    [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isTransparent() }"
+    (onClick)="onClickTransparent()"
+    size="small"
+    text
+  >
+    <img
+      src="assets/icons/transparent.png"
+      alt="transparent"
+      pTooltip="Transparent"
+      tooltipPosition="bottom"
+      width="20"
+    />
+  </p-button>
+  <p-colorpicker
+    formControlName="fill"
+    appendTo="body"
+    class="border-2 border-[var(--p-surface-300)] rounded-lg"
+  />
+  } @case ('line') {
+  <div class="flex gap-4 items-center w-50">
+    <p class="text-sm">Stroke:</p>
+    <p-slider formControlName="strokeWidth" min="1" max="100" class="w-full" />
+  </div>
+  <p-colorpicker
+    formControlName="fill"
+    appendTo="body"
+    class="border-2 border-[var(--p-surface-300)] rounded-lg"
+  />
+  } @case ('marquee') {
+  <div class="flex flex-col gap-2 p-2">
+    <p class="text-sm">Text Properties:</p>
+    <div class="flex gap-2 items-center">
+      <div class="w-20">
+        <p-inputnumber formControlName="size" [min]="8" size="small" showButtons fluid />
+      </div>
+      <div class="w-40">
+        <p-select formControlName="font" [options]="fontOptions" size="small" filter fluid />
+      </div>
+      <p-button
+        [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isBold() }"
+        (onClick)="onClickBold()"
+        size="small"
+        text
+      >
+        <img src="assets/icons/bold.png" alt="bold" pTooltip="Bold" width="12" />
+      </p-button>
+      <p-button
+        [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isItalic() }"
+        (onClick)="onClickItalic()"
+        size="small"
+        text
+      >
+        <img src="assets/icons/italic.png" alt="italic" pTooltip="Italic" width="12" />
+      </p-button>
+      <p-button
+        [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isUnderline() }"
+        (onClick)="onClickUnderline()"
+        size="small"
+        text
+      >
+        <img src="assets/icons/underline.png" alt="underline" pTooltip="Underline" width="12" />
+      </p-button>
+      <p-colorpicker
+        formControlName="color"
+        appendTo="body"
+        class="border-2 border-[var(--p-surface-300)] rounded-lg"
+      />
+    </div>
+    <p-divider />
+    <p class="text-sm">Shape Properties:</p>
+    <div class="flex gap-2 items-center">
+      <p-selectbutton
+        styleClass="!bg-[var(--p-surface-200)] !dark:bg-[var(--p-surface-800)]"
+        [options]="rectPropOptions"
+        formControlName="style"
+        optionValue="value"
+        [allowEmpty]="false"
+      >
+        <ng-template #item let-item>
+          @switch (item.value) { @case('fill') {
+          <div
+            class="w-5 h-5 bg-[var(--p-surface-600)] dark:bg-[var(--p-surface-400)]"
+            [pTooltip]="item.label"
+            tooltipPosition="bottom"
+          ></div>
+          } @case('outline') {
+          <div
+            class="w-5 h-5 border-2 border-[var(--p-surface-600)] dark:border-[var(--p-surface-400)]"
+            [pTooltip]="item.label"
+            tooltipPosition="bottom"
+          ></div>
+          } @case('dashed') {
+          <div
+            class="w-5 h-5 border-2 border-dashed border-[var(--p-surface-600)] dark:border-[var(--p-surface-400)]"
+            [pTooltip]="item.label"
+            tooltipPosition="bottom"
+          ></div>
+          } }
+        </ng-template>
+      </p-selectbutton>
+      <div class="flex gap-4 items-center w-full">
+        <p class="text-sm">Stroke:</p>
+        <p-slider formControlName="strokeWidth" min="10" max="100" class="w-full" />
+      </div>
+      <p-button
+        [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isTransparent() }"
+        (onClick)="onClickTransparent()"
+        size="small"
+        text
+      >
+        <img
+          src="assets/icons/transparent.png"
+          alt="transparent"
+          pTooltip="Transparent"
+          tooltipPosition="bottom"
+          width="100"
+        />
+      </p-button>
+      <p-colorpicker
+        formControlName="fill"
+        appendTo="body"
+        class="border-2 border-[var(--p-surface-300)] rounded-lg"
+      />
+    </div>
+    <p-divider />
+    <div class="flex gap-2 items-center">
+      <p class="text-sm">Speed:</p>
+      <p-slider formControlName="duration" min="10" max="100" class="w-full" />
+    </div>
+  </div>
+  } }
 </div>
