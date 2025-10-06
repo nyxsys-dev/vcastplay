@@ -10,7 +10,13 @@ import myPreset from '../../public/assets/myPreset';
 import { provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart, LineChart, PieChart } from 'echarts/charts';
-import { GridComponent, LegendComponent, TitleComponent, ToolboxComponent, TooltipComponent } from 'echarts/components';
+import {
+  GridComponent,
+  LegendComponent,
+  TitleComponent,
+  ToolboxComponent,
+  TooltipComponent,
+} from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { provideHttpClient } from '@angular/common/http';
 
@@ -24,32 +30,38 @@ import { MessageModule } from 'primeng/message';
 echarts.use([
   PieChart,
   LineChart,
-  BarChart, 
-  TitleComponent, 
+  BarChart,
+  TitleComponent,
   TooltipComponent,
   ToolboxComponent,
-  GridComponent, 
+  GridComponent,
   LegendComponent,
-  CanvasRenderer
+  CanvasRenderer,
 ]);
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    importProvidersFrom([ ConfirmDialogModule, MessageModule ]),
+    importProvidersFrom([ConfirmDialogModule, MessageModule]),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'top' }) ),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({
+        anchorScrolling: 'enabled',
+        scrollPositionRestoration: 'top',
+      })
+    ),
     provideHttpClient(),
     providePrimeNG({
-      theme: { 
+      theme: {
         preset: myPreset,
         options: {
           darkModeSelector: '.dark',
-        }
-      }
+        },
+      },
     }),
     provideAnimationsAsync(),
     provideEchartsCore({ echarts }),
     ConfirmationService,
     MessageService,
-  ]
+  ],
 };

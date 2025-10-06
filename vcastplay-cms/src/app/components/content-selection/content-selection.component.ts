@@ -1,19 +1,20 @@
 import { Component, computed, EventEmitter, inject, Input, Output, signal, SimpleChanges } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
-import { AssetFilterComponent } from '../../pages/assets/asset-filter/asset-filter.component';
-import { PlaylistFilterComponent } from '../../pages/playlist/playlist-filter/playlist-filter.component';
-import { AssetsService } from '../../core/services/assets.service';
-import { PlaylistService } from '../../core/services/playlist.service';
-import { SchedulesService } from '../../core/services/schedules.service';
+import { AssetsService } from '../../features/assets/assets.service';
+import { PlaylistService } from '../../features/playlist/playlist.service';
+import { SchedulesService } from '../../features/schedules/schedules.service';
 import { UtilityService } from '../../core/services/utility.service';
 import { FormControl } from '@angular/forms';
-import { ScheduleFilterComponent } from '../../pages/schedules/schedule-filter/schedule-filter.component';
-import { DesignLayoutService } from '../../core/services/design-layout.service';
+import { DesignLayoutService } from '../../features/design-layout/design-layout.service';
 import { FiltersComponent } from '../filters/filters.component';
+import { AssetFilterComponent } from '../../features/assets/asset-filter/asset-filter.component';
+import { PlaylistFilterComponent } from '../../features/playlist/playlist-filter/playlist-filter.component';
+import { ScheduleFilterComponent } from '../../features/schedules/schedule-filter/schedule-filter.component';
 
 @Component({
   selector: 'app-content-selection',
-  imports: [ PrimengUiModule, AssetFilterComponent, PlaylistFilterComponent, ScheduleFilterComponent, FiltersComponent ],
+  imports: [ PrimengUiModule, AssetFilterComponent, PlaylistFilterComponent, ScheduleFilterComponent
+    , FiltersComponent ],
   templateUrl: './content-selection.component.html',
   styleUrl: './content-selection.component.scss'
 })

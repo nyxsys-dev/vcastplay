@@ -1,7 +1,7 @@
 import { Component, computed, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { TagService } from '../../core/services/tag.service';
+import { TagService } from '../../features/settings/tags/tag.service';
 
 @Component({
   selector: 'app-audience-tag-filters',

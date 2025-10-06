@@ -1,92 +1,105 @@
 <div class="flex flex-col gap-3 h-full">
-    @if (!assetOnly) {
-        <p-floatlabel class="w-full" variant="on">
-            <p-select inputId="type" [options]="filtereContentTypes()" optionLabel="label" optionValue="value" [formControl]="contentTypeControl" appendTo="body" fluid />
-            <label for="type">Select Contents</label>
-        </p-floatlabel>
-    }
-    @switch (contentTypeControl.value) {
-        @case ('asset') {
-            <app-asset-filter (filterChange)="onFilterChange($event)" />
-        }
-        @case ('playlist') {
-            <app-playlist-filter (filterChange)="onFilterChange($event)" />
-        }
-        @case ('design') {
-            <app-filters (filterChange)="onFilterChange($event)" />
-        }
-        @case ('clipart') {
-            <app-filters (filterChange)="onFilterChange($event)" />
-        }
-        @case ('schedule') {
-            <app-schedule-filter (filterChange)="onFilterChange($event)" />
-        }
-    }
+  @if (!assetOnly) {
+  <p-floatlabel class="w-full" variant="on">
+    <p-select
+      inputId="type"
+      [options]="filtereContentTypes()"
+      optionLabel="label"
+      optionValue="value"
+      [formControl]="contentTypeControl"
+      appendTo="body"
+      fluid
+    />
+    <label for="type">Select Contents</label>
+  </p-floatlabel>
+  } @switch (contentTypeControl.value) { @case ('asset') {
+  <app-asset-filter (filterChange)="onFilterChange($event)" />
+  } @case ('playlist') {
+  <app-playlist-filter (filterChange)="onFilterChange($event)" />
+  } @case ('design') {
+  <app-filters (filterChange)="onFilterChange($event)" />
+  } @case ('clipart') {
+  <app-filters (filterChange)="onFilterChange($event)" />
+  } @case ('schedule') {
+  <app-schedule-filter (filterChange)="onFilterChange($event)" />
+  } }
 
-    <div class="flex-1 min-h-[200px] overflow-y-auto pb-8 border border-[var(--p-surface-300)] rounded-lg">
-        <p-table
-            #contentTable
-            [value]="filteredContentLists()"
-            [(selection)]="selectionContent"
-            (selectionChange)="onSelectionChange($event)"
-            dataKey="id"
-            [scrollable]="true"
-            scrollHeight="flex"
-            [selectionMode]="selectionMode"
-            size="small"
-            stripedRows
-            showGridlines
-        >
-            <ng-template #header>
-                <tr>
-                    <th style="width: 3rem"></th>
-                    <th>Name</th>
-                    <th>
-                        @if (!['schedule', 'clipart'].includes(contentTypeControl.value)) { Duration }
-                        @else if (['clipart'].includes(contentTypeControl.value)) { Preview }
-                        @else { Description }
-                    </th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-item>
-                <tr class="text-sm" [pSelectableRow]="item" [pSelectableRowDisabled]="!isSelectable">
-                    <td>
-                        @if (isSelectable) {
-                            <div class="text-center">
-                                @if (selectionMode == 'multiple') {
-                                    <p-tableCheckbox [value]="item" />
-                                } @else {
-                                    <p-tableRadioButton [value]="item" />
-                                }
-                            </div>
-                        } @else {
-                            <div class="text-center">
-                                <p-button (onClick)="onSelectionChange(item)" icon="pi pi-plus" severity="success" size="small" pTooltip="Select" tooltipPosition="bottom" />
-                            </div>
-                        }
-                    </td>
-                    <td>
-                        <div class="flex flex-col">
-                            <p class="w-50 line-clamp-1 truncate" [pTooltip]="item.name" tooltipPosition="bottom">{{ item.name }}</p>
-                            @if (['asset'].includes(contentTypeControl.value)) {
-                                <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
-                            }
-                        </div>
-                    </td>
-                    <td>
-                        @if (!['schedule', 'clipart'].includes(contentTypeControl.value)) { {{ utils.timeConversion(item.duration) }} } 
-                        @else if (['clipart'].includes(contentTypeControl.value)) { <img [src]="item.link" [alt]="item.name" class="w-15"> }
-                        @else { {{ item.description }} }
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-                <tr>
-                    <td colspan="3" [height]="20">
-                        <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
+  <div
+    class="flex-1 min-h-[200px] overflow-y-auto pb-8 border border-[var(--p-surface-300)] rounded-lg"
+  >
+    <p-table
+      #contentTable
+      [value]="filteredContentLists()"
+      [(selection)]="selectionContent"
+      (selectionChange)="onSelectionChange($event)"
+      dataKey="id"
+      [scrollable]="true"
+      scrollHeight="flex"
+      [selectionMode]="selectionMode"
+      size="small"
+      stripedRows
+      showGridlines
+    >
+      <ng-template #header>
+        <tr>
+          <th style="width: 3rem"></th>
+          <th>Name</th>
+          <th>
+            @if (!['schedule', 'clipart'].includes(contentTypeControl.value)) { Duration } @else if
+            (['clipart'].includes(contentTypeControl.value)) { Preview } @else { Description }
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-item>
+        <tr class="text-sm" [pSelectableRow]="item" [pSelectableRowDisabled]="!isSelectable">
+          <td>
+            @if (isSelectable) {
+            <div class="text-center">
+              @if (selectionMode == 'multiple') {
+              <p-tableCheckbox [value]="item" />
+              } @else {
+              <p-tableRadioButton [value]="item" />
+              }
+            </div>
+            } @else {
+            <div class="text-center">
+              <p-button
+                (onClick)="onSelectionChange(item)"
+                icon="pi pi-plus"
+                severity="success"
+                size="small"
+                pTooltip="Select"
+                tooltipPosition="bottom"
+              />
+            </div>
+            }
+          </td>
+          <td>
+            <div class="flex flex-col">
+              <p class="w-50 line-clamp-1 truncate" [pTooltip]="item.name" tooltipPosition="bottom">
+                {{ item.name }}
+              </p>
+              @if (['asset'].includes(contentTypeControl.value)) {
+              <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
+              }
+            </div>
+          </td>
+          <td>
+            @if (!['schedule', 'clipart'].includes(contentTypeControl.value)) {
+            {{ utils.timeConversion(item.duration) }} } @else if
+            (['clipart'].includes(contentTypeControl.value)) {
+            <img [src]="item.link" [alt]="item.name" class="w-15" /> } @else {
+            {{ item.description }} }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="3" [height]="20">
+            <div class="flex justify-center p-5"><p class="italic">No Data found</p></div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>

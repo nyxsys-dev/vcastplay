@@ -4,8 +4,8 @@ import { PrimengUiModule } from './core/modules/primeng-ui/primeng-ui.module';
 
 @Component({
   selector: 'app-root',
-  imports: [ RouterOutlet, PrimengUiModule ],
+  imports: [RouterOutlet, PrimengUiModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent { }
+export class AppComponent {}

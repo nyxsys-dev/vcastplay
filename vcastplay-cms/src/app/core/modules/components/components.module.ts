@@ -4,40 +4,38 @@ import { ToolbarComponent } from '../../../components/toolbar/toolbar.component'
 import { DrawerComponent } from '../../../components/drawer/drawer.component';
 import { BreadcrumbsComponent } from '../../../components/breadcrumbs/breadcrumbs.component';
 import { FiltersComponent } from '../../../components/filters/filters.component';
-import { PlaylistContainerComponent } from '../../../components/playlist/playlist-container/playlist-container.component';
-import { PlaylistSelectContentsComponent } from '../../../components/playlist/playlist-select-contents/playlist-select-contents.component';
-import { AssetListItemComponent } from '../../../pages/assets/asset-list-item/asset-list-item.component';
-import { PlaylistListItemComponent } from '../../../pages/playlist/playlist-list-item/playlist-list-item.component';
-import { AssetScheduleComponent } from '../../../pages/assets/asset-schedule/asset-schedule.component';
-import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
 import { MapmarkersComponent } from '../../../components/mapmarkers/mapmarkers.component';
-import { UserListItemComponent } from '../../../components/users/user-list-item/user-list-item.component';
-import { UserDetailsComponent } from '../../../components/users/user-details/user-details.component';
-import { RoleListItemComponent } from '../../../components/roles/role-list-item/role-list-item.component';
-import { RoleDetailsComponent } from '../../../components/roles/role-details/role-details.component';
-import { AddToPlaylistComponent } from '../../../components/playlist/add-to-playlist/add-to-playlist.component';
-import { UserApprovalComponent } from '../../../components/users/user-approval/user-approval.component';
-import { SchedulesContentListComponent } from '../../../pages/schedules/schedules-content-list/schedules-content-list.component';
-import { ScheduleListItemComponent } from '../../../pages/schedules/schedule-list-item/schedule-list-item.component';
-import { ScreenScheduleComponent } from '../../../pages/screens/screen-schedule/screen-schedule.component';
-import { AssetFilterComponent } from '../../../pages/assets/asset-filter/asset-filter.component';
-import { ScreenFilterComponent } from '../../../pages/screens/screen-filter/screen-filter.component';
-import { PlaylistFilterComponent } from '../../../pages/playlist/playlist-filter/playlist-filter.component';
-import { ScheduleFilterComponent } from '../../../pages/schedules/schedule-filter/schedule-filter.component';
-import { ScreenControlsComponent } from '../../../pages/screen-management/screen-controls/screen-controls.component';
-import { ScreenManagementListItemComponent } from '../../../pages/screen-management/screen-management-list-item/screen-management-list-item.component';
-import { BroadcastListItemComponent } from '../../../pages/settings/broadcast/broadcast-list-item/broadcast-list-item.component';
-import { BroadcastDetailsComponent } from '../../../pages/settings/broadcast/broadcast-details/broadcast-details.component';
-import { ScreenBroadcastMessageComponent } from '../../../components/screen-broadcast-message/screen-broadcast-message.component';
-import { ScrubberTimelineComponent } from '../../../components/scrubber-timeline/scrubber-timeline.component';
-import { ScreenSettingsComponent } from '../../../pages/screen-management/screen-settings/screen-settings.component';
 import { ContentSelectionComponent } from '../../../components/content-selection/content-selection.component';
-import { ScreenDetailsComponent } from '../../../pages/screen-management/screen-details/screen-details.component';
-import { ScreenSelectionComponent } from '../../../components/screen-selection/screen-selection.component';
-import { DesignLayoutToolsComponent } from '../../../components/design-layout/design-layout-tools/design-layout-tools.component';
-import { DesignLayoutListItemComponent } from '../../../pages/design-layout/design-layout-list-item/design-layout-list-item.component';
-import { ObjectPropertiesComponent } from '../../../components/design-layout/object-properties/object-properties.component';
-
+import { BroadcastListItemComponent } from '../../../features/settings/broadcast/broadcast-list-item/broadcast-list-item.component';
+import { BroadcastDetailsComponent } from '../../../features/settings/broadcast/broadcast-details/broadcast-details.component';
+import { UserListItemComponent } from '../../../features/settings/users/user-list-item/user-list-item.component';
+import { UserDetailsComponent } from '../../../features/settings/users/user-details/user-details.component';
+import { UserApprovalComponent } from '../../../features/settings/users/user-approval/user-approval.component';
+import { RoleListItemComponent } from '../../../features/settings/roles/role-list-item/role-list-item.component';
+import { RoleDetailsComponent } from '../../../features/settings/roles/role-details/role-details.component';
+import { ScreenScheduleComponent } from '../../../features/screens/screen-schedule/screen-schedule.component';
+import { ScreenFilterComponent } from '../../../features/screens/screen-filter/screen-filter.component';
+import { ScreenControlsComponent } from '../../../features/screen-management/screen-controls/screen-controls.component';
+import { ScreenManagementListItemComponent } from '../../../features/screen-management/screen-management-list-item/screen-management-list-item.component';
+import { ScreenBroadcastMessageComponent } from '../../../features/screen-management/screen-broadcast-message/screen-broadcast-message.component';
+import { ScreenSettingsComponent } from '../../../features/screen-management/screen-settings/screen-settings.component';
+import { ScreenSelectionComponent } from '../../../features/design-layout/screen-selection/screen-selection.component';
+import { AddToPlaylistComponent } from '../../../features/playlist/add-to-playlist/add-to-playlist.component';
+import { PlaylistContainerComponent } from '../../../features/playlist/playlist-container/playlist-container.component';
+import { PlaylistSelectContentsComponent } from '../../../features/playlist/playlist-select-contents/playlist-select-contents.component';
+import { PlaylistListItemComponent } from '../../../features/playlist/playlist-list-item/playlist-list-item.component';
+import { PlaylistFilterComponent } from '../../../features/playlist/playlist-filter/playlist-filter.component';
+import { AssetListItemComponent } from '../../../features/assets/asset-list-item/asset-list-item.component';
+import { AssetScheduleComponent } from '../../../features/assets/asset-schedule/asset-schedule.component';
+import { AssetFilterComponent } from '../../../features/assets/asset-filter/asset-filter.component';
+import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
+import { SchedulesContentListComponent } from '../../../features/schedules/schedules-content-list/schedules-content-list.component';
+import { ScheduleListItemComponent } from '../../../features/schedules/schedule-list-item/schedule-list-item.component';
+import { ScheduleFilterComponent } from '../../../features/schedules/schedule-filter/schedule-filter.component';
+import { ScreenDetailsComponent } from '../../../features/screen-management/screen-details/screen-details.component';
+import { DesignLayoutToolsComponent } from '../../../features/design-layout/design-layout-tools/design-layout-tools.component';
+import { ObjectPropertiesComponent } from '../../../features/design-layout/object-properties/object-properties.component';
+import { DesignLayoutListItemComponent } from '../../../features/design-layout/design-layout-list-item/design-layout-list-item.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
@@ -46,7 +44,6 @@ const COMPONENT_MODULES = [
   BreadcrumbsComponent,
   FiltersComponent,
   MapmarkersComponent,
-  ScrubberTimelineComponent,
   ContentSelectionComponent,
 
   // Broadcast Components
@@ -54,7 +51,7 @@ const COMPONENT_MODULES = [
   BroadcastDetailsComponent,
 
   // Users Components
-  UserListItemComponent, 
+  UserListItemComponent,
   UserDetailsComponent,
   UserApprovalComponent,
 
@@ -73,14 +70,14 @@ const COMPONENT_MODULES = [
 
   // Playlist Components
   AddToPlaylistComponent,
-  PlaylistContainerComponent, 
-  PlaylistSelectContentsComponent, 
+  PlaylistContainerComponent,
+  PlaylistSelectContentsComponent,
   PlaylistListItemComponent,
   PlaylistFilterComponent,
 
   // Asset Components
   AssetListItemComponent,
-  AssetScheduleComponent, 
+  AssetScheduleComponent,
   AssetFilterComponent,
 
   // Audience Tag Components
@@ -96,11 +93,11 @@ const COMPONENT_MODULES = [
   DesignLayoutToolsComponent,
   DesignLayoutListItemComponent,
   ObjectPropertiesComponent,
-]
+];
 
 @NgModule({
   declarations: [],
-  imports: [ ...COMPONENT_MODULES ],
-  exports: [ ...COMPONENT_MODULES, ]
+  imports: [...COMPONENT_MODULES],
+  exports: [...COMPONENT_MODULES],
 })
-export class ComponentsModule { }
+export class ComponentsModule {}

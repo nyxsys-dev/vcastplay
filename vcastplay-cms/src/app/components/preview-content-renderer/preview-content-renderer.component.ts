@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, forwardRef, inject, Input } from '@angular/core';
 import { PreviewAssetsComponent } from '../preview-assets/preview-assets.component';
-import { PlaylistService } from '../../core/services/playlist.service';
+import { PlaylistService } from '../../features/playlist/playlist.service';
 import { PreviewDesignLayoutComponent } from '../preview-design-layout/preview-design-layout.component';
 
 @Component({
