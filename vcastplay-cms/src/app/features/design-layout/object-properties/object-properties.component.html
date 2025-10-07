@@ -19,7 +19,7 @@
     size="small"
     text
   >
-    <img src="assets/icons/bold.png" alt="bold" pTooltip="Bold" width="12" />
+    <img [src]="getIconPath('bold')" alt="bold" pTooltip="Bold" width="12" />
   </p-button>
   <p-button
     [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isItalic() }"
@@ -27,7 +27,7 @@
     size="small"
     text
   >
-    <img src="assets/icons/italic.png" alt="italic" pTooltip="Italic" width="12" />
+    <img [src]="getIconPath('italic')" alt="italic" pTooltip="Italic" width="12" />
   </p-button>
   <p-button
     [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isUnderline() }"
@@ -35,7 +35,7 @@
     size="small"
     text
   >
-    <img src="assets/icons/underline.png" alt="underline" pTooltip="Underline" width="12" />
+    <img [src]="getIconPath('underline')" alt="underline" pTooltip="Underline" width="12" />
   </p-button>
   <p-selectbutton
     [options]="alignmentOptions"
@@ -127,7 +127,7 @@
         size="small"
         text
       >
-        <img src="assets/icons/bold.png" alt="bold" pTooltip="Bold" width="12" />
+        <img [src]="getIconPath('bold')" alt="bold" pTooltip="Bold" width="12" />
       </p-button>
       <p-button
         [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isItalic() }"
@@ -135,7 +135,7 @@
         size="small"
         text
       >
-        <img src="assets/icons/italic.png" alt="italic" pTooltip="Italic" width="12" />
+        <img [src]="getIconPath('italic')" alt="italic" pTooltip="Italic" width="12" />
       </p-button>
       <p-button
         [ngClass]="{ 'bg-[var(--p-surface-300)] dark:bg-[var(--p-surface-600)] rounded-lg': isUnderline() }"
@@ -143,7 +143,7 @@
         size="small"
         text
       >
-        <img src="assets/icons/underline.png" alt="underline" pTooltip="Underline" width="12" />
+        <img [src]="getIconPath('underline')" alt="underline" pTooltip="Underline" width="12" />
       </p-button>
       <p-colorpicker
         formControlName="color"

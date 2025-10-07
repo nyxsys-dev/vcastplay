@@ -1,24 +1,24 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { map } from 'rxjs';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { DrawerMenu } from '../interfaces/drawer-menu';
-import { PrimeNG } from 'primeng/config';
-import { FormGroup } from '@angular/forms';
-import moment from 'moment';
-import { HttpClient } from '@angular/common/http';
-import { SelectOption } from '../interfaces/general';
-import _ from 'lodash';
+import { inject, Injectable, signal } from '@angular/core'
+import { map } from 'rxjs'
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { DrawerMenu } from '../interfaces/drawer-menu'
+import { PrimeNG } from 'primeng/config'
+import { FormGroup } from '@angular/forms'
+import moment from 'moment'
+import { HttpClient } from '@angular/common/http'
+import { SelectOption } from '../interfaces/general'
+import _ from 'lodash'
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UtilityService {
 
-  filterValues = signal<any>({});
-  drawerVisible = signal<boolean>(false);
-  isDarkTheme = signal<boolean>(false);
-  tableSkeletonRows = Array(5).fill({});
+  filterValues = signal<any>({})
+  drawerVisible = signal<boolean>(false)
+  isDarkTheme = signal<boolean>(false)
+  tableSkeletonRows = Array(5).fill({})
 
   icons = signal<SelectOption[]>([
     { label: 'Envelope', value: 'pi-envelope' },
@@ -31,7 +31,7 @@ export class UtilityService {
     { label: 'Clock', value: 'pi-clock' },
     { label: 'Bell', value: 'pi-bell' },
     { label: 'Warning', value: 'pi-exclamation-triangle' },
-  ]);
+  ])
 
   fileTypes = signal<SelectOption[]>([
     { label: 'Image', value: 'image' },
@@ -40,14 +40,14 @@ export class UtilityService {
     { label: 'File', value: 'file' },
     { label: 'Web', value: 'web' },
     { label: 'Widget', value: 'widget' },
-  ]);
-  
+  ])
+
   orientations = signal<SelectOption[]>([
     { label: 'Landscape', value: 'landscape' },
     { label: 'Portrait', value: 'portrait' },
     { label: 'Square', value: 'square' },
-  ]);
-  
+  ])
+
   resolutions = signal<SelectOption[]>([
     { label: '1920x1080', value: '1920x1080' },
     { label: '1366x768', value: '1366x768' },
@@ -59,7 +59,7 @@ export class UtilityService {
     { label: '1280x800', value: '1280x800' },
     { label: '1024x768', value: '1024x768' },
     { label: '800x600', value: '800x600' },
-  ]);
+  ])
 
   modules = signal<DrawerMenu[]>([
     { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },
@@ -75,44 +75,44 @@ export class UtilityService {
       icon: 'pi pi-cog',
       expanded: false,
       items: [
-        { label: 'Profile', icon: 'pi pi-user', routerLink: ['/settings/profile'], },
-        { label: 'Users', icon: 'pi pi-users', routerLink: ['/settings/user-management'], },
-        { label: 'Roles', icon: 'pi pi-lock', routerLink: ['/settings/role-management'], },
+        { label: 'Profile', icon: 'pi pi-user', routerLink: ['/settings/profile'] },
+        { label: 'Users', icon: 'pi pi-users', routerLink: ['/settings/user-management'] },
+        { label: 'Roles', icon: 'pi pi-lock', routerLink: ['/settings/role-management'] },
         { separator: true },
-        { label: 'Broadcast', icon: 'pi pi-megaphone', routerLink: ['/settings/broadcast'], },
-        { label: 'Tags', icon: 'pi pi-tag', routerLink: ['/settings/tag'], },
-      ]
-    }
-  ]);
-  
+        { label: 'Broadcast', icon: 'pi pi-megaphone', routerLink: ['/settings/broadcast'] },
+        { label: 'Tags', icon: 'pi pi-tag', routerLink: ['/settings/tag'] },
+      ],
+    },
+  ])
+
   status: any[] = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
     { label: 'Pending', value: 'pending' },
-    { label: 'Suspended', value: 'suspended' }
+    { label: 'Suspended', value: 'suspended' },
   ]
 
-  private breakPointObserver = inject(BreakpointObserver);
+  private breakPointObserver = inject(BreakpointObserver)
   readonly isMobile = toSignal(
-    this.breakPointObserver.observe([ Breakpoints.Handset ]).pipe(
-      map(result => Object.values(result.breakpoints).some(match => match))
-    ),
+    this.breakPointObserver
+      .observe([Breakpoints.Handset])
+      .pipe(map((result) => Object.values(result.breakpoints).some((match) => match))),
     { initialValue: false }
-  );
-  
+  )
+
   readonly isTablet = toSignal(
-    this.breakPointObserver.observe([ Breakpoints.Tablet ]).pipe(
-      map(result => Object.values(result.breakpoints).some(match => match))
-    ),
+    this.breakPointObserver
+      .observe([Breakpoints.Tablet])
+      .pipe(map((result) => Object.values(result.breakpoints).some((match) => match))),
     { initialValue: false }
-  );
+  )
 
   readonly isDesktop = toSignal(
-    this.breakPointObserver.observe([ Breakpoints.Web ]).pipe(
-      map(result => Object.values(result.breakpoints).some(match => match))
-    ),
+    this.breakPointObserver
+      .observe([Breakpoints.Web])
+      .pipe(map((result) => Object.values(result.breakpoints).some((match) => match))),
     { initialValue: false }
-  );
+  )
 
   roles: any[] = [
     { label: 'Administrator', value: 'admin' },
@@ -143,13 +143,13 @@ export class UtilityService {
     { label: 'Mobile', value: 'mobile' },
     { label: 'Desktop', value: 'desktop' },
   ]
-  
-  fontOptions: string[] = [ 
-    'Arial', 
+
+  fontOptions: string[] = [
+    'Arial',
     'Britannic',
     'Calibri',
     'Cooper',
-    'Courier New', 
+    'Courier New',
     'Comic Sans MS',
     'Elephant',
     'Franklin Gothic',
@@ -158,24 +158,30 @@ export class UtilityService {
     'Lucida Calligraphy',
     'Lucida Sans',
     'Segoe Print',
-    'Times New Roman', 
-    'Verdana', 
+    'Times New Roman',
+    'Verdana',
   ]
 
   isEmpty(value: any) {
-    return value === null || value === undefined || value === '' || Object.keys(value).length === 0 || !value;
+    return (
+      value === null ||
+      value === undefined ||
+      value === '' ||
+      Object.keys(value).length === 0 ||
+      !value
+    )
   }
 
   setLightTheme() {
-    const element: any = document.querySelector('html');
-    element.classList.remove('dark');
-    this.isDarkTheme.set(false);
+    const element: any = document.querySelector('html')
+    element.classList.remove('dark')
+    this.isDarkTheme.set(false)
   }
 
   setDarkTheme() {
-    const element: any = document.querySelector('html');
-    element.classList.toggle('dark');
-    this.isDarkTheme.set(true);
+    const element: any = document.querySelector('html')
+    element.classList.toggle('dark')
+    this.isDarkTheme.set(true)
   }
 
   /**
@@ -185,43 +191,45 @@ export class UtilityService {
    * @returns The array of time slots.
    */
   generateTimeCode() {
-    const timeSlots = [];
-    const interval = 15; // minutes
+    const timeSlots = []
+    const interval = 15 // minutes
 
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += interval) {
-        const start = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        let endHour = hour;
-        let endMinute = minute + interval;
+        const start = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+        let endHour = hour
+        let endMinute = minute + interval
 
         if (endMinute >= 60) {
-          endMinute = 0;
-          endHour += 1;
+          endMinute = 0
+          endHour += 1
         }
 
-        const end = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
-        timeSlots.push({ start, end });
+        const end = `${endHour.toString().padStart(2, '0')}:${endMinute
+          .toString()
+          .padStart(2, '0')}`
+        timeSlots.push({ start, end })
       }
     }
 
-    return timeSlots;
+    return timeSlots
   }
 
-/**
- * Generates a random screen code of specified length.
- * The code consists of uppercase alphabets and numbers.
- *
- * @param length - The length of the screen code to generate.
- * @returns A string representing the generated screen code.
- */
+  /**
+   * Generates a random screen code of specified length.
+   * The code consists of uppercase alphabets and numbers.
+   *
+   * @param length - The length of the screen code to generate.
+   * @returns A string representing the generated screen code.
+   */
   genereteScreenCode(length: number): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    let code = ''
     for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      code += characters.charAt(randomIndex);
+      const randomIndex = Math.floor(Math.random() * characters.length)
+      code += characters.charAt(randomIndex)
     }
-    return code;
+    return code
   }
 
   /**
@@ -230,48 +238,61 @@ export class UtilityService {
    * @returns An array of strings representing the generated time options.
    */
   generateTimeOptions(): string[] {
-    const times = [];
+    const times = []
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
-        const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        times.push(time);
+        const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+        times.push(time)
       }
     }
-    return times;
+    return times
   }
 
-  constructor(private config: PrimeNG, private http: HttpClient) { }
+  constructor(private config: PrimeNG, private http: HttpClient) {}
 
   formatDate(date: any, format: string, timeZone: string = 'Asia/Manila') {
-    return moment(date).tz(timeZone);
+    return moment(date).tz(timeZone)
   }
 
   formatSize(bytes: number) {
-    const k = 1024;
-    const dm = 3;
-    const sizes: any = this.config.translation.fileSizeTypes;    
+    const k = 1024
+    const dm = 3
+    const sizes: any = this.config.translation.fileSizeTypes
     if (bytes == 0) {
-      return `0 ${sizes[0]}`;
+      return `0 ${sizes[0]}`
     }
 
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    const formattedSize = !isNaN(parseFloat((bytes / Math.pow(k, i)).toFixed(dm))) ? parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) : 0;
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    const formattedSize = !isNaN(parseFloat((bytes / Math.pow(k, i)).toFixed(dm)))
+      ? parseFloat((bytes / Math.pow(k, i)).toFixed(dm))
+      : 0
 
-    return `${formattedSize} ${sizes[i]}`;
+    return `${formattedSize} ${sizes[i]}`
   }
 
   timeConversion(ms: number, isReadable: boolean = false): string {
-    const totalSeconds = Math.floor(ms);
-    const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-    const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-    const secs = (totalSeconds % 60).toString().padStart(2, '0');
+    const totalSeconds = Math.floor(ms)
+    const hrs = Math.floor(totalSeconds / 3600)
+      .toString()
+      .padStart(2, '0')
+    const mins = Math.floor((totalSeconds % 3600) / 60)
+      .toString()
+      .padStart(2, '0')
+    const secs = (totalSeconds % 60).toString().padStart(2, '0')
 
-    if (!isReadable) return `${hrs}:${mins}:${secs}`;
-    else return [ hrs ? `${hrs}h` : '', mins ? `${mins}m` : '', secs || (!hrs && !mins) ? `${secs}s` : '' ].filter(Boolean).join(' ');
+    if (!isReadable) return `${hrs}:${mins}:${secs}`
+    else
+      return [
+        hrs ? `${hrs}h` : '',
+        mins ? `${mins}m` : '',
+        secs || (!hrs && !mins) ? `${secs}s` : '',
+      ]
+        .filter(Boolean)
+        .join(' ')
   }
 
   getFormControl(formGroup: FormGroup, fieldName: string) {
-    return formGroup.controls[fieldName];
+    return formGroup.controls[fieldName]
   }
 
   getStatus(status: string) {
@@ -279,36 +300,36 @@ export class UtilityService {
       case 'approved':
       case 'active':
       case 'online':
-      case 'playing' :
+      case 'playing':
       case 'connected':
       case 'on':
-        return 'success';
+        return 'success'
       case 'inactive':
       case 'standby':
-        return 'warn';
+        return 'warn'
       case 'disapproved':
       case 'suspended':
       case 'offline':
       case 'disconnected':
       case 'off':
-        return 'danger';
+        return 'danger'
       default:
-        return 'secondary';
+        return 'secondary'
     }
   }
 
   getIcon(status: string) {
     switch (status.toLowerCase()) {
-      case 'playing' :
-        return 'pi-play-circle';
+      case 'playing':
+        return 'pi-play-circle'
       case 'active':
       case 'online':
       case 'connected':
       case 'on':
-        return 'pi-check-circle';
+        return 'pi-check-circle'
       case 'inactive':
       case 'standby':
-        return 'pi-pause-circle';
+        return 'pi-pause-circle'
       case 'disapproved':
         return 'pi-thumbs-down-fill'
       case 'approved':
@@ -317,70 +338,77 @@ export class UtilityService {
       case 'offline':
       case 'disconnected':
       case 'off':
-        return 'pi-times-circle';
+        return 'pi-times-circle'
       default:
-        return 'pi-question-circle';
+        return 'pi-question-circle'
     }
   }
 
   toTitleCase(value: string) {
-    return _.startCase(value);
+    return _.startCase(value)
   }
 
   onFilterItems(data: any[], filters: any) {
-    const activeKeys = Object.keys(filters).filter(key => filters[key]?.length);
+    const activeKeys = Object.keys(filters).filter((key) => filters[key]?.length)
 
-    return data.filter(item => {
-      const tag = item.audienceTag;
+    return data.filter((item) => {
+      const tag = item.audienceTag
 
-      return activeKeys.some(key => {
-        const filterValues = filters[key];
-        const value = tag[key];
+      return activeKeys.some((key) => {
+        const filterValues = filters[key]
+        const value = tag[key]
 
         if (Array.isArray(value)) {
-          return value.some((v: any) => filterValues.includes(v));
+          return value.some((v: any) => filterValues.includes(v))
         }
 
-        return filterValues.includes(value);
-      });
-    });
+        return filterValues.includes(value)
+      })
+    })
   }
   onGetLastUpdatedLabel(dateInput: Date | string): string {
-    const date = moment(dateInput);
-    const now = moment();
+    const date = moment(dateInput)
+    const now = moment()
 
-    if (!dateInput || !moment(dateInput).isValid()) return '-';
+    if (!dateInput || !moment(dateInput).isValid()) return '-'
 
-    const diffSeconds = now.diff(date, 'seconds');
-    const diffMinutes = now.diff(date, 'minutes');
-    const diffHours = now.diff(date, 'hours');
-    const diffDays = now.diff(date, 'days');
-    const diffWeeks = now.diff(date, 'weeks');
+    const diffSeconds = now.diff(date, 'seconds')
+    const diffMinutes = now.diff(date, 'minutes')
+    const diffHours = now.diff(date, 'hours')
+    const diffDays = now.diff(date, 'days')
+    const diffWeeks = now.diff(date, 'weeks')
 
-    if (diffSeconds < 60) return 'Just now';
-    if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    if (diffWeeks < 4) return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
+    if (diffSeconds < 60) return 'Just now'
+    if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+    if (diffWeeks < 4) return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`
 
-    return date.format('MMM D, YYYY');
+    return date.format('MMM D, YYYY')
   }
-
 
   // Public API
   getWeatherData(lat: number, lng: number) {
-    return this.http.get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`);
+    return this.http.get(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m`
+    )
   }
-  
+
   getGeolocation(lat: number, lng: number) {
-    return this.http.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`)
+    return this.http.get(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+    )
   }
 
   getReverseGeolocation(lat: number, lng: number) {
-    return this.http.get(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=18`);
+    return this.http.get(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=18`
+    )
   }
 
   getAddressCoordinates(search: string) {
-    return this.http.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(search)}`);
+    return this.http.get(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(search)}`
+    )
   }
 }

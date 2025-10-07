@@ -1,27 +1,27 @@
 <div class="flex flex-col items-center justify-center">
     <p-button (onClick)="onClickMove()" text>
-        <img src="assets/icons/cursor.png" alt="move" pTooltip="Move" width="20">
+        <img [src]="getIconPath('cursor')" alt="move" pTooltip="Move" width="20">
     </p-button>
     <p-button (onClick)="onClickSelection()" text>
-        <img src="assets/icons/selection.png" alt="selection" pTooltip="Selection" width="20">
+        <img [src]="getIconPath('selection')" alt="selection" pTooltip="Selection" width="20">
     </p-button>
     <p-button (onClick)="text.toggle($event)" text>
-        <img src="assets/icons/text.png" alt="text" pTooltip="Text" width="20">
+        <img [src]="getIconPath('text')" alt="text" pTooltip="Text" width="20">
     </p-button>
     <p-button (onClick)="shapes.toggle($event)" text>
-        <img src="assets/icons/shapes.png" alt="shapes" pTooltip="Shapes" width="20">
+        <img [src]="getIconPath('shapes')" alt="shapes" pTooltip="Shapes" width="20">
     </p-button>
     <p-button (onClick)="onClickAddContents()" text>
-        <img src="assets/icons/images.png" alt="images" pTooltip="Contents" width="20">
+        <img [src]="getIconPath('images')" alt="images" pTooltip="Contents" width="20">
     </p-button>
     <p-button (onClick)="onClickAddLine()" text>
-        <img src="assets/icons/line.png" alt="line" pTooltip="Line" width="20">
+        <img [src]="getIconPath('line')" alt="line" pTooltip="Line" width="20">
     </p-button>
     <p-button (onClick)="onClickPan()" text>
-        <img src="assets/icons/hand.png" alt="hand" pTooltip="Hand" width="20">
+        <img [src]="getIconPath('hand')" alt="hand" pTooltip="Hand" width="20">
     </p-button>
     <p-button (onClick)="onClickZoom()" text>
-        <img src="assets/icons/zoom.png" alt="zoom" pTooltip="Zoom" width="20">
+        <img [src]="getIconPath('zoom')" alt="zoom" pTooltip="Zoom" width="20">
     </p-button>
     <p-divider />
     <p-colorpicker [(ngModel)]="selectedColor" class="border-2 border-[var(--p-surface-300)] rounded-lg"
@@ -32,7 +32,7 @@
     <ng-template #item let-item>
         <a pRipple class="flex items-center p-menu-item-link">
             <p>{{ item.label }}</p>
-            <img class="ml-auto" [src]="item.image" [alt]="item.label" [pTooltip]="item.label" width="20">
+            <img class="ml-auto" [src]="this.getIconPath(item.label.toLowerCase())" [alt]="item.label" [pTooltip]="item.label" width="20">
         </a>
     </ng-template>
 </p-menu>

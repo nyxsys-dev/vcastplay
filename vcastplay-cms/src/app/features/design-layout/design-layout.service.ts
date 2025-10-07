@@ -25,6 +25,7 @@ export class DesignLayoutService {
   private redoStack: any[] = []
   private isRestoringState = signal<boolean>(false)
   private snap = 5 // snap threshold in px
+  private backgroundColor: string = '#ffffff';
 
   private designSignal = signal<DesignLayout[]>([])
   designs = computed(() => this.designSignal())
@@ -571,6 +572,7 @@ export class DesignLayoutService {
     canvas.requestRenderAll()
     this.onSetCanvasProps('remove', false, 'default')
     this.saveState()
+    this.objectPropsForm.reset()
   }
 
   onUndoLayer() {
@@ -645,9 +647,11 @@ export class DesignLayoutService {
     color: string = '#000000'
   ) {
     this.onSetCanvasProps('text', true, 'default')
-    const tempText = new fabric.FabricText(content, { fontFamily: 'Arial', color })
 
     canvas.discardActiveObject()
+    this.objectPropsForm.reset()
+
+    const tempText = new fabric.FabricText(content, { fontFamily: 'Arial', color, fontSize: 40 })
     const { width, height } = this.canvasDimensions(canvas)
     const left = Math.random() * (width - tempText.width)
     const top = Math.random() * (height - tempText.height)
@@ -667,17 +671,16 @@ export class DesignLayoutService {
     canvas.add(text)
     canvas.setActiveObject(text)
     canvas.requestRenderAll()
+
     this.onDisableLayersProps(canvas, true)
     this.showContents.set(false)
     this.saveState()
   }
 
-  onAddTextMarquee(canvas: fabric.Canvas, value: string, background: string = '#0e0e0e') {
+  onAddTextMarquee(canvas: fabric.Canvas, value: string, fill: string) {
     const { htmlLayers }: any = this.designForm.value
     this.onSetCanvasProps('marquee', true, 'default')
     canvas.discardActiveObject()
-
-    this.objectPropsForm.reset()
 
     const tempText = new fabric.FabricText(value, { fill: 'white', fontSize: 24 })
 
@@ -694,7 +697,7 @@ export class DesignLayoutService {
       top,
       width: width / this.DEFAULT_SCALE(),
       height: textHeight,
-      fill: background,
+      fill,
       hasControls: true,
       selectable: true,
       lockRotation: true,
@@ -702,7 +705,6 @@ export class DesignLayoutService {
 
     rect.setControlsVisibility(this.TEXTMARQUEECONTROL_STYLE)
 
-    canvas.add(rect)
     const htmlLayer: any = this.createHtmlLayerFromObject(
       rect,
       uuidv7(),
@@ -721,9 +723,14 @@ export class DesignLayoutService {
     Object.assign(htmlLayer, { style: this.objectPropsForm.value })
     rect.set('html', htmlLayer)
 
-    this.syncDivsWithFabric(canvas)
+    canvas.add(rect)
     canvas.setActiveObject(rect)
     canvas.requestRenderAll()
+
+    this.syncDivsWithFabric(canvas)
+    this.onDisableLayersProps(canvas, true)
+    this.showContents.set(false)
+    this.saveState()
   }
 
   onAddShapeToCanvas(canvas: fabric.Canvas, type: string, fill: string = '#808080') {
@@ -857,7 +864,6 @@ export class DesignLayoutService {
 
     // ⚡ Wait until first frame is ready
     video.addEventListener('loadeddata', () => {
-      canvas.setActiveObject(videoObj)
       canvas.requestRenderAll() // show first frame
     })
 
@@ -974,25 +980,26 @@ export class DesignLayoutService {
     }
   }
 
-  onLayerArrangement(position: string) {
-    const object: any = this.canvas.getActiveObject()
+  onMoveObjectToPosition(position: 'forward' | 'backward' | 'front' | 'back') {
+    const activeObject: any = this.canvas.getActiveObject()
+
     switch (position) {
       case 'forward':
-        this.canvas.bringObjectForward(object, true)
+        this.canvas.bringObjectForward(activeObject, true)
         break
       case 'backward':
-        this.canvas.sendObjectBackwards(object, true)
+        this.canvas.sendObjectBackwards(activeObject, true)
         break
       case 'front':
-        this.canvas.bringObjectToFront(object)
+        this.canvas.bringObjectToFront(activeObject)
         break
       default:
-        this.canvas.sendObjectToBack(object)
+        this.canvas.sendObjectToBack(activeObject)
         break
     }
 
     this.canvas.discardActiveObject()
-    this.canvas.setActiveObject(object)
+    this.canvas.setActiveObject(activeObject)
     this.canvas.requestRenderAll()
   }
 
@@ -1071,62 +1078,62 @@ export class DesignLayoutService {
 
   onLayerSpacing(axis: 'horizontal' | 'vertical') {
     const canvas = this.getCanvas()
-    const selected = canvas.getActiveObjects()
-    if (selected.length < 3) return // need at least 3
+    const selectedObjects = canvas.getActiveObjects()
+    if (selectedObjects.length < 3) return // need at least 3 objects
 
-    // 1) Capture bounds once (absolute AABB, includes rotation/scale)
-    const items = selected.map((obj) => ({ obj, b: obj.getBoundingRect() }))
+    // Capture bounds once
+    const itemsWithBounds = selectedObjects.map((obj) => ({ obj, bounds: obj.getBoundingRect() }))
 
-    // 2) Sort by axis
-    const sorted = items.sort((a, b) =>
-      axis === 'horizontal' ? a.b.left - b.b.left : a.b.top - b.b.top
+    // Sort by axis
+    const sortedItems = itemsWithBounds.sort((a, b) =>
+      axis === 'horizontal' ? a.bounds.left - b.bounds.left : a.bounds.top - b.bounds.top
     )
 
-    const first = sorted[0]
-    const last = sorted[sorted.length - 1]
+    const firstItem = sortedItems[0]
+    const lastItem = sortedItems[sortedItems.length - 1]
 
-    // 3) Compute available segment between extremes (first's far edge to last's near edge)
+    // Compute available segment between extremes
     const start =
-      axis === 'horizontal' ? first.b.left + first.b.width : first.b.top + first.b.height
-    const end = axis === 'horizontal' ? last.b.left : last.b.top
+      axis === 'horizontal'
+        ? firstItem.bounds.left + firstItem.bounds.width
+        : firstItem.bounds.top + firstItem.bounds.height
+    const end = axis === 'horizontal' ? lastItem.bounds.left : lastItem.bounds.top
 
-    const numGaps = sorted.length - 1
+    const numGaps = sortedItems.length - 1
 
-    // 4) Sum widths/heights of all *middle* items (indices 1..n-2)
-    const sumMiddleSizes = sorted
+    // Sum widths/heights of all middle items
+    const sumMiddleSizes = sortedItems
       .slice(1, -1)
-      .reduce((acc, it) => acc + (axis === 'horizontal' ? it.b.width : it.b.height), 0)
+      .reduce((acc, it) => acc + (axis === 'horizontal' ? it.bounds.width : it.bounds.height), 0)
 
-    // 5) Gap size formula:
-    // (end - start) = sumMiddleSizes + numGaps * gap
+    // Gap size formula
     const available = end - start
     const gap = (available - sumMiddleSizes) / numGaps // can be negative if things overlap
 
-    // 6) Walk from left/top to right/bottom, placing each middle item
-    let cursor = start // this is the right/bottom edge of the "previous" piece initially
+    // Walk from left/top to right/bottom, placing each middle item
+    let cursor = start
+    for (let i = 1; i < sortedItems.length - 1; i++) {
+      const item = sortedItems[i]
+      const bounds = item.bounds
 
-    for (let i = 1; i < sorted.length - 1; i++) {
-      const it = sorted[i]
-      const b = it.b
-
-      // target left/top = cursor + gap
+      // Target left/top = cursor + gap
       const targetPos = cursor + gap
 
       if (axis === 'horizontal') {
-        // move by delta between current bounds.left and target left
-        it.obj.left += targetPos - b.left
-        it.obj.setCoords()
-        cursor = targetPos + b.width // update cursor to this item's right edge
+        // Move by delta between current bounds.left and target left
+        item.obj.left += targetPos - bounds.left
+        item.obj.setCoords()
+        cursor = targetPos + bounds.width // Update cursor to this item's right edge
       } else {
-        it.obj.top += targetPos - b.top
-        it.obj.setCoords()
-        cursor = targetPos + b.height // update cursor to this item's bottom edge
+        item.obj.top += targetPos - bounds.top
+        item.obj.setCoords()
+        cursor = targetPos + bounds.height // Update cursor to this item's bottom edge
       }
     }
 
-    // 7) Reselect so selection box fits new positions
+    // Reselect so selection box fits new positions
     canvas.discardActiveObject()
-    canvas.setActiveObject(new fabric.ActiveSelection(selected, { canvas }))
+    canvas.setActiveObject(new fabric.ActiveSelection(selectedObjects, { canvas }))
     canvas.requestRenderAll()
   }
 
@@ -1181,7 +1188,8 @@ export class DesignLayoutService {
     const { size, weight, italic, underline, alignment, color, font } = value
 
     const activeObj: any = canvas.getActiveObject()
-    if (!activeObj) return
+    // Prevent non-text objects
+    if (!activeObj || !['textbox'].includes(activeObj.type)) return
 
     activeObj.set({
       fontSize: size,
@@ -1191,16 +1199,17 @@ export class DesignLayoutService {
       underline: underline,
       textAlign: alignment,
       fill: color,
-      textBoxProp: value,
     })
 
+    activeObj.set('textBoxProp', value)
     canvas.requestRenderAll()
   }
 
   onUpdateRectProperty(canvas: fabric.Canvas, value: any) {
     const { fill, transparent, style, strokeWidth } = value
     const activeObj = canvas.getActiveObject()
-    if (!activeObj) return
+    // Prevent non-rect objects
+    if (!activeObj || !['rect', 'circle', 'triangle', 'ellipse'].includes(activeObj.type)) return
 
     activeObj.set('strokeDashArray', undefined)
     switch (style) {
@@ -1221,13 +1230,14 @@ export class DesignLayoutService {
         break
     }
     activeObj.set('rectProp', value)
-    canvas.requestRenderAll()
+    canvas.renderAll()
   }
 
   onUpdateLineProperty(canvas: fabric.Canvas, value: any) {
     const { fill, strokeWidth } = value
     const activeObj = canvas.getActiveObject()
-    if (!activeObj) return
+    // Prevent non-line objects
+    if (!activeObj || !['line'].includes(activeObj.type)) return
     activeObj.set({ stroke: fill, strokeWidth })
     activeObj.set('lineProp', value)
     canvas.requestRenderAll()
@@ -1239,6 +1249,7 @@ export class DesignLayoutService {
     const activeObj = canvas.getActiveObject()
     if (!activeObj) return
 
+    // Prevent non-rect and non-html objects
     const html = activeObj.get('html')
     if (html) {
       Object.assign(html, { style: value })
@@ -1272,9 +1283,9 @@ export class DesignLayoutService {
     canvas.requestRenderAll()
   }
 
-  onShowGridLines(canvas: fabric.Canvas, value: boolean) {
+  onShowGridLines(canvas: fabric.Canvas, value: boolean) {    
     if (!value) {
-      canvas.set('backgroundColor', '#ffffff')
+      canvas.set('backgroundColor', this.backgroundColor)
     } else {
       this.drawGrid(canvas)
     }
@@ -1583,7 +1594,7 @@ export class DesignLayoutService {
           if (selected.type === 'image') {
             this.onSetCanvasProps('image', true, 'default')
           } else if (selected.type === 'textbox') {
-            this.objectPropsForm.patchValue(selected.textBoxProp)
+            this.objectPropsForm.patchValue(selected.textBoxProp, { emitEvent: false })
             this.onSetCanvasProps('text', true, 'default')
           } else if (
             ['rect', 'circle', 'triangle', 'ellipse'].includes(selected.type) &&
@@ -1613,17 +1624,30 @@ export class DesignLayoutService {
       if (selected) {
         this.showContents.set(selected.html ? true : false)
         selected.set(this.SELECTION_STYLE())
+              
+        selected.dirty = true;
+        selected.setCoords();
+        canvas.requestRenderAll();
+
         if (selected.type === 'image') {
           this.onSetCanvasProps('image', true, 'default')
         } else if (selected.type === 'textbox') {
-          this.objectPropsForm.patchValue(selected.textBoxProp)
-          this.onSetCanvasProps('text', true, 'default')
+          setTimeout(() => {
+            const textBoxProp = selected.get('textBoxProp')
+            this.objectPropsForm.patchValue(textBoxProp)
+            this.onSetCanvasProps('text', true, 'default')
+          }, 50)
         } else if (
           ['rect', 'circle', 'triangle', 'ellipse'].includes(selected.type) &&
           !selected.html
         ) {
-          this.objectPropsForm.patchValue(selected.rectProp)
-          this.onSetCanvasProps('rect', true, 'default')
+          setTimeout(() => {
+            const rectProp = selected.get('rectProp')
+            console.log(rectProp);
+            
+            this.objectPropsForm.patchValue(rectProp)
+            this.onSetCanvasProps('rect', true, 'default')
+          }, 50)
         } else if (selected.type == 'line') {
           this.objectPropsForm.patchValue(selected.lineProp)
           this.onSetCanvasProps('line', true, 'default')
@@ -1642,7 +1666,7 @@ export class DesignLayoutService {
 
     canvas.on('selection:cleared', () => {
       this.objectPropsForm.reset()
-      // this.onSetCanvasProps('cleared', true, 'default');
+      this.onSetCanvasProps('cleared', true, 'default')
     })
 
     canvas.on('object:added', (e) => {
@@ -1751,82 +1775,81 @@ export class DesignLayoutService {
     oType: string,
     canvas: fabric.Canvas
   ) {
-    const snapDist = this.snap ?? 5;
-    const tolerance = Math.abs(mVal - oVal);
+    const snapDist = this.snap ?? 5
+    const tolerance = Math.abs(mVal - oVal)
 
-    if (tolerance >= snapDist) return;
+    if (tolerance >= snapDist) return
 
     // Draw guide
-    const isVertical = mType === 'left' || mType === 'centerX' || mType === 'right';
-    const isHorizontal = mType === 'top' || mType === 'centerY' || mType === 'bottom';
-    if (isVertical) this.drawGuidelines(canvas, oVal, 'vertical');
-    if (isHorizontal) this.drawGuidelines(canvas, oVal, 'horizontal');
+    const isVertical = mType === 'left' || mType === 'centerX' || mType === 'right'
+    const isHorizontal = mType === 'top' || mType === 'centerY' || mType === 'bottom'
+    if (isVertical) this.drawGuidelines(canvas, oVal, 'vertical')
+    if (isHorizontal) this.drawGuidelines(canvas, oVal, 'horizontal')
 
-    const width = obj.width ?? 0;
-    const height = obj.height ?? 0;
-    const scaleX = obj.scaleX ?? 1;
-    const scaleY = obj.scaleY ?? 1;
+    const width = obj.width ?? 0
+    const height = obj.height ?? 0
+    const scaleX = obj.scaleX ?? 1
+    const scaleY = obj.scaleY ?? 1
 
     if (obj.__corner) {
       // --- Resizing case ---
       if (isVertical) {
-        const currentLeft = obj.left ?? 0;
-        const rightEdge = currentLeft + width * scaleX;
+        const currentLeft = obj.left ?? 0
+        const rightEdge = currentLeft + width * scaleX
 
         if (mType === 'right') {
-          const newWidth = oVal - currentLeft;
+          const newWidth = oVal - currentLeft
           obj.set({
             scaleX: Math.max(newWidth / width, 0.01),
-          });
+          })
         }
 
         if (mType === 'left') {
-          const newWidth = rightEdge - oVal;
+          const newWidth = rightEdge - oVal
           obj.set({
             left: oVal,
             scaleX: Math.max(newWidth / width, 0.01),
-          });
+          })
         }
       }
 
       if (isHorizontal) {
-        const currentTop = obj.top ?? 0;
-        const bottomEdge = currentTop + height * scaleY;
+        const currentTop = obj.top ?? 0
+        const bottomEdge = currentTop + height * scaleY
 
         if (mType === 'bottom') {
-          const newHeight = oVal - currentTop;
+          const newHeight = oVal - currentTop
           obj.set({
             scaleY: Math.max(newHeight / height, 0.01),
-          });
+          })
         }
 
         if (mType === 'top') {
-          const newHeight = bottomEdge - oVal;
+          const newHeight = bottomEdge - oVal
           obj.set({
             top: oVal,
             scaleY: Math.max(newHeight / height, 0.01),
-          });
+          })
         }
       }
     } else {
       // --- Moving case ---
       if (isVertical) {
-        if (mType === 'left') obj.set({ left: oVal });
-        if (mType === 'centerX') obj.set({ left: oVal - (width * scaleX) / 2 });
-        if (mType === 'right') obj.set({ left: oVal - width * scaleX });
+        if (mType === 'left') obj.set({ left: oVal })
+        if (mType === 'centerX') obj.set({ left: oVal - (width * scaleX) / 2 })
+        if (mType === 'right') obj.set({ left: oVal - width * scaleX })
       }
 
       if (isHorizontal) {
-        if (mType === 'top') obj.set({ top: oVal });
-        if (mType === 'centerY') obj.set({ top: oVal - (height * scaleY) / 2 });
-        if (mType === 'bottom') obj.set({ top: oVal - height * scaleY });
+        if (mType === 'top') obj.set({ top: oVal })
+        if (mType === 'centerY') obj.set({ top: oVal - (height * scaleY) / 2 })
+        if (mType === 'bottom') obj.set({ top: oVal - height * scaleY })
       }
     }
 
-    obj.setCoords();
-    canvas.requestRenderAll();
+    obj.setCoords()
+    canvas.requestRenderAll()
   }
-
 
   private drawGuidelines(canvas: fabric.Canvas, value: number, position: string): void {
     const { width, height } = this.DEFAULT_RESOLUTION
@@ -1853,6 +1876,8 @@ export class DesignLayoutService {
   }
 
   private drawGrid(canvas: fabric.Canvas, gridSize: number = 54) {
+    this.backgroundColor = canvas.get('backgroundColor')
+    
     const gridCanvas = document.createElement('canvas')
     gridCanvas.width = gridSize
     gridCanvas.height = gridSize
@@ -1861,7 +1886,7 @@ export class DesignLayoutService {
     if (!ctx) return
 
     // Background color (white)
-    ctx.fillStyle = '#fff'
+    ctx.fillStyle = this.backgroundColor;
     ctx.fillRect(0, 0, gridSize, gridSize)
 
     // Grid line (light gray)
@@ -1886,7 +1911,7 @@ export class DesignLayoutService {
       repeat: 'repeat',
     })
 
-    canvas.set('backgroundColor', pattern)
+    canvas.set('backgroundColor', pattern)    
     canvas.requestRenderAll()
   }
 }

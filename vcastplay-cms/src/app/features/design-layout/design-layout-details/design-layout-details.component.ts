@@ -438,7 +438,7 @@ export class DesignLayoutDetailsComponent {
         break
     }
     // this.onResetCanvasPosition();
-    this.designLayoutService.onLayerArrangement('front')
+    this.designLayoutService.onMoveObjectToPosition('front')
   }
 
   onClickAddShape(type: string) {
@@ -464,9 +464,9 @@ export class DesignLayoutDetailsComponent {
     this.designLayoutService.onZoomCanvas(canvas, this.canvasContainer.nativeElement, 1, true)
   }
 
-  onClickLayerArrangement(position: string) {
+  onClickLayerArrangement(position: 'forward' | 'backward' | 'front' | 'back') {
     // this.onResetCanvasPosition();
-    this.designLayoutService.onLayerArrangement(position)
+    this.designLayoutService.onMoveObjectToPosition(position)
   }
 
   onClickLayerAlignment(position: 'left' | 'center' | 'right' | 'top' | 'middle' | 'bottom') {

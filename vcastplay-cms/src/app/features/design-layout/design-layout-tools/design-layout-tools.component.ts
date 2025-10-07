@@ -1,25 +1,44 @@
-import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
-import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
-import { DesignLayoutService } from '../design-layout.service';
-import { MenuItem } from 'primeng/api';
+import { Component, EventEmitter, inject, Input, Output, signal, ViewChild } from '@angular/core'
+import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module'
+import { DesignLayoutService } from '../design-layout.service'
+import { MenuItem } from 'primeng/api'
+import { UtilityService } from '../../../core/services/utility.service'
+import { environment } from '../../../../environments/environment.development'
 
 @Component({
   selector: 'app-design-layout-tools',
-  imports: [ PrimengUiModule ],
+  imports: [PrimengUiModule],
   templateUrl: './design-layout-tools.component.html',
-  styleUrl: './design-layout-tools.component.scss'
+  styleUrl: './design-layout-tools.component.scss',
 })
 export class DesignLayoutToolsComponent {
+  @ViewChild('textMenu') textMenu: any
+  @ViewChild('shapeMenu') shapeMenu: any
 
-  @Output() resetDragPosition = new EventEmitter<void>();
+  @Output() resetDragPosition = new EventEmitter<void>()
 
-  designLayoutService = inject(DesignLayoutService);
+  iconPath: string = environment.iconPath;
+
+  designLayoutService = inject(DesignLayoutService)
+  utils = inject(UtilityService)
 
   shapeItems: MenuItem[] = [
-    { label: 'Circle', command: () => this.onClickAddShape('circle'), image: 'assets/icons/circle.png' },
-    { label: 'Rectangle', command: () => this.onClickAddShape('rectangle'), image: 'assets/icons/rectangle.png' },
-    { label: 'Triangle', command: () => this.onClickAddShape('triangle'), image: 'assets/icons/triangle.png' },
-    { label: 'Ellipse', command: () => this.onClickAddShape('ellipse'), image: 'assets/icons/ellipse.png' },
+    {
+      label: 'Circle',
+      command: () => this.onClickAddShape('circle'),
+    },
+    {
+      label: 'Rectangle',
+      command: () => this.onClickAddShape('rectangle'),
+    },
+    {
+      label: 'Triangle',
+      command: () => this.onClickAddShape('triangle'),
+    },
+    {
+      label: 'Ellipse',
+      command: () => this.onClickAddShape('ellipse'),
+    },
   ]
 
   textItems: MenuItem[] = [
@@ -27,53 +46,57 @@ export class DesignLayoutToolsComponent {
     { label: 'Marquee', command: () => this.onClickTextMarquee() },
   ]
 
+  getIconPath(name: string): string {
+    return `${this.iconPath}${this.isDarkTheme ? `${name}-white.png` : `${name}.png`}`
+  }
+
   onClickSelection() {
-    const canvas = this.designLayoutService.getCanvas();
-    this.resetDragPosition.emit();
-    this.designLayoutService.onSelection(canvas);
+    const canvas = this.designLayoutService.getCanvas()
+    this.resetDragPosition.emit()
+    this.designLayoutService.onSelection(canvas)
   }
 
   onClickAddText() {
-    const canvas = this.designLayoutService.getCanvas();
-    this.resetDragPosition.emit();
-    this.designLayoutService.onAddTextToCanvas(canvas, 'Enter text here', this.selectedColor());
+    const canvas = this.designLayoutService.getCanvas()
+    this.resetDragPosition.emit()
+    this.designLayoutService.onAddTextToCanvas(canvas, 'Enter text here', this.selectedColor())
   }
 
   onClickAddShape(type: string) {
-    const canvas = this.designLayoutService.getCanvas();
-    this.resetDragPosition.emit();
-    this.designLayoutService.onAddShapeToCanvas(canvas, type, this.selectedColor());
+    const canvas = this.designLayoutService.getCanvas()
+    this.resetDragPosition.emit()
+    this.designLayoutService.onAddShapeToCanvas(canvas, type, this.selectedColor())
   }
-  
+
   onClickAddContents() {
-    this.resetDragPosition.emit();
-    this.showContents.set(!this.showContents());
-    this.designLayoutService.onSetCanvasProps('content', false, 'default');
+    this.resetDragPosition.emit()
+    this.showContents.set(!this.showContents())
+    this.designLayoutService.onSetCanvasProps('content', false, 'default')
   }
 
   onClickAddLine() {
-    const canvas = this.designLayoutService.getCanvas();
-    this.resetDragPosition.emit();
-    this.designLayoutService.onAddLineToCanvas(canvas, this.selectedColor());
+    const canvas = this.designLayoutService.getCanvas()
+    this.resetDragPosition.emit()
+    this.designLayoutService.onAddLineToCanvas(canvas, this.selectedColor())
   }
 
   onClickPan() {
-    const canvas = this.designLayoutService.getCanvas();
-    this.designLayoutService.onPan(canvas);
+    const canvas = this.designLayoutService.getCanvas()
+    this.designLayoutService.onPan(canvas)
   }
 
   onClickMove() {
-    this.resetDragPosition.emit();
-    const canvas = this.designLayoutService.getCanvas();
-    this.designLayoutService.onMove(canvas);
+    this.resetDragPosition.emit()
+    const canvas = this.designLayoutService.getCanvas()
+    this.designLayoutService.onMove(canvas)
   }
 
   onClickZoom() {
-    this.resetDragPosition.emit();
-    const canvas = this.designLayoutService.getCanvas();
-    this.zoomControl.patchValue(canvas.getZoom());
-    canvas.discardActiveObject();
-    this.designLayoutService.onSetCanvasProps('zoom', true, 'default');
+    this.resetDragPosition.emit()
+    const canvas = this.designLayoutService.getCanvas()
+    this.zoomControl.patchValue(canvas.getZoom())
+    canvas.discardActiveObject()
+    this.designLayoutService.onSetCanvasProps('zoom', true, 'default')
   }
 
   onClickTextMarquee() {
@@ -81,17 +104,31 @@ export class DesignLayoutToolsComponent {
   }
 
   onUnSelectAllLayers() {
-    const canvas = this.designLayoutService.getCanvas();
-    this.designLayoutService.onUnSelectAllLayers(canvas);
+    const canvas = this.designLayoutService.getCanvas()
+    this.designLayoutService.onUnSelectAllLayers(canvas)
   }
-  
+
   onChangeColor(event: any) {
-    this.designLayoutService.onChangeColor(event.value);
+    this.designLayoutService.onChangeColor(event.value)
   }
-  
-  get zoomControl() { return this.designLayoutService.zoomControl; }
-  get showContents() { return this.designLayoutService.showContents; }
-  get selectedColor() { return this.designLayoutService.selectedColor; }
-  get objectPropsForm() { return this.designLayoutService.objectPropsForm; }
-  get showInputMarquee() { return this.designLayoutService.showInputMarquee; }
+
+  get zoomControl() {
+    return this.designLayoutService.zoomControl
+  }
+  get showContents() {
+    return this.designLayoutService.showContents
+  }
+  get selectedColor() {
+    return this.designLayoutService.selectedColor
+  }
+  get objectPropsForm() {
+    return this.designLayoutService.objectPropsForm
+  }
+  get showInputMarquee() {
+    return this.designLayoutService.showInputMarquee
+  }
+
+  get isDarkTheme() {
+    return this.utils.isDarkTheme()
+  }
 }

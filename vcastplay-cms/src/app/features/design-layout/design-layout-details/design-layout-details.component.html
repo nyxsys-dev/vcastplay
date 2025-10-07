@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-1 h-full relative">
+<div class="flex flex-col gap-1 h-full relative select-none">
   <p-menubar class="z-50" [model]="layoutItems">
     <ng-template #item let-item let-root="root">
       <a pRipple class="flex items-center p-menubar-item-link">
@@ -20,9 +20,16 @@
       <app-design-layout-tools (resetDragPosition)="onResetCanvasPosition()" />
     </div>
 
-    <div class="absolute bottom-0 left-0 p-2 bg-[var(--p-surface-100)] dark:bg-[var(--p-surface-800)] shadow-lg rounded-lg z-40">
+    <div
+      class="absolute bottom-0 left-0 p-2 bg-[var(--p-surface-100)] dark:bg-[var(--p-surface-800)] shadow-lg rounded-lg z-40"
+    >
       <div class="flex items-center gap-2">
-        <p-checkbox inputId="showGridLines" [(ngModel)]="showGridLines" (onChange)="onShowGridLinesChange($event)" binary />
+        <p-checkbox
+          inputId="showGridLines"
+          [(ngModel)]="showGridLines"
+          (onChange)="onShowGridLinesChange($event)"
+          binary
+        />
         <label for="showGridLines" class="text-sm">Show Grid</label>
       </div>
     </div>
@@ -139,7 +146,10 @@
       cdkDragBoundary=".canvas-boundary"
       cdkDrag
     >
-      <div class="w-2 h-8 bg-[var(--p-surface-200)] dark:bg-black rounded-lg cursor-move" cdkDragHandle></div>
+      <div
+        class="w-2 h-8 bg-[var(--p-surface-200)] dark:bg-black rounded-lg cursor-move"
+        cdkDragHandle
+      ></div>
       <p-slider
         min="0.10"
         max="2.0"
@@ -163,7 +173,10 @@
       cdkDragBoundary=".canvas-boundary"
       cdkDrag
     >
-      <div class="w-2 h-8 bg-[var(--p-surface-200)] dark:bg-black rounded-lg cursor-move" cdkDragHandle></div>
+      <div
+        class="w-2 h-8 bg-[var(--p-surface-200)] dark:bg-black rounded-lg cursor-move"
+        cdkDragHandle
+      ></div>
       @for (item of objectAlignments; track $index) {
       <p-button (onClick)="item.command()" text>
         <img
@@ -246,7 +259,11 @@
             <label for="color">Color</label>
           </p-floatlabel>
           <p>or</p>
-          <p-colorpicker formControlName="color" appendTo="body" />
+          <p-colorpicker
+            formControlName="color"
+            appendTo="body"
+            class="border-2 border-[var(--p-surface-300)] rounded-lg"
+          />
         </div>
       </form>
     </div>
