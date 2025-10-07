@@ -1,9 +1,9 @@
 import { Component, ElementRef, EventEmitter, forwardRef, HostListener, inject, Input, Output, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
-import { DesignLayout } from '../../core/interfaces/design-layout';
 import { DesignLayoutService } from '../../features/design-layout/design-layout.service';
 import * as fabric from 'fabric';
 import { PreviewContentRendererComponent } from '../preview-content-renderer/preview-content-renderer.component';
+import { DesignLayout } from '../../features/design-layout/design-layout';
 
 @Component({
   selector: 'app-preview-design-layout',

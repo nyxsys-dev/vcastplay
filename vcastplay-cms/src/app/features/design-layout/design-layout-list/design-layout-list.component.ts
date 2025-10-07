@@ -4,10 +4,10 @@ import { ComponentsModule } from '../../../core/modules/components/components.mo
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { DesignLayoutService } from '../design-layout.service';
 import { UtilityService } from '../../../core/services/utility.service';
-import { DesignLayout } from '../../../core/interfaces/design-layout';
 import { Menu } from 'primeng/menu';
 import { Router } from '@angular/router';
 import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';
+import { DesignLayout } from '../design-layout';
 
 @Component({
   selector: 'app-design-layout-list',

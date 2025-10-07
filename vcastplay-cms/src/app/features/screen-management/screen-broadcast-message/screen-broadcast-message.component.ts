@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { UtilityService } from '../../../core/services/utility.service';
-import { BroadcastService } from '../../../core/services/broadcast.service';
+import { BroadcastService } from '../../settings/broadcast/broadcast.service';
 
 @Component({
   selector: 'app-screen-broadcast-message',

@@ -1,6 +1,6 @@
 import { Component, computed, effect, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
-import { Screen } from '../../../core/interfaces/screen';
+import { Screen } from '../../../features/screens/screen';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UtilityService } from '../../../core/services/utility.service';
 

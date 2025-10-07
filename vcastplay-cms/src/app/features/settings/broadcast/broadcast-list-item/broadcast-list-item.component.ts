@@ -1,6 +1,6 @@
 import { Component, inject, Input, TemplateRef } from '@angular/core';
 import { PrimengUiModule } from '../../../../core/modules/primeng-ui/primeng-ui.module';
-import { ScreenMessage } from '../../../../core/interfaces/screen';
+import { ScreenMessage } from '../../../screens/screen';
 import { UtilityService } from '../../../../core/services/utility.service';
 
 @Component({

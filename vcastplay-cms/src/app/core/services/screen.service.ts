@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Screen, ScreenMessage } from '../interfaces/screen';
+import { Screen, ScreenMessage } from '../../features/screens/screen';
 import { SelectOption } from '../interfaces/general';
 import { MenuItem } from 'primeng/api';
 

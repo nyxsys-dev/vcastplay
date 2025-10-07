@@ -1,7 +1,7 @@
 import { Component, effect, inject, Input, TemplateRef } from '@angular/core';
 import { UtilityService } from '../../../core/services/utility.service';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
-import { Screen } from '../../../core/interfaces/screen';
+import { Screen } from '../../screens/screen';
 import { ScreenService } from '../../../core/services/screen.service';
 
 @Component({

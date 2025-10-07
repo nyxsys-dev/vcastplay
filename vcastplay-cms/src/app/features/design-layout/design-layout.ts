@@ -1,5 +1,5 @@
-import { ApprovedInfo } from "./general";
-import { Screen } from "./screen";
+import { ApprovedInfo } from "../../core/interfaces/general";
+import { Screen } from "../../features/screens/screen";
 
 export interface DesignLayout {
     id: number;

@@ -1,15 +1,13 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FullCalendarComponent } from '@fullcalendar/angular';
-import { Assets } from '../../core/interfaces/assets';
-import { Playlist } from '../../core/interfaces/playlist';
-import { Schedule, ScheduleContentItem } from '../../core/interfaces/schedules';
 import moment from 'moment-timezone';
 import { AssetsService } from '../assets/assets.service';
 import { PlaylistService } from '../playlist/playlist.service';
 import { SelectOption } from '../../core/interfaces/general';
 import _ from 'lodash';
 import { DesignLayoutService } from '../design-layout/design-layout.service';
+import { Schedule, ScheduleContentItem } from './schedules';
 
 @Injectable({
   providedIn: 'root'

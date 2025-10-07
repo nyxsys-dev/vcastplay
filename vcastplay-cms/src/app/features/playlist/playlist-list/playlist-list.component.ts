@@ -4,7 +4,7 @@ import { ComponentsModule } from '../../../core/modules/components/components.mo
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { PlaylistService } from '../playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
-import { Playlist } from '../../../core/interfaces/playlist';
+import { Playlist } from '../playlist';
 import { Router } from '@angular/router';
 import { Menu } from 'primeng/menu';
 import { PlaylistMainPlayerComponent } from '../playlist-main-player/playlist-main-player.component';

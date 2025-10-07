@@ -1,4 +1,5 @@
-import { ApprovedInfo } from "./general";
+import { ApprovedInfo } from "../../core/interfaces/general";
+
 
 export interface Schedule {
     id: number;

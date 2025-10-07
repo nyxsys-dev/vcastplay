@@ -1,16 +1,14 @@
-import { computed, inject, Injectable, Injector, signal } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Assets } from '../../core/interfaces/assets';
-import { ContentState, Playlist } from '../../core/interfaces/playlist';
+import { ContentState, Playlist } from './playlist';
 import { SelectOption } from '../../core/interfaces/general';
-import { DesignLayout } from '../../core/interfaces/design-layout';
+import { DesignLayout } from '../design-layout/design-layout';
+import { Assets } from '../assets/assets';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlaylistService {
-
-  private injector = inject(Injector);
 
   private playlistSignal = signal<Playlist[]>([]);
   playlists = computed(() => this.playlistSignal());

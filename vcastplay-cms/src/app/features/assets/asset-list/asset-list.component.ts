@@ -5,10 +5,10 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { AssetsService } from '../assets.service';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
-import { Assets } from '../../../core/interfaces/assets';
 import { FormControl } from '@angular/forms';
 import { PlaylistService } from '../../playlist/playlist.service';
 import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
+import { Assets } from '../assets';
 
 @Component({
   selector: 'app-asset-list',

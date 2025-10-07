@@ -1,7 +1,7 @@
 import { Component, inject, Input, TemplateRef } from '@angular/core';
 import { UtilityService } from '../../../core/services/utility.service';
-import { DesignLayout } from '../../../core/interfaces/design-layout';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
+import { DesignLayout } from '../design-layout';
 
 @Component({
   selector: 'app-design-layout-list-item',

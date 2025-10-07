@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { PlaylistService } from '../playlist.service';
 import { FormGroup } from '@angular/forms';
-import { Playlist } from '../../../core/interfaces/playlist';
+import { Playlist } from '../playlist';
 
 @Component({
   selector: 'app-add-to-playlist',

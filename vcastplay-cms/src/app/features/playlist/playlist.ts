@@ -1,5 +1,5 @@
 import { signal } from "@angular/core";
-import { ApprovedInfo } from "./general";
+import { ApprovedInfo } from "../../core/interfaces/general";
 
 export interface Playlist {
     id: number;

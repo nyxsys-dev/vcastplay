@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { Assets } from '../../core/interfaces/assets';
 import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
+import { Assets } from '../../features/assets/assets';
 
 @Component({
   selector: 'app-preview-assets',

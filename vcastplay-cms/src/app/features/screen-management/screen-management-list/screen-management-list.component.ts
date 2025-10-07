@@ -5,8 +5,8 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import _ from 'lodash';
-import { Screen, ScreenMessage } from '../../../core/interfaces/screen';
-import { BroadcastService } from '../../../core/services/broadcast.service';
+import { Screen, ScreenMessage } from '../../screens/screen';
+import { BroadcastService } from '../../settings/broadcast/broadcast.service';
 
 @Component({
   selector: 'app-screen-management-list',

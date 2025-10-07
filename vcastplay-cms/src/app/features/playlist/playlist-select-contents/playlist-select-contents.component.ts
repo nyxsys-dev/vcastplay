@@ -1,12 +1,12 @@
-import { Component, computed, effect, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Component, computed, effect, EventEmitter, inject, Input, Output } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { AssetsService } from '../../assets/assets.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
-import { Assets } from '../../../core/interfaces/assets';
 import { PlaylistService } from '../playlist.service';
 import { TagService } from '../../settings/tags/tag.service';
 import { AssetListItemComponent } from '../../assets/asset-list-item/asset-list-item.component';
+import { Assets } from '../../assets/assets';
 
 @Component({
   selector: 'app-playlist-select-contents',

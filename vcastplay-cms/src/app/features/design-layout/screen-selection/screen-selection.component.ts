@@ -2,7 +2,7 @@ import { Component, computed, EventEmitter, inject, Output, signal } from '@angu
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ScreenService } from '../../../core/services/screen.service';
 import { UtilityService } from '../../../core/services/utility.service';
-import { Screen } from '../../../core/interfaces/screen';
+import { Screen } from '../../screens/screen';
 import _ from 'lodash';
 import { ScreenFilterComponent } from '../../screens/screen-filter/screen-filter.component';
 

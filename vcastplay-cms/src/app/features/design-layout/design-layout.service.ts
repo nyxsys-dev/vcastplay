@@ -1,10 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core'
-import { DesignLayout, HtmlLayer } from '../../core/interfaces/design-layout'
 import { FormControl, FormGroup, Validators } from '@angular/forms'
 import { PlaylistService } from '../playlist/playlist.service'
 import { v7 as uuidv7 } from 'uuid'
 import * as fabric from 'fabric'
-import { initAligningGuidelines } from 'fabric/extensions'
+import { DesignLayout, HtmlLayer } from './design-layout'
 
 interface GuideLine {
   line: fabric.Line
@@ -943,10 +942,7 @@ export class DesignLayoutService {
   ) {
     const canvas = this.onInitFabricCanvas(viewport, canvasContainer, resolution, backgroundColor)
     canvas.requestRenderAll()
-
-    // this.drawGrid(canvas)
     canvas.setZoom(this.DEFAULT_SCALE())
-    // initAligningGuidelines(canvas, this.GUIDELINES_CONFIG())
 
     this.zoomControl.patchValue(this.DEFAULT_SCALE())
     this.registerCanvasEvents(canvas)

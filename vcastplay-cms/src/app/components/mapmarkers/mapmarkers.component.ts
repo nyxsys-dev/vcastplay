@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Input, Output, signal } from '@angular
 import * as L from 'leaflet';
 import 'leaflet';
 import 'leaflet.markercluster';
-import { Screen } from '../../core/interfaces/screen';
+import { Screen } from '../../features/screens/screen';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { UtilityService } from '../../core/services/utility.service';
 

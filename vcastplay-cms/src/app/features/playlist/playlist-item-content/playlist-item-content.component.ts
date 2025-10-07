@@ -1,10 +1,10 @@
 import { Component, inject, Input, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
-import { Assets } from '../../../core/interfaces/assets';
 import { PlaylistService } from '../playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
-import { Playlist } from '../../../core/interfaces/playlist';
-import { DesignLayout } from '../../../core/interfaces/design-layout';
+import { Playlist } from '../playlist';
+import { Assets } from '../../assets/assets';
+import { DesignLayout } from '../../design-layout/design-layout';
 
 @Component({
   selector: 'app-playlist-item-content',

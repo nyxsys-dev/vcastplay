@@ -1,7 +1,7 @@
 import { Component, inject, Input, TemplateRef } from '@angular/core';
-import { Schedule } from '../../../core/interfaces/schedules';
 import { UtilityService } from '../../../core/services/utility.service';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
+import { Schedule } from '../schedules';
 
 @Component({
   selector: 'app-schedule-list-item',

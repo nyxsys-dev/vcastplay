@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { PrimengUiModule } from '../../../../core/modules/primeng-ui/primeng-ui.module';
 import { UtilityService } from '../../../../core/services/utility.service';
-import { BroadcastService } from '../../../../core/services/broadcast.service';
+import { BroadcastService } from '../broadcast.service';
 import { TagService } from '../../tags/tag.service';
 
 @Component({

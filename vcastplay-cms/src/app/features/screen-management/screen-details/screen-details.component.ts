@@ -1,5 +1,5 @@
 import { Component, inject, Input } from '@angular/core';
-import { Screen } from '../../../core/interfaces/screen';
+import { Screen } from '../../screens/screen';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { UtilityService } from '../../../core/services/utility.service';
 

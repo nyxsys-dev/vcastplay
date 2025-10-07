@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { ScreenMessage } from '../interfaces/screen';
+import { ScreenMessage } from '../../screens/screen';
 import { FormControl, FormGroup } from '@angular/forms';
 
 @Injectable({

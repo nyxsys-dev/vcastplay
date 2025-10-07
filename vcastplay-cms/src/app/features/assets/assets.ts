@@ -1,4 +1,4 @@
-import { AudienceTag } from "./general";
+import { AudienceTag } from "../../core/interfaces/general";
 
 export interface Assets {
     id: number;

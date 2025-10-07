@@ -5,7 +5,7 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { SchedulesService } from '../schedules.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { Router } from '@angular/router';
-import { Schedule } from '../../../core/interfaces/schedules';
+import { Schedule } from '../schedules';
 
 @Component({
   selector: 'app-schedule-list',

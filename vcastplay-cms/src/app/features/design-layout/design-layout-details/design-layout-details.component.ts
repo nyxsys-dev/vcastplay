@@ -18,8 +18,8 @@ import { Router } from '@angular/router'
 import { PlaylistService } from '../../playlist/playlist.service'
 import { CdkDrag } from '@angular/cdk/drag-drop'
 import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player/playlist-main-player.component'
-import { Assets } from '../../../core/interfaces/assets'
-import { DesignLayout } from '../../../core/interfaces/design-layout'
+import { Assets } from '../../assets/assets'
+import { DesignLayout } from '../design-layout'
 
 @Component({
   selector: 'app-design-layout-details',

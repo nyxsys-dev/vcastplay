@@ -4,14 +4,14 @@ import { ComponentsModule } from '../../../core/modules/components/components.mo
 import { AssetsService } from '../../assets/assets.service';
 import { PlaylistService } from '../playlist.service';
 import { UtilityService } from '../../../core/services/utility.service';
-import { Assets } from '../../../core/interfaces/assets';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { v7 as uuidv7 } from 'uuid';
-import moment, { duration } from 'moment';
+import moment from 'moment';
 import { PlaylistMainPlayerComponent } from '../playlist-main-player/playlist-main-player.component';
-import { DesignLayout } from '../../../core/interfaces/design-layout';
+import { Assets } from '../../assets/assets';
+import { DesignLayout } from '../../design-layout/design-layout';
 
 @Component({
   selector: 'app-playlist-details',

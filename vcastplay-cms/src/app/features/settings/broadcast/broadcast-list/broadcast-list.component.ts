@@ -4,8 +4,8 @@ import { ScreenService } from '../../../../core/services/screen.service';
 import { ComponentsModule } from '../../../../core/modules/components/components.module';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { UtilityService } from '../../../../core/services/utility.service';
-import { BroadcastService } from '../../../../core/services/broadcast.service';
-import { ScreenMessage } from '../../../../core/interfaces/screen';
+import { BroadcastService } from '../broadcast.service';
+import { ScreenMessage } from '../../../screens/screen';
 
 @Component({
   selector: 'app-broadcast-list',

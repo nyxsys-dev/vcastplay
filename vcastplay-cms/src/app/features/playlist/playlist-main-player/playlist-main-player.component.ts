@@ -1,6 +1,6 @@
 import { Component, effect, ElementRef, inject, Input, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
-import { ContentState, Playlist } from '../../../core/interfaces/playlist';
+import { ContentState, Playlist } from '../playlist';
 import { PlaylistService } from '../playlist.service';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
 import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';

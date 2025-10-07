@@ -1,6 +1,6 @@
-import { Assets } from "./assets";
-import { Playlist } from "./playlist";
-import { Schedule } from "./schedules";
+import { Assets } from "../assets/assets";
+import { Playlist } from "../playlist/playlist";
+import { Schedule } from "../schedules/schedules";
 
 export interface Screen {
     id: number;

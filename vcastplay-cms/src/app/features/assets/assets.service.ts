@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { AssestInfo, Assets, AssetType } from '../../core/interfaces/assets';
+import { AssestInfo, Assets, AssetType } from './assets';
 
 @Injectable({
   providedIn: 'root'
