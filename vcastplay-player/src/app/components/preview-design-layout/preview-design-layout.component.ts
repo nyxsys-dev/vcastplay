@@ -30,7 +30,7 @@ export class PreviewDesignLayoutComponent {
   storage = inject(StorageService);
   utils = inject(UtilsService);
 
-  canvas: fabric.Canvas | any = null;
+  canvas: fabric.StaticCanvas | any = null;
   playing = signal<boolean>(false);
   
   @HostListener('window:resize', ['$event'])
@@ -42,7 +42,7 @@ export class PreviewDesignLayoutComponent {
 
   ngOnInit(): void { }
 
-  ngAfterViewInit(): void {  
+  ngAfterViewInit(): void {
     this.onRenderCanvas()  
   }
 

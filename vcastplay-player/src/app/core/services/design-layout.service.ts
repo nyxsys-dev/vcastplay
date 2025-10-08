@@ -1,5 +1,5 @@
-import { Injectable, signal } from '@angular/core';
-import { DesignLayout, HtmlLayer } from '../interfaces/design-layout';
+import { Injectable } from '@angular/core';
+import { DesignLayout } from '../interfaces/design-layout';
 import * as fabric from 'fabric';
 import { environment } from '../../../environments/environment.development';
 
@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment.development';
 })
 export class DesignLayoutService {
   
-  private canvas!: fabric.Canvas;
+  private canvas!: fabric.StaticCanvas;
   private animFrameId!: number;
   
   timeout: number = environment.timeout;
@@ -18,15 +18,15 @@ export class DesignLayoutService {
 
   constructor() { }
 
-  setCanvas(canvas: fabric.Canvas) {
+  setCanvas(canvas: fabric.StaticCanvas) {
     this.canvas = canvas;
   }
 
-  getCanvas(): fabric.Canvas {
+  getCanvas(): fabric.StaticCanvas {
     return this.canvas;
   }
 
-  removeCanvas(canvas?: fabric.Canvas) {
+  removeCanvas(canvas?: fabric.StaticCanvas) {
     if (canvas) {
       canvas.clear();
       canvas.dispose();
@@ -44,7 +44,7 @@ export class DesignLayoutService {
     })
   }
   
-  onScaleCanvas(canvas: fabric.Canvas, parentElement: any, canvasContainer: any) {
+  onScaleCanvas(canvas: fabric.StaticCanvas, parentElement: any, canvasContainer: any) {
     if (!canvas) return;
 
     const { width, height } = this.DEFAULT_RESOLUTION;
@@ -129,7 +129,7 @@ export class DesignLayoutService {
     this.onStartVideoRender(canvas);
   }
 
-  onStopVideosInCanvas(canvas: fabric.Canvas) {
+  onStopVideosInCanvas(canvas: fabric.StaticCanvas) {
     if (!canvas) return;
     const objects = canvas.getObjects();
     objects.forEach((object: any) => {
@@ -201,13 +201,14 @@ export class DesignLayoutService {
             objects.sort((a: any, b: any) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
 
             objects.forEach((obj: any) => {
-              if (obj.html) {
-                const html: any = obj.html;
-                const alreadyExists = htmlLayers.find((item: HtmlLayer) => item.id === html.id);
+              // if (obj.html) {
+              //   const html: any = obj.html;
+              //   const alreadyExists = htmlLayers.find((item: HtmlLayer) => item.id === html.id);
 
-                if (alreadyExists) this.syncDivsWithFabric(newCanvas, design);
+              //   if (alreadyExists) this.syncDivsWithFabric(newCanvas, design);
 
-              } else if (obj.data) {
+              // } else 
+                if (obj.data) {
                 const data: any = obj.data;
 
                 if (data.type == 'video') {
@@ -216,9 +217,6 @@ export class DesignLayoutService {
                 }
               }
             });
-
-            // newCanvas.selection = false;
-            // newCanvas.skipTargetFind = true;
 
             this.syncDivsWithFabric(newCanvas, design);
             newCanvas.requestRenderAll();
@@ -233,7 +231,7 @@ export class DesignLayoutService {
     })
   }
   
-  private updateCanvasSize(canvas: fabric.Canvas, canvasContainer: any, zoomLevel: number) {
+  private updateCanvasSize(canvas: fabric.StaticCanvas, canvasContainer: any, zoomLevel: number) {
     const { width, height } = this.DEFAULT_RESOLUTION;
 
     const newContainerWidth = width * zoomLevel;
