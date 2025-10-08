@@ -6,7 +6,7 @@
                     'opacity-0': content().currentContent()?.contentId != item.contentId,
                     'opacity-100': content().currentContent()?.contentId == item.contentId 
                 }"
-                [viewport]="viewport" [currentPlaying]="content().currentContent()" [designLayout]="item" />
+                [viewport]="viewport" [currentPlaying]="content().currentContent()" [contentData]="item" />
         }
         @default {
             <app-preview-assets class="absolute h-full w-full flex items-center justify-center" [currentPlaying]="content().currentContent()" 

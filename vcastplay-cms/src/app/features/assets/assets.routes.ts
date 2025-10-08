@@ -16,9 +16,4 @@ export default [
         title: `Asset Upload • ${appTitle}`,
         canDeactivate: [ canDeactivateGuard ]
     },
-    // {
-    //     path: 'asset-details/:code', 
-    //     loadComponent: () => import('./asset-details/asset-details.component').then(m => m.AssetDetailsComponent),
-    //     title: `Asset Upload • ${appTitle}`,
-    // },
 ] as Routes

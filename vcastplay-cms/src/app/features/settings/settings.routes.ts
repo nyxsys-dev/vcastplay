@@ -20,7 +20,7 @@ export default [
     },
     {
         path: 'tag',
-        loadComponent: () => import('./tags/tags.component').then(m => m.TagsComponent),
+        loadComponent: () => import('./tags/tag-list/tags.component').then(m => m.TagsComponent),
         title: `Tags • ${appTitle}`,
     },
     {

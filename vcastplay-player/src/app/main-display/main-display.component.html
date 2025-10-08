@@ -1,4 +1,4 @@
-<div #viewport class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden"
+<div #viewport class="relative flex flex-col gap-4 justify-center items-center h-screen relative group overflow-hidden select-none"
   [ngClass]="{ 'bg-[var(--p-primary-500)]': !isPlay(), 'bg-stone-800': isPlay() }">
 
   <!-- Main Player -->
@@ -7,10 +7,11 @@
       @case ('design') {
         <app-preview-design-layout class="flex-1 h-full w-full flex items-center justify-center" 
           [ngClass]="{ 'opacity-100': isPlay(), 'opacity-0': !isPlay() }"
-          [viewport]="viewport" [designLayout]="contentData" (isDoneRendering)="onDoneRendering($event)" />
+          [viewport]="viewport" [contentData]="contentData" (isDoneRendering)="onDoneRendering($event)" />
       }
       @case('playlist') {
         <app-preview-content-renderer class="relative w-full h-full group bg-stone-800 text-white rounded-lg" 
+          [ngClass]="{ 'opacity-100': isPlay(), 'opacity-0': !isPlay() }"
           [autoPlay]="true" [contentData]="contentData" />
       }
       @default {
@@ -50,9 +51,9 @@
 
   <div class="absolute bottom-0 left-0 flex items-center gap-1 p-2 w-full">
     <div class="flex gap-3">
-      <p-button label="Asset" (onClick)="onClickSetContent('asset')" [disabled]="playerContent()" severity="secondary" size="small" />
-      <p-button label="Playlist" (onClick)="onClickSetContent('playlist')" [disabled]="playerContent()" severity="secondary" size="small" />
-      <p-button label="Design" (onClick)="onClickSetContent('design')" [disabled]="playerContent()" severity="secondary" size="small" />
+      <p-button label="Asset" (onClick)="onClickSetContent('asset')" severity="secondary" size="small" />
+      <p-button label="Playlist" (onClick)="onClickSetContent('playlist')" severity="secondary" size="small" />
+      <p-button label="Design" (onClick)="onClickSetContent('design')" severity="secondary" size="small" />
       <p-button label="Stop" (onClick)="onClikcStopPreview()" severity="secondary" size="small" />
       @if (platform == 'desktop') {
         <p-button label="Notepad" (onClick)="onClickNotepad()" severity="secondary" size="small" />
@@ -62,7 +63,7 @@
     <p class="text-[10px] md:text-sm text-zinc-300 ml-auto">{{ systemInfo()?.code ?? '000000000' }}: {{ systemInfo()?.appVersion ?? '0.0.0' }}</p>
   </div>
 
-  @if (platform == 'desktop') {
+  <!-- @if (platform == 'desktop') {
     <app-progress-bar class="absolute bottom-10 left-0 w-full px-4 mb-4" />
-  }
+  } -->
 </div>

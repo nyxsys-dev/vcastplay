@@ -128,10 +128,18 @@ async function onTakeScreenShot() {
 function onDeleteFolder(folderName) {
   return new Promise((resolve, reject) => {
     const downloadDir = path.join(app.getPath("downloads"), folderName);
-    fs.rm(downloadDir, { recursive: true, force: true }, (err) => {
-      if (err) reject(err);
-      else resolve(`${downloadDir} deleted successfully`);
-    })
+    fs.stat(downloadDir, (err, stats) => {
+      if (err && err.code === 'ENOENT') {
+        resolve(`${downloadDir} does not exist`);
+      } else if (err) {
+        reject(err);
+      } else {
+        fs.rm(downloadDir, { recursive: true, force: true }, (err) => {
+          if (err) reject(err);
+          else resolve(`${downloadDir} deleted successfully`);
+        });
+      }
+    });
   })
 }
 

@@ -917,6 +917,7 @@ export class DesignLayoutService {
     htmlLayers.push(htmlLayer)
 
     rect.set('html', htmlLayer)
+    rect.set('data', content)
 
     this.playlistService.onPlayContent(content)
 
@@ -1639,14 +1640,15 @@ export class DesignLayoutService {
         ) {
           setTimeout(() => {
             const rectProp = selected.get('rectProp')
-            console.log(rectProp);
-            
             this.objectPropsForm.patchValue(rectProp)
             this.onSetCanvasProps('rect', true, 'default')
           }, 50)
         } else if (selected.type == 'line') {
-          this.objectPropsForm.patchValue(selected.lineProp)
+          setTimeout(() => {
+          const lineProp = selected.get('lineProp')
+          this.objectPropsForm.patchValue(lineProp)
           this.onSetCanvasProps('line', true, 'default')
+          }, 50)
         } else {
           const { content, style } = selected.html
           if (content.type == 'marquee') {
@@ -1669,9 +1671,19 @@ export class DesignLayoutService {
       const obj: any = e.target
       if (!obj) return
 
+      // Add duration
+      // const data = obj.data;
+      // let duration: number += data.duration ?? 5;
+
       if (!obj.defaultState) {
         obj.defaultState = this.captureState(obj)
       }
+    })
+
+    canvas.on('object:removed', (e) => {
+      const obj: any = e.target
+      if (!obj) return
+      obj.defaultState = this.captureState(obj)
     })
 
     canvas.on('object:modified', (e) => {

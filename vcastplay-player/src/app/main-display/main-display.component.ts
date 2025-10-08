@@ -70,14 +70,6 @@ export class MainDisplayComponent {
     this.onGetPlayerInformation();
     this.cdr.detectChanges();
   }
-  
-  onClickPlayPreview() {
-    if (!this.isPlaying()) {
-      this.playlistService.onPlayContent(this.playerContent());
-    } else {
-      this.playlistService.onStopContent(this.playerContent().id);
-    }
-  }
 
   onClikcStopPreview() {
     this.playlistService.onStopAllContents();
@@ -88,23 +80,17 @@ export class MainDisplayComponent {
   }
 
   onClickSetContent(type: string) {
+    this.playlistService.onStopAllContents();
+    if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
+    
     const content = this.player.onSetContent(type);
-    if (this.platform == 'desktop') {
-      const files = ['asset'].includes(type) ? [ content ] : content.files;
-      this.utils.onDownloadFiles(files).then((response: any) => {
-        const { files } = response;
-        files.forEach(async (file: any, index: number) => await this.indexedDB.addItem({ index, file }));
-        setTimeout(() => this.isPlay.set(true), 500);
-      });
-    } else if (this.platform == 'android') {
+    if (!['design'].includes(type)) setTimeout(() => this.isPlay.set(true), this.timeout);
+
+    if (this.platform == 'android') {
       const file = ['asset'].includes(type) ? [ content ] : content.files;
       this.player.onSendDataToAndroid({ file });
     }
   }
-
-  // onClickCheckUpdates() {
-  //   window.system.checkForUpdates();
-  // }
 
   onClickNotepad() {
     this.player.sendApp('notepad')
@@ -133,8 +119,9 @@ export class MainDisplayComponent {
   }
 
   onDoneRendering(event: any) {
-    const platform = this.storage.get('platform');
-    if (!['android', 'desktop'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
+    // Plays content on Desktop and Web
+    const platform = this.storage.get('platform');    
+    if (!['android'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
   }
   
   trackById(index: number, item: any): any {

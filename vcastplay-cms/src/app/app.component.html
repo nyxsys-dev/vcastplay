@@ -1,3 +1,23 @@
-<router-outlet></router-outlet>
+<div class="min-h-screen md:ms-[7rem] relative">
+  <app-toolbar></app-toolbar>
+  <app-drawer></app-drawer>
+  <div class="main-wrapper relative">
+    <div
+      class="main-content p-3 md:p-[1rem] bg-gray-200 dark:bg-black relative md:rounded-tl-[26px]"
+    >
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <div class="block md:hidden absolute bottom-0 end-0 z-100 m-3">
+    <div
+      class="bg-[var(--p-primary-600)] w-15 h-15 flex items-center justify-center text-white rounded-full cursor-pointer"
+      (click)="utils.drawerVisible.set(!utils.drawerVisible())"
+    >
+      <i class="pi pi-bars !text-lg"></i>
+    </div>
+  </div>
+</div>
+
 <p-confirmdialog />
 <p-toast />

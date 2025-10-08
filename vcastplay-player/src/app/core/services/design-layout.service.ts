@@ -53,7 +53,7 @@ export class DesignLayoutService {
     this.updateCanvasSize(canvas, canvasContainer, fitScale);
   }
 
-  onAddVideoToCanvas(canvas: fabric.Canvas, data: any, fabricObject?: fabric.Object | any) {
+  onAddVideoToCanvas(canvas: fabric.StaticCanvas, data: any, fabricObject?: fabric.Object | any) {
     try {
       const { width, height }: any = data.fileDetails.resolution;
     
@@ -106,7 +106,7 @@ export class DesignLayoutService {
     }
   }
   
-  onStartVideoRender(canvas: fabric.Canvas) {
+  onStartVideoRender(canvas: fabric.StaticCanvas) {
     if (this.animFrameId) return;
     const render = () => {      
       canvas.requestRenderAll();
@@ -116,7 +116,7 @@ export class DesignLayoutService {
     if (!this.animFrameId) this.animFrameId = requestAnimationFrame(render);
   }
   
-  onPlayVideosInCanvas(canvas: fabric.Canvas) {
+  onPlayVideosInCanvas(canvas: fabric.StaticCanvas) {
     const objects = canvas.getObjects();
     objects.forEach((object: any) => {
       const data = object.data;
@@ -166,7 +166,7 @@ export class DesignLayoutService {
     this.DEFAULT_SCALE = scale;
     this.DEFAULT_RESOLUTION = resolution;
     
-    return new fabric.Canvas(canvasElement, { 
+    return new fabric.StaticCanvas(canvasElement, { 
       width: newWidth,
       height: newHeight,
       backgroundColor,
@@ -217,8 +217,8 @@ export class DesignLayoutService {
               }
             });
 
-            newCanvas.selection = false;
-            newCanvas.skipTargetFind = true;
+            // newCanvas.selection = false;
+            // newCanvas.skipTargetFind = true;
 
             this.syncDivsWithFabric(newCanvas, design);
             newCanvas.requestRenderAll();
@@ -251,7 +251,7 @@ export class DesignLayoutService {
     canvas.requestRenderAll();
   }
   
-  private syncDivsWithFabric(canvas: fabric.Canvas, design: DesignLayout) {
+  private syncDivsWithFabric(canvas: fabric.StaticCanvas, design: DesignLayout) {
     const events = [
       'object:added',
       'object:moving',
@@ -272,7 +272,7 @@ export class DesignLayoutService {
     );
   }
 
-  private updateHtmlLayers(canvas: fabric.Canvas, design: DesignLayout) {
+  private updateHtmlLayers(canvas: fabric.StaticCanvas, design: DesignLayout) {
     const { htmlLayers }: any = design; 
     const activeObjects: fabric.Object[] = canvas.getObjects();
     
@@ -289,7 +289,7 @@ export class DesignLayoutService {
     })
   }
 
-  private createHtmlLayerFromObject(obj: fabric.FabricObject, id: string, content: any, style: any, canvas: fabric.Canvas) {
+  private createHtmlLayerFromObject(obj: fabric.FabricObject, id: string, content: any, style: any, canvas: fabric.StaticCanvas) {
 
     const zoom = canvas.getZoom();    
 

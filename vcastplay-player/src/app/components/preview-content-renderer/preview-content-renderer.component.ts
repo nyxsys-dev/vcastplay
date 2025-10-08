@@ -5,6 +5,7 @@ import { PreviewAssetsComponent } from '../preview-assets/preview-assets.compone
 import { PreviewDesignLayoutComponent } from '../preview-design-layout/preview-design-layout.component';
 import { ContentState } from '../../core/interfaces/playlist';
 import { environment } from '../../../environments/environment.development';
+import { UtilsService } from '../../core/services/utils.service';
 
 @Component({
   selector: 'app-preview-content-renderer',
@@ -19,6 +20,7 @@ export class PreviewContentRendererComponent {
   @Input() autoPlay: boolean = false;
 
   playlistService = inject(PlaylistsService);
+  utils = inject(UtilsService);
   
   timeout: number = environment.timeout;
   content = signal<ContentState>({
@@ -31,18 +33,17 @@ export class PreviewContentRendererComponent {
   });
 
   ngOnChanges() {
-    // if (this.autoPlay) {
-    //   // setTimeout(() => {
-    //     this.playlistService.onPlayContent(this.contentData);
-    //     this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
-    //   // }, this.timeout);
-    // }
+    if (this.autoPlay) {
+      const content: any = this.contentData;
+      const files = ['asset'].includes(content.type) ? [ content ] : content.files;
+      this.utils.onDownloadFiles(files).then((response: any) => {
+        this.playlistService.onPlayContent(this.contentData);
+        this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
+      })
+    }
   }
 
-  ngAfterViewInit() {
-    this.playlistService.onPlayContent(this.contentData);
-    this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
-  }
+  ngAfterViewInit() { }
 
   trackById(index: number, item: any): any {
     return { id: index, contentId: item.contentId } 
