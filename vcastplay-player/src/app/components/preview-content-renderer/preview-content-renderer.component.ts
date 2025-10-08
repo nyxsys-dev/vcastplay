@@ -6,6 +6,7 @@ import { PreviewDesignLayoutComponent } from '../preview-design-layout/preview-d
 import { ContentState } from '../../core/interfaces/playlist';
 import { environment } from '../../../environments/environment.development';
 import { UtilsService } from '../../core/services/utils.service';
+import { StorageService } from '../../core/services/storage.service';
 
 @Component({
   selector: 'app-preview-content-renderer',
@@ -21,6 +22,7 @@ export class PreviewContentRendererComponent {
 
   playlistService = inject(PlaylistsService);
   utils = inject(UtilsService);
+  storage = inject(StorageService);
   
   timeout: number = environment.timeout;
   content = signal<ContentState>({
@@ -35,11 +37,17 @@ export class PreviewContentRendererComponent {
   ngOnChanges() {
     if (this.autoPlay) {
       const content: any = this.contentData;
-      const files = ['asset'].includes(content.type) ? [ content ] : content.files;
-      this.utils.onDownloadFiles(files).then((response: any) => {
+      const platform = this.storage.get('platform');
+      if (platform == 'desktop') {
+        const files = ['asset'].includes(content.type) ? [ content ] : content.files;
+        this.utils.onDownloadFiles(files).then((response: any) => {
+          this.playlistService.onPlayContent(this.contentData);
+          this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
+        })
+      } else {
         this.playlistService.onPlayContent(this.contentData);
         this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
-      })
+      }
     }
   }
 

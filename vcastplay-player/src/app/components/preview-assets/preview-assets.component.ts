@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild }
 import { Assets } from '../../core/interfaces/assets';
 import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
 import { UtilsService } from '../../core/services/utils.service';
+import { StorageService } from '../../core/services/storage.service';
 
 @Component({
   selector: 'app-preview-assets',
@@ -19,6 +20,7 @@ export class PreviewAssetsComponent {
   @Output() timeUpdate = new EventEmitter<any>();
 
   utils = inject(UtilsService);
+  storage = inject(StorageService);
 
   ngOnChanges() {
     if (!this.currentPlaying) return;
@@ -29,13 +31,16 @@ export class PreviewAssetsComponent {
   }
 
   ngAfterViewInit() {
-    const content: any = this.currentContent;    
-    this.utils.onDownloadFiles([ content ]).then((response: any) => {
-      if (this.currentContent.type == 'video' && this.videoRef) {
-        this.videoRef.nativeElement.currentTime = 0;
-        this.videoRef.nativeElement.play();
-      }
-    })
+    const content: any = this.currentContent; 
+    const platform = this.storage.get('platform');
+    if (platform == 'desktop') {
+      this.utils.onDownloadFiles([ content ]).then((response: any) => {
+        if (this.currentContent.type == 'video' && this.videoRef) {
+          this.videoRef.nativeElement.currentTime = 0;
+          this.videoRef.nativeElement.play();
+        }
+      })
+    };
   }
 
   ngOnDestroy() {
