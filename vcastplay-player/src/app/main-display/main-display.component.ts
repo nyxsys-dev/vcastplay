@@ -81,15 +81,19 @@ export class MainDisplayComponent {
 
   onClickSetContent(type: string) {
     this.playlistService.onStopAllContents();
-    if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
-    
-    const content = this.player.onSetContent(type);
-    if (!['design'].includes(type)) setTimeout(() => this.isPlay.set(true), this.timeout);
+    this.player.onSetContent('stop');
 
-    if (this.platform == 'android') {
-      const file = ['asset'].includes(type) ? [ content ] : content.files;
-      this.player.onSendDataToAndroid({ file });
-    }
+    setTimeout(() => {
+      if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
+      
+      const content = this.player.onSetContent(type);
+      if (!['design'].includes(type)) setTimeout(() => this.isPlay.set(true), this.timeout);
+
+      if (this.platform == 'android') {
+        const file = ['asset'].includes(type) ? [ content ] : content.files;
+        this.player.onSendDataToAndroid({ file });
+      }
+    }, 10);
   }
 
   onClickNotepad() {
@@ -120,6 +124,8 @@ export class MainDisplayComponent {
 
   onDoneRendering(event: any) {
     // Plays content on Desktop and Web
+    console.log(event);
+    
     const platform = this.storage.get('platform');    
     if (!['android'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
   }
