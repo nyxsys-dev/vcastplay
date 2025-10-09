@@ -83,14 +83,17 @@ export class PreviewAssetsComponent {
       if (content.type == 'video') {
         video.src = tempLink;
         video.currentTime = 0;
-        video.load();
-        video.play();
+        video.preload = 'auto';
+        video.addEventListener('loadeddata', () => {
+          video.currentTime = 0;
+          video.play();
+        })
       }
 
       if (content.type == 'image') {
         this.imageRef.nativeElement.src = tempLink;
       }
-    }, 300);
+    }, 500);
   }
 
   ngOnDestroy() {

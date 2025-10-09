@@ -1,6 +1,6 @@
 @switch (currentContent?.type) {
     @case ('video') {
-        <video #video class="max-h-full w-full h-full object-fill" preload="metadata"
+        <video #video class="max-h-full w-full h-full object-fill" preload="auto"
             [attr.poster]="null" [controls]="false" [autoplay]="true" [muted]="true" [loop]="true" (ended)="onVideoEnded($event)"></video>
     }
     @case ('web') {

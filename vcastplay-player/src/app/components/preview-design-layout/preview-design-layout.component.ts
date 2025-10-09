@@ -85,7 +85,7 @@ export class PreviewDesignLayoutComponent {
         this.isDoneRendering.emit(canvas);
         this.cdr.detectChanges();
       })
-    }, 300);
+    }, 800);
   }
   
   trackById(index: number, item: any) {
