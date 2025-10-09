@@ -93,7 +93,7 @@ export class PreviewAssetsComponent {
       if (content.type == 'image') {
         this.imageRef.nativeElement.src = tempLink;
       }
-    }, 500);
+    }, 800);
   }
 
   ngOnDestroy() {
