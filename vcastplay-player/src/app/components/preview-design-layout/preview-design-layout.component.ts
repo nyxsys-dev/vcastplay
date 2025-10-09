@@ -7,6 +7,7 @@ import * as fabric from 'fabric';
 import { UtilsService } from '../../core/services/utils.service';
 import { PlatformService } from '../../core/services/platform.service';
 import { StorageService } from '../../core/services/storage.service';
+import { IndexedDbService } from '../../core/services/indexed-db.service';
 
 @Component({
   selector: 'app-preview-design-layout',
@@ -27,6 +28,7 @@ export class PreviewDesignLayoutComponent {
 
   designLayoutService = inject(DesignLayoutService);
   platformService = inject(PlatformService);
+  indexedDB = inject(IndexedDbService);
   storage = inject(StorageService);
   utils = inject(UtilsService);
 
@@ -55,31 +57,35 @@ export class PreviewDesignLayoutComponent {
 
   onRenderCanvas() {
     const content: any = this.contentData;
-    const files = ['asset'].includes(content.type) ? [ content ] : content.files;
-    
     const platform = this.storage.get('platform');
-    if (platform == 'desktop') {
-      this.utils.onDownloadFiles(files).then((response: any) => {
-        const { files } = response;        
-        // files.forEach(async (file: any, index: number) => await this.indexedDB.addItem({ index, file }));
-        
-        this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.contentData).then((canvas: any) => {
-          this.playing.set(true);
-          this.canvas = canvas;
-          // this.designLayoutService.onPlayVideosInCanvas(canvas);
-          this.isDoneRendering.emit(canvas);
-          this.cdr.detectChanges();
-        })
-      });
-    } else {      
-      this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.contentData).then((canvas: any) => {
+    // const files = ['asset'].includes(content.type) ? [ content ] : content.files;
+    
+    // const platform = this.storage.get('platform');
+    // if (platform == 'desktop') {
+    //   this.utils.onDownloadFiles(files).then((response: any) => {
+    //     const { files } = response;        
+    //     // files.forEach(async (file: any, index: number) => await this.indexedDB.addItem({ index, file }));
+    //   });
+    // } else {      
+    //   this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.contentData).then((canvas: any) => {
+    //     this.playing.set(true);
+    //     this.canvas = canvas;
+    //     // this.designLayoutService.onPlayVideosInCanvas(canvas);
+    //     this.isDoneRendering.emit(canvas);
+    //     this.cdr.detectChanges();
+    //   })
+    // }
+  
+    setTimeout(async () => {
+      const items: any = await this.indexedDB.getAllItems();      
+      this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, content, items, platform).then((canvas: any) => {
         this.playing.set(true);
         this.canvas = canvas;
-        // this.designLayoutService.onPlayVideosInCanvas(canvas);
+        this.designLayoutService.onPlayVideosInCanvas(canvas);
         this.isDoneRendering.emit(canvas);
         this.cdr.detectChanges();
       })
-    }
+    }, 300);
   }
   
   trackById(index: number, item: any) {

@@ -39,6 +39,8 @@ export class MainDisplayComponent {
   timeout: number = environment.timeout;
   isPlay = signal<boolean>(false);
 
+  contentReady = signal<boolean>(false);
+
   constructor(private cdr: ChangeDetectorRef) {
     const platform = this.storage.get('platform');
     window.addEventListener('online', () => this.networkStat.set(true));
@@ -57,7 +59,7 @@ export class MainDisplayComponent {
     window.receiveDataFromAndroid = (data: any) => {
       if (data) {
         console.log('🧭 Data received from Android:', data);
-        setTimeout(() => this.isPlay.set(true), this.timeout);
+        // setTimeout(() => this.isPlay.set(true), this.timeout);
       } else {
         console.log('🧭 Data received from Android is empty');
       }
@@ -79,21 +81,42 @@ export class MainDisplayComponent {
     this.isPlay.set(false)
   }
 
-  onClickSetContent(type: string) {
+  async onClickSetContent(type: string) {
+    this.contentReady.set(false);
     this.playlistService.onStopAllContents();
     this.player.onSetContent('stop');
 
-    setTimeout(() => {
-      if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
-      
-      const content = this.player.onSetContent(type);
-      if (!['design'].includes(type)) setTimeout(() => this.isPlay.set(true), this.timeout);
+    const content = this.player.onSetContent(type);
 
-      if (this.platform == 'android') {
-        const file = ['asset'].includes(type) ? [ content ] : content.files;
-        this.player.onSendDataToAndroid({ file });
-      }
-    }, 10);
+    if (this.platform == 'desktop') {
+      this.utils.onDeleteFolder('vcastplay');
+    }
+    const files: any[] = ['asset'].includes(type) ? [ content ] : content.files;
+
+    // Save files to indexedDB
+    await this.indexedDB.clearItems()
+    const promises: any = files.forEach(async (file: any) => {
+      const res = await fetch(file.link);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      await this.indexedDB.addItem({ file, url });
+    })
+
+    await Promise.all([promises]);
+
+    this.isPlay.set(true);
+
+    // setTimeout(() => {
+    //   if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
+      
+    //   const content = this.player.onSetContent(type);
+    //   if (!['design'].includes(type)) setTimeout(() => this.isPlay.set(true), this.timeout);
+
+    //   if (this.platform == 'android') {
+    //     const file = ['asset'].includes(type) ? [ content ] : content.files;
+    //     this.player.onSendDataToAndroid({ file });
+    //   }
+    // }, 10);
   }
 
   onClickNotepad() {
@@ -124,8 +147,6 @@ export class MainDisplayComponent {
 
   onDoneRendering(event: any) {
     // Plays content on Desktop and Web
-    console.log(event);
-    
     const platform = this.storage.get('platform');    
     if (!['android'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
   }

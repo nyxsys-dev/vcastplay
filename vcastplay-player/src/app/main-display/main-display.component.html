@@ -21,11 +21,12 @@
       [contentData]="contentData"
     />
     } @default {
-    <app-preview-assets
-      class="absolute h-full w-full flex items-center justify-center"
-      [currentContent]="contentData"
-      (timeUpdate)="onProgressUpdate(contentData.id, $event)"
-    />
+      <app-preview-assets
+        class="absolute h-full w-full flex items-center justify-center"
+        [ngClass]="{ 'opacity-100': isPlay(), 'opacity-0': !isPlay() }"
+        [currentContent]="contentData"
+        (timeUpdate)="onProgressUpdate(contentData.id, $event)"
+      />
     } }
   </ng-container>
 

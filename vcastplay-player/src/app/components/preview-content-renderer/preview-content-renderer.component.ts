@@ -36,18 +36,20 @@ export class PreviewContentRendererComponent {
 
   ngOnChanges() {
     if (this.autoPlay) {
-      const content: any = this.contentData;
-      const platform = this.storage.get('platform');
-      if (platform == 'desktop') {
-        const files = ['asset'].includes(content.type) ? [ content ] : content.files;
-        this.utils.onDownloadFiles(files).then((response: any) => {
-          this.playlistService.onPlayContent(this.contentData);
-          this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
-        })
-      } else {
-        this.playlistService.onPlayContent(this.contentData);
-        this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
-      }
+      // const content: any = this.contentData;
+      // const platform = this.storage.get('platform');
+      // if (platform == 'desktop') {
+      //   const files = ['asset'].includes(content.type) ? [ content ] : content.files;
+      //   this.utils.onDownloadFiles(files).then((response: any) => {
+      //     this.playlistService.onPlayContent(this.contentData);
+      //     this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
+      //   })
+      // } else {
+      //   this.playlistService.onPlayContent(this.contentData);
+      //   this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
+      // }
+      this.playlistService.onPlayContent(this.contentData);      
+      this.content.set(this.playlistService.onGetCurrentContent(this.contentData.id)());
     }
   }
 

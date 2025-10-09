@@ -35,9 +35,9 @@ export class DesignLayoutService {
     cancelAnimationFrame(this.animFrameId);
   }
 
-  onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout) {
+  onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout, items: any, platform: any) {
     return new Promise((resolve) => {
-      this.initCanvas(viewport, canvasContainer, design).then((canvas: any) => {
+      this.initCanvas(viewport, canvasContainer, design, items, platform).then((canvas: any) => {
         this.setCanvas(canvas);
         resolve(canvas);
       });
@@ -53,15 +53,17 @@ export class DesignLayoutService {
     this.updateCanvasSize(canvas, canvasContainer, fitScale);
   }
 
-  onAddVideoToCanvas(canvas: fabric.StaticCanvas, data: any, fabricObject?: fabric.Object | any) {
+  onAddVideoToCanvas(canvas: fabric.StaticCanvas, data: any, fabricObject?: fabric.Object | any, items?: any, platform?: any) {
     try {
       const { width, height }: any = data.fileDetails.resolution;
+
+      const file = items.find((item: any) => item.file.name == data.name);      
     
       const video = document.createElement('video');
       const videoSource = document.createElement('source');
 
       video.appendChild(videoSource);
-      videoSource.src = data.link;
+      videoSource.src = ['android', 'desktop'].includes(platform) ? file.url : data.url;
 
       video.width = width;
       video.height = height;
@@ -72,8 +74,8 @@ export class DesignLayoutService {
       video.crossOrigin = 'anonymous';
       video.preload = 'auto';
       video.poster = '';
-      video.currentTime = 1;
-      video.load();
+      // video.currentTime = 1;
+      // video.load();
       
       video.addEventListener('loadeddata', () => {
         video.currentTime = 0;
@@ -93,7 +95,7 @@ export class DesignLayoutService {
         videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
         videoObj.set('data', { ...data, element: video });
 
-        video.play().catch(err => console.warn('Video play failed:', err));
+        // video.play().catch(err => console.warn('Video play failed:', err));
 
         canvas.insertAt(videoObj.zIndex, videoObj);
         canvas.requestRenderAll();
@@ -179,6 +181,8 @@ export class DesignLayoutService {
     viewport: any,
     canvasElement: any, 
     design: DesignLayout,
+    items: any,
+    platform: any
   ) {
     return new Promise((resolve, reject) => {
       try {
@@ -212,7 +216,7 @@ export class DesignLayoutService {
                 const data: any = obj.data;
 
                 if (data.type == 'video') {
-                  this.onAddVideoToCanvas(newCanvas, data, obj);
+                  this.onAddVideoToCanvas(newCanvas, data, obj, items, platform);
                   // newCanvas.remove(obj);
                 }
               }
@@ -220,7 +224,7 @@ export class DesignLayoutService {
 
             this.syncDivsWithFabric(newCanvas, design);
             newCanvas.requestRenderAll();
-            this.onPlayVideosInCanvas(newCanvas);
+            // this.onPlayVideosInCanvas(newCanvas);
           })
         });
 
