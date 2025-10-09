@@ -27,6 +27,8 @@ import { PreviewContentRendererComponent } from '../components/preview-content-r
 })
 export class MainDisplayComponent {
 
+  private timeout: number = environment.timeout;
+
   networkService = inject(NetworkService);
   indexedDB = inject(IndexedDbService);
   player = inject(PlayerService);
@@ -35,11 +37,8 @@ export class MainDisplayComponent {
   utils = inject(UtilsService);
   storage = inject(StorageService);
 
-  desktopFilePath: string = environment.desktopFilePath;
-  timeout: number = environment.timeout;
   isPlay = signal<boolean>(false);
-
-  contentReady = signal<boolean>(false);
+  currentContent: any;
 
   constructor(private cdr: ChangeDetectorRef) {
     const platform = this.storage.get('platform');
@@ -82,29 +81,38 @@ export class MainDisplayComponent {
   }
 
   async onClickSetContent(type: string) {
-    this.contentReady.set(false);
-    this.playlistService.onStopAllContents();
-    this.player.onSetContent('stop');
-
     const content = this.player.onSetContent(type);
+    console.log('🧭 New Content detected:', content);
 
-    if (this.platform == 'desktop') {
-      this.utils.onDeleteFolder('vcastplay');
-    }
+    // if (this.platform == 'desktop') {
+    //   this.utils.onDeleteFolder('vcastplay');
+    // }
     const files: any[] = ['asset'].includes(type) ? [ content ] : content.files;
 
     // Save files to indexedDB
-    await this.indexedDB.clearItems()
+    await this.indexedDB.clearItems();
+    
     const promises: any = files.forEach(async (file: any) => {
+      console.log('🧭 Downloading File:', file);
+      
       const res = await fetch(file.link);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       await this.indexedDB.addItem({ file, url });
     })
 
-    await Promise.all([promises]);
+    await Promise.all([promises]).then(() => {
+      setTimeout(() => {
+        
+        this.playlistService.onStopAllContents();
+        this.player.onSetContent('stop');
+        this.currentContent = content;
+        this.isPlay.set(true);
+        console.log('🧭 Content set:', content);
+      }, this.timeout);
+    })
 
-    this.isPlay.set(true);
+    
 
     // setTimeout(() => {
     //   if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
@@ -147,8 +155,8 @@ export class MainDisplayComponent {
 
   onDoneRendering(event: any) {
     // Plays content on Desktop and Web
-    const platform = this.storage.get('platform');    
-    if (!['android'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
+    // const platform = this.storage.get('platform');    
+    // if (!['android'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
   }
   
   trackById(index: number, item: any): any {

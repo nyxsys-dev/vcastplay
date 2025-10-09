@@ -8,6 +8,7 @@ import { UtilsService } from '../../core/services/utils.service';
 import { PlatformService } from '../../core/services/platform.service';
 import { StorageService } from '../../core/services/storage.service';
 import { IndexedDbService } from '../../core/services/indexed-db.service';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
   selector: 'app-preview-design-layout',
@@ -26,6 +27,8 @@ export class PreviewDesignLayoutComponent {
   @Input() currentPlaying: any;
 
   @Output() isDoneRendering = new EventEmitter<any>();
+  
+  private timeout: number = environment.timeout;
 
   designLayoutService = inject(DesignLayoutService);
   platformService = inject(PlatformService);
@@ -71,7 +74,6 @@ export class PreviewDesignLayoutComponent {
 
   onRenderCanvas() {
     const content: any = this.contentData;
-    const platform = this.storage.get('platform');
     // const files = ['asset'].includes(content.type) ? [ content ] : content.files;
     
     // const platform = this.storage.get('platform');
@@ -91,16 +93,16 @@ export class PreviewDesignLayoutComponent {
     // }
   
     setTimeout(async () => {
+      const platform = await this.storage.get('platform');
       const items: any = await this.indexedDB.getAllItems();      
       this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, content, items, platform).then((canvas: any) => {
         this.playing.set(true);
-        this.canvas = canvas;
+        this.canvas = canvas;        
         this.designLayoutService.onPlayVideosInCanvas(canvas);
-        this.isDoneRendering.emit(canvas);       
-        
+        this.isDoneRendering.emit(canvas);
         this.cdr.detectChanges();
       })
-    }, 800);
+    }, this.timeout);
   }
   
   trackById(index: number, item: any) {

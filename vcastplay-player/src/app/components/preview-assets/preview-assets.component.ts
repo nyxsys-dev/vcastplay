@@ -23,8 +23,7 @@ export class PreviewAssetsComponent {
 
   @Output() timeUpdate = new EventEmitter<any>();
 
-  private desktopPath: string = environment.desktopFilePath;
-  private androidPath: string = environment.androidFilePath;
+  private timeout: number = environment.timeout;
 
   utils = inject(UtilsService);
   storage = inject(StorageService);
@@ -92,11 +91,11 @@ export class PreviewAssetsComponent {
       }
 
       if (content.type == 'image') image.src = tempLink;
-    }, 800);
+    }, this.timeout);
   }
 
   ngOnDestroy() {
-    if (this.currentContent.type == 'video' && this.videoRef) {
+    if (this.currentContent?.type == 'video' && this.videoRef) {
       this.videoRef.nativeElement.currentTime = 0;
       this.videoRef.nativeElement.remove();
     }

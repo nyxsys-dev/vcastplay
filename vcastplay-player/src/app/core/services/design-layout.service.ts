@@ -57,13 +57,13 @@ export class DesignLayoutService {
     try {
       const { width, height }: any = data.fileDetails.resolution;
 
-      const file = items.find((item: any) => item.file.name == data.name);      
+      const file = items.find((item: any) => item.file.name == data.name);       
     
       const video = document.createElement('video');
       const videoSource = document.createElement('source');
-
+      
       video.appendChild(videoSource);
-      videoSource.src = ['android', 'desktop'].includes(platform) ? file.url : data.url;
+      videoSource.src = file.url;
 
       video.width = width;
       video.height = height;
@@ -95,7 +95,7 @@ export class DesignLayoutService {
         videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
         videoObj.set('data', { ...data, element: video });
 
-        // video.play().catch(err => console.warn('Video play failed:', err));
+        if (platform == 'web') video.play().catch(err => console.warn('Video play failed:', err));
 
         canvas.insertAt(videoObj.zIndex, videoObj);
         canvas.requestRenderAll();
@@ -119,7 +119,7 @@ export class DesignLayoutService {
   }
   
   onPlayVideosInCanvas(canvas: fabric.StaticCanvas) {
-    const objects = canvas.getObjects();
+    const objects = canvas.getObjects();    
     objects.forEach((object: any) => {
       const data = object.data;
       if (data && data?.type == 'video' && data.element instanceof HTMLVideoElement) {
