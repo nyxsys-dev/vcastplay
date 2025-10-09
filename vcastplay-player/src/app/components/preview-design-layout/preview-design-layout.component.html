@@ -7,7 +7,7 @@
                 @if (!layer.content.marquee) {
                     <app-preview-content-renderer [contentData]="layer.content" [autoPlay]="playing()" />
                 } @else {
-                    <div class="overflow-hidden w-full h-full">
+                    <div class="overflow-hidden w-full h-full" *ngIf="canvas">
                         <div id="marquee" class="animate-marquee items-center justify-center w-full h-full gap-3 text-white"
                             [ngStyle]="{ 'animation-duration': layer.style.duration + 's' }">
                             <div class="flex gap-3">

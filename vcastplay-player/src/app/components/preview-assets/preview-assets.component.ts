@@ -8,7 +8,7 @@ import { IndexedDbService } from '../../core/services/indexed-db.service';
 
 @Component({
   selector: 'app-preview-assets',
-  imports: [ SafeurlPipe ],
+  imports: [ ],
   templateUrl: './preview-assets.component.html',
   styleUrl: './preview-assets.component.scss'
 })
@@ -61,6 +61,7 @@ export class PreviewAssetsComponent {
 
   ngAfterViewInit() {
     const video = this.videoRef?.nativeElement;
+    const image = this.imageRef?.nativeElement;
     const content: any = this.currentContent; 
     // const platform = this.storage.get('platform');
     // if (platform == 'desktop') {
@@ -90,9 +91,7 @@ export class PreviewAssetsComponent {
         })
       }
 
-      if (content.type == 'image') {
-        this.imageRef.nativeElement.src = tempLink;
-      }
+      if (content.type == 'image') image.src = tempLink;
     }, 800);
   }
 

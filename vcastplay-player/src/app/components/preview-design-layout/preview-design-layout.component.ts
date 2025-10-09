@@ -18,6 +18,7 @@ import { IndexedDbService } from '../../core/services/indexed-db.service';
 export class PreviewDesignLayoutComponent {
 
   @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
   @Input() viewport: any;
   @Input() contentData!: any;
@@ -44,8 +45,21 @@ export class PreviewDesignLayoutComponent {
 
   ngOnInit(): void { }
 
-  ngAfterViewInit(): void {
+  ngOnChanges(): void {
+    console.log('🧭 Content data changed:', this.contentData);
+    if (this.canvas) {
+      this.designLayoutService.onStopVideosInCanvas(this.canvas);
+      this.designLayoutService.removeCanvas(this.canvas);
+      this.canvas = null;
+
+      const htmlCanvas = this.canvasContainer.nativeElement.querySelector('canvas') as HTMLCanvasElement;
+      htmlCanvas.remove();
+    }
     this.onRenderCanvas()  
+  }
+
+  ngAfterViewInit(): void {
+    // this.onRenderCanvas()  
   }
 
   ngOnDestroy(): void {
@@ -82,7 +96,8 @@ export class PreviewDesignLayoutComponent {
         this.playing.set(true);
         this.canvas = canvas;
         this.designLayoutService.onPlayVideosInCanvas(canvas);
-        this.isDoneRendering.emit(canvas);
+        this.isDoneRendering.emit(canvas);       
+        
         this.cdr.detectChanges();
       })
     }, 800);
