@@ -77,40 +77,42 @@ export class MainDisplayComponent {
     this.player.onSetContent('stop');
     if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
     this.indexedDB.clearItems();
+    this.currentContent = null;
     this.isPlay.set(false)
   }
 
   async onClickSetContent(type: string) {
     const content = this.player.onSetContent(type);
     console.log('🧭 New Content detected:', content);
-
-    // if (this.platform == 'desktop') {
-    //   this.utils.onDeleteFolder('vcastplay');
-    // }
+    
     const files: any[] = ['asset'].includes(type) ? [ content ] : content.files;
 
     // Save files to indexedDB
     await this.indexedDB.clearItems();
     
-    const promises: any = files.forEach(async (file: any) => {
+    // const promises: any = files.map(async (file: any) => {
+    //   console.log('🧭 Downloading File:', file);
+      
+    //   const res = await fetch(file.link);
+    //   const blob = await res.blob();
+    //   const url = URL.createObjectURL(blob);
+    //   await this.indexedDB.addItem({ file, url });
+    // })
+
+    await Promise.all(files.map(async (file: any) => {
       console.log('🧭 Downloading File:', file);
       
       const res = await fetch(file.link);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       await this.indexedDB.addItem({ file, url });
-    })
-
-    await Promise.all([promises]).then(() => {
-      setTimeout(() => {
-        
-        this.playlistService.onStopAllContents();
-        this.player.onSetContent('stop');
-        this.currentContent = content;
-        this.isPlay.set(true);
-        console.log('🧭 Content set:', content);
-      }, this.timeout);
-    })
+    }));
+    
+    this.playlistService.onStopAllContents();
+    this.player.onSetContent('stop');
+    this.currentContent = content;
+    this.isPlay.set(true);
+    console.log('🧭 Content set:', content);
 
     
 

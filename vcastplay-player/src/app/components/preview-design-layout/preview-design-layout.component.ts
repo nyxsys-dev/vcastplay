@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, HostListener, inject, Input, Output, signal, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, HostListener, inject, Input, Output, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { DesignLayout } from '../../core/interfaces/design-layout';
 import { DesignLayoutService } from '../../core/services/design-layout.service';
 import { PrimengModule } from '../../core/modules/primeng/primeng.module';
@@ -48,17 +48,18 @@ export class PreviewDesignLayoutComponent {
 
   ngOnInit(): void { }
 
-  ngOnChanges(): void {
-    console.log('🧭 Content data changed:', this.contentData);
-    if (this.canvas) {
-      this.designLayoutService.onStopVideosInCanvas(this.canvas);
-      this.designLayoutService.removeCanvas(this.canvas);
-      this.canvas = null;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['contentData'] && this.contentData) {
+      if (this.canvas) {
+        this.designLayoutService.onStopVideosInCanvas(this.canvas);
+        this.designLayoutService.removeCanvas(this.canvas);
+        this.canvas = null;
 
-      const htmlCanvas = this.canvasContainer.nativeElement.querySelector('canvas') as HTMLCanvasElement;
-      htmlCanvas.remove();
-    }
-    this.onRenderCanvas()  
+        const htmlCanvas = this.canvasContainer.nativeElement.querySelector('canvas') as HTMLCanvasElement;
+        htmlCanvas.remove();
+      }
+      this.onRenderCanvas(this.contentData); 
+    }  
   }
 
   ngAfterViewInit(): void {
@@ -72,37 +73,18 @@ export class PreviewDesignLayoutComponent {
     this.canvas = null;
   }
 
-  onRenderCanvas() {
-    const content: any = this.contentData;
-    // const files = ['asset'].includes(content.type) ? [ content ] : content.files;
-    
-    // const platform = this.storage.get('platform');
-    // if (platform == 'desktop') {
-    //   this.utils.onDownloadFiles(files).then((response: any) => {
-    //     const { files } = response;        
-    //     // files.forEach(async (file: any, index: number) => await this.indexedDB.addItem({ index, file }));
-    //   });
-    // } else {      
-    //   this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, this.contentData).then((canvas: any) => {
-    //     this.playing.set(true);
-    //     this.canvas = canvas;
-    //     // this.designLayoutService.onPlayVideosInCanvas(canvas);
-    //     this.isDoneRendering.emit(canvas);
-    //     this.cdr.detectChanges();
-    //   })
-    // }
-  
-    setTimeout(async () => {
-      const platform = await this.storage.get('platform');
-      const items: any = await this.indexedDB.getAllItems();      
-      this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, content, items, platform).then((canvas: any) => {
-        this.playing.set(true);
-        this.canvas = canvas;        
-        this.designLayoutService.onPlayVideosInCanvas(canvas);
-        this.isDoneRendering.emit(canvas);
-        this.cdr.detectChanges();
-      })
-    }, this.timeout);
+  async onRenderCanvas(content: any) { 
+    // setTimeout(async () => {
+    // }, this.timeout);
+    const platform = await this.storage.get('platform');
+    const items: any = await this.indexedDB.getAllItems();      
+    this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, content, items, platform).then((canvas: any) => {
+      this.playing.set(true);
+      this.canvas = canvas;        
+      this.designLayoutService.onPlayVideosInCanvas(canvas);
+      this.isDoneRendering.emit(canvas);
+      this.cdr.detectChanges();
+    })
   }
   
   trackById(index: number, item: any) {
