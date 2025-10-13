@@ -124,7 +124,7 @@ export class PreviewAssetsComponent {
     const file: any = items.find((item: any) => item.file.name == content.name);      
     if (!file) return;
     
-    const tempLink = file.url;
+    const tempLink = URL.createObjectURL(file.blob); //file.url;
 
     if (content.type == 'video' && video) {
       video.src = tempLink;

@@ -63,7 +63,7 @@ export class DesignLayoutService {
       const videoSource = document.createElement('source');
       
       video.appendChild(videoSource);
-      videoSource.src = file.url;
+      videoSource.src = URL.createObjectURL(file.blob); //file.url;
 
       video.width = width;
       video.height = height;

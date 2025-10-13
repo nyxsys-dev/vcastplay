@@ -111,8 +111,8 @@ export class MainDisplayComponent {
       
       const res = await fetch(file.link);
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      await this.indexedDB.addItem({ file, url });
+      // const url = URL.createObjectURL(blob);
+      await this.indexedDB.addItem({ file, blob });
     }));
 
     this.playlistService.onStopAllContents();
