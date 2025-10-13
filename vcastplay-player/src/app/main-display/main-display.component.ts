@@ -65,7 +65,13 @@ export class MainDisplayComponent {
     }
   }
 
-  ngOnInit() { }
+  async ngOnInit() {
+    const content = this.storage.get('currentContent');    
+    if (content) {
+      this.currentContent = content; //JSON.parse(content);
+      this.isPlay.set(true);
+    }
+  }
 
   async ngAfterViewInit() {
     this.onGetPlayerInformation();
@@ -77,6 +83,7 @@ export class MainDisplayComponent {
     this.player.onSetContent('stop');
     if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
     this.indexedDB.clearItems();
+    this.storage.remove('currentContent');
     this.currentContent = null;
     this.isPlay.set(false)
   }
@@ -107,11 +114,12 @@ export class MainDisplayComponent {
       const url = URL.createObjectURL(blob);
       await this.indexedDB.addItem({ file, url });
     }));
-    
+
     this.playlistService.onStopAllContents();
     this.player.onSetContent('stop');
     this.currentContent = content;
     this.isPlay.set(true);
+    this.storage.set('currentContent', JSON.stringify(content));
     console.log('🧭 Content set:', content);
 
     
