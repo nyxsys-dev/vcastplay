@@ -217,6 +217,21 @@
       />
     </div>
     }
+
+    @if (['android'].includes(platform)) {
+    <div class="flex gap-3">
+      <label for="left" class="text-sm mr-auto">Close:</label>
+      <p-button icon="pi pi-times" (onClick)="onClickAndroidBtn('close')" />
+    </div>
+    <div class="flex gap-3">
+      <label for="left" class="text-sm mr-auto">Restart:</label>
+      <p-button icon="pi pi-refresh" (onClick)="onClickAndroidBtn('restart')" />
+    </div>
+    <div class="flex gap-3">
+      <label for="left" class="text-sm mr-auto">Shutdown:</label>
+      <p-button icon="pi pi-power-off" (onClick)="onClickAndroidBtn('shutdown')" />
+    </div>
+    }
   </form>
   <ng-template #footer>
     <p-button label="Clear Logs" severity="secondary" (onClick)="onClickClearLogs()" />

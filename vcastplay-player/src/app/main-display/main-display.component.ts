@@ -184,6 +184,10 @@ export class MainDisplayComponent {
     // if (!['android'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
   }
 
+  onClickAndroidBtn(data: string) {
+    this.player.onSendDataToAndroid({ data });
+  }
+
   onClickApplySettings() {
     const platform = this.storage.get('platform');
     if (['android'].includes(platform)) this.player.onSendDataToAndroid(this.settingsForm.value);
