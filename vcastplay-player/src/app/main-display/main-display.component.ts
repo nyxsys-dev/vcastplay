@@ -13,7 +13,7 @@ import { PlatformService } from '../core/services/platform.service';
 import { environment } from '../../environments/environment.development';
 import { PreviewContentRendererComponent } from '../components/preview-content-renderer/preview-content-renderer.component';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-main-display',
@@ -53,10 +53,13 @@ export class MainDisplayComponent {
     height: new FormControl(800),
     alwaysOn: new FormControl(false),
     alwaysOnTop: new FormControl(false),
-    contentLogs: new FormControl(true),
+    contentLogs: new FormControl(false),
     toggleAudio: new FormControl(false),
     audio: new FormControl(false),
+    displayId: new FormControl(null),
   });
+
+  displayOptions: MenuItem[] = [];
 
   constructor(private cdr: ChangeDetectorRef) {
     const platform = this.storage.get('platform');
@@ -201,11 +204,18 @@ export class MainDisplayComponent {
 
   onClickClearLogs() {
     const platform = this.storage.get('platform');
-    if (['android'].includes(platform)) this.player.onSendDataToAndroid({ contentLogs: false });
+    if (['android'].includes(platform)) this.player.onSendDataToAndroid({ clearLogs: true });
     if (['desktop'].includes(platform)) {
       window.system.onDeleteContentLogs()
         .then((res) => this.message.add({ severity:'success', summary: 'Success', detail: res }))
     }
+  }
+
+  onShowSettings() {
+    window.system.onGetDisplays()
+      .then((displays) => {
+        this.displayOptions = displays;
+      })
   }
   
   trackById(index: number, item: any): any {

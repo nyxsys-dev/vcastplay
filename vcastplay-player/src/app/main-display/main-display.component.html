@@ -118,6 +118,7 @@
   [(visible)]="showSettings"
   [style]="{ width: '20rem' }"
   [resizable]="false"
+  (onShow)="onShowSettings()"
   (onHide)="showSettings.set(false)"
   draggable
   modal
@@ -143,6 +144,18 @@
     <div class="flex gap-3">
       <label for="left" class="text-sm">Always On Top:</label>
       <p-toggleswitch class="ml-auto" formControlName="alwaysOnTop" />
+    </div>
+    <div class="flex gap-3">
+      <label for="fullscreen" class="text-sm">Select Display:</label>
+      <p-select
+        class="ml-auto"
+        formControlName="displayId"
+        [options]="displayOptions"
+        optionLabel="name"
+        optionValue="id"
+        appendTo="body"
+        placeholder="Select display"
+      />
     </div>
     <div class="flex gap-3">
       <label for="fullscreen" class="text-sm">Fullscreen:</label>
@@ -220,9 +233,7 @@
         showButtons
       />
     </div>
-    }
-
-    @if (['android'].includes(platform)) {
+    } @if (['android'].includes(platform)) {
     <div class="flex gap-3">
       <label for="left" class="text-sm mr-auto">Re-Open:</label>
       <p-button icon="pi pi-times" (onClick)="onClickAndroidBtn('reopen')" />

@@ -18,8 +18,10 @@ contextBridge.exposeInMainWorld('system', {
   onSendWindowData: (data) => ipcRenderer.send('sendWindowData', data),
 
   // Content Logs functions
-  onSendContentLogs: (data) => ipcRenderer.send('sendContentLogs', data),
+  onSendContentLogs: (data) => ipcRenderer.send('onSendContentLogs', data),
   onDeleteContentLogs: () => ipcRenderer.invoke('onDeleteContentLogs'),
+
+  onGetDisplays: () => ipcRenderer.invoke('onGetDisplays'),
 
   isElectron: true
 });

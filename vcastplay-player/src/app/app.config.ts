@@ -30,6 +30,7 @@ declare global {
       onSendWindowData: (data: any) => void;
       onSendContentLogs: (data: any) => Promise<any>;
       onDeleteContentLogs: () => Promise<any>;
+      onGetDisplays: () => Promise<any>;
       isElectron: boolean;
     },
     getDeviceDetails: (data: any) => void;
