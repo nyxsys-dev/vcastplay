@@ -98,7 +98,6 @@ export class PlaylistsService {
         const sendData = { playlist: playlist.name, name: item.name, duration: item.duration };
         switch(platform) {
           case 'android':
-            console.log('Android: Current Playing', sendData);
             this.playerService.onSendDataToAndroid(sendData);
             break;
           case 'desktop':

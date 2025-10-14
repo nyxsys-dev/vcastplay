@@ -193,12 +193,10 @@ export class MainDisplayComponent {
 
   onClickApplySettings() {
     const platform = this.storage.get('platform');
+    const { contentLogs } = this.settingsForm.value;
+    this.isContentLogs.set(contentLogs);
     if (['android'].includes(platform)) this.player.onSendDataToAndroid(this.settingsForm.value);
-    if (['desktop'].includes(platform)) {
-      const { contentLogs } = this.settingsForm.value;
-      this.isContentLogs.set(contentLogs);
-      window.system.onSendWindowData(this.settingsForm.value);
-    }
+    if (['desktop'].includes(platform)) window.system.onSendWindowData(this.settingsForm.value);
   }
 
   onClickClearLogs() {
