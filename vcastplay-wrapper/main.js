@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, session } = require('electron');
+const { app, screen, BrowserWindow, ipcMain, Menu, session } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 const path = require('path');
@@ -19,10 +19,23 @@ let win;
  */
 
 function createWindow() {
+  const display = screen.getPrimaryDisplay();
+
   win = new BrowserWindow({
-    fullscreen: !isDev,
+    fullscreenable: true,
+    // fullscreen: !isDev,
     contextIsolation: false,
     autoHideMenuBar: true,
+    width: display.size.width,
+    height: display.size.height,
+    // width: 1000,         // custom width
+    // height: 700,         // custom height
+    // x: 0,              // position from left
+    // y: 0,              // position from top
+    frame: false,        // remove default OS window frame
+    // resizable: false,    // disable resizing (optional)
+    transparent: false,  // set to true if you want transparent background
+    hasShadow: false,    // set to true if you want a shadow
     icon: path.join(__dirname, 'assets/favicon.png'),
     webPreferences: {
       nodeIntegration: true,
@@ -94,8 +107,25 @@ ipcMain.on('check-for-updates', () => {
   autoUpdater.checkForUpdatesAndNotify();
 });
 
+// Send settings to renderer
+ipcMain.on('sendWindowData', async (event, data) => {
+  if (!win) return;
+  await systemFunc.onApplySettings(win, data);
+});
+
+// Send Content Playback logs
+ipcMain.on('sendContentLogs', async (event, data) => {
+  await systemFunc.onSaveContentLogs(data);
+});
+
+// Delete Content Playback logs
+ipcMain.on('deleteContentLogs', async () => {
+  await systemFunc.onDeleteContentLogs();
+});
+
 app.whenReady().then(async () => {
   await session.defaultSession.setProxy({ mode: "system" });
   createWindow();
 });
+
 app.on('window-all-closed', () => app.quit());

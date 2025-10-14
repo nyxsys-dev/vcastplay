@@ -1,4 +1,4 @@
-const { app, screen, nativeImage, Tray, Menu } = require('electron');
+const { app, screen, nativeImage, Tray, Menu, } = require('electron');
 const { exec } = require('child_process');
 
 const os = require('os');
@@ -43,15 +43,15 @@ async function onGetSystemInfo() {
 
 async function onSystemCommand(action, appName) {
     const commands = {
-        shutdown: "shutdown -s -t 0",
-        restart: "shutdown -r -t 0",
+        shutdown: 'shutdown -s -t 0',
+        restart: 'shutdown -r -t 0',
         open: `start ${appName}`,
         close: `taskkill /IM ${appName}.exe /F`,
     };
     return new Promise((resolve, reject) => {
         exec(commands[action], (err) => {
-            if (err) reject("Failed");
-            else resolve("OK");
+            if (err) reject('Failed');
+            else resolve('OK');
         });
     });
 }
@@ -128,7 +128,7 @@ async function onTakeScreenShot() {
 function onDeleteFolder(folderName) {
   return new Promise((resolve, reject) => {
     try {
-      const downloadDir = path.join(app.getPath("downloads"), folderName);
+      const downloadDir = path.join(app.getPath('downloads'), folderName);
       if (fs.existsSync(downloadDir)) {
         fs.rm(downloadDir, { recursive: true, force: true }, (err) => {
           if (err) reject(err);
@@ -143,4 +143,59 @@ function onDeleteFolder(folderName) {
   })
 }
 
-module.exports = { onGetSystemInfo, onSystemCommand, onCreateTray, onTakeScreenShot, onDeleteFolder };
+function onApplySettings(window, data) {
+  return new Promise((resolve, reject) => {
+    try {
+      const { width, height, top, left, resizable, fullscreen, alwaysOnTop } = data || {};
+      window.setResizable(resizable);
+      window.setFullScreen(fullscreen);
+      window.setPosition(Math.round(left), Math.round(top), false);
+      window.setSize(width, height, false);
+      window.setAlwaysOnTop(alwaysOnTop);
+      resolve('Settings applied successfully');
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
+function onSaveContentLogs(message) {
+  return new Promise((resolve, reject) => {
+    try {
+      const logDir = path.join(app.getPath('userData'), 'logs');
+      const logFile = path.join(logDir, 'content.log');
+      const timestamp = new Date().toISOString();
+      const logMessage = `${timestamp}: ${message}\n`;
+      
+      if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir);
+      }
+
+      fs.appendFileSync(logFile, logMessage, (err) => {
+        if (err) console.error('❌ Failed to write log:', err);
+        else resolve('Log saved successfully');
+      });
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
+function onDeleteContentLogs() {
+  return new Promise((resolve, reject) => {
+    try {
+      const logDir = path.join(app.getPath('userData'), 'logs');
+      const logFile = path.join(logDir, 'content.log');
+      if (fs.existsSync(logFile)) {
+        fs.unlinkSync(logFile, (err) => {
+          if (err) console.error('❌ Failed to delete log:', err);
+          else resolve('Log deleted successfully');
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
+module.exports = { onGetSystemInfo, onSystemCommand, onCreateTray, onTakeScreenShot, onDeleteFolder, onApplySettings, onSaveContentLogs, onDeleteContentLogs };

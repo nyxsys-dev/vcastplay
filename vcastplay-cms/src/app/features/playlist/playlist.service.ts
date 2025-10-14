@@ -472,7 +472,7 @@ export class PlaylistService {
     const contents = playlist.contents;  
     if (contents.length === 0) return;
 
-    const state = this.states.get(playlist.id)!;
+    const state: ContentState = this.states.get(playlist.id)!;
     
     // Only reset this playlist, not others
     clearTimeout(state.timeoutId);
@@ -488,7 +488,7 @@ export class PlaylistService {
       const item = contents[state.index];
       const { hasGap, type, speed } = playlist.transition;
       const transitionSpeed = speed * 100;
-      const gapDuration = hasGap ? 500 : 0;
+      const gapDuration = hasGap ? 1000 : 0;
 
       state.currentTransition.set({ type, speed: transitionSpeed });   
       state.isPlaying.set(true);
@@ -550,7 +550,7 @@ export class PlaylistService {
           // state.fadeIn.set(true);
           // state.currentContent.set(contents[state.index]);
           playNextContent();
-        }, gapDuration);
+        }, gapDuration + 500);
 
       }, duration);
     }

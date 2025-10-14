@@ -12,6 +12,7 @@ import { PreviewDesignLayoutComponent } from '../components/preview-design-layou
 import { PlatformService } from '../core/services/platform.service';
 import { environment } from '../../environments/environment.development';
 import { PreviewContentRendererComponent } from '../components/preview-content-renderer/preview-content-renderer.component';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-main-display',
@@ -38,7 +39,21 @@ export class MainDisplayComponent {
   storage = inject(StorageService);
 
   isPlay = signal<boolean>(false);
+  showSettings = signal<boolean>(false);
   currentContent: any;
+
+  settingsForm: FormGroup = new FormGroup({
+    fullscreen: new FormControl(false),
+    resizable: new FormControl(true),
+    top: new FormControl(0),
+    left: new FormControl(0),
+    width: new FormControl(600),
+    height: new FormControl(800),
+    alwaysOn: new FormControl(false),
+    alwaysOnTop: new FormControl(false),
+    contentLogs: new FormControl(false),
+    toggleAudio: new FormControl(false),
+  });
 
   constructor(private cdr: ChangeDetectorRef) {
     const platform = this.storage.get('platform');
@@ -48,7 +63,7 @@ export class MainDisplayComponent {
     effect(() => {
       console.log('🧭 Network status changed:', this.networkStat());
       console.log(`System has been initialized in ${platform.toUpperCase()}`);       
-      // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };      
+      // this.systemInfo = { ...this.systemInfo, coords: this.utils.location() };
     })
 
     /**
@@ -90,7 +105,7 @@ export class MainDisplayComponent {
 
   async onClickSetContent(type: string) {
     const content = this.player.onSetContent(type);
-    console.log('🧭 New Content detected:', content);
+    // console.log('🧭 New Content detected:', content);
     
     const files: any[] = ['asset'].includes(type) ? [ content ] : content.files;
 
@@ -107,7 +122,7 @@ export class MainDisplayComponent {
     // })
 
     await Promise.all(files.map(async (file: any) => {
-      console.log('🧭 Downloading File:', file);
+      // console.log('🧭 Downloading File:', file);
       
       const res = await fetch(file.link);
       const blob = await res.blob();
@@ -120,7 +135,7 @@ export class MainDisplayComponent {
     this.currentContent = content;
     this.isPlay.set(true);
     this.storage.set('currentContent', JSON.stringify(content));
-    console.log('🧭 Content set:', content);
+    // console.log('🧭 Content set:', content);
 
     
 
@@ -168,6 +183,22 @@ export class MainDisplayComponent {
     // const platform = this.storage.get('platform');    
     // if (!['android'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
   }
+
+  onClickApplySettings() {
+    const platform = this.storage.get('platform');
+    if (['android'].includes(platform)) this.player.onSendDataToAndroid(this.settingsForm.value);
+    if (['desktop'].includes(platform)) {
+      const { contentLogs } = this.settingsForm.value;
+      this.isContentLogs.set(contentLogs);
+      window.system.onSendWindowData(this.settingsForm.value);
+    }
+  }
+
+  onClickClearLogs() {
+    const platform = this.storage.get('platform');
+    if (['android'].includes(platform)) this.player.onSendDataToAndroid({ contentLogs: false });
+    if (['desktop'].includes(platform)) window.system.onDeleteContentLogs();
+  }
   
   trackById(index: number, item: any): any {
     return { id: index, contentId: item.contentId } 
@@ -186,6 +217,7 @@ export class MainDisplayComponent {
 
   get isPlaying() { return this.playlistService.isPlaying; }
   get onProgressUpdate() { return this.playlistService.onProgressUpdate; }
+  get isContentLogs() { return this.playlistService.isContentLogs; }
 
   get platform() { return this.platformService.platform; }
   get dataFromAndroid() { return this.player.dataFromAndroid; }

@@ -1,10 +1,10 @@
 <div #mainPlayer class="flex items-center justify-center h-full">
     <div #viewport class="relative flex items-center justify-center aspect-video
-        transition-all duration-{{content().currentTransition()?.speed}} ease-in-out" [ngClass]="getTransitionClasses()">
+        transition duration-{{content().currentTransition()?.speed}} ease-in-out" [ngClass]="getTransitionClasses()">
         @for (item of playlistContents; track trackById($index, item)) {
             @switch (item.type) {
                 @case ('design') {
-                    <app-preview-design-layout class="absolute flex-1 h-full w-full flex items-center justify-center" 
+                    <app-preview-design-layout class="absolute flex-1 h-full w-full flex items-center justify-center inset-0" 
                         [ngClass]="{ 
                             'opacity-0': content().currentContent()?.contentId != item.contentId,
                             'opacity-100': content().currentContent()?.contentId == item.contentId 
@@ -12,7 +12,7 @@
                         [viewport]="viewport" [currentPlaying]="content().currentContent()" [designLayout]="item" [isViewOnly]="true" />
                 }
                 @default {
-                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center" [currentPlaying]="content().currentContent()" 
+                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center inset-0" [currentPlaying]="content().currentContent()" 
                         [ngClass]="{ 
                             'opacity-0': content().currentContent()?.contentId != item.contentId,
                             'opacity-100': content().currentContent()?.contentId == item.contentId 

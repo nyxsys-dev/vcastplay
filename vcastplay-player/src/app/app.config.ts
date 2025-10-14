@@ -24,6 +24,9 @@ declare global {
       downloadFiles: (files: any[]) => Promise<string>;
       onDownloadProgress: (callback: (data: any) => void) => void;
       onDeleteFolder: (path: string) => void;
+      onSendWindowData: (data: any) => void;
+      onSendContentLogs: (data: any) => Promise<any>;
+      onDeleteContentLogs: () => Promise<any>;
       isElectron: boolean;
     },
     getDeviceDetails: (data: any) => void;

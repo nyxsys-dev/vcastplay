@@ -13,6 +13,7 @@ export class PlaylistsService {
   private states = new Map<number, ContentState>();
   
   isPlaying = signal<boolean>(false);
+  isContentLogs = signal<any>(null);
 
   desktopFilePath: string = environment.desktopFilePath;
   androidFilePath: string = environment.androidFilePath;
@@ -58,23 +59,7 @@ export class PlaylistsService {
     state.fadeIn.set(false);
 
     const playNextContent = () => {
-      let tempItem: any;
-      
-      const { link, ...content } = contents[state.index];
-
-      switch (platform) {
-        case 'desktop':
-          tempItem = { link: `${this.desktopFilePath}${content.name}` , ...content};
-          break;
-        case 'android':
-          tempItem = { link: `${this.androidFilePath}${content.name}` , ...content};
-          break;
-        default:
-          tempItem = contents[state.index];
-          break;
-      }
-
-      const item = tempItem;
+      const item = contents[state.index];
 
       const { hasGap, type, speed } = playlist.transition;
       const transitionSpeed = speed * 100;
@@ -106,7 +91,18 @@ export class PlaylistsService {
           break;
       }
 
-      console.log("Current Playing:", { name: item.name, link: item.link });
+      if (this.isContentLogs()) {
+        // Send data to android or desktop
+        const sendData = JSON.stringify({ playlist: playlist.name, name: item.name, link: item.link });
+        switch(platform) {
+          case 'android':
+            this.onSendDataToAndroid(sendData);
+            break;
+          case 'desktop':
+            this.onSendDataToDesktop(sendData);
+            break;
+        }
+      }
       
       state.timeoutId = setTimeout(() => {
 
@@ -203,4 +199,18 @@ export class PlaylistsService {
    * End Play Playlist
    * ======================================================
   */
+
+  onSendDataToAndroid(data: any) {
+    if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {
+      const jsonData = JSON.stringify(data);
+      console.log(jsonData);
+      (window as any).AndroidBridge.sendCommand(jsonData);
+    } else {
+      console.warn('AndroidBridge not available.');
+    }
+  }
+
+  onSendDataToDesktop(data: any) {
+    window.system.onSendContentLogs(data)
+  }
 }
