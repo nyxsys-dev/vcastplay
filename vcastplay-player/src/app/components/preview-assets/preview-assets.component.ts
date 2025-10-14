@@ -59,7 +59,8 @@ export class PreviewAssetsComponent {
     //   this.playerService.onSendDataToDesktop
     // }
     const video: HTMLVideoElement = event.target as HTMLVideoElement;
-    video.pause();
+    video.currentTime = 0;
+    video.remove();
   }
 
   private async onLoadMedia(content: any) {
