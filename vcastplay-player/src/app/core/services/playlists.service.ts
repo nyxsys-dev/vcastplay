@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { ContentState, Playlists } from '../interfaces/playlist';
 import { environment } from '../../../environments/environment.development';
 import { PlatformService } from './platform.service';
+import { PlayerService } from './player.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { PlatformService } from './platform.service';
 export class PlaylistsService {
 
   platform = inject(PlatformService);
+  playerService = inject(PlayerService);
   
   private states = new Map<number, ContentState>();
   
@@ -93,13 +95,14 @@ export class PlaylistsService {
 
       if (this.isContentLogs()) {
         // Send data to android or desktop
-        const sendData = JSON.stringify({ playlist: playlist.name, name: item.name, duration: item.duration });
+        const sendData = { playlist: playlist.name, name: item.name, duration: item.duration };
         switch(platform) {
           case 'android':
-            this.onSendDataToAndroid(sendData);
+            console.log('Android: Current Playing', sendData);
+            this.playerService.onSendDataToAndroid(sendData);
             break;
           case 'desktop':
-            this.onSendDataToDesktop(sendData);
+            this.playerService.onSendDataToDesktop(sendData);
             break;
         }
       }
@@ -199,18 +202,4 @@ export class PlaylistsService {
    * End Play Playlist
    * ======================================================
   */
-
-  onSendDataToAndroid(data: any) {
-    if ((window as any).AndroidBridge && typeof (window as any).AndroidBridge.sendCommand === 'function') {
-      const jsonData = JSON.stringify(data);
-      console.log(jsonData);
-      (window as any).AndroidBridge.sendCommand(jsonData);
-    } else {
-      console.warn('AndroidBridge not available.');
-    }
-  }
-
-  onSendDataToDesktop(data: any) {
-    window.system.onSendContentLogs(data);
-  }
 }

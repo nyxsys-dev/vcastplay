@@ -1,10 +1,9 @@
 import { Component, ElementRef, EventEmitter, inject, Input, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Assets } from '../../core/interfaces/assets';
-import { SafeurlPipe } from '../../core/pipes/safeurl.pipe';
 import { UtilsService } from '../../core/services/utils.service';
 import { StorageService } from '../../core/services/storage.service';
-import { environment } from '../../../environments/environment.development';
 import { IndexedDbService } from '../../core/services/indexed-db.service';
+import { PlayerService } from '../../core/services/player.service';
 
 @Component({
   selector: 'app-preview-assets',
@@ -23,67 +22,11 @@ export class PreviewAssetsComponent {
 
   @Output() timeUpdate = new EventEmitter<any>();
 
-  private timeout: number = environment.timeout;
-
   utils = inject(UtilsService);
   storage = inject(StorageService);
   indexedDB = inject(IndexedDbService);
+  playerService = inject(PlayerService);
 
-  // async ngOnChanges() {
-  //   const content: any = this.currentContent;
-  //   const platform = this.storage.get('platform');
-
-  //   if (this.videoRef) {
-  //     this.videoRef.nativeElement.currentTime = 0;
-  //     this.videoRef.nativeElement.play();
-  //   }
-    
-  //   // if (!this.currentPlaying) return;
-
-  //   // const items: any = await this.indexedDB.getAllItems();
-  //   // const { file, url } = items.find((item: any) => item.file.name == content.name);
-
-  //   // const tempLink = url;
-
-  //   // if (this.currentContent.type == 'video') {
-  //   //   this.videoRef.nativeElement.src = tempLink;
-
-  //   //   this.videoRef.nativeElement.currentTime = 0;
-  //   //   this.videoRef.nativeElement.play();
-  //   // }
-
-  //   // if (this.currentContent.type == 'image') {
-  //   //   this.imageRef.nativeElement.src = tempLink;
-  //   // }
-    
-  // }
-
-  // ngAfterViewInit() {
-  //   const video = this.videoRef?.nativeElement;
-  //   const image = this.imageRef?.nativeElement;
-  //   const content: any = this.currentContent; 
-    
-  //   setTimeout(async () => {
-  //     const items: any = await this.indexedDB.getAllItems();
-  //     const file: any = items.find((item: any) => item.file.name == content.name);      
-  //     if (!file) return;
-      
-  //     const tempLink = file.url;
-
-  //     if (content.type == 'video') {
-  //       video.src = tempLink;
-  //       video.currentTime = 0;
-  //       video.preload = 'auto';
-  //       video.addEventListener('loadeddata', () => {
-  //         video.currentTime = 0;
-  //         video.play();
-  //       })
-  //     }
-
-  //     if (content.type == 'image') image.src = tempLink;
-  //   }, this.timeout);
-  // }
-  
   async ngAfterViewInit() {
     if (this.currentContent) {
       await this.onLoadMedia(this.currentContent);
@@ -111,8 +54,11 @@ export class PreviewAssetsComponent {
   }
 
   onVideoEnded(event: Event) {
+    // const platform = this.storage.get('platform');
+    // if (platform == 'desktop') {
+    //   this.playerService.onSendDataToDesktop
+    // }
     const video: HTMLVideoElement = event.target as HTMLVideoElement;
-    // video.currentTime = 0;
     video.pause();
   }
 
@@ -138,5 +84,4 @@ export class PreviewAssetsComponent {
 
     if (content.type == 'image' && image) image.src = tempLink;
   }
-
 }
