@@ -99,7 +99,7 @@
       @if (['android', 'desktop'].includes(platform)) {
       <!-- <p-button label="Notepad" (onClick)="onClickNotepad()" severity="secondary" size="small" /> -->
       <p-button
-        label="Setting"
+        label="Settings"
         (onClick)="showSettings.set(true)"
         severity="secondary"
         size="small"
@@ -126,6 +126,10 @@
     <div class="flex gap-3">
       <label for="left" class="text-sm">Always On:</label>
       <p-toggleswitch class="ml-auto" formControlName="alwaysOn" />
+    </div>
+    <div class="flex gap-3">
+      <label for="left" class="text-sm">Audio:</label>
+      <p-toggleswitch class="ml-auto" formControlName="audio" />
     </div>
     <div class="flex gap-3">
       <label for="left" class="text-sm">Audio:</label>
@@ -219,6 +223,10 @@
     }
 
     @if (['android'].includes(platform)) {
+    <div class="flex gap-3">
+      <label for="left" class="text-sm mr-auto">Re-Open:</label>
+      <p-button icon="pi pi-times" (onClick)="onClickAndroidBtn('reopen')" />
+    </div>
     <div class="flex gap-3">
       <label for="left" class="text-sm mr-auto">Close:</label>
       <p-button icon="pi pi-times" (onClick)="onClickAndroidBtn('close')" />

@@ -93,7 +93,7 @@ export class PlaylistsService {
 
       if (this.isContentLogs()) {
         // Send data to android or desktop
-        const sendData = JSON.stringify({ playlist: playlist.name, name: item.name, link: item.link });
+        const sendData = JSON.stringify({ playlist: playlist.name, name: item.name, duration: item.duration });
         switch(platform) {
           case 'android':
             this.onSendDataToAndroid(sendData);
@@ -211,6 +211,6 @@ export class PlaylistsService {
   }
 
   onSendDataToDesktop(data: any) {
-    window.system.onSendContentLogs(data)
+    window.system.onSendContentLogs(data);
   }
 }

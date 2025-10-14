@@ -47,7 +47,7 @@ function createWindow() {
   if (isDev) {
     // 🟢 DEV: Use Angular live server
     win.loadURL('http://localhost:4200');
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
   } else {
     // 🟢 PROD: Use built Angular app
     win.loadFile('dist/player/browser/index.html');
@@ -119,8 +119,8 @@ ipcMain.on('sendContentLogs', async (event, data) => {
 });
 
 // Delete Content Playback logs
-ipcMain.on('deleteContentLogs', async () => {
-  await systemFunc.onDeleteContentLogs();
+ipcMain.handle('onDeleteContentLogs', async () => {
+  return await systemFunc.onDeleteContentLogs();
 });
 
 app.whenReady().then(async () => {

@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection, isDevMode, provideAppInitializer } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, isDevMode, provideAppInitializer, importProvidersFrom } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
@@ -9,6 +9,9 @@ import myPreset from '../../public/assets/myPresets';
 import { provideServiceWorker } from '@angular/service-worker';
 
 import { initializeApp } from './core/interfaces/app-initializer';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageModule } from 'primeng/message';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 // Use window.system to call functions from preload.js
 declare global {
@@ -36,6 +39,7 @@ declare global {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    importProvidersFrom([ ConfirmDialogModule, MessageModule ]),
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
     provideHttpClient(),
@@ -51,6 +55,8 @@ export const appConfig: ApplicationConfig = {
       enabled: !window.system?.isElectron && !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    provideAppInitializer(initializeApp())
+    provideAppInitializer(initializeApp()),
+    ConfirmationService,
+    MessageService
   ]
 };

@@ -8,16 +8,18 @@ contextBridge.exposeInMainWorld('system', {
   // onUpdateDownloaded: (callback) => ipcRenderer.on('update_downloaded', callback),
   restartApp: () => ipcRenderer.send('restart_app'),
   takeScreenshot: () => ipcRenderer.invoke('takeScreenshot'),
+
+  // Download files
   downloadFiles: (files) => ipcRenderer.invoke('downloadFiles', files),
-  
   onDownloadProgress: (callback) => ipcRenderer.on('downloadProgress', (_, data) => callback(data)),
   onDeleteFolder: (filePath) => ipcRenderer.invoke('onDeleteFolder', filePath),
 
+  // Send window data
   onSendWindowData: (data) => ipcRenderer.send('sendWindowData', data),
 
   // Content Logs functions
   onSendContentLogs: (data) => ipcRenderer.send('sendContentLogs', data),
-  onDeleteContentLogs: () => ipcRenderer.send('deleteContentLogs'),
+  onDeleteContentLogs: () => ipcRenderer.invoke('onDeleteContentLogs'),
 
   isElectron: true
 });

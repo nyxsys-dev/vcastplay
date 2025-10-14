@@ -6,6 +6,10 @@ const si = require('systeminformation');
 const path = require('path');
 const fs = require('fs');
 
+// Create log directory for Content PLayback logs
+const logDir = path.join(app.getPath('userData'), 'logs');
+const logFile = path.join(logDir, 'content.log');
+
 async function onGetSystemInfo() {
     
   const hostname = os.hostname();
@@ -146,12 +150,13 @@ function onDeleteFolder(folderName) {
 function onApplySettings(window, data) {
   return new Promise((resolve, reject) => {
     try {
-      const { width, height, top, left, resizable, fullscreen, alwaysOnTop } = data || {};
+      const { width, height, top, left, resizable, fullscreen, alwaysOnTop, audio } = data || {};
       window.setResizable(resizable);
       window.setFullScreen(fullscreen);
       window.setPosition(Math.round(left), Math.round(top), false);
       window.setSize(width, height, false);
       window.setAlwaysOnTop(alwaysOnTop);
+      window.webContents.setAudioMuted(audio);
       resolve('Settings applied successfully');
     } catch (error) {
       reject(error);
@@ -162,8 +167,6 @@ function onApplySettings(window, data) {
 function onSaveContentLogs(message) {
   return new Promise((resolve, reject) => {
     try {
-      const logDir = path.join(app.getPath('userData'), 'logs');
-      const logFile = path.join(logDir, 'content.log');
       const timestamp = new Date().toISOString();
       const logMessage = `${timestamp}: ${message}\n`;
       
@@ -171,26 +174,20 @@ function onSaveContentLogs(message) {
         fs.mkdirSync(logDir);
       }
 
-      fs.appendFileSync(logFile, logMessage, (err) => {
-        if (err) console.error('❌ Failed to write log:', err);
-        else resolve('Log saved successfully');
-      });
+      fs.appendFileSync(logFile, logMessage);
+      resolve('Log saved successfully');
     } catch (error) {
       reject(error);
     }
   })
 }
 
-function onDeleteContentLogs() {
+async function onDeleteContentLogs() {
   return new Promise((resolve, reject) => {
     try {
-      const logDir = path.join(app.getPath('userData'), 'logs');
-      const logFile = path.join(logDir, 'content.log');
       if (fs.existsSync(logFile)) {
-        fs.unlinkSync(logFile, (err) => {
-          if (err) console.error('❌ Failed to delete log:', err);
-          else resolve('Log deleted successfully');
-        });
+        fs.unlinkSync(logFile);
+        resolve('Log deleted successfully');
       }
     } catch (error) {
       reject(error);

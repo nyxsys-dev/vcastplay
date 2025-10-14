@@ -13,6 +13,7 @@ import { PlatformService } from '../core/services/platform.service';
 import { environment } from '../../environments/environment.development';
 import { PreviewContentRendererComponent } from '../components/preview-content-renderer/preview-content-renderer.component';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-main-display',
@@ -24,7 +25,7 @@ import { FormControl, FormGroup } from '@angular/forms';
     forwardRef(() => PreviewContentRendererComponent),
   ],
   templateUrl: './main-display.component.html',
-  styleUrl: './main-display.component.scss'
+  styleUrl: './main-display.component.scss',
 })
 export class MainDisplayComponent {
 
@@ -37,6 +38,7 @@ export class MainDisplayComponent {
   platformService = inject(PlatformService);
   utils = inject(UtilsService);
   storage = inject(StorageService);
+  message = inject(MessageService);
 
   isPlay = signal<boolean>(false);
   showSettings = signal<boolean>(false);
@@ -51,8 +53,9 @@ export class MainDisplayComponent {
     height: new FormControl(800),
     alwaysOn: new FormControl(false),
     alwaysOnTop: new FormControl(false),
-    contentLogs: new FormControl(false),
+    contentLogs: new FormControl(true),
     toggleAudio: new FormControl(false),
+    audio: new FormControl(false),
   });
 
   constructor(private cdr: ChangeDetectorRef) {
@@ -201,7 +204,10 @@ export class MainDisplayComponent {
   onClickClearLogs() {
     const platform = this.storage.get('platform');
     if (['android'].includes(platform)) this.player.onSendDataToAndroid({ contentLogs: false });
-    if (['desktop'].includes(platform)) window.system.onDeleteContentLogs();
+    if (['desktop'].includes(platform)) {
+      window.system.onDeleteContentLogs()
+        .then((res) => this.message.add({ severity:'success', summary: 'Success', detail: res }))
+    }
   }
   
   trackById(index: number, item: any): any {
