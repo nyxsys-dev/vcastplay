@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, signal } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { FormGroup } from '@angular/forms';
 import { ScreenService } from '../../../core/services/screen.service';
@@ -38,11 +38,19 @@ export class ScreenScheduleComponent {
     }
   }
 
+  onAlwaysOnChange(event: any) {
+    this.hoursControl?.reset();
+    this.weekdaysControl?.reset();
+    this.allWeekdays?.reset();
+  }
+
   isCheckedWeekday(): boolean {
     const weekdaysCtrl = this.weekdaysControl?.value;
     return weekdaysCtrl.length > 0 && weekdaysCtrl.length < this.weekdays.length;
   }
 
+  get alwaysOn() { return this.operationGroupControl.get('alwaysOn')?.value; }
+  get allWeekdays() { return this.operationGroupControl.get('allWeekdays'); }
   get operationGroupControl() { return this.screenForm.get('operation') as FormGroup; }
   get weekdaysControl() { return this.operationGroupControl.get('weekdays'); }
   get hoursControl() { return this.operationGroupControl.get('hours'); } 

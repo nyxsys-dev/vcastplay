@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-1 h-full">
+<div class="flex flex-col gap-1 h-full select-none">
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
     <p-card styleClass="h-full" class="flex-1">
         <ng-template #title>
@@ -6,141 +6,149 @@
                 <div class="flex items-center gap-2">
                     <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" text />
                     <p class="text-sm md:text-xl font-semibold">{{ isEditMode() ? 'Edit Schedule' : 'New Schedule' }}</p>
+                    @if (isEditMode()) {
+                    <p-tag
+                        [value]="formControl('status').value?.toUpperCase()"
+                        [icon]="'pi ' + utils.getIcon(formControl('status').value)"
+                        [severity]="utils.getStatus(formControl('status').value)"
+                    />
+                    }
                 </div>
-                <div class="hidden md:flex ml:auto gap-2">
-                    <!-- <p-button label="Add Content" icon="pi pi-plus" (onClick)="onClickAddContent()" outlined /> -->
-                    <p-button label="Add" icon="pi pi-plus" (onClick)="addOptions.toggle($event)" outlined />
-                    <p-button icon="pi pi-save" label="Save" (onClick)="onClickSave($event)" />
+                <div class="hidden md:flex ml:auto gap-3">
+                    <p-button label="Fillers" icon="pi pi-images" (onClick)="showFillerContents.set(true)" severity="secondary" 
+                        [badge]="totalFillers > 0 ? totalFillers : null" badgeSeverity="danger" />
+                    @if (!['approved', 'disapproved'].includes(status?.value)) {
+                        <p-button label="Add" icon="pi pi-plus" (onClick)="onClickAddContent()" severity="success" />
+                        <p-button icon="pi pi-save" label="Save" (onClick)="onClickSave($event)" />
+                    }
                 </div>
-                <div class="flex md:hidden ml:auto gap-2">
-                    <!-- <p-button icon="pi pi-plus" (onClick)="onClickAddContent()"  outlined /> -->
-                    <p-button icon="pi pi-plus" (onClick)="addOptions.toggle($event)" outlined />
-                    <p-button icon="pi pi-save" (onClick)="onClickSave($event)" />
+                <div class="flex md:hidden ml:auto gap-3">
+                    <p-overlaybadge severity="danger" [value]="totalFillers" badgeSize="small" [badgeDisabled]="totalFillers == 0">
+                        <p-button icon="pi pi-images" (onClick)="showFillerContents.set(true)" severity="secondary" />
+                    </p-overlaybadge>
+                    @if (!['approved', 'disapproved'].includes(status?.value)) {
+                        <p-button icon="pi pi-plus" (onClick)="onClickAddContent()" severity="success" />
+                        <p-button icon="pi pi-save" (onClick)="onClickSave($event)" />
+                    }
                 </div>
             </div>
         </ng-template>
-        <div class="flex flex-col gap-4 h-full flex-1">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4" [formGroup]="scheduleForm">
-                <div class="col-span-1 md:col-span-6 lg:col-span-3">
-                    <p-floatlabel variant="on">
-                        <input id="name" pInputText formControlName="name" 
-                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
-                        <label for="name">Name</label>
-                    </p-floatlabel>
+        <div class="flex flex-col gap-4 h-full flex-1 pt-3">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="col-span-1 md:col-span-10 grid grid-cols-1 md:grid-cols-12 gap-4" [formGroup]="scheduleForm">
+                    <div class="col-span-1 md:col-span-6 lg:col-span-3">
+                        <p-floatlabel variant="on">
+                            <input id="name" pInputText formControlName="name" 
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
+                            <label for="name">Name</label>
+                        </p-floatlabel>
+                    </div>
+                    <div class="col-span-1 md:col-span-6 lg:col-span-9">
+                        <p-floatlabel variant="on">
+                            <input id="description" pInputText formControlName="description"
+                                [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" fluid />
+                            <label for="description">Description</label>
+                        </p-floatlabel>
+                    </div>
                 </div>
-                <div class="col-span-1 md:col-span-6 lg:col-span-9">
-                    <p-floatlabel variant="on">
-                        <input id="description" pInputText formControlName="description"
-                            [ngClass]="{ 'ng-invalid ng-dirty': formControl('description').invalid && formControl('description').touched }" fluid />
-                        <label for="description">Description</label>
-                    </p-floatlabel>
-                </div>
+                <p-floatlabel class="col-span-1 md:col-span-2" variant="on">
+                    <p-select inputId="calendarView" [(ngModel)]="calendarViewSignal" [options]="calendarViews()" optionLabel="label" optionValue="value" 
+                        (onChange)="onChangeCalendarView($event)" fluid />
+                    <label for="calendarView">Calendar View</label>
+                </p-floatlabel>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                <!-- !['dayGridMonth'].includes(calendarViewSignal()) -->
-                <div class="col-span1 md:col-span-12 lg:col-span-8 order-3 md:order-1">
+                <div class="col-span-1 md:col-span-12 lg:col-span-10 order-3 md:order-1">
                     <div class="flex gap-3 items-center">
                         <p-button icon="pi pi-chevron-left" size="small" pTooltip="Previous" tooltipPosition="bottom" (onClick)="onClickPreviousCalendar()" />
                         <p-button icon="pi pi-chevron-right" size="small" pTooltip="Next" tooltipPosition="bottom" (onClick)="onClickNextCalendar()" />
                         <p class="font-semibold text-lg">{{ calendarTitle() }}</p>
                     </div>
                 </div>
-                <div class="col-span-1 md:col-span-6 lg:col-span-2 order-2">
-                    <p-floatlabel variant="on" [ngClass]="{ '!hidden': ['dayGridMonth'].includes(calendarViewSignal()) }">
-                        <p-select inputId="timeSlot" [(ngModel)]="timeSlotSignal" [options]="timeSlots()" 
-                            optionLabel="value" optionValue="value" (onChange)="onChangeTimeSlot($event)" appendTo="body" fluid />
-                        <label for="timeSlot">Time Slots</label>
-                    </p-floatlabel>
-                </div>
-                <div class="col-span-1 md:col-span-6 lg:col-span-2 order-1 md:order-3">
-                    <p-floatlabel variant="on">
-                        <p-select inputId="calendarView" [(ngModel)]="calendarViewSignal" [options]="calendarViews()" optionLabel="label" optionValue="value" 
-                            (onChange)="onChangeCalendarView($event)" fluid />
-                        <label for="calendarView">Calendar View</label>
-                    </p-floatlabel>
-                </div>
             </div>
             <full-calendar #scheduleCalendar [options]="calendarOptions"></full-calendar>
         </div>
+        <ng-template #footer>
+            <div class="hidden md:grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                <ng-container *ngTemplateOutlet="totalInfo; context: { $implicit: totalByType() }"></ng-container>
+            </div>
+            <p-button class="md:hidden" label="Info" icon="pi pi-info-circle" (onClick)="infoPop.show($event)" size="small" />
+            <p-popover #infoPop appendTo="body">
+                <div class="grid gap-2">
+                    <ng-container *ngTemplateOutlet="totalInfo; context: { $implicit: totalByType() }"></ng-container>
+                </div>
+            </p-popover>
+        </ng-template>
     </p-card>
 </div>
 
-<p-dialog header="Add Content" [(visible)]="showAddContents" [style]="{ width: '42rem' }" [draggable]="false" (onHide)="onClickCancelContent()" closable modal>
-    <app-schedules-content-list #scheduleContents [calendar]="scheduleCalendar" />
-    <ng-template #footer>
-        <p-button label="Close" severity="secondary" (onClick)="onClickCancelContent()" />
-        <p-button label="Save" severity="success" (onClick)="onClickSaveContent($event)" />
-    </ng-template>
-</p-dialog>
+<ng-template #totalInfo let-total>
+    <p-tag value="Image ({{ total.image ?? 0 }})" icon="pi pi-image" />
+    <p-tag value="Video ({{ total.video ?? 0 }})" icon="pi pi-video" severity="contrast" />
+    <p-tag value="Audio ({{ total.audio ?? 0 }})" icon="pi pi-volume-up" severity="success" />
+    <p-tag value="File ({{ total.file ?? 0 }})" icon="pi pi-file" severity="warn" />
+    <p-tag value="Web ({{ total.web ?? 0 }})" icon="pi pi-globe" severity="secondary" />
+    <p-tag value="Youtube ({{ total.youtube ?? 0 }})" icon="pi pi-youtube" severity="danger" />
+    <p-tag value="Facebook ({{ total.facebook ?? 0 }})" icon="pi pi-facebook" severity="info" />
+</ng-template>
 
-<p-dialog header="Add Fillers" [(visible)]="showFillerContents" [style]="{ width: '42rem' }" [draggable]="false" (onHide)="onClickCancelContent()" closable modal>     
-    <app-content-selection [assetOnly]="true" selectionMode="multiple" [selectionContent]="arrSelectedContents" (selectedContents)="onSelectionChange($event)" />
-    <ng-template #footer>
-        <p-button label="Close" severity="secondary" (onClick)="onClickCancelContent()" />
-        <p-button label="Save" severity="success" (onClick)="onClickSaveFillers($event)" />
-    </ng-template>
-</p-dialog>
+<app-schedules-content-list #scheduleContents [calendar]="scheduleCalendar" 
+    [showAddContents]="showAddContents" [scheduleForm]="scheduleForm" (contentsByType)="onGetTotalContentsByType($event)" />
+
+<app-schedule-fillers [showFillerContents]="showFillerContents" [scheduleForm]="scheduleForm" />
 
 <p-dialog header="Content Preview" [(visible)]="showPreviewEvent" (onHide)="onClosePreview()"
     styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false" [resizable]="true">
-    @switch (type?.value) {
-        @case('asset') {
-            <ng-container *ngIf="detailContents as content">
-                <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
-                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
-                        [currentContent]="content" [showControls]="true" [autoPlay]="false" />
-                </div>
-            </ng-container>
-        }
-        @case ('playlist') {
-            <ng-container *ngIf="detailContents as content">
+    <ng-container *ngIf="selectedContent() as content">
+        @switch (content.extendedProps.type) {
+            @case ('playlist') {
                 <div class="flex h-full w-full">
                     <app-playlist-main-player class="relative flex-1 border-1 border-[var(--p-surface-300)] group bg-stone-800 text-white"
-                        [playlist]="content" />
+                        [playlist]="content.extendedProps" />
                 </div>
-            </ng-container>
-        }
-        @case ('design') {
-            <ng-container *ngIf="detailContents as content">
+            }
+            @case ('design') {
                 <div #viewport class="relative flex h-full md:h-100 w-full items-center justify-center group bg-stone-800 text-white rounded-lg">
-                    <app-preview-design-layout class="absolute flex-1" [designLayout]="content" [isViewOnly]="true" [viewport]="viewport" />
+                    <app-preview-design-layout class="absolute flex-1" [designLayout]="content.extendedProps" [isViewOnly]="true" [viewport]="viewport" />
                 </div>
-            </ng-container>
+            }
+            @default {
+                <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
+                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
+                        [currentContent]="content.extendedProps" [showControls]="true" [autoPlay]="false" />
+                </div>
+            }
         }
-    }
-    <div class="flex flex-col gap-3 mt-3">
-        <p class="text-sm italic text-gray-400">Information</p>
-        <div class="flex gap-2">
-            <p class="text-lg font-semibold">{{ detailContents?.name }}</p>
-            @if (['asset'].includes(type?.value)) { <p-tag class="ml-auto" [value]="detailContents?.type.toUpperCase()" severity="info" /> }
-        </div>
-        @if (!['asset'].includes(type?.value)) {
-            <p class="text-lg">{{ detailContents?.description }}</p>
-        }
-        @if (!contentValue.allDay) {
+        <div class="flex flex-col gap-3 mt-3">
+            <p class="text-sm italic text-gray-400">Information</p>
             <div class="flex gap-2">
-                <p>Start Date:</p>
-                <p class="ml-auto text-sm">{{ contentValue?.start | date: 'medium' }}</p>
+                <p class="text-lg font-semibold">{{ content.extendedProps.name }}</p>
+                <p-tag class="ml-auto" [value]="content.extendedProps.type.toUpperCase()" severity="info" />
             </div>
+            <p class="text-lg">{{ content.extendedProps.description }}</p>
+            @if (!content.allDay) {
+                <div class="flex gap-2">
+                    <p>Start Date:</p>
+                    <p class="ml-auto text-sm">{{ content?.start | date: 'medium' }}</p>
+                </div>
+                <div class="flex gap-2">
+                    <p>End Date:</p>
+                    <p class="ml-auto text-sm">{{ content?.end | date: 'medium' }}</p>
+                </div>
+            } @else {
+                <div class="flex">
+                    <p>Schedule:</p>
+                    <p-tag class="ml-auto" severity="success" value="Runs All Day" />
+                </div>
+            }
             <div class="flex gap-2">
-                <p>End Date:</p>
-                <p class="ml-auto text-sm">{{ contentValue?.end | date: 'medium' }}</p>
+                <p>Duration:</p>
+                <p-tag class="ml-auto" severity="info" [value]="utils.timeConversion(content.extendedProps.duration)" />
             </div>
-        } @else {
-            <div class="flex">
-                <p>Schedule:</p>
-                <p-tag class="ml-auto" severity="success" value="Runs All Day" />
-            </div>
-        }
-        <div class="flex gap-2">
-            <p>Duration:</p>
-            <p-tag class="ml-auto" severity="info" [value]="utils.timeConversion(contentValue?.duration)" />
         </div>
-    </div>
+    </ng-container>
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="showPreviewEvent.set(false)" />
         <p-button label="Delete" severity="danger" (onClick)="onClickDeleteContent($event)" />
     </ng-template>
 </p-dialog>
-
-<p-menu #addOptions [model]="itemMenu" [popup]="true" appendTo="body" />

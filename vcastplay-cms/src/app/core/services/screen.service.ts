@@ -97,7 +97,8 @@ export class ScreenService {
       resolution: new FormControl(null, [ Validators.required ]),
     }),
     operation: new FormGroup({
-      alwaysOn: new FormControl(false),
+      alwaysOn: new FormControl(false, { nonNullable: true }),
+      allWeekdays: new FormControl(false, { nonNullable: true }),
       weekdays: new FormControl([], { nonNullable: true }),
       hours: new FormControl([], { nonNullable: true }),
     }),

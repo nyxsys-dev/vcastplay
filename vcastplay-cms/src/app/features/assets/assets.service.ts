@@ -25,6 +25,8 @@ export class AssetsService {
     { label: 'File', value: 'file' },
     { label: 'Web Pages', value: 'web' },
     { label: 'Widgets', value: 'widget' },
+    { label: 'Youtube', value: 'youtube' },
+    { label: 'Facebook', value: 'facebook' },
   ]);
 
   assetTypeControl: FormControl = new FormControl('file', { nonNullable: true });

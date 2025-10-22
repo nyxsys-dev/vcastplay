@@ -1,27 +1,43 @@
 import { ApprovedInfo } from "../../core/interfaces/general";
+import { Assets } from "../assets/assets";
+import { DesignLayout } from "../design-layout/design-layout";
+import { Playlist } from "../playlist/playlist";
 
 
 export interface Schedule {
     id: number;
     name: string;
     description: string;
-    contents: ScheduleContentItem[];
+    contents: ScheduleContentItems[];
+    startDate: string;
+    endDate: string;
     status: string;
     approvedInfo?: ApprovedInfo;
     createdOn: Date;
     updatedOn: Date;
 }
 
-export interface ScheduleContentItem {
-    type: 'asset' | 'playlist' | 'layout';
-    eventId: any;
+export interface ContentItems {
     id: string;
-    title: string;
+    content: Assets | Playlist | DesignLayout;
     start: string;
     end: string;
-    color: string;
+    weekdays: string[];
+    hours: string[];
+    allWeekdays: boolean;
     allDay: boolean;
-    duration?: number;
-    isFiller?: boolean;
-    extendedProps?: any; // contents details
+    isFiller: boolean;
+    color: string;
+}
+
+export interface ScheduleContentItems {
+    id: string;
+    title: string;
+    extendedProps: Assets | Playlist | DesignLayout;
+    start: string;
+    end: string;
+    backgroundColor: string;
+    borderColor: string;
+    allDay: boolean;
+    isFiller: boolean;
 }

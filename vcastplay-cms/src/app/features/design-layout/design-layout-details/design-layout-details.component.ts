@@ -208,6 +208,21 @@ export class DesignLayoutDetailsComponent {
           ],
           disabled: true,
         },
+        {
+          label: 'Layer Position',
+          childIcon: 'pi pi-chevron-right',
+          items: [
+            {
+              label: 'Lock',
+              command: () => this.onClickLayerLock(true),
+            },
+            {
+              label: 'Unlock',
+              command: () => this.onClickLayerLock(false),
+            },
+          ],
+          disabled: true,
+        }
       ],
     },
   ]
@@ -524,6 +539,11 @@ export class DesignLayoutDetailsComponent {
 
   onClickImportCanvas() {
     this.importFileElement.nativeElement.click()
+  }
+
+  onClickLayerLock(value: boolean) {
+    const canvas = this.designLayoutService.getCanvas()
+    this.designLayoutService.onLayerLock(canvas, value)
   }
 
   onSelectionChange(event: any) {

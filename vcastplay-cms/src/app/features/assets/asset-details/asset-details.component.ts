@@ -48,6 +48,8 @@ export class AssetDetailsComponent {
   isShowAudienceTag = signal<boolean>(false);
   isShowInfo = signal<boolean>(false);
 
+  allowedLinks: string[] = [ 'web', 'widget', 'youtube', 'facebook' ];
+
   filterCategory = computed(() => {
     return this.tagsLists().find(tag => tag.id.includes('categories')).data();
   })
@@ -58,7 +60,7 @@ export class AssetDetailsComponent {
 
   showLinkInput = () => {
     const type = this.assetTypeControl.value;
-    return [ 'web', 'widget' ].includes(type);
+    return this.allowedLinks.includes(type);
   }
   
   hasUnsavedChanges!: () => boolean;
@@ -75,7 +77,7 @@ export class AssetDetailsComponent {
   ngOnInit() { 
     if (!this.isEditMode()) this.assetTypeControl.enable();
     const type = this.formControl('type').value;
-    this.assetTypeControl.patchValue([ 'web', 'widget' ].includes(type) ? type : 'file');
+    this.assetTypeControl.patchValue(this.allowedLinks.includes(type) ? type : 'file');
   }
 
   ngOnDestroy() {
@@ -91,7 +93,7 @@ export class AssetDetailsComponent {
 
   onChangeType(event: any) {
     const type = event.value;
-    if (['web', 'widget'].includes(type)) {
+    if (this.allowedLinks.includes(type)) {
       this.formFileDetails('orientation').enable();
       this.assetForm.patchValue({ type, name: null, link: null })
     } else {
@@ -136,6 +138,12 @@ export class AssetDetailsComponent {
       this.assetForm.patchValue(result);
     }
     
+  }
+
+  async onGetContentDuration(event: any) {
+    const duration = Math.ceil(event);
+    console.log(duration);
+    this.assetForm.patchValue({ duration });
   }
 
   async onClickSave(event: Event) {
@@ -197,6 +205,11 @@ export class AssetDetailsComponent {
   
   onClickCancel() {
     this.router.navigate([ '/assets/asset-library' ]);
+  }
+
+  onClickClear() {
+    this.assetForm.patchValue({ link: null })
+    this.fileDetails?.reset();
   }
 
   onClickCloseSchedule() {

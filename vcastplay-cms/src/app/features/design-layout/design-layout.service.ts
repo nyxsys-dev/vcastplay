@@ -1289,6 +1289,24 @@ export class DesignLayoutService {
     canvas.requestRenderAll()
   }
 
+  onLayerLock(canvas: fabric.Canvas, value: boolean) {
+    const activeObjects = canvas.getActiveObjects()
+    if (!activeObjects || activeObjects.length === 0) return
+
+    activeObjects.forEach((object: fabric.FabricObject) => {
+      object.set({
+        lockMovementX: value,
+        lockMovementY: value,
+        lockRotation: value,
+        lockScalingX: value,
+        lockScalingY: value,
+        lockUniScaling: value,
+        hasControls: !value,
+      })
+    })
+    canvas.requestRenderAll()
+  }
+
   /**
    * ====================================================================================================================================
    * Private methods insert here

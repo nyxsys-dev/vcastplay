@@ -1,13 +1,16 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FullCalendarComponent } from '@fullcalendar/angular';
-import moment from 'moment-timezone';
+import moment, { weekdays } from 'moment-timezone';
 import { AssetsService } from '../assets/assets.service';
 import { PlaylistService } from '../playlist/playlist.service';
 import { SelectOption } from '../../core/interfaces/general';
 import _ from 'lodash';
 import { DesignLayoutService } from '../design-layout/design-layout.service';
-import { Schedule, ScheduleContentItem } from './schedules';
+import { ContentItems, Schedule, ScheduleContentItems } from './schedules';
+import { Assets } from '../assets/assets';
+import { Playlist } from '../playlist/playlist';
+import { DesignLayout } from '../design-layout/design-layout';
 
 @Injectable({
   providedIn: 'root'
@@ -62,13 +65,17 @@ export class SchedulesService {
     { label: 'Approved', value: 'approved' },
     { label: 'Disapproved', value: 'disapproved' },
     { label: 'Pending', value: 'pending' },
+    { label: 'Expiring', value: 'expiring' },
+    { label: 'Expired', value: 'expired' },
   ])
 
   scheduleForm: FormGroup = new FormGroup({
     id: new FormControl(0),
     name: new FormControl(null, [ Validators.required ]),
     description: new FormControl(null, [ Validators.required ]),
-    contents: new FormControl<any[]>([], { nonNullable: true, validators: Validators.required }),
+    startDate: new FormControl(null),
+    endDate: new FormControl(null),
+    contents: new FormControl<ContentItems[]>([], { nonNullable: true, validators: Validators.required }),
     status: new FormControl(null),
     approvedInfo: new FormGroup({
       approvedBy: new FormControl('Admin', { nonNullable: true }),
@@ -79,25 +86,25 @@ export class SchedulesService {
 
   contentItemForm: FormGroup = new FormGroup({
     id: new FormControl(0),
-    title: new FormControl(null, [ Validators.required ]),
+    content: new FormControl<Assets | Playlist | DesignLayout | any>(null, [ Validators.required ]),
     start: new FormControl(null, [ Validators.required ]),
     end: new FormControl(null, [ Validators.required ]),
+    allDay: new FormControl<boolean>(false, { nonNullable: true }),
+    allWeekdays: new FormControl<boolean>(false, { nonNullable: true }),
+    weekdays: new FormControl<string[]>([], { nonNullable: true }),
+    hours: new FormControl<string[]>([], { nonNullable: true }),
+    isFiller: new FormControl<boolean>(false, { nonNullable: true }),
     color: new FormControl(null, [ Validators.required ]),
-    type: new FormControl('asset', { nonNullable: true, validators: Validators.required }),
-    allDay: new FormControl(false),
-    overlap: new FormControl(false),
-    duration: new FormControl(0),
-    isFiller: new FormControl(false, { nonNullable: true }),
-  }, { validators: this.onTimeRangeValidator })
+  }, { validators: this.onDateRangeValidator })
 
-  
+
   scheduleFilterForm: FormGroup = new FormGroup({
     dateRange: new FormControl(null),
     status: new FormControl(null),
     keywords: new FormControl(null),
   });
 
-  onTimeRangeValidator(group: AbstractControl): ValidationErrors | null {
+  onDateRangeValidator(group: AbstractControl): ValidationErrors | null {
     const start = group.get('start')?.value;
     const end = group.get('end')?.value;
 
@@ -116,85 +123,242 @@ export class SchedulesService {
     /**Call GET API */
     this.scheduleSignal.set([
       {
-        id: 1,
-        name: 'New Schedule',
-        description: 'This is a sample description of a new schedule',
-        contents: [
-          {
-            eventId: 1,
-            id: 'NYX001',
-            title: 'image (2).png',
-            start: '2025-07-10T06:15:00',
-            end: '2025-07-10T06:20:00',
-            color: '#FF6384',
-            allDay: false,
-            type: 'asset'
+          "id": 1,
+          "name": "Awesome schedule",
+          "description": "This is a sample description of a new schedule",
+          "startDate": "2025-10-20T16:00:00.000Z",
+          "endDate": "2025-10-26T16:15:00.000Z",
+          "contents": [
+              {
+                  "id": "NYX001",
+                  "title": "pexels-photo-355465.jpeg",
+                  "start": "2025-10-20T16:00:00.000Z",
+                  "end": "2025-10-26T16:15:00.000Z",
+                  "backgroundColor": "#71717B",
+                  "borderColor": "#71717B",
+                  "extendedProps": {
+                      "id": 1,
+                      "code": "NYX001",
+                      "name": "pexels-photo-355465.jpeg",
+                      "type": "image",
+                      "link": "https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg",
+                      "thumbnail": "https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg",
+                      "fileDetails": {
+                          "name": "image (2).png",
+                          "size": 55782,
+                          "type": "image/png",
+                          "orientation": "portrait",
+                          "resolution": {
+                              "width": 326,
+                              "height": 195
+                          }
+                      },
+                      "duration": 5,
+                      "audienceTag": {
+                          "genders": [
+                              "Male",
+                              "Female"
+                          ],
+                          "ageGroups": [],
+                          "timeOfDays": [],
+                          "seasonalities": [],
+                          "locations": [],
+                          "pointOfInterests": [],
+                          "tags": []
+                      },
+                      "status": "pending",
+                      createdOn: new Date(),
+                      updatedOn: new Date()
+                  },
+                  "allDay": true,
+                  "isFiller": true
+              },
+              {
+                  "id": "NYX002",
+                  "title": "ForBiggerBlazes.mp4",
+                  "start": "2025-10-20T16:00:00.000Z",
+                  "end": "2025-10-26T16:15:00.000Z",
+                  "backgroundColor": "#71717B",
+                  "borderColor": "#71717B",
+                  "extendedProps": {
+                      "id": 2,
+                      "code": "NYX002",
+                      "name": "ForBiggerBlazes.mp4",
+                      "type": "video",
+                      "link": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                      "thumbnail": "https://placehold.co/600x400",
+                      "fileDetails": {
+                          "name": "ForBiggerBlazes.mp4",
+                          "size": 2498125,
+                          "type": "video/mp4",
+                          "orientation": "landscape",
+                          "resolution": {
+                              "width": 1280,
+                              "height": 720
+                          }
+                      },
+                      "duration": 15,
+                      "audienceTag": {
+                          "genders": [
+                              "Male",
+                              "Female"
+                          ],
+                          "ageGroups": [],
+                          "timeOfDays": [],
+                          "seasonalities": [],
+                          "locations": [],
+                          "pointOfInterests": [],
+                          "tags": []
+                      },
+                      "status": "pending",
+                      createdOn: new Date(),
+                      updatedOn: new Date()
+                  },
+                  "allDay": true,
+                  "isFiller": true
+              },
+              {
+                  "id": "1",
+                  "title": "ForBiggerBlazes.mp4",
+                  "start": "2025-10-21T16:00:00",
+                  "end": "2025-10-21T18:00:00",
+                  "backgroundColor": "#36A2EB",
+                  "borderColor": "#36A2EB",
+                  "extendedProps": {
+                      "id": 2,
+                      "code": "NYX002",
+                      "name": "ForBiggerBlazes.mp4",
+                      "type": "video",
+                      "link": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                      "thumbnail": "https://placehold.co/600x400",
+                      "fileDetails": {
+                          "name": "ForBiggerBlazes.mp4",
+                          "size": 2498125,
+                          "type": "video/mp4",
+                          "orientation": "landscape",
+                          "resolution": {
+                              "width": 1280,
+                              "height": 720
+                          }
+                      },
+                      "duration": 15,
+                      "audienceTag": {
+                          "genders": [
+                              "Male",
+                              "Female"
+                          ],
+                          "ageGroups": [],
+                          "timeOfDays": [],
+                          "seasonalities": [],
+                          "locations": [],
+                          "pointOfInterests": [],
+                          "tags": []
+                      },
+                      "status": "pending",
+                      createdOn: new Date(),
+                      updatedOn: new Date()
+                  },
+                  "isFiller": false,
+                  "allDay": false
+              },
+              {
+                  "id": "2",
+                  "title": "ForBiggerBlazes.mp4",
+                  "start": "2025-10-22T16:00:00",
+                  "end": "2025-10-22T18:00:00",
+                  "backgroundColor": "#36A2EB",
+                  "borderColor": "#36A2EB",
+                  "extendedProps": {
+                      "id": 2,
+                      "code": "NYX002",
+                      "name": "ForBiggerBlazes.mp4",
+                      "type": "video",
+                      "link": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                      "thumbnail": "https://placehold.co/600x400",
+                      "fileDetails": {
+                          "name": "ForBiggerBlazes.mp4",
+                          "size": 2498125,
+                          "type": "video/mp4",
+                          "orientation": "landscape",
+                          "resolution": {
+                              "width": 1280,
+                              "height": 720
+                          }
+                      },
+                      "duration": 15,
+                      "audienceTag": {
+                          "genders": [
+                              "Male",
+                              "Female"
+                          ],
+                          "ageGroups": [],
+                          "timeOfDays": [],
+                          "seasonalities": [],
+                          "locations": [],
+                          "pointOfInterests": [],
+                          "tags": []
+                      },
+                      "status": "pending",
+                      createdOn: new Date(),
+                      updatedOn: new Date()
+                  },
+                  "isFiller": false,
+                  "allDay": false
+              },
+              {
+                  "id": "3",
+                  "title": "ForBiggerBlazes.mp4",
+                  "start": "2025-10-23T16:00:00",
+                  "end": "2025-10-23T18:00:00",
+                  "backgroundColor": "#36A2EB",
+                  "borderColor": "#36A2EB",
+                  "extendedProps": {
+                      "id": 2,
+                      "code": "NYX002",
+                      "name": "ForBiggerBlazes.mp4",
+                      "type": "video",
+                      "link": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                      "thumbnail": "https://placehold.co/600x400",
+                      "fileDetails": {
+                          "name": "ForBiggerBlazes.mp4",
+                          "size": 2498125,
+                          "type": "video/mp4",
+                          "orientation": "landscape",
+                          "resolution": {
+                              "width": 1280,
+                              "height": 720
+                          }
+                      },
+                      "duration": 15,
+                      "audienceTag": {
+                          "genders": [
+                              "Male",
+                              "Female"
+                          ],
+                          "ageGroups": [],
+                          "timeOfDays": [],
+                          "seasonalities": [],
+                          "locations": [],
+                          "pointOfInterests": [],
+                          "tags": []
+                      },
+                      "status": "pending",
+                      createdOn: new Date(),
+                      updatedOn: new Date()
+                  },
+                  "isFiller": false,
+                  "allDay": false
+              }
+          ],
+          "status": "pending",
+          "approvedInfo": {
+              "approvedBy": "",
+              "approvedOn": null,
+              "remarks": ""
           },
-          {
-            eventId: 2,
-            id: 'NYX001',
-            title: 'image (2).png',
-            start: '2025-07-11T06:15:00',
-            end: '2025-07-11T06:20:00',
-            color: '#FF6384',
-            allDay: false,
-            type: 'asset'
-          },
-          {
-            eventId: 3,
-            id: 'NYX001',
-            title: 'image (2).png',
-            start: '2025-07-12T06:15:00',
-            end: '2025-07-12T06:20:00',
-            color: '#FF6384',
-            allDay: false,
-            type: 'asset'
-          },
-          {
-            eventId: 4,
-            id: 'NYX001',
-            title: 'image (2).png',
-            start: '2025-07-13T06:15:00',
-            end: '2025-07-13T06:20:00',
-            color: '#FF6384',
-            allDay: false,
-            type: 'asset'
-          },
-          {
-            eventId: 5,
-            id: 'NYX001',
-            title: 'image (2).png',
-            start: '2025-07-14T06:15:00',
-            end: '2025-07-14T06:20:00',
-            color: '#FF6384',
-            allDay: false,
-            type: 'asset'
-          },
-          {
-            eventId: 6,
-            id: 'NYX001',
-            title: 'image (2).png',
-            start: '2025-07-15T06:15:00',
-            end: '2025-07-15T06:20:00',
-            color: '#FF6384',
-            allDay: false,
-            type: 'asset'
-          },
-          {
-            eventId: 7,
-            id: 'NYX001',
-            title: 'image (2).png',
-            start: '2025-07-16T06:15:00',
-            end: '2025-07-16T06:20:00',
-            color: '#FF6384',
-            allDay: false,
-            type: 'asset'
-          }
-        ],
-        status: 'pending',
-        createdOn: new Date('2025-07-10T00:42:28.042Z'),
-        updatedOn: new Date('2025-07-10T00:42:28.042Z')
-    }
+          createdOn: new Date(),
+          updatedOn: new Date()
+      }
     ])
     this.totalRecords.set(this.schedules().length);
   }
@@ -204,116 +368,73 @@ export class SchedulesService {
     return this.scheduleSignal();
   }
 
-  async onSaveContent(content: ScheduleContentItem, fullCalendar: FullCalendarComponent) {    
+  async onSaveContent(contentItem: ContentItems, fullCalendar: FullCalendarComponent) {    
     return new Promise((resolve, reject) => {
-      let totalDuplicates: number = 0;
+      let events: any[] = [];
       const calendarApi = fullCalendar.getApi();
-      const type = calendarApi.view.type;
-      const start = moment(content.start);
-      let end = moment(content.end);
+      const startDate = moment(contentItem.start).toDate();
+      const endDate = moment(contentItem.end).toDate();
 
-      if (type.startsWith('timeGrid') && end.isSameOrAfter(start)) end.add(1, 'day');
+      const currentDate = new Date(startDate);
+      while (currentDate <= endDate) {
+        const getWeekday = moment(currentDate).format('dddd');
+        if (contentItem.weekdays.includes(getWeekday)) {
+          const nextDay = moment(currentDate).add(1, 'days').toDate();
+          for (const hour of contentItem.hours) {
 
-      const daysCount = moment(end).tz('Asia/Manila').diff(start, 'days');
-      
-      for (let day = 0; day < daysCount; day++) {
-        const currentDate = moment(content.start).add(day, 'days');
-        const startTime = moment(content.start).tz('Asia/Manila').format('HH:mm:ss');
-        const endTime = moment(content.start).tz('Asia/Manila').add(content.duration, 'seconds').format('HH:mm:ss');
+            if (moment(hour).isSameOrAfter(nextDay)) {
+              break;
+            }
 
-        const eventData = {
-          eventId: calendarApi.getEvents().length + 1,
-          id: content.id,
-          title: content.title,
-          start: currentDate.tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + startTime,
-          end: currentDate.tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + endTime,
-          color: content.color,
-          allDay: content.allDay,
-          type: content.type,
-          duration: content.duration
-        };
-
-        // Check if there is a duplicate event
-        const hasDuplicate: any[] = this.onFindDuplicateEvents(eventData);
-        if (hasDuplicate.length == 0) {
-          calendarApi.addEvent({
-            id: eventData.eventId.toString(),
-            title: eventData.title,
-            start: eventData.start,
-            end: eventData.end,
-            backgroundColor: eventData.color,
-            borderColor: eventData.color,
-            extendedProps: eventData,
-            allDay: eventData.allDay,
-          });
-        } else {
-          totalDuplicates += hasDuplicate.length
+            const { start: startTime, end: endTime }: any = hour;
+            const start = moment(currentDate).tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + moment(startTime).tz('Asia/Manila').format('HH:mm:ss');
+            const end = moment(currentDate).tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + moment(endTime).tz('Asia/Manila').format('HH:mm:ss');
+            
+            // Insert event to calendar
+            const eventData = this.onAddEventToCalendar(contentItem, start, end, fullCalendar);
+            calendarApi.addEvent(eventData);
+            events.push(eventData);
+          }
         }
-      }
 
-      const updatedContents = calendarApi.getEvents().map(event => event.extendedProps);
-      this.scheduleForm.patchValue({ contents: updatedContents });
-      resolve({ totalDuplicates })
+        if (contentItem.allDay) {
+          const start = moment(currentDate).startOf('day').toISOString();
+          const end = moment(currentDate).endOf('day').toISOString();
+          
+          // Insert event to calendar
+          const eventData = this.onAddEventToCalendar(contentItem, start, end, fullCalendar);
+          calendarApi.addEvent(eventData);
+          events.push(eventData);
+        }
+
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      resolve(events);
     })
   }
 
-  onUpdateContent(event: any, fullcalendar: FullCalendarComponent) {
-    const { start, end, allDay, duration, ...data } = event.extendedProps;
-    
-    const tempContents = [ ...this.scheduleForm.value.contents || [] ];
-    const index = tempContents.findIndex((item: any) => item.eventId == event.id);
-    
-    tempContents[index] = { 
-      start: moment(event.start).toISOString(),
-      end: moment(event.start).add(duration, 'seconds').toISOString(),
-      allDay: event.allDay,
-      ...data
-    };
-    
-    this.scheduleForm.patchValue({ contents: tempContents });
+  onAddEventToCalendar(contentItem: any, start: any, end: any, fullCalendar: FullCalendarComponent) {
+    const calendarApi = fullCalendar.getApi();
+    // Insert event to calendar
+    return {
+      id: (calendarApi.getEvents().length + 1).toString(),
+      title: contentItem.content.name,
+      start,
+      end,
+      backgroundColor: contentItem.color,
+      borderColor: contentItem.color,
+      extendedProps: contentItem.content,
+      allDay: contentItem.allDay
+    }
   }
 
-  onSelectAllow(info: any, fullcalendar: FullCalendarComponent): boolean {
-    const calendarApi = fullcalendar.getApi();
-    const type = calendarApi.view.type;
-
-    if (type.startsWith('timeGrid') && info.allDay) return false;
-
-    // Remove previous selection
-    const existing = calendarApi.getEventById('selectBox');
-    if (existing) existing.remove();
-
-    let startMoment = moment(info.start);
-    let endMoment = moment(info.end);
-
-    // Swap if start is after end
-    if (startMoment.isAfter(endMoment)) [startMoment, endMoment] = [endMoment, startMoment];
-
-    const startTime = startMoment.format('HH:mm:ss');
-    const endTime = endMoment.format('HH:mm:ss');
-
-    const eventData: any = {
-      id: 'selectBox',
-      start: startMoment.toISOString(),
-      end: endMoment.toISOString(),
-      // overlap: false
-    };
-
-    if (this.calendarViewSignal() == 'dayGridMonth') {
-      eventData.allDay = true;
-      eventData.display = 'background';
-    } else {
-      eventData.startTime = startTime;
-      eventData.endTime = endTime;
-      eventData.startRecur = startMoment.toISOString();
-      eventData.endRecur = endMoment.toISOString();
-      eventData.display = 'background';
-      eventData.backgroundColor = '#53EAFD';
-    }
-
-    calendarApi.addEvent(eventData);
-
-    return true;
+  onUpdateContent(event: any) {
+    const { contents } = this.scheduleForm.value;
+    const { id, title, start, end, backgroundColor, borderColor, extendedProps, allDay } = event;
+    
+    const index = contents.findIndex((item: any) => item.id == id);
+    contents[index] = { id, title, start: moment(start).toISOString(), end: moment(end).toISOString(), backgroundColor, borderColor, extendedProps, allDay };
+    this.scheduleForm.patchValue({ contents });
   }
 
   onGetContentDetails(id: any, type: string, eventId: string) {
@@ -337,35 +458,26 @@ export class SchedulesService {
   }
 
   onDeleteContent(event: any, fullcalendar: FullCalendarComponent) {
-    const calendar: any = fullcalendar.getApi();    
-    calendar.getEventById(event.eventId).remove();
-    const events = calendar.getEvents().map((event: any) => event.extendedProps);    
-    this.scheduleForm.patchValue({ contents: events });
+    const calendar: any = fullcalendar.getApi();
+    const { contents } = this.scheduleForm.value;  
+    this.scheduleForm.patchValue({ contents: contents.filter((item: any) => item.id != event.id) });
+    calendar.getEventById(event.id).remove();
   }
-
-  onFindDuplicateEvents(value: any) {
-    const eventMap = new Map();
-    const { contents } = this.scheduleForm.value;
-    const { start, end, ...curContent } = value;
-    
-    const eventContents = [ ...contents, {
-      ...curContent,
-      start: moment(start).toISOString(),
-      end: moment(end).toISOString(),
-    }];
-
-    for (const event of eventContents) {
-      // const key = `${moment(event.start).valueOf()}|${moment(event.end).valueOf()}`;
-      const key = `${moment(event.start).valueOf()}`;
-      if (!eventMap.has(key)) {
-        eventMap.set(key, []);
+  
+  onGetTotalContentsByType(contentItems: ScheduleContentItems[]) {
+    return new Promise((resolve, reject) => {
+      try {
+        const totals: Record<string, number> = {};
+        const contents = contentItems.filter((item: ScheduleContentItems) => !item.isFiller).map((data: ScheduleContentItems) => data.extendedProps);
+        for (const content of contents) {
+          const type = content.type;
+          totals[type] = (totals[type] || 0) + 1;
+        }
+        resolve(totals);
+      } catch (error) {
+        reject(error);
       }
-
-      eventMap.get(key).push(event);
-    }
-    
-    // Only return groups with 2 or more events
-    return Array.from(eventMap.values()).filter(group => group.length > 1);
+    })
   }
 
   onSaveSchedule(schedule: Schedule) {
@@ -373,8 +485,12 @@ export class SchedulesService {
     const { id, status, ...info } = schedule;
     const index = tempData.findIndex(item => item.id == schedule.id);
 
-    if (index !== -1) tempData[index] = { ...schedule, updatedOn: new Date() };
+    const startDate = moment.min(schedule.contents.map(item => moment(item.start)));
+    const endDate = moment.max(schedule.contents.map(item => moment(item.end)));
+
+    if (index !== -1) tempData[index] = { ...schedule, startDate: startDate.toISOString(), endDate: endDate.toISOString(), updatedOn: new Date() };
     else tempData.push({ id: tempData.length + 1, status: 'pending', ...info, 
+      startDate: startDate.toISOString(), endDate: endDate.toISOString(),
       createdOn: new Date(), updatedOn: new Date(), approvedInfo: { approvedBy: '', approvedOn: null, remarks: '' } });
 
     this.scheduleSignal.set([ ...tempData ]);
@@ -401,7 +517,7 @@ export class SchedulesService {
 
   onApproveSchedule(schedule: Schedule, status: string) {
     const tempData = this.schedules();
-    const index = tempData.findIndex(item => item.id === schedule.id);
+    const index = tempData.findIndex(item => item.id == schedule.id);
     tempData[index] = { ...schedule, status, updatedOn: new Date() };
     this.scheduleSignal.set([...tempData]);
     

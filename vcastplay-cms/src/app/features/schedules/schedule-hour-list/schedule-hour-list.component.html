@@ -1,43 +1,44 @@
-<div class="flex flex-col gap-4">
-  <div class="flex flex-col gap-4" [formGroup]="screenForm">
-    <div class="flex gap-4" formGroupName="operation">
+<div class="flex flex-col gap-3">
+  <div class="flex flex-col gap-2" [formGroup]="contentItemForm">
+    <div class="flex gap-4">
       <p-toggleSwitch
-        inputId="alwaysOn"
-        formControlName="alwaysOn"
+        inputId="allDay"
+        formControlName="allDay"
         (onChange)="onAlwaysOnChange($event)"
         binary
       />
-      <label for="alwaysOn">Always On</label>
+      <label for="allDay">All Day</label>
     </div>
-
-    <p-fieldset legend="Weekdays" formGroupName="operation">
+    <p-fieldset legend="Weekdays">
+      <div class="grid grid-cols-3 md:grid-cols-4 gap-3 mt-3">
         <div class="flex items-center gap-2">
           <p-checkbox
             formControlName="allWeekdays"
             (onChange)="onCheckAllWeekdays($event)"
             [indeterminate]="isCheckedWeekday()"
-            [readonly]="alwaysOn"
+            [readonly]="allDay"
             binary
           />
           <label for="All">All</label>
         </div>
         @for (item of weekdays; track $index) {
         <div class="flex items-center gap-2">
-          <p-checkbox [value]="item" formControlName="weekdays" [readonly]="alwaysOn" />
+          <p-checkbox [value]="item" formControlName="weekdays" [readonly]="allDay" />
           <label [for]="item">{{ item }}</label>
         </div>
         }
+      </div>
     </p-fieldset>
   </div>
-
   <div class="flex flex-col gap-4">
     <div class="flex gap-2 items-center">
       <p class="font-semibold">Hours</p>
       <div class="ml-auto">
         <p-button
-          label="Add Hours"
           (onClick)="onClickAddHours()"
-          [disabled]="alwaysOn"
+          [disabled]="allDay"
+          pTooltip="Add Hours"
+          tooltipPosition="bottom"
           icon="pi pi-plus"
           size="small"
         />
@@ -64,7 +65,9 @@
               appendTo="body"
               [iconDisplay]="'input'"
               placeholder="Start Time"
-              hourFormat="12"
+              (onSelect)="onTimeChange(index)"
+              hourFormat="24"
+              stepMinute="30"
               showIcon
               fluid
             >
@@ -80,7 +83,9 @@
               appendTo="body"
               [iconDisplay]="'input'"
               placeholder="End Time"
-              hourFormat="12"
+              (onSelect)="onTimeChange(index)"
+              hourFormat="24"
+              stepMinute="30"
               showIcon
               fluid
             >

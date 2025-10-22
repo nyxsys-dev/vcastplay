@@ -36,6 +36,8 @@ import { ScreenDetailsComponent } from '../../../features/screen-management/scre
 import { DesignLayoutToolsComponent } from '../../../features/design-layout/design-layout-tools/design-layout-tools.component';
 import { ObjectPropertiesComponent } from '../../../features/design-layout/object-properties/object-properties.component';
 import { DesignLayoutListItemComponent } from '../../../features/design-layout/design-layout-list-item/design-layout-list-item.component';
+import { ScheduleHourListComponent } from '../../../features/schedules/schedule-hour-list/schedule-hour-list.component';
+import { ScheduleFillersComponent } from '../../../features/schedules/schedule-fillers/schedule-fillers.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
@@ -67,6 +69,7 @@ const COMPONENT_MODULES = [
   ScreenBroadcastMessageComponent,
   ScreenSettingsComponent,
   ScreenSelectionComponent,
+  ScreenDetailsComponent,
 
   // Playlist Components
   AddToPlaylistComponent,
@@ -87,7 +90,8 @@ const COMPONENT_MODULES = [
   SchedulesContentListComponent,
   ScheduleListItemComponent,
   ScheduleFilterComponent,
-  ScreenDetailsComponent,
+  ScheduleHourListComponent,
+  ScheduleFillersComponent,
 
   // Design Layout Components
   DesignLayoutToolsComponent,

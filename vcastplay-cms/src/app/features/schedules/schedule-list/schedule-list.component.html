@@ -28,6 +28,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
+                        <th>Date Range</th>
                         <th>Last Update</th>
                         <th>Status</th>
                         <th>
@@ -39,6 +40,9 @@
                     <tr class="text-sm">
                         <td>{{ item.name }}</td>
                         <td>{{ item.description }}</td>
+                        <td>
+                            <p>{{ item.startDate | date: 'mediumDate' }} - {{ item.endDate | date: 'mediumDate' }}</p>
+                        </td>
                         <td><p class="text-sm">{{ utils.onGetLastUpdatedLabel(item.updatedOn) }}</p></td>
                         <td><p-tag [value]="item.status.toUpperCase()" [icon]="'pi ' + utils.getIcon(item.status)"
                             [severity]="utils.getStatus(item.status)" /></td>
@@ -81,8 +85,8 @@
 </div>
 
 <ng-template #actionBtn let-item>
-    <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" tooltipPosition="bottom" 
-        [disabled]="['approved', 'disapproved'].includes(item.status)" severity="success" size="small" />
+    <p-button (onClick)="onClickEdit(item)" [icon]="!['approved', 'disapproved'].includes(item.status) ? 'pi pi-pencil' : 'pi pi-eye'" 
+        [pTooltip]="!['approved', 'disapproved'].includes(item.status) ? 'Edit' : 'View'"  tooltipPosition="bottom" severity="success" size="small" />
     <p-button icon="pi pi-check-circle" (onClick)="onClickShowApproved($event, item, approved)" pTooltip="Approval" tooltipPosition="bottom"  severity="info" size="small" />
     <p-button icon="pi pi-desktop" pTooltip="Set to screen" tooltipPosition="bottom" severity="warn" size="small" [disabled]="item.status == 'pending'" />
     <p-button icon="pi pi-history" pTooltip="Playlist Usage" tooltipPosition="bottom" severity="danger" size="small" [disabled]="item.status == 'pending'" />

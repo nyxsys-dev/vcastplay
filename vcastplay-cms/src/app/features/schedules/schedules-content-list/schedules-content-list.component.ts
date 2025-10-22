@@ -1,18 +1,19 @@
-import { Component, computed, inject, Input, signal, ViewChild } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, Output, signal, ViewChild } from '@angular/core';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { SchedulesService } from '../schedules.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { AssetsService } from '../../assets/assets.service';
 import { PlaylistService } from '../../playlist/playlist.service';
-import { AssetFilterComponent } from '../../assets/asset-filter/asset-filter.component';
-import { PlaylistFilterComponent } from '../../playlist/playlist-filter/playlist-filter.component';
 import { FullCalendarComponent } from '@fullcalendar/angular';
-import moment from 'moment-timezone';
 import { ContentSelectionComponent } from '../../../components/content-selection/content-selection.component';
+import { ScheduleHourListComponent } from '../schedule-hour-list/schedule-hour-list.component';
+import { MessageService } from 'primeng/api';
+import { FormGroup } from '@angular/forms';
+import { ScheduleContentItems } from '../schedules';
 
 @Component({
   selector: 'app-schedules-content-list',
-  imports: [ PrimengUiModule, ContentSelectionComponent ],
+  imports: [ PrimengUiModule, ContentSelectionComponent, ScheduleHourListComponent ],
   templateUrl: './schedules-content-list.component.html',
   styleUrl: './schedules-content-list.component.scss'
 })
@@ -21,13 +22,19 @@ export class SchedulesContentListComponent {
   @ViewChild('contents') contents!: ContentSelectionComponent;
 
   @Input() calendar!: FullCalendarComponent 
+  @Input() scheduleForm!: FormGroup;
+  @Input() showAddContents = signal<boolean>(false);
+
+  @Output() contentsByType = new EventEmitter<any>();
 
   assetService = inject(AssetsService);
   playlistService = inject(PlaylistService);
   scheduleService = inject(SchedulesService);
   utils = inject(UtilityService);
+  message = inject(MessageService);
   
-  dateRange: { start: Date; end: Date } = { start: new Date(), end: new Date() };
+  showContentSelection = signal<boolean>(false);
+  dateRange!: { start: Date; end: Date };
 
   filteredColor = computed(() => {
     return this.colors.filter((color: any) => color.text != 'white');
@@ -39,51 +46,43 @@ export class SchedulesContentListComponent {
     this.timeValues.set(this.utils.generateTimeOptions());
   }
 
-  onContentTypeChange(event: any) {    
-    this.contentItemForm.patchValue({ type: event });
+  async onClickSaveContent(event: Event) { 
+    const { hours, weekdays, allDay } = this.contentItemForm.value;
+    if (this.contentItemForm.invalid) {
+      this.contentItemForm.markAllAsTouched();
+      this.message.add({ severity: 'error', summary: 'Error', detail: 'Please input required fields (*)' });
+      return;
+    }
+
+    if (!allDay) {
+      if (hours.length == 0) {
+        this.message.add({ severity: 'error', summary: 'Error', detail: 'Please add at least one hour' });
+        return;
+      }
+
+      if (weekdays.length == 0) {
+        this.message.add({ severity: 'error', summary: 'Error', detail: 'Please select at least one day' });
+        return;
+      }
+    }
+
+    this.scheduleService.onSaveContent(this.contentItemForm.value, this.calendar).then(async (result: any) => { 
+      const { contents } = this.scheduleForm.value;
+      const newContents = { contents: [...contents, ...result] }
+      this.scheduleForm.patchValue(newContents);
+      const [ totalContentByType ] = await Promise.all([this.scheduleService.onGetTotalContentsByType(newContents.contents)]);
+      this.contentsByType.emit(totalContentByType);      
+      this.showAddContents.set(false);
+    });
   }
 
-  onSelectionChange(event: any) {    
-    if (!event) {
-      this.selectedContent.set(null);
-      return
-    };
-
-    this.selectedContent.set(event);    
-    
-    const { start, end, allDay } = this.calendarSelectedDate();
-    const startDate = moment(start);
-    const endDateTime = moment(startDate).add(event.duration, 'seconds').format('HH:mm:ss');
-    const newEndDate = moment(moment(end).tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + endDateTime).toDate();   
-
-    this.contentItemForm.patchValue({ 
-      id: event?.code ?? event.id, 
-      title: event.name, 
-      end: newEndDate,
-      allDay,
-      color: event.color,
-      duration: event.duration,
-    });    
+  onSelectionChange(event: any) {  
+    this.contentItemForm.patchValue({ content: event, allWeekdays: (this.weekdays.length + 1) > 7 });
+    this.showContentSelection.set(false);
   }
 
   onUpdateContentEventColor(color: any) {
     this.contentItemForm.patchValue({ color: color.hex });  
-  }
-
-  onStartDateChange(event: any, isTime: boolean = false) {
-    const { start, end, isSpecificTime } = this.calendarSelectedDate();
-    const { duration, end: prevEnd } = this.contentItemForm.value;
-    const endDate = moment(isSpecificTime && !isTime ? start : prevEnd).format('YYYY-MM-DD') + 'T' + moment(isTime ? event : prevEnd).format('HH:mm:ss');
-    
-    this.contentItemForm.patchValue({ end: moment(endDate).add(!isTime ? 0 : duration, 'seconds').toDate() }) 
-  }
-
-  onEndDateChange(event: any) {
-    const { start, duration, isSpecificTime } = this.contentItemForm.value;
-    const endDate = moment(event).format('YYYY-MM-DD') + 'T' + moment(start).format('HH:mm:ss');
-    this.contentItemForm.patchValue({
-      end: moment(endDate).add(duration, 'seconds').toDate()
-    })
   }
 
   formcontrol(fieldName: string) {
@@ -104,4 +103,7 @@ export class SchedulesContentListComponent {
   get end() { return this.contentItemForm.get('end'); }
   get calendarDateRange() { return this.scheduleService.calendarDateRange; }
   get calendarSelectedDate() { return this.scheduleService.calendarSelectedDate; }
+
+  get content() { return this.contentItemForm.get('content')?.value; }
+  get weekdays() { return this.contentItemForm.get('weekdays')?.value; }
 }

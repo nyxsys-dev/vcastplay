@@ -31,7 +31,7 @@ export class ScreenControlsComponent {
       this.message.add({ severity:'error', summary: 'Error', detail: 'Please select at least one screen.' });
       return;
     }
-    this.contents.selectionContent = [];
+    this.contents.selectionContent.set([]);
     this.showContents.set(true);
   }
 

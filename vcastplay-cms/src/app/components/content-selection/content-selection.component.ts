@@ -23,8 +23,9 @@ export class ContentSelectionComponent {
   @Input() assetOnly: boolean = false;
   @Input() selectedTypes: string[] = [];
   @Input() selectionMode: 'single' | 'multiple' = 'single';
-  @Input() selectionContent: any;
+  @Input() selectionContent = signal<any>(null);
   @Input() isSelectable: boolean = true;
+  @Input() readonly: boolean = false;
   @Input() includeDesignLayoutWithPlaylist: boolean = false;
 
   @Output() contentType = new EventEmitter<any>();
@@ -72,17 +73,17 @@ export class ContentSelectionComponent {
   })
   
   constructor() {
-    this.contentTypeControl.valueChanges.subscribe((value) => {
+    this.contentTypeControl.valueChanges.subscribe((value) => {      
       this.filterSignal.set({});
       this.audienceTagSignal.set({});
-      this.selectionContent = null;
+      this.selectionContent.set([]);
       this.onGetContents(value);
       this.contentType.emit(value);
     })
   }
 
   ngOnInit() {
-    this.onGetContents('asset');
+    this.onGetContents('asset');    
   }
 
   onGetContents(type: string) {
@@ -96,11 +97,11 @@ export class ContentSelectionComponent {
       case 'schedule':
         this.contentLists.set(this.scheduleService.onGetSchedule());
         break;
-      case 'asset':
-        this.contentLists.set(this.assetService.onGetAssets());
-        break;
       case 'clipart':
         this.contentLists.set(this.cliparts);
+        break;
+      default:
+        this.contentLists.set(this.assetService.onGetAssets());
         break;
     }
   }
@@ -114,7 +115,7 @@ export class ContentSelectionComponent {
   onSelectionChange(event: any) {    
     this.selectedContents.emit(event);
   }
-  
+
   get contentTypes() { return this.scheduleService.contentTypes; }
   get calendarSelectedDate() { return this.scheduleService.calendarSelectedDate; }
   

@@ -38,7 +38,7 @@
     <div #viewport class="relative flex w-full h-full flex items-center justify-center">
       <div
         #canvasContainer
-        class="relative origin-center flex items-center justify-center z-20 overflow-hidden"
+        class="canvas-container relative origin-center flex items-center justify-center z-20 overflow-hidden"
         cdkDrag
         [cdkDragDisabled]="!canvasProps.drag"
         cdkDropList
@@ -331,3 +331,5 @@
     />
   </ng-template>
 </p-dialog>
+
+<p-contextmenu [target]="canvasContainer" [model]="layoutItems" appendTo="body" />

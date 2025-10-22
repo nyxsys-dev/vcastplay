@@ -42,6 +42,8 @@ export class AssetListComponent {
   isShowPreview = signal<boolean>(false);
   isShowAddToPlaylist = signal<boolean>(false);
 
+  step: number = 0;
+
   assetViewModeCtrl: FormControl = new FormControl('Grid');
 
   assetFilters = signal<any>(this.assetFilterForm.valueChanges);
