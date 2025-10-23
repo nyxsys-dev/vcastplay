@@ -370,46 +370,50 @@ export class SchedulesService {
 
   async onSaveContent(contentItem: ContentItems, fullCalendar: FullCalendarComponent) {    
     return new Promise((resolve, reject) => {
-      let events: any[] = [];
-      const calendarApi = fullCalendar.getApi();
-      const startDate = moment(contentItem.start).toDate();
-      const endDate = moment(contentItem.end).toDate();
+      try {
+        let events: any[] = [];
+        const calendarApi = fullCalendar.getApi();
+        const startDate = moment(contentItem.start).toDate();
+        const endDate = moment(contentItem.end).toDate();
 
-      const currentDate = new Date(startDate);
-      while (currentDate <= endDate) {
-        const getWeekday = moment(currentDate).format('dddd');
-        if (contentItem.weekdays.includes(getWeekday)) {
-          const nextDay = moment(currentDate).add(1, 'days').toDate();
-          for (const hour of contentItem.hours) {
+        const currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+          const getWeekday = moment(currentDate).format('dddd');
+          if (contentItem.weekdays.includes(getWeekday)) {
+            const nextDay = moment(currentDate).add(1, 'days').toDate();
+            for (const hour of contentItem.hours) {
 
-            if (moment(hour).isSameOrAfter(nextDay)) {
-              break;
+              if (moment(hour).isSameOrAfter(nextDay)) {
+                break;
+              }
+
+              const { start: startTime, end: endTime }: any = hour;
+              const start = moment(currentDate).tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + moment(startTime).tz('Asia/Manila').format('HH:mm:ss');
+              const end = moment(currentDate).tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + moment(endTime).tz('Asia/Manila').format('HH:mm:ss');
+              
+              // Insert event to calendar
+              const eventData = this.onAddEventToCalendar(contentItem, start, end, fullCalendar);
+              calendarApi.addEvent(eventData);
+              events.push(eventData);
             }
+          }
 
-            const { start: startTime, end: endTime }: any = hour;
-            const start = moment(currentDate).tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + moment(startTime).tz('Asia/Manila').format('HH:mm:ss');
-            const end = moment(currentDate).tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + moment(endTime).tz('Asia/Manila').format('HH:mm:ss');
+          if (contentItem.allDay) {
+            const start = moment(currentDate).startOf('day').toISOString();
+            const end = moment(currentDate).endOf('day').toISOString();
             
             // Insert event to calendar
             const eventData = this.onAddEventToCalendar(contentItem, start, end, fullCalendar);
             calendarApi.addEvent(eventData);
             events.push(eventData);
           }
-        }
 
-        if (contentItem.allDay) {
-          const start = moment(currentDate).startOf('day').toISOString();
-          const end = moment(currentDate).endOf('day').toISOString();
-          
-          // Insert event to calendar
-          const eventData = this.onAddEventToCalendar(contentItem, start, end, fullCalendar);
-          calendarApi.addEvent(eventData);
-          events.push(eventData);
+          currentDate.setDate(currentDate.getDate() + 1);
         }
-
-        currentDate.setDate(currentDate.getDate() + 1);
+        resolve(events);
+      } catch (error) {
+        reject(error);
       }
-      resolve(events);
     })
   }
 

@@ -77,7 +77,7 @@
               <p class="w-50 line-clamp-1 truncate" [pTooltip]="item.name" tooltipPosition="bottom">
                 {{ item.name }}
               </p>
-              @if (['asset'].includes(contentTypeControl.value)) {
+              @if (!['youtube', 'facebook'].includes(item.type)) {
               <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
               }
             </div>

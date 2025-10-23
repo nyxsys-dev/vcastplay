@@ -396,7 +396,7 @@ export class UtilityService {
   onGetEmbedUrl(url: string): any {
     if (url.includes('youtube') || url.includes('youtu.be')) {
       const videoId = this.extractYouTubeId(url);
-      const link = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&loop=1`
+      const link = `https://www.youtube.com/embed/${videoId}?autoplay=0&mute=0&controls=0&loop=0&fs=0&enablejsapi=1&disablekb=1&playsinline=1&showinfo=0`;
       return { link, videoId };
     }
 

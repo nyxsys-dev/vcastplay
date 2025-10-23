@@ -9,13 +9,12 @@ import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { v7 as uuidv7 } from 'uuid';
 import moment from 'moment';
-import { PlaylistMainPlayerComponent } from '../playlist-main-player/playlist-main-player.component';
 import { Assets } from '../../assets/assets';
 import { DesignLayout } from '../../design-layout/design-layout';
 
 @Component({
   selector: 'app-playlist-details',
-  imports: [ PrimengUiModule, ComponentsModule, PlaylistMainPlayerComponent ],
+  imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './playlist-details.component.html',
   styleUrl: './playlist-details.component.scss',
 })

@@ -69,10 +69,8 @@
         </div>
 
         <!-- Preview Contents -->
-        <app-playlist-main-player
-          class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
-          [playlist]="playlistForm.value"
-        />
+        <app-playlist-player class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
+        [playlist]="playlistForm.value" />
       </div>
 
       <!-- Assets Lists -->
@@ -105,7 +103,7 @@
               formControlName="type"
               size="small"
               optionLabel="label"
-              optionValue="transition"
+              optionValue="value"
               [options]="transitionTypes"
               showClear
             />

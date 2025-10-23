@@ -1,25 +1,31 @@
-import { computed, Injectable, signal } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { AssestInfo, Assets, AssetType } from './assets';
+import { computed, Injectable, signal } from '@angular/core'
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms'
+import { AssestInfo, Assets, AssetType } from './assets'
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AssetsService {
+  private assetSignal = signal<Assets[]>([])
+  assets = computed(() => this.assetSignal())
 
-  private assetSignal = signal<Assets[]>([]);
-  assets = computed(() => this.assetSignal());
+  selectedAsset = signal<Assets | null>(null)
+  selectedArrAssets = signal<Assets[]>([])
 
-  selectedAsset = signal<Assets | null>(null);
-  selectedArrAssets = signal<Assets[]>([]);
+  first = signal<number>(0)
+  rows = signal<number>(8)
+  totalRecords = signal<number>(0)
 
-  first = signal<number>(0);
-  rows = signal<number>(8);
-  totalRecords = signal<number>(0);
-
-  loadingSignal = signal<boolean>(false);
-  isEditMode = signal<boolean>(false);
-  showPrompt = signal<boolean>(false);
+  loadingSignal = signal<boolean>(false)
+  isEditMode = signal<boolean>(false)
+  showPrompt = signal<boolean>(false)
 
   assetType = signal<AssetType[]>([
     { label: 'File', value: 'file' },
@@ -27,25 +33,25 @@ export class AssetsService {
     { label: 'Widgets', value: 'widget' },
     { label: 'Youtube', value: 'youtube' },
     { label: 'Facebook', value: 'facebook' },
-  ]);
+  ])
 
-  assetTypeControl: FormControl = new FormControl('file', { nonNullable: true });
-  
-  assetViewModeSignal = signal<string>('Grid');
-  assetViewModeCtrl: FormControl = new FormControl('Grid');
+  assetTypeControl: FormControl = new FormControl('file', { nonNullable: true })
+
+  assetViewModeSignal = signal<string>('Grid')
+  assetViewModeCtrl: FormControl = new FormControl('Grid')
   assetViewModes = [
     { icon: 'pi pi-table', label: 'Grid' },
     { icon: 'pi pi-list', label: 'List' },
   ]
-  
+
   assetForm: FormGroup = new FormGroup({
     id: new FormControl(''),
     code: new FormControl(''),
-    name: new FormControl('', [ Validators.required ]),
+    name: new FormControl('', [Validators.required]),
     type: new FormControl(''),
     link: new FormControl(''),
-    category: new FormControl(null, [ Validators.required ]),
-    subCategory: new FormControl(null, [ Validators.required ]),
+    category: new FormControl(null, [Validators.required]),
+    subCategory: new FormControl(null, [Validators.required]),
     fileDetails: new FormGroup<AssestInfo | any>({
       size: new FormControl(null),
       type: new FormControl(null),
@@ -54,12 +60,15 @@ export class AssetsService {
       thumbnail: new FormControl(null),
     }),
     availability: new FormControl<boolean>(false),
-    dateRange: new FormGroup({
-      start: new FormControl(null),
-      end: new FormControl(null),
-    }, { validators: [ this.dateRangeValidator()]}),
+    dateRange: new FormGroup(
+      {
+        start: new FormControl(null),
+        end: new FormControl(null),
+      },
+      { validators: [this.dateRangeValidator()] }
+    ),
     weekdays: new FormControl([], { nonNullable: true }),
-    hours: new FormControl<[{ start: string, end: string }] | []>([], { nonNullable: true }),
+    hours: new FormControl<[{ start: string; end: string }] | []>([], { nonNullable: true }),
     duration: new FormControl(10, { nonNullable: true }),
     audienceTag: new FormGroup({
       genders: new FormControl([], { nonNullable: true }),
@@ -79,9 +88,9 @@ export class AssetsService {
     type: new FormControl(null),
     orientation: new FormControl(null),
     keywords: new FormControl(null),
-  });
+  })
 
-  constructor() { }
+  constructor() {}
 
   onLoadAssets() {
     /** Get API */
@@ -101,18 +110,18 @@ export class AssetsService {
           orientation: 'portrait',
           resolution: {
             width: 326,
-            height: 195
+            height: 195,
           },
         },
         duration: 5,
         audienceTag: {
-          genders: [ 'Male', 'Female' ],
+          genders: ['Male', 'Female'],
           ageGroups: [],
           timeOfDays: [],
           seasonalities: [],
           locations: [],
           pointOfInterests: [],
-          tags: []
+          tags: [],
         },
         status: 'pending',
         createdOn: new Date(),
@@ -132,18 +141,18 @@ export class AssetsService {
           orientation: 'landscape',
           resolution: {
             width: 1280,
-            height: 720
+            height: 720,
           },
         },
         duration: 15,
         audienceTag: {
-          genders: [ 'Male', 'Female' ],
+          genders: ['Male', 'Female'],
           ageGroups: [],
           timeOfDays: [],
           seasonalities: [],
           locations: [],
           pointOfInterests: [],
-          tags: []
+          tags: [],
         },
         status: 'pending',
         createdOn: new Date(),
@@ -163,18 +172,18 @@ export class AssetsService {
           orientation: 'landscape',
           resolution: {
             width: 1280,
-            height: 720
+            height: 720,
           },
         },
         duration: 15,
         audienceTag: {
-          genders: [ 'Male', 'Female' ],
+          genders: ['Male', 'Female'],
           ageGroups: [],
           timeOfDays: [],
           seasonalities: [],
           locations: [],
           pointOfInterests: [],
-          tags: []
+          tags: [],
         },
         status: 'pending',
         createdOn: new Date(),
@@ -186,7 +195,8 @@ export class AssetsService {
         name: 'photo-1464822759023-fed622ff2c3b.avif',
         type: 'image',
         link: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        thumbnail: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        thumbnail:
+          'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,
@@ -194,18 +204,18 @@ export class AssetsService {
           orientation: 'portrait',
           resolution: {
             width: 326,
-            height: 195
+            height: 195,
           },
         },
         duration: 10,
         audienceTag: {
-          genders: [ 'Male', 'Female' ],
+          genders: ['Male', 'Female'],
           ageGroups: [],
           timeOfDays: [],
           seasonalities: [],
           locations: [],
           pointOfInterests: [],
-          tags: []
+          tags: [],
         },
         status: 'pending',
         createdOn: new Date(),
@@ -217,7 +227,8 @@ export class AssetsService {
         name: '1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
         type: 'image',
         link: 'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
-        thumbnail: 'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
+        thumbnail:
+          'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,
@@ -225,213 +236,312 @@ export class AssetsService {
           orientation: 'portrait',
           resolution: {
             width: 326,
-            height: 195
+            height: 195,
           },
         },
         duration: 8,
         audienceTag: {
-          genders: [ 'Male', 'Female' ],
+          genders: ['Male', 'Female'],
           ageGroups: [],
           timeOfDays: [],
           seasonalities: [],
           locations: [],
           pointOfInterests: [],
-          tags: []
+          tags: [],
         },
         status: 'pending',
         createdOn: new Date(),
         updatedOn: new Date(),
-      }
-    ]);
-    this.totalRecords.set(this.assets().length);
+      },
+      {
+        id: 6,
+        code: 'NYX005',
+        name: 'Youtube video',
+        type: 'youtube',
+        link: 'https://www.youtube.com/watch?v=wDchsz8nmbo',
+        category: 'Category 1',
+        subCategory: 'Sub Category 1',
+        thumbnail: 'https://placehold.co/600x400',
+        fileDetails: {
+          name: 'Youtube video',
+          size: 0,
+          type: 'youtube',
+          orientation: 'landscape',
+          resolution: {
+            width: 0,
+            height: 0,
+          },
+        },
+        dateRange: {
+          start: null,
+          end: null,
+        },
+        weekdays: [],
+        hours: [],
+        duration: 61,
+        audienceTag: {
+          genders: [],
+          ageGroups: [],
+          timeOfDays: [],
+          seasonalities: [],
+          locations: [],
+          pointOfInterests: [],
+          tags: [],
+        },
+        status: 'pending',
+        createdOn: new Date(),
+        updatedOn: new Date(),
+      },
+      {
+        id: 7,
+        code: 'NYX005',
+        name: 'Facebok Video',
+        type: 'facebook',
+        link: 'https://www.facebook.com/watch/?v=938367226505614',
+        category: 'Category 1',
+        subCategory: 'Sub Category 1',
+        thumbnail: 'https://placehold.co/600x400',
+        fileDetails: {
+          name: 'Facebok Video',
+          size: 0,
+          type: 'facebook',
+          orientation: 'landscape',
+          resolution: {
+            width: 0,
+            height: 0,
+          },
+        },
+        dateRange: {
+          start: null,
+          end: null,
+        },
+        weekdays: [],
+        hours: [],
+        duration: 71,
+        audienceTag: {
+          genders: [],
+          ageGroups: [],
+          timeOfDays: [],
+          seasonalities: [],
+          locations: [],
+          pointOfInterests: [],
+          tags: [],
+        },
+        status: 'pending',
+        createdOn: new Date(),
+        updatedOn: new Date(),
+      },
+    ])
+    this.totalRecords.set(this.assets().length)
     // this.loadingSignal.set(false);
   }
 
   onGetAssets() {
-    if (this.assetSignal().length === 0) this.onLoadAssets();
-    return this.assetSignal();
+    if (this.assetSignal().length === 0) this.onLoadAssets()
+    return this.assetSignal()
   }
 
   onRefreshRoles() {
-    this.assetSignal.set([]);
-    this.onLoadAssets();
+    this.assetSignal.set([])
+    this.onLoadAssets()
   }
 
   async onDropFile(files: any) {
     if (files) {
-      const tempData = files;
+      const tempData = files
       for (const file of await tempData) {
-        const result = await this.processFile(file);
+        const result = await this.processFile(file)
         if (result) {
-          this.assetForm.patchValue(result);
-          this.onSaveAssets(this.assetForm.value);
+          this.assetForm.patchValue(result)
+          this.onSaveAssets(this.assetForm.value)
         }
       }
-      this.assetForm.reset();
+      this.assetForm.reset()
     }
   }
-  
+
   onPageChange(event: any) {
-    this.first.set(event.first);
-    this.rows.set(event.rows);
+    this.first.set(event.first)
+    this.rows.set(event.rows)
   }
 
   onSaveAssets(assets: Assets) {
-    const tempAssets = this.assets();
-    const { id, code, status, ...info } = assets;    
-    const index = tempAssets.findIndex(u => u.id === id);
-    if (index !== -1) tempAssets[index] = { ...tempAssets[index], ...info };
-    else tempAssets.push({ id: tempAssets.length + 1, code: `NYX00${tempAssets.length + 1}`, status: 'pending', ...info, createdOn: new Date(), updatedOn: new Date() });
+    const tempAssets = this.assets()
+    const { id, code, status, ...info } = assets
+    const index = tempAssets.findIndex((u) => u.id === id)
+    if (index !== -1) tempAssets[index] = { ...tempAssets[index], ...info }
+    else
+      tempAssets.push({
+        id: tempAssets.length + 1,
+        code: `NYX00${tempAssets.length + 1}`,
+        status: 'pending',
+        ...info,
+        createdOn: new Date(),
+        updatedOn: new Date(),
+      })
 
-    this.assetSignal.set([...tempAssets]);
-    this.totalRecords.set(this.assets().length);
+    this.assetSignal.set([...tempAssets])
+    this.totalRecords.set(this.assets().length)
     /**Call POST/PATCH user API */
   }
 
   onDeleteAssets(assets: Assets) {
-    const tempAssets = this.assets().filter(u => u.id !== assets.id);
-    this.assetSignal.set([...tempAssets]);
-    this.totalRecords.set(this.assets().length);
+    const tempAssets = this.assets().filter((u) => u.id !== assets.id)
+    this.assetSignal.set([...tempAssets])
+    this.totalRecords.set(this.assets().length)
     /**Call DELETE user API */
   }
 
   onDuplicateAssets(assets: Assets) {
-    const tempData = this.assets();
-    tempData.push({ ...assets, id: tempData.length + 1, name: `Copy of ${assets.name}`, status: 'pending', createdOn: new Date(), updatedOn: new Date() });
-    this.assetSignal.set([...tempData]);
-    this.totalRecords.set(this.assets().length);
+    const tempData = this.assets()
+    tempData.push({
+      ...assets,
+      id: tempData.length + 1,
+      name: `Copy of ${assets.name}`,
+      status: 'pending',
+      createdOn: new Date(),
+      updatedOn: new Date(),
+    })
+    this.assetSignal.set([...tempData])
+    this.totalRecords.set(this.assets().length)
     /**CALL POST API */
   }
 
   onFilterChange(value: any) {
-    console.log(value);    
+    console.log(value)
   }
 
   dateRangeValidator(): ValidatorFn {
     return (group: AbstractControl): ValidationErrors | null => {
-      const start = group.get('start')?.value;
-      const end = group.get('end')?.value;
+      const start = group.get('start')?.value
+      const end = group.get('end')?.value
       if (start && end && new Date(start) > new Date(end)) {
         return { startAfterEnd: true }
       }
-      return null;
+      return null
     }
   }
-  
+
   async processFile(file: File): Promise<Assets | any> {
-    const MAX_SIZE  = 300 * 1024 * 1024;
-    if (file.size > MAX_SIZE) return false;
+    const MAX_SIZE = 300 * 1024 * 1024
+    if (file.size > MAX_SIZE) return false
 
     if (this.assetTypeControl.value === 'file') {
-      this.assetForm.patchValue({ name: file.name });
+      this.assetForm.patchValue({ name: file.name })
     }
 
-    const fileDataURL = await this.readFileAsDataURL(file);
-    const metadata = await this.getImageOrientationAndResolution(file, fileDataURL);
-    const type = file.type.split('/')[0];
-    
+    const fileDataURL = await this.readFileAsDataURL(file)
+    const metadata = await this.getImageOrientationAndResolution(file, fileDataURL)
+    const type = file.type.split('/')[0]
+
     if (type === 'video') {
       const [thumbnail, duration] = await Promise.all([
         this.extractVideoThumbnail(file),
-        this.getVideoDuration(file)
-      ]);
+        this.getVideoDuration(file),
+      ])
 
-      return this.buildAssetObject(fileDataURL, metadata, thumbnail, duration);
+      return this.buildAssetObject(fileDataURL, metadata, thumbnail, duration)
     }
 
-    return this.buildAssetObject(fileDataURL, metadata, fileDataURL);
+    return this.buildAssetObject(fileDataURL, metadata, fileDataURL)
   }
 
   private readFileAsDataURL(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
   }
-  
+
   private getImageOrientationAndResolution(file: File, dataURL: string): Promise<AssestInfo> {
-    return new Promise((resolve, reject) => {      
-      const isImage = file.type.startsWith('image');
-      const isVideo = file.type.startsWith('video');
-      const isText = file.type.startsWith('text');
-      
+    return new Promise((resolve, reject) => {
+      const isImage = file.type.startsWith('image')
+      const isVideo = file.type.startsWith('video')
+      const isText = file.type.startsWith('text')
+
       if (isImage) {
-        const img = new Image();
+        const img = new Image()
         img.onload = () => {
           resolve({
             name: file.name,
             size: file.size,
             type: file.type,
-            orientation: img.width > img.height ? 'landscape' : img.height > img.width ? 'portrait' : 'square',
-            resolution: { width: img.width, height: img.height }
-          });
-        };
-        img.onerror = reject;
-        img.src = dataURL;
+            orientation:
+              img.width > img.height ? 'landscape' : img.height > img.width ? 'portrait' : 'square',
+            resolution: { width: img.width, height: img.height },
+          })
+        }
+        img.onerror = reject
+        img.src = dataURL
       } else if (isVideo) {
-        const video = document.createElement('video');
-        video.preload = 'metadata';
+        const video = document.createElement('video')
+        video.preload = 'metadata'
         video.onloadedmetadata = () => {
           resolve({
             name: file.name,
             size: file.size,
             type: file.type,
-            orientation: video.videoWidth > video.videoHeight ? 'landscape' : video.videoHeight > video.videoWidth ? 'portrait' : 'square',
-            resolution: { width: video.videoWidth, height: video.videoHeight }
-          });
-        };
-        video.onerror = () => reject(new Error('Failed to load video metadata'));
-        video.src = dataURL;
+            orientation:
+              video.videoWidth > video.videoHeight
+                ? 'landscape'
+                : video.videoHeight > video.videoWidth
+                ? 'portrait'
+                : 'square',
+            resolution: { width: video.videoWidth, height: video.videoHeight },
+          })
+        }
+        video.onerror = () => reject(new Error('Failed to load video metadata'))
+        video.src = dataURL
       } else if (isText) {
         resolve({
           name: file.name,
           size: file.size,
           type: 'web',
           orientation: 'portrait',
-          resolution: { width: 0, height: 0 }
-        });
+          resolution: { width: 0, height: 0 },
+        })
       } else {
-        reject(new Error('Unsupported file type for orientation/resolution extraction'));
+        reject(new Error('Unsupported file type for orientation/resolution extraction'))
       }
-    });
+    })
   }
 
   private extractVideoThumbnail(file: File): Promise<string> {
     return new Promise((resolve) => {
-      const video = document.createElement('video');
-      video.preload = 'metadata';
-      video.src = URL.createObjectURL(file);
+      const video = document.createElement('video')
+      video.preload = 'metadata'
+      video.src = URL.createObjectURL(file)
 
       video.onloadedmetadata = () => {
-        video.currentTime = 1;
-      };
+        video.currentTime = 1
+      }
 
       video.onseeked = () => {
         setTimeout(() => {
-          const canvas = document.createElement('canvas');
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-          URL.revokeObjectURL(video.src);
-          resolve(canvas.toDataURL('image/png'));
-        }, 100);
-      };
-    });
+          const canvas = document.createElement('canvas')
+          canvas.width = video.videoWidth
+          canvas.height = video.videoHeight
+          const ctx = canvas.getContext('2d')
+          ctx?.drawImage(video, 0, 0, canvas.width, canvas.height)
+          URL.revokeObjectURL(video.src)
+          resolve(canvas.toDataURL('image/png'))
+        }, 100)
+      }
+    })
   }
 
   private getVideoDuration(file: File): Promise<number> {
     return new Promise((resolve) => {
-      const video = document.createElement('video');
-      video.preload = 'metadata';
-      video.src = URL.createObjectURL(file);
+      const video = document.createElement('video')
+      video.preload = 'metadata'
+      video.src = URL.createObjectURL(file)
       video.onloadedmetadata = () => {
-        URL.revokeObjectURL(video.src);
-        resolve(Math.floor(video.duration));
-      };
-    });
+        URL.revokeObjectURL(video.src)
+        resolve(Math.floor(video.duration))
+      }
+    })
   }
 
   private buildAssetObject(link: string, meta: AssestInfo, thumbnail: string, duration?: number) {
@@ -445,9 +555,9 @@ export class AssetsService {
         type: meta.type,
         orientation: meta.orientation,
         resolution: meta.resolution,
-        thumbnail
-      }
-    };
+        thumbnail,
+      },
+    }
     return { ...base, duration: duration ?? 5 }
   }
 }

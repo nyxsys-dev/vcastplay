@@ -208,7 +208,7 @@ export class AssetDetailsComponent {
   }
 
   onClickClear() {
-    this.assetForm.patchValue({ link: null })
+    this.assetForm.patchValue({ link: null, name: null })
     this.fileDetails?.reset();
   }
 

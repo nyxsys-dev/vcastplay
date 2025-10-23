@@ -1,0 +1,62 @@
+<div #mainPlayer class="flex items-center justify-center h-full aspect-video overflow-hidden">
+    <ng-container *ngIf="currentItem() as item">
+        <div
+            class="w-full h-full flex items-center justify-center transition-all ease-in-out"
+            [ngClass]="onActiveTransitionClass()"
+            style="--animation-duration: {{ playlist.transition.speed / 10 }}s"
+            *ngIf="isPlaying()"
+        >
+            @switch(item.type) {
+                @case('video') {
+                    <video [src]="item.link" [autoplay]="true" [playsInline]="true" (ended)="onItemEnd()"></video>
+                }
+                @case ('image') {
+                    <img class="absolute left-0 top-0 h-full w-full object-contain" [src]="item.link" [alt]="item.name" (load)="onImageLoaded(item)">
+                }
+                @case ('youtube') {
+                    <iframe class="absolute left-0 top-0 h-full w-full" [src]="utils.onGetEmbedUrl(item.link).link | safeurl" frameborder="0" 
+                        allow="autoplay; encrypted-media; compute-pressure; picture-in-picture" (load)="onYoutubeLoad()"></iframe>
+                }
+                @case ('facebook') {
+                    <div #fbPlayer class="relative flex items-center justify-center h-full w-full overflow-hidden">
+                        <div
+                            class="fb-video w-full h-full pointer-events-none"
+                            [attr.data-href]="item.link"
+                            data-autoplay="true"
+                            data-show-text="false"
+                            data-controls="false"
+                            data-allowfullscreen="false"
+                            data-show-captions="false"
+                        ></div>
+                    </div>
+                }
+            }
+        </div>
+    </ng-container>
+
+    <div class="hidden">
+        <ng-container *ngIf="nextPreloadedItem() as item">
+            @switch(item.type) {
+                @case('video') {
+                    <video [src]="item.link" preload="auto" [muted]="true"></video>
+                }
+                @case ('image') {
+                    <img [src]="item.link" [alt]="item.name">
+                }
+                @case ('youtube') {
+                    <iframe [src]="utils.onGetEmbedUrl(item.link) | safeurl"></iframe>
+                }
+                @case ('facebook') {
+                    <div [attr.data-href]="item.link"></div>
+                }
+            }
+        </ng-container>
+    </div>
+</div>
+
+<div class="absolute top-0 left-0 w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 z-60">
+    <div class="h-20 w-20 border-4 border-[var(--p-surface-200)] rounded-full opacity-70 flex items-center justify-center 
+        hover:opacity-100 cursor-pointer" (click)="onClickPlayback()" [pTooltip]="isPlaying() ? 'Pause' : 'Play'" tooltipPosition="bottom">
+        <i class="text-[var(--p-surface-200)] !text-2xl pi" [ngClass]="{ 'pi-pause': isPlaying(), 'pi-play': !isPlaying() }"></i>
+    </div>
+</div>

@@ -1,5 +1,7 @@
 import { signal } from "@angular/core";
 import { ApprovedInfo } from "../../core/interfaces/general";
+import { DesignLayout } from "../design-layout/design-layout";
+import { Assets } from "../assets/assets";
 
 export interface Playlist {
     id: number;
@@ -11,7 +13,7 @@ export interface Playlist {
         type: string;
         speed: number;
     },
-    contents: any[];
+    contents: Assets[] | DesignLayout[] | any[];
     loop: boolean;
     status: string;
     duration?: number;

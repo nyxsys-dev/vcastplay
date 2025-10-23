@@ -77,12 +77,22 @@ export class PlaylistService {
     subCategory: new FormControl(null),
   })
 
+  // transitionTypes: any[] = [
+  //   { label: 'Fade', value: 'fade-in', transition: { opacity: true } },
+  //   { label: 'Slide Up', value: 'slide-in', transition: { opacity: true, x: 'translate-y-4', y: 'translate-y-0' } },
+  //   { label: 'Slide Down', value: 'slide-out', transition: { opacity: true, x: '-translate-y-4', y: 'translate-y-0' } },
+  //   { label: 'Slide Left', value: 'slide-left', transition: { opacity: true, x: 'translate-x-4', y: 'translate-x-0' } },
+  //   { label: 'Slide Right', value: 'slide-out', transition: { opacity: true, x: '-translate-x-4', y: 'translate-x-0' } },
+  // ]
+
   transitionTypes: any[] = [
-    { label: 'Fade', value: 'fade-in', transition: { opacity: true } },
-    { label: 'Slide Up', value: 'slide-in', transition: { opacity: true, x: 'translate-y-4', y: 'translate-y-0' } },
-    { label: 'Slide Down', value: 'slide-out', transition: { opacity: true, x: '-translate-y-4', y: 'translate-y-0' } },
-    { label: 'Slide Left', value: 'slide-left', transition: { opacity: true, x: 'translate-x-4', y: 'translate-x-0' } },
-    { label: 'Slide Right', value: 'slide-out', transition: { opacity: true, x: '-translate-x-4', y: 'translate-x-0' } },
+    { label: 'Fade In', value: 'fade-in' },
+    // { label: 'Fade Out', value: 'fade-out' },
+    // { label: 'Fade In & Out', value: 'fade-in-out' },
+    { label: 'Slide Up', value: 'slide-up' },
+    { label: 'Slide Down', value: 'slide-down' },
+    { label: 'Slide Left', value: 'slide-left' },
+    { label: 'Slide Right', value: 'slide-right' },
   ]
 
   videoElement = signal<HTMLVideoElement | null>(null);

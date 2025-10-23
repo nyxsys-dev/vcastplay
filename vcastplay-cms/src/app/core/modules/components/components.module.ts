@@ -38,6 +38,7 @@ import { ObjectPropertiesComponent } from '../../../features/design-layout/objec
 import { DesignLayoutListItemComponent } from '../../../features/design-layout/design-layout-list-item/design-layout-list-item.component';
 import { ScheduleHourListComponent } from '../../../features/schedules/schedule-hour-list/schedule-hour-list.component';
 import { ScheduleFillersComponent } from '../../../features/schedules/schedule-fillers/schedule-fillers.component';
+import { PlaylistPlayerComponent } from '../../../features/playlist/playlist-player/playlist-player.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
@@ -77,6 +78,7 @@ const COMPONENT_MODULES = [
   PlaylistSelectContentsComponent,
   PlaylistListItemComponent,
   PlaylistFilterComponent,
+  PlaylistPlayerComponent,
 
   // Asset Components
   AssetListItemComponent,
