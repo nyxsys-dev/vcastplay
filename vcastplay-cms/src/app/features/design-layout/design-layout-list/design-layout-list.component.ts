@@ -6,12 +6,11 @@ import { DesignLayoutService } from '../design-layout.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { Menu } from 'primeng/menu';
 import { Router } from '@angular/router';
-import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';
 import { DesignLayout } from '../design-layout';
 
 @Component({
   selector: 'app-design-layout-list',
-  imports: [ PrimengUiModule, ComponentsModule, PreviewDesignLayoutComponent ],
+  imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './design-layout-list.component.html',
   styleUrl: './design-layout-list.component.scss',
 })
@@ -115,13 +114,6 @@ export class DesignLayoutListComponent {
   onClickPreview(design: any) {
     this.showPreview.set(true);
     this.selectedDesign.set(design);
-  }
-
-  onClosePreview() {
-    this.showPreview.set(false);
-    this.selectedDesign.set(null);
-    this.designForm.reset();
-    this.designLayoutService.onExitCanvas();
   }
 
   onGetCanvasData(event: any) {

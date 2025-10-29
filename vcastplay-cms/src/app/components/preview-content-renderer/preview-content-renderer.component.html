@@ -1,9 +1,0 @@
-@switch (content.type) {
-    @case ('design') {
-        <app-preview-design-layout [designLayout]="content" />
-    }
-    @default {
-        <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
-            [currentContent]="content" (timeUpdate)="onProgressUpdate(content.index, $event)" [autoPlay]="true" />
-    }
-}

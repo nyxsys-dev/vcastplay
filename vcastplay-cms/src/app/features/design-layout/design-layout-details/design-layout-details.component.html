@@ -56,56 +56,67 @@
             transform: 'rotate(' + layer.rotation + 'deg)'
           }"
         >
-          @if (!layer.content.marquee) {
-          <app-playlist-main-player
-            class="relative w-full h-full group bg-stone-800 text-white rounded-lg"
-            [playlist]="layer.content"
-            [autoPlay]="true"
-            [showControls]="false"
-          />
-          } @else {
-          <div class="relative overflow-hidden w-full h-full">
-            <div
-              id="marquee"
-              class="animate-marquee items-center justify-center w-full h-full gap-3 text-white"
-              [ngStyle]="{ 'animation-duration': layer.style.duration + 's' }"
-            >
-              <div class="flex gap-3">
-                @for (item of layer.content.repeat; track $index) {
-                <p
-                  class="font-semibold"
-                  [ngStyle]="{ 
-                    'font-size.px': layer.style.size,
-                    'font-family': layer.style.font,
-                    'font-weight': layer.style.weight ? 'bold' : 'normal',
-                    'font-style': layer.style.italic ? 'italic' : 'normal',
-                    'text-decoration': layer.style.underline ? 'underline' : 'none',
-                    'color': layer.style.color,
-                }"
+          @switch (layer.type) {
+            @case ('playlist') {
+              <app-playlist-player class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
+                  [playlist]="layer.content" [isAutoPlay]="true" />
+            }
+            
+            @case ('youtube') {
+              <app-asset-preview class="absolute h-full w-full flex items-center justify-center bg-stone-800"  
+                [asset]="layer.content" [autoPlay]="true" />
+            }
+            
+            @case ('facebook') {
+              <app-asset-preview class="absolute h-full w-full flex items-center justify-center bg-stone-800" 
+                [asset]="layer.content" [autoPlay]="true" />
+            }
+            
+
+            @case ('marquee') {
+              <div class="relative overflow-hidden w-full h-full">
+                <div
+                  id="marquee"
+                  class="animate-marquee items-center justify-center w-full h-full gap-3 text-white"
+                  [ngStyle]="{ 'animation-duration': layer.style.duration + 's' }"
                 >
-                  {{ layer.content.text }}
-                </p>
-                }
+                  <div class="flex gap-3">
+                    @for (item of layer.content.repeat; track $index) {
+                      <p
+                        class="font-semibold"
+                        [ngStyle]="{ 
+                          'font-size.px': layer.style.size,
+                          'font-family': layer.style.font,
+                          'font-weight': layer.style.weight ? 'bold' : 'normal',
+                          'font-style': layer.style.italic ? 'italic' : 'normal',
+                          'text-decoration': layer.style.underline ? 'underline' : 'none',
+                          'color': layer.style.color,
+                      }"
+                      >
+                        {{ layer.content.text }}
+                      </p>
+                    }
+                  </div>
+                  <div class="flex gap-3">
+                    @for (item of layer.content.repeat; track $index) {
+                      <p
+                        class="font-semibold"
+                        [ngStyle]="{ 
+                          'font-size.px': layer.style.size,
+                          'font-family': layer.style.font,
+                          'font-weight': layer.style.weight ? 'bold' : 'normal',
+                          'font-style': layer.style.italic ? 'italic' : 'normal',
+                          'text-decoration': layer.style.underline ? 'underline' : 'none',
+                          'color': layer.style.color,
+                      }"
+                      >
+                        {{ layer.content.text }}
+                      </p>
+                    }
+                  </div>
+                </div>
               </div>
-              <div class="flex gap-3">
-                @for (item of layer.content.repeat; track $index) {
-                <p
-                  class="font-semibold"
-                  [ngStyle]="{ 
-                    'font-size.px': layer.style.size,
-                    'font-family': layer.style.font,
-                    'font-weight': layer.style.weight ? 'bold' : 'normal',
-                    'font-style': layer.style.italic ? 'italic' : 'normal',
-                    'text-decoration': layer.style.underline ? 'underline' : 'none',
-                    'color': layer.style.color,
-                }"
-                >
-                  {{ layer.content.text }}
-                </p>
-                }
-              </div>
-            </div>
-          </div>
+            }
           }
         </div>
         }

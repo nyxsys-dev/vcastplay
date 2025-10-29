@@ -16,7 +16,7 @@ export class AssetsService {
   private assetSignal = signal<Assets[]>([])
   assets = computed(() => this.assetSignal())
 
-  selectedAsset = signal<Assets | null>(null)
+  selectedAsset = signal<Assets | any>(null);
   selectedArrAssets = signal<Assets[]>([])
 
   first = signal<number>(0)
@@ -258,7 +258,7 @@ export class AssetsService {
         code: 'NYX005',
         name: 'Youtube video',
         type: 'youtube',
-        link: 'https://www.youtube.com/watch?v=wDchsz8nmbo',
+        link: 'https://www.youtube.com/watch?v=QC8iQqtG0hg',
         category: 'Category 1',
         subCategory: 'Sub Category 1',
         thumbnail: 'https://placehold.co/600x400',
@@ -278,7 +278,7 @@ export class AssetsService {
         },
         weekdays: [],
         hours: [],
-        duration: 61,
+        duration: 7,
         audienceTag: {
           genders: [],
           ageGroups: [],
@@ -297,7 +297,7 @@ export class AssetsService {
         code: 'NYX005',
         name: 'Facebok Video',
         type: 'facebook',
-        link: 'https://www.facebook.com/watch/?v=938367226505614',
+        link: 'https://www.facebook.com/watch/?v=1222645649278888',
         category: 'Category 1',
         subCategory: 'Sub Category 1',
         thumbnail: 'https://placehold.co/600x400',
@@ -317,7 +317,7 @@ export class AssetsService {
         },
         weekdays: [],
         hours: [],
-        duration: 71,
+        duration: 10,
         audienceTag: {
           genders: [],
           ageGroups: [],

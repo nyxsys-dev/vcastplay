@@ -157,6 +157,10 @@ export class PlaylistDetailsComponent {
     console.log(event);
   }
 
+  onCurrentItemChange(event: Assets | DesignLayout | any) {
+    this.currentPlaying.set(event);
+  }
+
   formControl(fieldName: string) {
     return this.utils.getFormControl(this.playlistForm, fieldName);
   }
@@ -167,6 +171,9 @@ export class PlaylistDetailsComponent {
   get totalDuration() { return this.playlistService.totalDuration; }
   get transitionTypes() { return this.playlistService.transitionTypes; }
   get showContents() { return this.playlistService.showContents; }
+
+  get isPlaying() { return this.playlistService.isPlaying; }
+  get currentPlaying() { return this.playlistService.currentPlaying; }
 
   get assets() { return this.assetService.assets; }
   get assetViewModes() { return this.assetService.assetViewModes; }

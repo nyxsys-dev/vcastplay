@@ -1,40 +1,43 @@
-import { Component, ElementRef, inject, Input, signal, SimpleChanges, ViewChild } from '@angular/core';
-import { trigger, style, animate, transition, state } from '@angular/animations';
+import { Component, ElementRef, EventEmitter, forwardRef, inject, Input, Output, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { Playlist } from '../playlist';
 import { Assets } from '../../assets/assets';
 import { DesignLayout } from '../../design-layout/design-layout';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { UtilityService } from '../../../core/services/utility.service';
 import { SafeurlPipe } from '../../../core/pipes/safeurl.pipe';
-import YouTubePlayer from 'youtube-player';
+import { PlaylistService } from '../playlist.service';
+import { FacebookSDKService } from '../../../core/services/facebook-sdk.service';
+import { DesignLayoutPreviewComponent } from '../../design-layout/design-layout-preview/design-layout-preview.component';
+import { YoutubeSdkService } from '../../../core/services/youtube-sdk.service';
 
 declare const FB: any;
+declare const YT: any;
 
 @Component({
   selector: 'app-playlist-player',
-  imports: [ PrimengUiModule, SafeurlPipe ],
+  imports: [ PrimengUiModule, SafeurlPipe, forwardRef(() => DesignLayoutPreviewComponent) ],
   templateUrl: './playlist-player.component.html',
   styleUrl: './playlist-player.component.scss',
-  animations: [
-    trigger('fadeAnimation', [
-      state('hidden', style({ opacity: 0 })),
-      state('visible', style({ opacity: 1 })),
-      transition('hidden <=> visible', animate('{{speed}}ms ease-in-out'), {
-        params: { speed: 800 },
-      }),
-    ]),
-  ]
 })
 export class PlaylistPlayerComponent {
 
   @Input() playlist!: Playlist;
+  @Input() isAutoPlay: boolean = false;
+
+  @Output() onCurrentItemChange = new EventEmitter<Assets | DesignLayout | any>();
+  @Output() isPlayingChange = new EventEmitter<boolean>();
 
   @ViewChild('fbPlayer') fbPlayerRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('ytPlayer') ytPlayerRef!: ElementRef<HTMLDivElement>;
 
+  playlistService = inject(PlaylistService);
   utils = inject(UtilityService);
+  fbService = inject(FacebookSDKService);
+  ytService = inject(YoutubeSdkService);
 
   isPlaying = signal<boolean>(false);
   isTransitioning = signal<boolean>(false);
+  isFacebookLoading = signal<boolean>(false);
   currentIndex = signal<number>(0);
   currentItem = signal<Assets | DesignLayout | any>(null);
   nextPreloadedItem = signal<Assets | DesignLayout | any>(null);
@@ -42,13 +45,17 @@ export class PlaylistPlayerComponent {
 
   private timerId: any;
   private gapId: any;
+  private transitionId: any;
+  private fbTimerId: any;
+  private ytTimerId: any;
+  
 
   ngOnInit() {
     this.onInitPlaylist();
-    this.onRenderFacebookSDK();
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if (!changes['playlist'].currentValue) this.onStopPlayback();
     if (changes['playlist'] && changes['playlist'].currentValue) this.onInitPlaylist(true);
   }
 
@@ -62,16 +69,16 @@ export class PlaylistPlayerComponent {
   }
 
   onInitPlaylist(fromChange: boolean = false) {
-    const contents: number = this.playlist.contents.length;
-    clearTimeout(this.timerId);
-    clearTimeout(this.gapId);
+    const contents: number = this.playlist?.contents.length || 0;
+    this.onClearTimeout();
     this.currentIndex.set(0);
 
     if (contents > 0) {
       this.currentItem.set(this.playlist.contents[0]);
       this.onPreloadNextItem();
 
-      if (fromChange && this.isPlaying()) this.onStartPlayback();
+      if (this.isAutoPlay) this.onStartPlayback();
+      else if (fromChange && this.isPlaying()) this.onStartPlayback();
     }
   }
 
@@ -80,16 +87,18 @@ export class PlaylistPlayerComponent {
     if (contents == 0) return;
     this.isPlaying.set(true);
     this.currentItem.set(this.playlist.contents[this.currentIndex()]);
-    this.onPreloadNextItem();
 
-    // if (this.currentItem().type == 'image') this.onImageLoaded(this.currentItem());
-    // else if (this.currentItem().type == 'facebook') this.onFacebookLoad();    
+    if (this.currentItem().type == 'facebook') this.onFacebookLoad();
+    if (this.currentItem().type == 'youtube') this.onYoutubeLoad();
+    this.onCurrentItemChange.emit(this.currentItem());
+    this.isPlayingChange.emit(true);
+
+    this.onPreloadNextItem();
   }
 
   onStopPlayback() {
     this.isPlaying.set(false);
-    clearTimeout(this.timerId);
-    clearTimeout(this.gapId);
+    this.onClearTimeout();
     this.currentIndex.set(0);
     
     const video = document.querySelector('video');    
@@ -97,18 +106,18 @@ export class PlaylistPlayerComponent {
       video.currentTime = 0;
       video.pause();
     }
+    this.onCurrentItemChange.emit(null);
+    this.isPlayingChange.emit(false);
   }
 
   onNextItem() {
     const { type, hasGap } = this.playlist.transition;
     const typeDuration = type ? 300 : 0;
     const gapDuration = hasGap ? 1500 : 0;
-    clearTimeout(this.timerId);
-    clearTimeout(this.gapId);
+    this.onClearTimeout();
     
-    setTimeout(() => {
-
-      this.currentItem.set(null);
+    this.currentItem.set(null);
+    this.transitionId = setTimeout(() => {
 
       this.gapId = setTimeout(() => {
         const isLoop: boolean = this.playlist.loop;
@@ -126,24 +135,17 @@ export class PlaylistPlayerComponent {
         }
 
         this.currentIndex.set(nextIndex);
-        this.currentItem.set(this.playlist.contents[nextIndex]);
-        this.onPreloadNextItem();
+        this.currentItem.set(this.playlist.contents[nextIndex]);        
 
-        // if (this.isPlaying() && this.currentItem().type == 'image') this.onImageLoaded(this.currentItem());
         if (this.currentItem().type == 'facebook') this.onFacebookLoad();
-      }, gapDuration);
-    }, typeDuration);    
-  }
+        if (this.currentItem().type == 'youtube') this.onYoutubeLoad();
 
-  onItemEnd() {
-    const hasGap: boolean = this.playlist.transition.hasGap;    
-    const gapDuration = hasGap ? 1500 : 0;
-    // this.currentItem.set(null);
-    // if (hasGap) {
-    //   this.gapId = setTimeout(() => this.onNextItem(), gapDuration);
-    // }
-    // else 
-    this.onNextItem();
+        this.onCurrentItemChange.emit(this.currentItem());
+        this.onPreloadNextItem();
+        
+      }, gapDuration);
+
+    }, typeDuration);    
   }
 
   onPreloadNextItem() {
@@ -151,66 +153,69 @@ export class PlaylistPlayerComponent {
     this.nextPreloadedItem.set(this.playlist.contents[nextIndex]);
   }
 
+  // For Image and Web links
   onImageLoaded(item: Assets) {
     const duration = item.duration * 1000 || 5000;    
-    this.timerId = setTimeout(() => this.onItemEnd(), duration);
-  }
-
-  onYoutubeLoad() {
-    const ytPlayer = document.querySelector('iframe');    
-    if (!ytPlayer) return;
-    
-    const youtube = YouTubePlayer(ytPlayer)
-    youtube.on('ready', () => youtube.playVideo());
-    youtube.on('stateChange', (event: any) => {
-      if (event.data == 0) {
-        youtube.stopVideo();
-        this.onItemEnd();
-      }
-    })
-  }
-
-  onFacebookLoad() {
-    let facebook: any = null;
-    setTimeout(async () => {
-      const fbPlayer = this.fbPlayerRef.nativeElement;
-      
-      if ((window as any).FB) await FB.Event.unsubscribe('xfbml.ready');
-      
-      await FB.Event.subscribe('xfbml.ready', async (msg: any) => {        
-        if (msg.type === 'video' && msg.instance) {
-          facebook = msg.instance;
-        }
-      });
-
-      await FB.XFBML.parse(fbPlayer, async () => {
-        facebook.play();
-        facebook.subscribe('finishedPlaying', () => {
-          console.log('Finished playing');
-          facebook.pause();
-          this.onItemEnd();
-        });
-      })
-    }, 10);
+    this.timerId = setTimeout(() => this.onNextItem(), duration);
   }
   
-  private onRenderFacebookSDK(): Promise<void> {
-    return new Promise((resolve) => {
-      if ((window as any).FB) {
-        resolve();
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://connect.facebook.net/en_US/sdk.js';
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
+  async onYoutubeLoad() {
+    await this.ytService.onLoadSDK()
+    this.ytTimerId = setTimeout(async () => {
+      const ytPlayer = this.ytPlayerRef?.nativeElement;
+      const item = this.currentItem()
+      const { videoId } = this.utils.onGetEmbedUrl(item.link);
+      if (!ytPlayer) return;
+      
+      const player = await new YT.Player(ytPlayer, {
+        videoId,
+        playerVars: { autoPlay: 1, controls: 0, playsinline: 1, showinfo: 0 },
+        events: {
+          onReady: (event: any) => player.playVideo(),
+          onStateChange: (event: any) => {
+            if (event.data == YT.PlayerState.ENDED) {
+              player.seekTo(0);
+              player.stopVideo();
+              this.onNextItem();
+            }
+          }
+        }
+      })  
+    }, 10);
+  }
 
-      (window as any).fbAsyncInit = () => {
-        FB.init({ xfbml: true, version: 'v24.0' });
-        resolve();
-      };
-    });
+  async onFacebookLoad() { 
+    let player: any;
+    this.isFacebookLoading.set(true);
+    await this.fbService.onLoadSDK();
+    this.fbTimerId = setTimeout(async () => {
+      const fbPlayer = this.fbPlayerRef?.nativeElement;
+      if (!fbPlayer) return;
+      this.fbService.onFacebookParse(fbPlayer);
+
+      const iframe = fbPlayer.querySelector('iframe');
+      if (!iframe) return;      
+      try {
+        await FB.Event.unsubscribe('xfbml.ready');
+        await FB.Event.subscribe('xfbml.ready', async (msg: any) => {     
+          this.isFacebookLoading.set(false);
+          if (msg.type === 'video' && msg.instance) {
+            player = msg.instance;
+            player.play();
+            
+            player.subscribe('finishedPlaying', () => {
+              player.pause();
+              this.onNextItem();
+            });
+          }
+      
+        });
+
+      } catch (err) {
+        console.warn('FB Player init failed', err);
+        this.onNextItem();
+      }
+    }, 20);
   }
 
   onActiveTransitionClass() {
@@ -229,5 +234,12 @@ export class PlaylistPlayerComponent {
       default:
         return '';
     }
+  }
+
+  onClearTimeout() {
+    clearTimeout(this.timerId);
+    clearTimeout(this.gapId);
+    clearTimeout(this.transitionId);
+    clearTimeout(this.fbTimerId);
   }
 }

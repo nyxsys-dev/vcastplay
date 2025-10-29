@@ -7,11 +7,10 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { Playlist } from '../playlist';
 import { Router } from '@angular/router';
 import { Menu } from 'primeng/menu';
-import { PlaylistMainPlayerComponent } from '../playlist-main-player/playlist-main-player.component';
 
 @Component({
   selector: 'app-playlist-list',
-  imports: [ PrimengUiModule, ComponentsModule, PlaylistMainPlayerComponent ],
+  imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './playlist-list.component.html',
   styleUrl: './playlist-list.component.scss',
 })
@@ -38,7 +37,7 @@ export class PlaylistListComponent {
   showPreview = signal<boolean>(false);
   showApprove = signal<boolean>(false);
 
-  previewContent: any;
+  previewContent = signal<Playlist | any>(null);;
 
   playlistFilters = signal<any>(this.playlistFilterForm.valueChanges);
   filterPlaylist = computed(() => {
@@ -101,8 +100,7 @@ export class PlaylistListComponent {
 
   onClickPreview(playlist: any) {
     this.showPreview.set(true);
-    this.previewContent = playlist;
-    // this.playlistForm.patchValue(playlist);
+    this.previewContent.set({ ...playlist, loop: true });
   }
 
   onClickOptions(event: Event, playlist: Playlist, menu: Menu) {

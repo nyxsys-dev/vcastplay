@@ -184,16 +184,12 @@
   </p-card>
 </div>
 
-<p-dialog header="Preview" [(visible)]="isShowPreview" [style]="{ width: '50rem' }" modal>
-  <div
-    class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg"
-  >
-    <app-preview-assets
-      class="absolute h-full w-full flex items-center justify-center"
-      [currentContent]="selectedAsset()"
-      [showControls]="true"
-      [autoPlay]="false"
-    />
+<p-dialog header="Preview" [(visible)]="isShowPreview" [style]="{ width: '50rem' }" [resizable]="false" modal>
+  <div class="relative aspect-video border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
+    <ng-container *ngIf="selectedAsset() && isShowPreview()">
+      <app-asset-preview class="absolute h-full w-full flex items-center justify-center bg-stone-800"
+        [asset]="selectedAsset()" [showControls]="true" />
+    </ng-container>
   </div>
 </p-dialog>
 

@@ -30,6 +30,7 @@ export interface HtmlLayer {
     height: number;
     content: any;
     style?: any;
+    type: any;
     rotation: number;
     fabricObject: any;
 }

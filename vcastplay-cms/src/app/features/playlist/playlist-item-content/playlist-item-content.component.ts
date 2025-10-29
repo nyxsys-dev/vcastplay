@@ -5,6 +5,7 @@ import { UtilityService } from '../../../core/services/utility.service';
 import { Playlist } from '../playlist';
 import { Assets } from '../../assets/assets';
 import { DesignLayout } from '../../design-layout/design-layout';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-playlist-item-content',
@@ -14,8 +15,9 @@ import { DesignLayout } from '../../design-layout/design-layout';
 })
 export class PlaylistItemContentComponent {
   
-  @Input() playlist!: Playlist;
-  @Input() content!: Assets | DesignLayout;
+  @Input() playlist!: FormGroup;
+  @Input() content: Assets | DesignLayout | any;
+  @Input() isPlaying: boolean = false;
 
   showConfig = signal<boolean>(false);
 
@@ -23,24 +25,22 @@ export class PlaylistItemContentComponent {
   playlistService = inject(PlaylistService);
 
   onCurrentPlaying() {
-    const content: any = this.playlistService.onGetCurrentContent(this.playlist.id)(); 
-    const currentContent: any = content?.currentContent() ?? null;    
-    return content ? currentContent?.contentId == this.content.contentId : false;
+    const { contentId } = this.content;
+    return this.currentPlaying?.contentId == contentId;
   }
 
   onClickRemove(content: Assets | DesignLayout) {
     const { contentId } = content;
-    const contents = this.contents?.value;
-    const files = this.files?.value;
-    this.contents?.setValue(contents.filter((item: any) => item.contentId !== contentId));
-    this.files?.setValue(files.filter((item: any) => item.contentId !== contentId));
+    const { contents, files }: any = this.playlist.value;
+
+    const newContents = contents.filter((item: any) => item.contentId !== contentId);
+    const newFiles = files.filter((item: any) => item.contentId !== contentId);
+    this.playlist.patchValue({ contents: newContents, files: newFiles });
   }
 
   onClickHide() {
     this.showConfig.set(!this.showConfig());
   }
 
-  get files() { return this.playlistService.files; }
-  get contents() { return this.playlistService.contents; }
-  get isPlaying() { return this.playlistService.isPlaying; }
+  get currentPlaying() { return this.playlistService.currentPlaying(); }
 }

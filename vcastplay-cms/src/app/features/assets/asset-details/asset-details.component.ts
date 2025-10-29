@@ -6,14 +6,11 @@ import { AssetsService } from '../assets.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { TagService } from '../../settings/tags/tag.service';
-import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
-import { AssetScheduleComponent } from '../asset-schedule/asset-schedule.component';
-import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
-import { BreadcrumbsComponent } from '../../../components/breadcrumbs/breadcrumbs.component';
+import { ComponentsModule } from '../../../core/modules/components/components.module';
 
 @Component({
   selector: 'app-asset-details',
-  imports: [ PrimengUiModule, BreadcrumbsComponent, AssetScheduleComponent, AudienceTagFiltersComponent, PreviewAssetsComponent ],
+  imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './asset-details.component.html',
   styleUrl: './asset-details.component.scss',
 })
@@ -140,10 +137,18 @@ export class AssetDetailsComponent {
     
   }
 
-  async onGetContentDuration(event: any) {
-    const duration = Math.ceil(event);
-    console.log(duration);
-    this.assetForm.patchValue({ duration });
+  async onPropertiesChange(event: any) {
+    const { title, width, height, orientation, duration, type } = event;
+    this.assetForm.patchValue({ 
+      duration, 
+      fileDetails: {
+        name: title ?? '',
+        size: 0,
+        type,
+        orientation,
+        resolution: { width, height }
+      } 
+    });
   }
 
   async onClickSave(event: Event) {
@@ -208,7 +213,7 @@ export class AssetDetailsComponent {
   }
 
   onClickClear() {
-    this.assetForm.patchValue({ link: null, name: null })
+    this.assetForm.patchValue({ link: null, name: null, duration: 10 })
     this.fileDetails?.reset();
   }
 

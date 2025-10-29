@@ -2,7 +2,6 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  forwardRef,
   HostListener,
   inject,
   signal,
@@ -17,13 +16,12 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api'
 import { Router } from '@angular/router'
 import { PlaylistService } from '../../playlist/playlist.service'
 import { CdkDrag } from '@angular/cdk/drag-drop'
-import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player/playlist-main-player.component'
 import { Assets } from '../../assets/assets'
 import { DesignLayout } from '../design-layout'
 
 @Component({
   selector: 'app-design-layout-details',
-  imports: [PrimengUiModule, ComponentsModule, forwardRef(() => PlaylistMainPlayerComponent)],
+  imports: [PrimengUiModule, ComponentsModule ],
   templateUrl: './design-layout-details.component.html',
   styleUrl: './design-layout-details.component.scss',
 })
@@ -575,9 +573,16 @@ export class DesignLayoutDetailsComponent {
         })
         break
       case 'playlist':
-      case 'web':
         this.designLayoutService.onAddHTMLToCanvas(canvas, { loop: true, type, ...info })
         this.designForm.patchValue({ files: [...files, ...event.files] })
+        break
+      case 'youtube':
+      case 'facebook':
+      case 'web':
+        this.designLayoutService.onAddHTMLToCanvas(canvas, { loop: true, type, ...info })
+        this.designForm.patchValue({
+          files: [...files, { id: event.id, name: event.name, link: event.link }],
+        })
         break
       default:
         this.designLayoutService.onAddVideoToCanvas(canvas, event)

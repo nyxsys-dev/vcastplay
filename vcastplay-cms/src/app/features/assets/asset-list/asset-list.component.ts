@@ -7,12 +7,11 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { PlaylistService } from '../../playlist/playlist.service';
-import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
 import { Assets } from '../assets';
 
 @Component({
   selector: 'app-asset-list',
-  imports: [ PrimengUiModule, ComponentsModule, PreviewAssetsComponent ],
+  imports: [ PrimengUiModule, ComponentsModule ],
   templateUrl: './asset-list.component.html',
   styleUrl: './asset-list.component.scss',
 })
@@ -23,7 +22,7 @@ export class AssetListComponent {
     { 
       label: 'Options',
       items: [
-        { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => this.onClickPreview(this.selectedAsset()) },
+        { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => this.onClickPreview() },
         { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate(this.selectedAsset(), $event) },
         { label: 'Add to Playlist', icon: 'pi pi-list', command: ($event: any) => this.onClickAddToPlaylist(this.selectedAsset(), $event) },
         { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete(this.selectedAsset(), $event) }
@@ -192,8 +191,7 @@ export class AssetListComponent {
 
   onClickRefresh() { }
 
-  onClickPreview(item: any) {
-    this.selectedAsset.set(item);
+  onClickPreview() {
     this.isShowPreview.set(!this.isShowPreview());
   }
 

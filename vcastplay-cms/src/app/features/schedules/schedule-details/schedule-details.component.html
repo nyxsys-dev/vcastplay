@@ -100,25 +100,23 @@
 <p-dialog header="Content Preview" [(visible)]="showPreviewEvent" (onHide)="onClosePreview()"
     styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false" [resizable]="true">
     <ng-container *ngIf="selectedContent() as content">
-        @switch (content.extendedProps.type) {
-            @case ('playlist') {
-                <div class="flex h-full w-full">
-                    <app-playlist-main-player class="relative flex-1 border-1 border-[var(--p-surface-300)] group bg-stone-800 text-white"
+        <div class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg aspect-video">
+            @switch (content.extendedProps.type) {
+                @case ('playlist') {             
+                    <app-playlist-player class="" 
                         [playlist]="content.extendedProps" />
-                </div>
+                }
+                @case ('design') {
+                    <div #viewport class="absolute flex items-center justify-center w-full h-full overflow-hidden">
+                        <app-design-layout-preview [viewport]="viewport" [designLayout]="content.extendedProps" [isPlaying]="true" />
+                    </div>
+                }
+                @default {
+                    <app-asset-preview class="absolute h-full w-full flex items-center justify-center bg-stone-800"
+                        [asset]="content.extendedProps" [showControls]="true" />
+                }
             }
-            @case ('design') {
-                <div #viewport class="relative flex h-full md:h-100 w-full items-center justify-center group bg-stone-800 text-white rounded-lg">
-                    <app-preview-design-layout class="absolute flex-1" [designLayout]="content.extendedProps" [isViewOnly]="true" [viewport]="viewport" />
-                </div>
-            }
-            @default {
-                <div class="relative h-100 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
-                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center"
-                        [currentContent]="content.extendedProps" [showControls]="true" [autoPlay]="false" />
-                </div>
-            }
-        }
+        </div>
         <div class="flex flex-col gap-3 mt-3">
             <p class="text-sm italic text-gray-400">Information</p>
             <div class="flex gap-2">

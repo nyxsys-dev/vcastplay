@@ -1,7 +1,7 @@
 import { Component, computed, effect, ElementRef, HostListener, inject, signal, ViewChild } from '@angular/core';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { PrimengUiModule } from '../../../core/modules/primeng-ui/primeng-ui.module';
 import { ComponentsModule } from '../../../core/modules/components/components.module';
-import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { SchedulesService } from '../schedules.service';
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -9,17 +9,14 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { UtilityService } from '../../../core/services/utility.service';
-import { Router } from '@angular/router';
 import moment from 'moment-timezone';
 import { PlaylistService } from '../../playlist/playlist.service';
 import { SchedulesContentListComponent } from '../schedules-content-list/schedules-content-list.component';
-import { PreviewAssetsComponent } from '../../../components/preview-assets/preview-assets.component';
-import { PlaylistMainPlayerComponent } from '../../playlist/playlist-main-player/playlist-main-player.component';
-import { PreviewDesignLayoutComponent } from '../../../components/preview-design-layout/preview-design-layout.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-schedule-details',
-  imports: [PrimengUiModule, ComponentsModule, PreviewAssetsComponent, PlaylistMainPlayerComponent, PreviewDesignLayoutComponent ],
+  imports: [PrimengUiModule, ComponentsModule ],
   templateUrl: './schedule-details.component.html',
   styleUrl: './schedule-details.component.scss',
 })

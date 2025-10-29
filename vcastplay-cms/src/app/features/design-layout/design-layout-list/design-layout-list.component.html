@@ -73,6 +73,7 @@
     </p-card>
 </div>
 
+<p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
 <ng-template #actionBtn let-item>
     <p-button (onClick)="onClickEdit(item)" icon="pi pi-pencil" pTooltip="Edit" 
         tooltipPosition="bottom" severity="success" size="small" [disabled]="['approved', 'disapproved'].includes(item.status)" />
@@ -82,7 +83,17 @@
     <p-button (onClick)="onClickOptions($event, item, actionMenu)" pTooltip="More" tooltipPosition="bottom" icon="pi pi-cog" severity="contrast" size="small" />
 </ng-template>
 
-<p-menu #actionMenu [model]="actionItems" [popup]="true" appendTo="body" />
+
+<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="selectedDesign.set(null)" appendTo="body" [resizable]="false" modal>
+    <div class="relative border-2 border-[var(--p-surface-300)] bg-stone-800 text-white rounded-lg aspect-video">
+        <ng-container *ngIf="selectedDesign() as design">
+            <div #viewport class="absolute flex items-center justify-center w-full h-full overflow-hidden">
+                <app-design-layout-preview [viewport]="viewport" [designLayout]="design" [isPlaying]="true" />
+            </div>
+        </ng-container>
+    </div>
+</p-dialog>
+
 <p-popover #approved appendTo="body" (onHide)="designForm.reset()">
     <ng-template #content>
         <div class="flex flex-col gap-3">
@@ -108,11 +119,3 @@
         </div>
     </ng-template>
 </p-popover>
-
-<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="onClosePreview()" appendTo="body" [resizable]="false" modal>
-    <ng-container *ngIf="selectedDesign() as design">
-        <div #viewport class="flex-1 flex items-center justify-center bg-stone-800 text-white rounded-lg p-2 aspect-video">
-            <app-preview-design-layout [designLayout]="design" [isViewOnly]="true" [viewport]="viewport" [currentPlaying]="design" (canvasData)="onGetCanvasData($event)" />
-        </div>
-    </ng-container>
-</p-dialog>

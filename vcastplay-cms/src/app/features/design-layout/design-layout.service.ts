@@ -4,6 +4,7 @@ import { PlaylistService } from '../playlist/playlist.service'
 import { v7 as uuidv7 } from 'uuid'
 import * as fabric from 'fabric'
 import { DesignLayout, HtmlLayer } from './design-layout'
+import { Playlist } from '../playlist/playlist'
 
 interface GuideLine {
   line: fabric.Line
@@ -245,7 +246,6 @@ export class DesignLayoutService {
       object.set('zIndex', index)
     })
 
-    // const htmlLayers = this.canvasHTMLLayers() //.filter(item => !item.content.marquee);
     const canvasData = canvas.toObject([
       'html',
       'data',
@@ -274,7 +274,7 @@ export class DesignLayoutService {
     const index = tempData.findIndex((item) => item.id == design.id)
 
     const hasPlaylist =
-      design.htmlLayers.filter((item: HtmlLayer) => !item.content.marquee).length > 0 ? true : false
+      design.htmlLayers.filter((item: HtmlLayer) => !['marquee', 'youtube', 'facebook'].includes(item.type)).length > 0 ? true : false
 
     if (index !== -1)
       tempData[index] = {
@@ -451,8 +451,8 @@ export class DesignLayoutService {
         })
 
         if (html) {
-          const { content, style } = html
-          const htmlLayer = this.createHtmlLayerFromObject(cloned, uuidv7(), content, style, canvas)
+          const { content, style, type } = html
+          const htmlLayer = this.createHtmlLayerFromObject(cloned, uuidv7(), content, style, canvas, type)
           htmlLayers.push(htmlLayer)
           cloned.set('html', htmlLayer)
           cloned.setControlsVisibility(this.HTMLCONTROL_STYLE)
@@ -499,13 +499,14 @@ export class DesignLayoutService {
           })
 
           if (html) {
-            const { content, style } = html
+            const { content, style, type } = html
             const htmlLayer = this.createHtmlLayerFromObject(
               cloned,
               uuidv7(),
               content,
               style,
-              canvas
+              canvas,
+              type
             )
             htmlLayers.push(htmlLayer)
             cloned.set('html', htmlLayer)
@@ -711,10 +712,10 @@ export class DesignLayoutService {
         text: tempText.text,
         marquee: true,
         repeat: Array(repeatCount).fill(tempText.text),
-        type: 'marquee',
       },
       this.objectPropsForm.value,
-      canvas
+      canvas,
+      'marquee'
     )
 
     htmlLayers.push(htmlLayer)
@@ -840,8 +841,9 @@ export class DesignLayoutService {
     video.playsInline = true
     video.crossOrigin = 'anonymous'
     video.preload = 'auto'
-    // video.load();
-    // video.play();
+    video.load();
+    video.play();
+    // if (isViewOnly) video.play();
 
     const videoObj: any = new fabric.FabricImage(video, {
       left: fabricObject?.left ?? 0,
@@ -853,20 +855,20 @@ export class DesignLayoutService {
       objectCaching: false,
       data,
       zIndex: fabricObject?.zIndex ?? 0,
-    })
+    })    
 
     videoObj.setControlsVisibility(this.HTMLCONTROL_STYLE)
-    // canvas.add(videoObj);
-    canvas.insertAt(videoObj.zIndex, videoObj)
 
     videoObj.set('data', { ...data, element: video })
 
     // ⚡ Wait until first frame is ready
-    video.addEventListener('loadeddata', () => {
-      canvas.requestRenderAll() // show first frame
-    })
+    // video.addEventListener('loadeddata', () => {
+    // })
+    // canvas.add(videoObj);
+    canvas.insertAt(videoObj.zIndex, videoObj)
+    canvas.requestRenderAll() // show first frame
 
-    video.onended = () => video.play().catch((err) => console.warn('Video play failed:', err))
+    // video.onended = () => video.play().catch((err) => console.warn('Video play failed:', err))
 
     if (autoPlay) this.onStartVideoRender(canvas)
     this.onDisableLayersProps(canvas, true)
@@ -893,14 +895,14 @@ export class DesignLayoutService {
     this.saveState()
   }
 
-  onAddHTMLToCanvas(canvas: fabric.Canvas, content: any) {
+  onAddHTMLToCanvas(canvas: fabric.Canvas, content: Playlist | any) {
     const { htmlLayers }: any = this.designForm.value
     this.onSetCanvasProps('content', true, 'default')
     const rect = new fabric.Rect({
       left: 100 + length * 50,
       top: 100 + length * 50,
-      width: 200,
-      height: 100,
+      width: 500,
+      height: 500,
       fill: 'transparent',
       stroke: null,
       strokeWidth: 0,
@@ -909,18 +911,16 @@ export class DesignLayoutService {
       lockRotation: true,
     })
 
-    rect.setControlsVisibility(this.HTMLCONTROL_STYLE)
+    // rect.setControlsVisibility(this.HTMLCONTROL_STYLE)
 
-    canvas.add(rect)
-
-    const htmlLayer: any = this.createHtmlLayerFromObject(rect, uuidv7(), content, null, canvas)
+    const htmlLayer: any = this.createHtmlLayerFromObject(rect, uuidv7(), content, null, canvas, content.type)
     htmlLayers.push(htmlLayer)
 
     rect.set('html', htmlLayer)
     rect.set('data', content)
 
-    this.playlistService.onPlayContent(content)
 
+    canvas.add(rect)
     this.syncDivsWithFabric(canvas)
     canvas.setActiveObject(rect)
     canvas.requestRenderAll()
@@ -928,6 +928,11 @@ export class DesignLayoutService {
     this.onDisableLayersProps(canvas, true)
     this.showContents.set(false)
     this.saveState()
+  }
+
+  onAddSocialToCanvas(canvas: fabric.Canvas, content: any) {
+    const { htmlLayers }: any = this.designForm.value
+
   }
 
   /**
@@ -1400,12 +1405,12 @@ export class DesignLayoutService {
 
               if (alreadyExists) {
                 this.syncDivsWithFabric(newCanvas)
-                if (!html.content.marquee) this.playlistService.onPlayContent(html.content)
+                // if (html.type == 'marquee') this.playlistService.onPlayContent(html.content)
               }
             } else if (obj.data) {
               const data: any = obj.data
 
-              if (data.type === 'video') {
+              if (data.type === 'video') {                              
                 this.onAddVideoToCanvas(
                   newCanvas,
                   data,
@@ -1539,7 +1544,8 @@ export class DesignLayoutService {
           layer.id,
           layer.content,
           layer.style,
-          canvas
+          canvas,
+          layer.type
         )
         Object.assign(layer, updated)
       }
@@ -1551,7 +1557,8 @@ export class DesignLayoutService {
     id: string,
     content: any,
     style: any,
-    canvas: fabric.Canvas
+    canvas: fabric.Canvas,
+    type: string
   ) {
     const zoom = canvas.getZoom()
 
@@ -1566,7 +1573,7 @@ export class DesignLayoutService {
     const height = bounds.height * zoom // obj.getScaledHeight() * zoom;
     const angle = obj.angle || 0
 
-    if (html && !html.content.marquee)
+    if (html && !['marquee', 'youtube', 'facebook'].includes(html.type))
       obj.setControlsVisibility({
         mtr: false,
         tl: false,
@@ -1586,6 +1593,7 @@ export class DesignLayoutService {
       height,
       rotation: angle,
       content,
+      type,
       style,
       fabricObject: obj,
     }

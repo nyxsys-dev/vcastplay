@@ -1,26 +1,31 @@
-<div class="relative flex flex-col gap-2 border-1 border-[var(--p-primary-100)] shadow shadow-xl h-40 w-full group" 
-    cdkDrag [cdkDragDisabled]="disableDrag" [cdkDragData]="asset">
+<div class="relative flex flex-col gap-2 border-1 border-[var(--p-primary-100)] shadow shadow-xl h-40 w-full group">
     
     <div class="flex-1 flex flex-col items-center justify-center gap-2 relative group rounded-lg">
-        <app-preview-assets class="absolute h-full w-full flex items-center justify-center" [currentContent]="asset" [showControls]="false" />
+        @switch (asset.type) {
+            @case ('facebook') {
+                <img class="w-20" src="assets/socials/facebook.png" [alt]="asset.name" />
+            }
+            @case ('youtube') {
+                <img class="w-20" src="assets/socials/youtube.png" [alt]="asset.name" />
+            }
+            @default {
+                <app-asset-preview class="absolute h-full w-full flex items-center justify-center bg-stone-800"
+                    [asset]="asset" [showControls]="true" />
+            }
+        }
 
         @if(showDetails) {
             <div class="flex items-end absolute bottom-0 left-0 h-full w-full bg-gradient-to-t from-[var(--p-primary-500)] to-transparent p-2 text-white"  
                 (click)="showOptions && showDrawer.set(true)" [ngClass]="{ 'cursor-pointer': showOptions }">
                 <div class="flex flex-col w-full">
                     <p class="text-sm line-clamp-1">{{ asset.name }}</p>
-                    <p class="text-xs">{{ utils.formatSize(asset.fileDetails.size ?? 0) }}</p>
+                    @if(!['facebook', 'youtube'].includes(asset.type)) {
+                        <p class="text-xs">{{ utils.formatSize(asset.fileDetails.size ?? 0) }}</p>
+                    }
+
                 </div>
             </div>
         }
-    </div>
-
-    <div class="outline-dashed outline-2 outline-offset-2 outline-gray-400" [ngClass]="customCSS" *cdkDragPlaceholder></div>
-
-    <div *cdkDragPreview>
-        <div class="relative flex flex-col gap-2 border border-[var(--p-surface-300)] rounded-lg p-3 bg-[var(--p-surface-300)] w-50">
-            <app-preview-assets class="flex items-center justify-center" [currentContent]="asset" [showControls]="false" />
-        </div>
     </div>
 </div>
 
@@ -29,7 +34,9 @@
     <div class="flex gap-4">
         <div class="flex flex-col w-full">
             <p class="text-lg font-semibold line-clamp-1">{{ asset.name }}</p>
-            <p class="text-base">{{ utils.formatSize(asset.fileDetails.size) }}</p>
+            @if(!['facebook', 'youtube'].includes(asset.type)) {
+                <p class="text-xs">{{ utils.formatSize(asset.fileDetails.size ?? 0) }}</p>
+            }
         </div>
         <div class="flex gap-2 ml-auto">
             <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: asset }"></ng-container>

@@ -15,11 +15,10 @@ import { PlaylistItemContentComponent } from '../playlist-item-content/playlist-
 })
 export class PlaylistContainerComponent {
 
+  @Input() playlistForm!: FormGroup;
+  @Input() isPlaying: boolean = false;
+
   @ViewChildren('playlistContent', { read: ElementRef }) playlistContent!: QueryList<ElementRef>
-
-  @Input() playListForm!: FormGroup;
-
-  // assets = signal<Assets[]>([]);
 
   assetService = inject(AssetsService);
   playlistService = inject(PlaylistService);
@@ -31,7 +30,7 @@ export class PlaylistContainerComponent {
     effect(() => {
       const content = this.currentPlaying;
       if (content) {
-        const { contents } = this.playListForm.value;
+        const { contents } = this.playlistForm.value;
         const index = contents.findIndex((item: any) => item.contentId === content.contentId);
         this.activeIndex = index;
         this.onScrollContent(index);
@@ -39,9 +38,7 @@ export class PlaylistContainerComponent {
     })
   }
 
-  ngOnInit() {
-    // this.assets.set(this.assetService.onGetAssets());    
-  }
+  ngOnInit() { }
 
   onScrollContent(index: number) {
     const child = this.playlistContent.toArray()[index].nativeElement as HTMLElement;
@@ -49,32 +46,24 @@ export class PlaylistContainerComponent {
   }
 
   onDropped(event: CdkDragDrop<string[]>) {
-    const length = this.contents?.value?.length || 0;
-    const contents = this.contents?.value || [];
+    const { contents } = this.playlistForm.value;
+    const length = contents.length || 0;
     const { previousIndex, previousContainer, currentIndex, container, item: { data } } = event;
 
     // If the item is from the same container (reordering)
     if (previousContainer == container) {
       moveItemInArray(contents, previousIndex, currentIndex);
-      this.contents?.setValue([...contents]);
+      this.playlistForm.patchValue({ contents });
       return;
     }
 
-    // If it's from another container (adding)    
-    // const isExists = contents.some((item: Assets) => item.id === data.id);
-    // if (isExists) {
-    //   this.message.add({ severity: 'error', summary: 'Error', detail: `"${data.name}" is already exists` });
-    //   return;
-    // }
-
-    // Add item
+    // Add item    
     contents.splice(currentIndex, 0, {...data, contentId: length + 1});
-    this.contents?.setValue([...contents]);
+    this.playlistForm.patchValue({ contents });
   }
 
   trackByFn(index: number, item: any) { return item.contentId; }
 
-  get contents() { return this.playListForm.get('contents'); }
-  get isPlaying() { return this.playlistService.isPlaying; }
+  get contents() { return this.playlistForm.get('contents'); }
   get currentPlaying() { return this.playlistService.currentPlaying(); }
 }

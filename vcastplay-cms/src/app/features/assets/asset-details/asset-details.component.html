@@ -140,11 +140,12 @@
                             <p-menu #fileSettings [model]="fileSettingItems" appendTo="body" popup />
                         </div>
                     </div>
-                    <app-preview-assets class="absolute h-full w-full flex items-center justify-center bg-stone-800"
-                        [currentContent]="assetForm.value" [showControls]="true" [autoPlay]="false" (contentDuration)="onGetContentDuration($event)" />
+
+                    <app-asset-preview class="absolute h-full w-full flex items-center justify-center bg-stone-800" 
+                        [asset]="assetForm.value" [showControls]="true" (onPropertiesChange)="onPropertiesChange($event)" />
+
                 </ng-container>
             </div>
-
         </div>
     </p-card>
 </div>

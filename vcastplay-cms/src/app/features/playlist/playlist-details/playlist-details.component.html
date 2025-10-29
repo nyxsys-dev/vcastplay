@@ -70,7 +70,7 @@
 
         <!-- Preview Contents -->
         <app-playlist-player class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg" 
-        [playlist]="playlistForm.value" />
+          [playlist]="playlistForm.value" (onCurrentItemChange)="onCurrentItemChange($event)" (isPlayingChange)="isPlaying.set($event)" />
       </div>
 
       <!-- Assets Lists -->
@@ -134,7 +134,7 @@
         </div>
         }
       </div>
-      <app-playlist-container [playListForm]="playlistForm" />
+      <app-playlist-container [playlistForm]="playlistForm" [isPlaying]="isPlaying()" />
       <div class="flex w-full justify-between items-center mt-2">
         <p-tag severity="info" [value]="'Duration: ' + utils.timeConversion(totalDuration())" />
         <p class="italic text-sm text-red-400 hidden md:block">

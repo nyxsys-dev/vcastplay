@@ -391,7 +391,7 @@ export class PlaylistService {
       const tempData = item.contents;
       const assetItem = item.contents.find(item => item.id === asset.id);
       if (!assetItem) {
-        item.contents = [...tempData, asset];
+        item.contents = [...tempData, { ...asset, contentId: item.contents.length + 1 }];
         this.onSavePlaylist(item);
       };
     })    
@@ -475,7 +475,7 @@ export class PlaylistService {
   }
 
   onPlayContent(playlist: Playlist) {    
-    this.isPlaying.set(true);
+    // this.isPlaying.set(true);
 
     // Register state for this playlist only
     this.registerContent(playlist.id);
@@ -588,7 +588,7 @@ export class PlaylistService {
     state.gapTimeout = undefined;
     state.intervalId = undefined;
 
-    this.isPlaying.set(false);
+    // this.isPlaying.set(false);
     this.currentPlaying.set(null);
   }
 
@@ -597,7 +597,7 @@ export class PlaylistService {
       this.onStopContent(id);
     });
 
-    this.isPlaying.set(false);
+    // this.isPlaying.set(false);
     this.currentPlaying.set(null);
   }
 

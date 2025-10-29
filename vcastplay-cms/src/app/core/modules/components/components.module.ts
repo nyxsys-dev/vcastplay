@@ -39,6 +39,8 @@ import { DesignLayoutListItemComponent } from '../../../features/design-layout/d
 import { ScheduleHourListComponent } from '../../../features/schedules/schedule-hour-list/schedule-hour-list.component';
 import { ScheduleFillersComponent } from '../../../features/schedules/schedule-fillers/schedule-fillers.component';
 import { PlaylistPlayerComponent } from '../../../features/playlist/playlist-player/playlist-player.component';
+import { AssetPreviewComponent } from '../../../features/assets/asset-preview/asset-preview.component';
+import { DesignLayoutPreviewComponent } from '../../../features/design-layout/design-layout-preview/design-layout-preview.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
@@ -84,6 +86,7 @@ const COMPONENT_MODULES = [
   AssetListItemComponent,
   AssetScheduleComponent,
   AssetFilterComponent,
+  AssetPreviewComponent,
 
   // Audience Tag Components
   AudienceTagFiltersComponent,
@@ -98,6 +101,7 @@ const COMPONENT_MODULES = [
   // Design Layout Components
   DesignLayoutToolsComponent,
   DesignLayoutListItemComponent,
+  DesignLayoutPreviewComponent,
   ObjectPropertiesComponent,
 ];
 
