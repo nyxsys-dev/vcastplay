@@ -18,7 +18,7 @@ import {
   TooltipComponent,
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 // import * as L from 'leaflet';
 import 'leaflet';
@@ -26,6 +26,8 @@ import 'leaflet.markercluster';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageModule } from 'primeng/message';
+import { authInterceptor } from './core/api/interceptors/auth.interceptor';
+import { errorInterceptor } from './core/api/interceptors/error.interceptor';
 
 echarts.use([
   PieChart,
@@ -61,6 +63,7 @@ export const appConfig: ApplicationConfig = {
     }),
     provideAnimationsAsync(),
     provideEchartsCore({ echarts }),
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     ConfirmationService,
     MessageService,
   ],
