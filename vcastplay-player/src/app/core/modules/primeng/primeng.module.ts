@@ -55,6 +55,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { FluidModule } from 'primeng/fluid';
 import { InputOtpModule } from 'primeng/inputotp';
 import { ChipModule } from 'primeng/chip';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { StyleClassModule } from 'primeng/styleclass';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -118,6 +119,7 @@ const PRIMENG_MODULES = [
   FluidModule,
   InputOtpModule,
   ChipModule,
+  ProgressSpinnerModule,
 ];
 
 @NgModule({

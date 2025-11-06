@@ -365,7 +365,6 @@ export class DesignLayoutDetailsComponent {
 
   ngOnDestroy() {
     this.isEditMode.set(false)
-    this.playlistService.onStopAllContents()
     this.designLayoutService.onSetCanvasProps('exit', false, 'default')
     this.designLayoutService.onExitCanvas()
   }

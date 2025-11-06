@@ -87,7 +87,6 @@ export class PlaylistDetailsComponent {
     this.playlistForm.markAsUntouched();
     this.playlistForm.reset();
     this.playlistForm.reset({ contents: [] });
-    this.playlistService.onStopAllContents();
   }
   
   hasUnsavedData(): boolean {
@@ -124,7 +123,6 @@ export class PlaylistDetailsComponent {
 
   onClickClearAll() {
     this.formControl('contents').setValue([]);
-    this.playlistService.onStopAllContents();
   }
 
   onFilterChange(event: any) {

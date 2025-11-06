@@ -96,12 +96,10 @@ export class ScreenService {
       orientation: new FormControl(null, [ Validators.required ]),
       resolution: new FormControl(null, [ Validators.required ]),
     }),
-    operation: new FormGroup({
-      alwaysOn: new FormControl(false, { nonNullable: true }),
-      allWeekdays: new FormControl(false, { nonNullable: true }),
-      weekdays: new FormControl([], { nonNullable: true }),
-      hours: new FormControl([], { nonNullable: true }),
-    }),
+    allDay: new FormControl<boolean>(false, { nonNullable: true }),
+    allWeekdays: new FormControl<boolean>(false, { nonNullable: true }),
+    weekdays: new FormControl<string[]>([], { nonNullable: true }),
+    hours: new FormControl<string[]>([], { nonNullable: true }),
     geograhic: new FormGroup({
       locations: new FormControl(null, [ Validators.required ]),
       landmarks: new FormControl(null, [ Validators.required ]),

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, forwardRef, inject, Input, Output, signal, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, forwardRef, inject, Input, Output, QueryList, signal, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { Playlist } from '../playlist';
 import { Assets } from '../../assets/assets';
 import { DesignLayout } from '../../design-layout/design-layout';
@@ -27,8 +27,11 @@ export class PlaylistPlayerComponent {
   @Output() onCurrentItemChange = new EventEmitter<Assets | DesignLayout | any>();
   @Output() isPlayingChange = new EventEmitter<boolean>();
 
-  @ViewChild('fbPlayer') fbPlayerRef!: ElementRef<HTMLDivElement>;
-  @ViewChild('ytPlayer') ytPlayerRef!: ElementRef<HTMLDivElement>;
+  // @ViewChild('fbPlayer') fbPlayerRef!: ElementRef<HTMLDivElement>;
+  // @ViewChild('ytPlayer') ytPlayerRef!: ElementRef<HTMLDivElement>;
+
+  @ViewChildren('ytPlayer') ytPlayersRef!: QueryList<ElementRef<HTMLDivElement>>[];
+  @ViewChildren('fbPlayer') fbPlayersRef!: ElementRef<HTMLDivElement>[];
 
   playlistService = inject(PlaylistService);
   utils = inject(UtilityService);
@@ -56,7 +59,7 @@ export class PlaylistPlayerComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     if (!changes['playlist'].currentValue) this.onStopPlayback();
-    if (changes['playlist'] && changes['playlist'].currentValue) this.onInitPlaylist(true);
+    if (changes['playlist'] && changes['playlist'].currentValue && this.isAutoPlay) this.onInitPlaylist(true);
   }
 
   ngOnDestroy() {
@@ -68,17 +71,18 @@ export class PlaylistPlayerComponent {
     else this.onStartPlayback();
   }
 
-  onInitPlaylist(fromChange: boolean = false) {
+  async onInitPlaylist(fromChange: boolean = false) {
     const contents: number = this.playlist?.contents.length || 0;
     this.onClearTimeout();
     this.currentIndex.set(0);
+    await this.ytService.onLoadSDK();
+    await this.fbService.onLoadSDK();
 
-    if (contents > 0) {
+    if (contents > 0 && this.isAutoPlay) {
       this.currentItem.set(this.playlist.contents[0]);
-      this.onPreloadNextItem();
-
-      if (this.isAutoPlay) this.onStartPlayback();
-      else if (fromChange && this.isPlaying()) this.onStartPlayback();
+      if (this.isAutoPlay || (fromChange && this.isPlaying())) {
+        this.onStartPlayback();
+      }
     }
   }
 
@@ -88,24 +92,28 @@ export class PlaylistPlayerComponent {
     this.isPlaying.set(true);
     this.currentItem.set(this.playlist.contents[this.currentIndex()]);
 
+    if (['image', 'web', 'design'].includes(this.currentItem().type)) this.onImageLoaded(this.currentItem());
+    if (this.currentItem().type == 'video') this.onVideoLoad();
     if (this.currentItem().type == 'facebook') this.onFacebookLoad();
     if (this.currentItem().type == 'youtube') this.onYoutubeLoad();
     this.onCurrentItemChange.emit(this.currentItem());
     this.isPlayingChange.emit(true);
 
-    this.onPreloadNextItem();
+    // this.onPreloadNextItem();
   }
 
   onStopPlayback() {
     this.isPlaying.set(false);
     this.onClearTimeout();
     this.currentIndex.set(0);
+    this.currentItem.set(null);
     
-    const video = document.querySelector('video');    
-    if (video) {
-      video.currentTime = 0;
-      video.pause();
-    }
+    const videos = document.querySelectorAll('video');
+    for (const v of videos) {
+      v.currentTime = 0;
+      v.pause();
+    };
+
     this.onCurrentItemChange.emit(null);
     this.isPlayingChange.emit(false);
   }
@@ -135,13 +143,15 @@ export class PlaylistPlayerComponent {
         }
 
         this.currentIndex.set(nextIndex);
-        this.currentItem.set(this.playlist.contents[nextIndex]);        
-
+        this.currentItem.set(this.playlist.contents[nextIndex]);
+        
+        if (['image', 'web', 'design'].includes(this.currentItem().type)) this.onImageLoaded(this.currentItem());
+        if (this.currentItem().type == 'video') this.onVideoLoad();
         if (this.currentItem().type == 'facebook') this.onFacebookLoad();
         if (this.currentItem().type == 'youtube') this.onYoutubeLoad();
 
         this.onCurrentItemChange.emit(this.currentItem());
-        this.onPreloadNextItem();
+        // this.onPreloadNextItem();
         
       }, gapDuration);
 
@@ -153,68 +163,115 @@ export class PlaylistPlayerComponent {
     this.nextPreloadedItem.set(this.playlist.contents[nextIndex]);
   }
 
+  onVideoLoad() {
+    const content: Assets | DesignLayout | any = this.currentItem();
+    Promise.resolve().then(() => {
+      const videos = document.querySelectorAll('video');
+      for (const v of videos) {
+        if (v.id == content.contentId) {
+          v.currentTime = 0;
+          v.muted = true;
+          v.play()
+        }
+      };
+    })
+  }
+
   // For Image and Web links
   onImageLoaded(item: Assets) {
     const duration = item.duration * 1000 || 5000;    
     this.timerId = setTimeout(() => this.onNextItem(), duration);
   }
+
+  onIFrameLoad(item: Assets) {
+    if (item.type == 'web') return item.link;
+    else return '';
+  }
   
   async onYoutubeLoad() {
-    await this.ytService.onLoadSDK()
     this.ytTimerId = setTimeout(async () => {
-      const ytPlayer = this.ytPlayerRef?.nativeElement;
-      const item = this.currentItem()
+      const item = this.currentItem();
       const { videoId } = this.utils.onGetEmbedUrl(item.link);
-      if (!ytPlayer) return;
-      
-      const player = await new YT.Player(ytPlayer, {
-        videoId,
-        playerVars: { autoPlay: 1, controls: 0, playsinline: 1, showinfo: 0 },
-        events: {
-          onReady: (event: any) => player.playVideo(),
-          onStateChange: (event: any) => {
-            if (event.data == YT.PlayerState.ENDED) {
-              player.seekTo(0);
-              player.stopVideo();
-              this.onNextItem();
-            }
+
+      this.ytPlayersRef.forEach((player: any) => {
+        const playerEl = player.nativeElement;
+        if (!playerEl) return;
+
+        if (item.contentId == playerEl.id) {
+
+          if (playerEl._ytInstance && playerEl._ytInstance.destroy) {
+            playerEl._ytInstance.destroy();
           }
+
+          const player = new YT.Player(playerEl, {
+            videoId,
+            playerVars: { autoPlay: 1, controls: 0, playsinline: 1, showinfo: 0 },
+            events: {
+              onReady: (event: any) => {
+                player.playVideo()
+                playerEl._ytInstance = player;
+              },
+              onStateChange: (event: any) => {
+                if (event.data == YT.PlayerState.ENDED) {                  
+                  player.seekTo(0);
+                  player.stopVideo();
+                  this.onNextItem();
+                }
+              }
+            }
+          })
         }
-      })  
+      })
     }, 10);
   }
 
   async onFacebookLoad() { 
-    let player: any;
+    let fbPlayer: any;
     this.isFacebookLoading.set(true);
-    await this.fbService.onLoadSDK();
+
     this.fbTimerId = setTimeout(async () => {
-      const fbPlayer = this.fbPlayerRef?.nativeElement;
-      if (!fbPlayer) return;
-      this.fbService.onFacebookParse(fbPlayer);
+      const item = this.currentItem();
 
-      const iframe = fbPlayer.querySelector('iframe');
-      if (!iframe) return;      
-      try {
-        await FB.Event.unsubscribe('xfbml.ready');
-        await FB.Event.subscribe('xfbml.ready', async (msg: any) => {     
-          this.isFacebookLoading.set(false);
-          if (msg.type === 'video' && msg.instance) {
-            player = msg.instance;
-            player.play();
-            
-            player.subscribe('finishedPlaying', () => {
-              player.pause();
-              this.onNextItem();
+      this.fbPlayersRef.forEach(async (player: any) => {
+
+        const playerEl = player.nativeElement;        
+        if (!playerEl) return;
+
+        if (item.contentId == playerEl.id) {
+          try {
+            await FB.Event.unsubscribe('xfbml.ready');
+            await FB.Event.subscribe('xfbml.ready', async (msg: any) => {     
+              this.isFacebookLoading.set(false);
+              if (msg.type === 'video' && msg.instance) {
+                fbPlayer = msg.instance;
+                fbPlayer.play();
+                
+                fbPlayer.subscribe('finishedPlaying', () => {
+                  fbPlayer.pause();
+                  this.onNextItem();
+                });
+              }
             });
-          }
-      
-        });
+            this.fbService.onFacebookParse(playerEl);
 
-      } catch (err) {
-        console.warn('FB Player init failed', err);
-        this.onNextItem();
-      }
+            const iframe = playerEl.querySelector('iframe');
+            if (iframe) {
+              const orientation = iframe.offsetWidth > iframe.offsetHeight ? 'landscape' : 'portrait';
+              const scale = orientation == 'landscape' ? 1 : playerEl.clientHeight / iframe.clientHeight;
+              iframe.style.position = 'absolute';
+              iframe.style.top = '50%';
+              iframe.style.left = '50%';
+              iframe.style.transformOrigin = 'center center';
+              iframe.style.border = 'none';
+              iframe.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            }
+
+          } catch (err) {
+            console.warn('FB Player init failed', err);
+            this.onNextItem();
+          }
+        }
+      })
     }, 20);
   }
 
@@ -241,5 +298,10 @@ export class PlaylistPlayerComponent {
     clearTimeout(this.gapId);
     clearTimeout(this.transitionId);
     clearTimeout(this.fbTimerId);
+    clearTimeout(this.ytTimerId);
+  }
+
+  trackById(index: number, item: Assets | DesignLayout | any) {
+    return item.contentId;
   }
 }

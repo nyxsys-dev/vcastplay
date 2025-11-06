@@ -1,4 +1,5 @@
 import { Assets } from "../assets/assets";
+import { DesignLayout } from "../design-layout/design-layout";
 import { Playlist } from "../playlist/playlist";
 import { Schedule } from "../schedules/schedules";
 
@@ -22,11 +23,9 @@ export interface Screen {
         orientation: string;
         resolution: string;
     }
-    operation?: {
-        alwaysOn: boolean;
-        weekdays: string[];
-        hours: string[];
-    };
+    allDay?: boolean; // Always On
+    weekdays?: string[];
+    hours?: string[];
     geographic?: {
         location: string;
         landmark: string;
@@ -36,8 +35,8 @@ export interface Screen {
     screenStatus?: 'playing' | 'standby' | 'disconnected';
     displayStatus?: 'on' | 'off';
     assignedContent?: {
-        type: 'asset' | 'playlist' | 'schedule';
-        content: Assets | Playlist | Schedule; // Design Layout
+        type: 'asset' | 'playlist' | 'schedule' | 'design';
+        content: Assets | Playlist | Schedule | DesignLayout;
     }
     messages?: ScreenMessage[]; 
     response?: string;

@@ -100,19 +100,20 @@
 <p-dialog header="Content Preview" [(visible)]="showPreviewEvent" (onHide)="onClosePreview()"
     styleClass="w-[30rem] md:w-[40rem] h-auto" [modal]="true" [draggable]="false" [resizable]="true">
     <ng-container *ngIf="selectedContent() as content">
-        <div class="relative flex-1 border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg aspect-video">
+        <div class="relative flex flex-col flex-1 items-center justify-center overflow-hidden
+            h-full w-full border-[var(--p-surface-300)] bg-stone-800 text-white rounded-lg aspect-video">
             @switch (content.extendedProps.type) {
                 @case ('playlist') {             
-                    <app-playlist-player class="" 
+                    <app-playlist-player class="group flex items-center justify-center h-full w-full flex items-center justify-center"  
                         [playlist]="content.extendedProps" />
                 }
                 @case ('design') {
-                    <div #viewport class="absolute flex items-center justify-center w-full h-full overflow-hidden">
-                        <app-design-layout-preview [viewport]="viewport" [designLayout]="content.extendedProps" [isPlaying]="true" />
+                    <div #viewport class="relative flex w-full h-full flex items-center justify-center">
+                        <app-design-layout-preview [viewport]="viewport" [designLayout]="content.extendedProps" [isPlaying]="true" [isPreview]="true" />
                     </div>
                 }
                 @default {
-                    <app-asset-preview class="absolute h-full w-full flex items-center justify-center bg-stone-800"
+                    <app-asset-preview class="absolute h-full w-full flex items-center justify-center"
                         [asset]="content.extendedProps" [showControls]="true" />
                 }
             }

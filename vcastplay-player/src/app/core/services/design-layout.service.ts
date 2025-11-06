@@ -36,12 +36,7 @@ export class DesignLayoutService {
   }
 
   onPreloadCanvas(viewport: any, canvasContainer: any, design: DesignLayout, items: any, platform: any) {
-    return new Promise((resolve) => {
-      this.initCanvas(viewport, canvasContainer, design, items, platform).then((canvas: any) => {
-        this.setCanvas(canvas);
-        resolve(canvas);
-      });
-    })
+    return this.initCanvas(viewport, canvasContainer, design, items, platform)
   }
   
   onScaleCanvas(canvas: fabric.StaticCanvas, parentElement: any, canvasContainer: any) {
@@ -57,8 +52,7 @@ export class DesignLayoutService {
     try {
       const { width, height }: any = data.fileDetails.resolution;
 
-      const file = items.find((item: any) => item.file.name == data.name);       
-    
+      const file = items.find((item: any) => item.file.name == data.name); 
       const video = document.createElement('video');
       const videoSource = document.createElement('source');
       
@@ -74,35 +68,54 @@ export class DesignLayoutService {
       video.crossOrigin = 'anonymous';
       video.preload = 'auto';
       video.poster = '';
-      // video.currentTime = 1;
+      video.currentTime = 1;
       // video.load();
+      // video.play();      
       
-      video.addEventListener('loadeddata', () => {
-        video.currentTime = 0;
+      // video.addEventListener('loadeddata', () => {
+      //   video.currentTime = 0;
 
-        const videoObj: any = new fabric.FabricImage(video, { 
-          left: fabricObject?.left ?? 0,
-          top: fabricObject?.top ?? 0,
-          originX: fabricObject?.originX ?? 'top',
-          originY: fabricObject?.originY ?? 'left',
-          scaleX: fabricObject?.scaleX ?? 0.2,
-          scaleY: fabricObject?.scaleY ?? 0.2,
-          objectCaching: false,
-          data, 
-          zIndex: fabricObject?.zIndex ?? 0
-        });
+      //   const videoObj: any = new fabric.FabricImage(video, { 
+      //     left: fabricObject?.left ?? 0,
+      //     top: fabricObject?.top ?? 0,
+      //     originX: fabricObject?.originX ?? 'top',
+      //     originY: fabricObject?.originY ?? 'left',
+      //     scaleX: fabricObject?.scaleX ?? 0.2,
+      //     scaleY: fabricObject?.scaleY ?? 0.2,
+      //     objectCaching: false,
+      //     data, 
+      //     zIndex: fabricObject?.zIndex ?? 0
+      //   });
 
-        videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
-        videoObj.set('data', { ...data, element: video });
+      //   videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
+      //   videoObj.set('data', { ...data, element: video });
 
-        if (platform == 'web') video.play().catch(err => console.warn('Video play failed:', err));
+      //   if (platform == 'web') video.play().catch(err => console.warn('Video play failed:', err));
 
-        canvas.insertAt(videoObj.zIndex, videoObj);
-        canvas.requestRenderAll();
-        // this.onStartVideoRender(canvas);
+      //   canvas.insertAt(videoObj.zIndex, videoObj);
+      //   canvas.requestRenderAll();
+      //   // this.onStartVideoRender(canvas);
+      // });
+      
+      const videoObj: any = new fabric.FabricImage(video, { 
+        left: fabricObject?.left ?? 0,
+        top: fabricObject?.top ?? 0,
+        originX: fabricObject?.originX ?? 'top',
+        originY: fabricObject?.originY ?? 'left',
+        scaleX: fabricObject?.scaleX ?? 0.2,
+        scaleY: fabricObject?.scaleY ?? 0.2,
+        objectCaching: false,
+        data, 
+        zIndex: fabricObject?.zIndex ?? 0
       });
 
-      video.onended = () => video.play().catch(err => console.warn('Video play failed:', err));
+      videoObj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false });
+      videoObj.set('data', { ...data, element: video });
+
+      canvas.insertAt(videoObj.zIndex, videoObj);
+      canvas.requestRenderAll();
+      // this.onStartVideoRender(canvas);      
+      
     } catch (error) {
       console.error('Error adding video to canvas', error);
     }
@@ -182,56 +195,48 @@ export class DesignLayoutService {
     canvasElement: any, 
     design: DesignLayout,
     items: any,
-    platform: any
+    platform: any,
   ) {
     return new Promise((resolve, reject) => {
       try {
-        const { screen, canvas, htmlLayers }: any = design;
-        const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
-        const canvasData = JSON.parse(canvas);
+      const { screen, canvas, htmlLayers }: any = design;
+      const [ width, height ] = screen.displaySettings.resolution.split('x').map(Number);
+      const canvasData = JSON.parse(canvas);
 
-        const newCanvas = this.onInitFabricCanvas(viewport, canvasElement, { width, height }, canvasData.background);
+      const newCanvas = this.onInitFabricCanvas(viewport, canvasElement, { width, height }, canvasData.background);
 
-        newCanvas.setZoom(this.DEFAULT_SCALE);
+      newCanvas.setZoom(this.DEFAULT_SCALE);
 
-        // setTimeout(() => {
-          
-        // }, this.timeout);
-        newCanvas.loadFromJSON(canvasData, () => {
-          requestAnimationFrame(() => {
-            const objects = newCanvas.getObjects();
+      newCanvas.loadFromJSON(canvasData, () => {
+        setTimeout(() => {
+          const objects = newCanvas.getObjects();
 
-            // Sort objects by zIndex
-            objects.sort((a: any, b: any) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
+          // Sort objects by zIndex
+          objects.sort((a: any, b: any) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
 
-            objects.forEach((obj: any) => {
-              // if (obj.html) {
-              //   const html: any = obj.html;
-              //   const alreadyExists = htmlLayers.find((item: HtmlLayer) => item.id === html.id);
+          objects.forEach((obj: any) => {
+            if (obj.data) {
+              const data: any = obj.data;
 
-              //   if (alreadyExists) this.syncDivsWithFabric(newCanvas, design);
-
-              // } else 
-                if (obj.data) {
-                const data: any = obj.data;
-
-                if (data.type == 'video') {
-                  this.onAddVideoToCanvas(newCanvas, data, obj, items, platform);
-                  // newCanvas.remove(obj);
-                }
+              if (data.type == 'video') {
+                this.onAddVideoToCanvas(newCanvas, data, obj, items, platform);
+                newCanvas.remove(obj);
               }
-            });
+            }
+          });
 
-            this.syncDivsWithFabric(newCanvas, design);
-            newCanvas.requestRenderAll();
-            // this.onPlayVideosInCanvas(newCanvas);
-          })
-        });
+          this.syncDivsWithFabric(newCanvas, design);
+          newCanvas.requestRenderAll();
+        }, this.timeout);
+      });
 
-        resolve(newCanvas);
-      } catch (error) {
-        reject('Error initializing canvas: ' + error);
-      }
+      resolve(newCanvas);
+      // return newCanvas;
+    } catch (error) {
+      console.log('error on initCanvas', error)
+      reject(error);
+      // return null
+    }
     })
   }
   
@@ -276,22 +281,22 @@ export class DesignLayoutService {
 
   private updateHtmlLayers(canvas: fabric.StaticCanvas, design: DesignLayout) {
     const { htmlLayers }: any = design; 
-    const activeObjects: fabric.Object[] = canvas.getObjects();
+    const activeObjects: fabric.FabricObject[] = canvas.getObjects();
     
-    activeObjects.forEach((object: fabric.Object) => {
+    activeObjects.forEach((object: fabric.FabricObject) => {
       const html = object.get('html');
       if (!html) return;
 
       const layer = htmlLayers.find((item: any) => item.id === html.id);
 
       if (layer) {        
-        const updated = this.createHtmlLayerFromObject(object, layer.id, layer.content, layer.style, canvas);
+        const updated = this.createHtmlLayerFromObject(object, layer.id, layer.content, layer.style, canvas, layer.type);
         Object.assign(layer, updated);
       }
     })
   }
 
-  private createHtmlLayerFromObject(obj: fabric.FabricObject, id: string, content: any, style: any, canvas: fabric.StaticCanvas) {
+  private createHtmlLayerFromObject(obj: fabric.FabricObject, id: string, content: any, style: any, canvas: fabric.StaticCanvas, type: string) {
 
     const zoom = canvas.getZoom();    
 
@@ -306,7 +311,7 @@ export class DesignLayoutService {
     const height = bounds.height * zoom
     const angle = obj.angle || 0;
 
-    if (html && !html.content.marquee) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
+    // if (html && !html.content.marquee) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
     
     return {
       id,
@@ -318,6 +323,7 @@ export class DesignLayoutService {
       content,
       style,
       fabricObject: obj,
+      type
     };
   }
 }

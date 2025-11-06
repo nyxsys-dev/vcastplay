@@ -21,13 +21,14 @@ export class DesignLayoutPreviewComponent {
   @Input() viewport: HTMLDivElement | any;
   @Input() designLayout: DesignLayout | any;
   @Input() isPlaying: boolean = false;
+  @Input() isPreview: boolean = false;
 
   @Output() onCanvasChange = new EventEmitter<any>();
 
   @ViewChild('canvasContainer', { static: true }) canvasContainer!: ElementRef<HTMLDivElement>;
 
   designlayoutService = inject(DesignLayoutService);
-  canvas: fabric.Canvas | any = null;
+  private canvas: fabric.Canvas | any = null;
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -35,24 +36,37 @@ export class DesignLayoutPreviewComponent {
     this.designlayoutService.onScaleCanvas(this.canvas, this.viewport, canvasContainer);
   }
 
-  ngOnChanges(changes: SimpleChanges) {    
-    if (changes['designLayout'] && changes['designLayout'].currentValue && this.isPlaying) this.onRenderCanvas();
+  ngOnChanges(changes: SimpleChanges) {     
+    if (this.canvas && this.isPlaying) {
+      Promise.resolve().then(() => {        
+        this.designlayoutService.onPlayVideosInCanvas(this.canvas);
+        this.onCanvasChange.emit(this.canvas);
+      })
+    } else if (this.canvas && !this.isPlaying) {
+      this.designlayoutService.onStopVideosInCanvas(this.canvas);
+    } else this.onRenderCanvas();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy() {    
     if (this.canvas) {
       this.designlayoutService.onStopVideosInCanvas(this.canvas);
       this.canvas = null;
     }
   }
 
-  onRenderCanvas() {
+  onRenderCanvas() {    
     const container = this.canvasContainer.nativeElement;    
     Promise.resolve().then(() => {
-      this.canvas = this.designlayoutService.onPreloadCanvas(this.viewport, container, this.designLayout);      
-      this.designlayoutService.onPlayVideosInCanvas(this.canvas);
-      this.onCanvasChange.emit(this.canvas);
+      this.canvas = this.designlayoutService.onPreloadCanvas(this.viewport, container, this.designLayout, this.isPreview);
+      // if (this.isPlaying) this.designlayoutService.onPlayVideosInCanvas(this.canvas);
     })
+  }
+
+  onRemoveCanvas() {
+    if (this.canvas) {
+      const canvasElement = document.querySelector('canvas');
+      canvasElement?.remove();
+    }
   }
 
   trackById(index: number, item: any) {

@@ -102,12 +102,18 @@ export class AssetDetailsComponent {
   async onDropFile(event: DragEvent) {
     event.preventDefault();
     if (this.showLinkInput()) return;
-    const files = Array.from(event.dataTransfer?.files || []);    
+    try {
+      const files = Array.from(event.dataTransfer?.files || []);    
 
-    const file = files[0];
-    const result = await this.assetService.processFile(file);
-    if (result) {
-      this.assetForm.patchValue(result);
+      const file = files[0];
+      const result = await this.assetService.processFile(file);
+      
+      if (result) {
+        this.assetForm.patchValue(result);
+      }
+    } catch (error: any) {
+      this.message.add({ severity: 'error', summary: 'Error', detail: error.message || 'Failed to process file' });
+      this.assetForm.reset();
     }
   }
 
@@ -130,11 +136,16 @@ export class AssetDetailsComponent {
       return;
     }
     
-    const result = await this.assetService.processFile(file);
-    if (result) {
-      this.assetForm.patchValue(result);
+    try {
+      const result = await this.assetService.processFile(file);
+      
+      if (result) {
+        this.assetForm.patchValue(result);
+      }
+    } catch (error: any) {
+      this.message.add({ severity: 'error', summary: 'Error', detail: error.message || 'Failed to process file' });
+      this.assetForm.reset();
     }
-    
   }
 
   async onPropertiesChange(event: any) {
@@ -234,6 +245,15 @@ export class AssetDetailsComponent {
   onClickCloseAudienceTag() {
     this.isShowAudienceTag.set(false);
   }
+  
+  onChangeAvailability(event: any) {
+    const checked = event.checked;
+    if (!checked) {
+      this.dateRangeControl?.reset();
+      this.weekdays?.reset();
+      this.hours?.reset();
+    }
+  }
 
   formControl(fieldName: string) {
     return this.utils.getFormControl(this.assetForm, fieldName);
@@ -242,6 +262,10 @@ export class AssetDetailsComponent {
   formFileDetails(fieldName: string) {
     return this.formControl('fileDetails').get(fieldName) as FormGroup;
   }
+
+  get orientations() { return this.utils.orientations; }
+  
+  get tagsLists() { return this.tagService.tagsLists; }
 
   get isEditMode() { return this.assetService.isEditMode; }
   get selectedAsset() { return this.assetService.selectedAsset; }
@@ -254,7 +278,5 @@ export class AssetDetailsComponent {
   get dateRange() { return this.assetForm.get('dateRange'); }
   get weekdays() { return this.assetForm.get('weekdays'); }
   get hours() { return this.assetForm.get('hours'); }
-  get orientations() { return this.utils.orientations; }
-  
-  get tagsLists() { return this.tagService.tagsLists; }
+  get dateRangeControl() { return this.assetForm.get('dateRange'); }
 }

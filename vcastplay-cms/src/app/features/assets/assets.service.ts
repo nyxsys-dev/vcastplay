@@ -7,7 +7,8 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms'
-import { AssestInfo, Assets, AssetType } from './assets'
+import { AssetInfo, Assets, AssetType } from './assets'
+import heic2any from 'heic2any';
 
 @Injectable({
   providedIn: 'root',
@@ -52,7 +53,7 @@ export class AssetsService {
     link: new FormControl(''),
     category: new FormControl(null, [Validators.required]),
     subCategory: new FormControl(null, [Validators.required]),
-    fileDetails: new FormGroup<AssestInfo | any>({
+    fileDetails: new FormGroup<AssetInfo | any>({
       size: new FormControl(null),
       type: new FormControl(null),
       orientation: new FormControl(null),
@@ -67,8 +68,10 @@ export class AssetsService {
       },
       { validators: [this.dateRangeValidator()] }
     ),
-    weekdays: new FormControl([], { nonNullable: true }),
-    hours: new FormControl<[{ start: string; end: string }] | []>([], { nonNullable: true }),
+    allDay: new FormControl<boolean>(false, { nonNullable: true }),
+    allWeekdays: new FormControl<boolean>(false, { nonNullable: true }),
+    weekdays: new FormControl<string[]>([], { nonNullable: true }),
+    hours: new FormControl<string[]>([], { nonNullable: true }),
     duration: new FormControl(10, { nonNullable: true }),
     audienceTag: new FormGroup({
       genders: new FormControl([], { nonNullable: true }),
@@ -422,28 +425,31 @@ export class AssetsService {
     }
   }
 
-  async processFile(file: File): Promise<Assets | any> {
-    const MAX_SIZE = 300 * 1024 * 1024
-    if (file.size > MAX_SIZE) return false
+  async processFile(file: File): Promise<AssetInfo | any> {
+    try {
+      if (this.assetTypeControl.value === 'file') this.assetForm.patchValue({ name: file.name });
 
-    if (this.assetTypeControl.value === 'file') {
-      this.assetForm.patchValue({ name: file.name })
+      // Try to process image metadata
+      const { link, ...metadata }: any = await this.getImageOrientationAndResolution(file);      
+
+      const type = file.type.split('/')[0];
+
+      if (type === 'video') {
+        const [thumbnail, duration] = await Promise.all([
+          this.extractVideoThumbnail(file),
+          this.getVideoDuration(file),
+        ]);
+
+        return this.buildAssetObject(link, metadata, thumbnail, duration);
+        // resolve(this.buildAssetObject(link, metadata, thumbnail, duration));
+      }
+
+      return this.buildAssetObject(link, metadata, link);
+      // resolve(this.buildAssetObject(link, metadata, link));
+    } catch (error) {
+      // return error
+      throw error
     }
-
-    const fileDataURL = await this.readFileAsDataURL(file)
-    const metadata = await this.getImageOrientationAndResolution(file, fileDataURL)
-    const type = file.type.split('/')[0]
-
-    if (type === 'video') {
-      const [thumbnail, duration] = await Promise.all([
-        this.extractVideoThumbnail(file),
-        this.getVideoDuration(file),
-      ])
-
-      return this.buildAssetObject(fileDataURL, metadata, thumbnail, duration)
-    }
-
-    return this.buildAssetObject(fileDataURL, metadata, fileDataURL)
   }
 
   private readFileAsDataURL(file: File): Promise<string> {
@@ -455,58 +461,194 @@ export class AssetsService {
     })
   }
 
-  private getImageOrientationAndResolution(file: File, dataURL: string): Promise<AssestInfo> {
-    return new Promise((resolve, reject) => {
-      const isImage = file.type.startsWith('image')
-      const isVideo = file.type.startsWith('video')
-      const isText = file.type.startsWith('text')
+  // private getImageOrientationAndResolution(file: File): Promise<AssetInfo> {
+  //   return new Promise(async (resolve, reject) => {
+  //     const isImage = file.type.startsWith('image')
+  //     const isVideo = file.type.startsWith('video')
+  //     const isText = file.type.startsWith('text')
+  //     const isHeic = file.name.toLowerCase().endsWith('.heic')
 
-      if (isImage) {
-        const img = new Image()
-        img.onload = () => {
+  //     if (isImage) {
+  //       const img = new Image()
+  //       img.onload = async() => {
+  //         resolve({
+  //           name: file.name,
+  //           size: file.size,
+  //           type: file.type,
+  //           orientation:
+  //             img.width > img.height ? 'landscape' : img.height > img.width ? 'portrait' : 'square',
+  //           resolution: { width: img.width, height: img.height },
+  //           link: await this.readFileAsDataURL(file),
+  //         })
+  //       }
+  //       img.onerror = reject
+  //       img.src = await this.readFileAsDataURL(file)
+  //     } else if (isVideo) {
+  //       const video = document.createElement('video')
+  //       video.preload = 'metadata'
+  //       video.onloadedmetadata = async () => {
+  //         resolve({
+  //           name: file.name,
+  //           size: file.size,
+  //           type: file.type,
+  //           orientation:
+  //             video.videoWidth > video.videoHeight
+  //               ? 'landscape'
+  //               : video.videoHeight > video.videoWidth
+  //               ? 'portrait'
+  //               : 'square',
+  //           resolution: { width: video.videoWidth, height: video.videoHeight },
+  //           link: await this.readFileAsDataURL(file),
+  //         })
+  //       }
+  //       video.onerror = () => reject(new Error('Failed to load video metadata'))
+  //       video.src = await this.readFileAsDataURL(file)
+  //     } else if (isText) {
+  //       resolve({
+  //         name: file.name,
+  //         size: file.size,
+  //         type: 'web',
+  //         orientation: 'portrait',
+  //         resolution: { width: 0, height: 0 },
+  //         link: await this.readFileAsDataURL(file),
+  //       })
+  //     } else if (isHeic) {
+  //       const convertedBlob = await heic2any({ blob: file, toType: 'image/png', quality: 0.9 });
+  //       const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+  //       const newImage = new File([ blob ], file.name.replace(/\.heic$/i, '.png'), { type: 'image/png' });   
+
+  //       const img = new Image()
+  //       img.onload = async () => {
+  //         resolve({
+  //           name: file.name,
+  //           size: newImage.size,
+  //           type: newImage.type,
+  //           orientation:
+  //             img.width > img.height ? 'landscape' : img.height > img.width ? 'portrait' : 'square',
+  //           resolution: { width: img.width, height: img.height },
+  //           link: await this.readFileAsDataURL(newImage),
+  //         })
+  //       }
+  //       img.onerror = reject        
+  //       img.src = await this.readFileAsDataURL(newImage)
+  //     } else {
+  //       throw new Error('Unsupported file type for orientation/resolution extraction')
+  //     }
+  //   })
+  // }
+  
+  private async getImageOrientationAndResolution(file: File): Promise<AssetInfo> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const isImage = file.type.startsWith('image');
+        const isVideo = file.type.startsWith('video');
+        const isText = file.type.startsWith('text');
+        const isHeic = file.name.toLowerCase().endsWith('.heic');
+
+        // 🖼️ Regular image
+        if (isImage) {
+          const img = new Image();
+          img.onload = async () => {
+            resolve({
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              orientation:
+                img.width > img.height
+                  ? 'landscape'
+                  : img.height > img.width
+                  ? 'portrait'
+                  : 'square',
+              resolution: { width: img.width, height: img.height },
+              link: await this.readFileAsDataURL(file),
+            });
+          };
+          img.onerror = () =>
+            reject(new Error('Failed to load image metadata (possibly corrupted image)'));
+          img.src = await this.readFileAsDataURL(file);
+          return;
+        }
+
+        // 🎥 Video
+        if (isVideo) {
+          const video = document.createElement('video');
+          video.preload = 'metadata';
+          video.onloadedmetadata = async () => {
+            resolve({
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              orientation:
+                video.videoWidth > video.videoHeight
+                  ? 'landscape'
+                  : video.videoHeight > video.videoWidth
+                  ? 'portrait'
+                  : 'square',
+              resolution: { width: video.videoWidth, height: video.videoHeight },
+              link: await this.readFileAsDataURL(file),
+            });
+          };
+          video.onerror = () =>
+            reject(new Error('Failed to load video metadata (unsupported or corrupted video)'));
+          video.src = await this.readFileAsDataURL(file);
+          return;
+        }
+
+        // 📄 Text or simple web file
+        if (isText) {
           resolve({
             name: file.name,
             size: file.size,
-            type: file.type,
-            orientation:
-              img.width > img.height ? 'landscape' : img.height > img.width ? 'portrait' : 'square',
-            resolution: { width: img.width, height: img.height },
-          })
+            type: 'web',
+            orientation: 'portrait',
+            resolution: { width: 0, height: 0 },
+            link: await this.readFileAsDataURL(file),
+          });
+          return;
         }
-        img.onerror = reject
-        img.src = dataURL
-      } else if (isVideo) {
-        const video = document.createElement('video')
-        video.preload = 'metadata'
-        video.onloadedmetadata = () => {
-          resolve({
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            orientation:
-              video.videoWidth > video.videoHeight
-                ? 'landscape'
-                : video.videoHeight > video.videoWidth
-                ? 'portrait'
-                : 'square',
-            resolution: { width: video.videoWidth, height: video.videoHeight },
-          })
+
+        // 🍏 HEIC image
+        if (isHeic) {
+          try {
+            const convertedBlob = await heic2any({ blob: file, toType: 'image/png', quality: 0.9 });
+            const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+            const newImage = new File([blob], file.name.replace(/\.heic$/i, '.png'), {
+              type: 'image/png',
+            });
+
+            const img = new Image();
+            img.onload = async () => {
+              resolve({
+                name: file.name,
+                size: newImage.size,
+                type: newImage.type,
+                orientation:
+                  img.width > img.height
+                    ? 'landscape'
+                    : img.height > img.width
+                    ? 'portrait'
+                    : 'square',
+                resolution: { width: img.width, height: img.height },
+                link: await this.readFileAsDataURL(newImage),
+              });
+            };
+            img.onerror = () =>
+              reject(new Error('Failed to load converted HEIC image (possibly invalid file)'));
+            img.src = await this.readFileAsDataURL(newImage);
+            return;
+          } catch (error: any) {
+            reject({ code: 'PROCESS_ERROR', message: error?.message || 'Failed to process file' });
+          }
         }
-        video.onerror = () => reject(new Error('Failed to load video metadata'))
-        video.src = dataURL
-      } else if (isText) {
-        resolve({
-          name: file.name,
-          size: file.size,
-          type: 'web',
-          orientation: 'portrait',
-          resolution: { width: 0, height: 0 },
-        })
-      } else {
-        reject(new Error('Unsupported file type for orientation/resolution extraction'))
+
+        // ❌ Unsupported type
+        reject(new Error('Unsupported file type for orientation/resolution extraction'));
+      } catch (error: any) {
+        reject(new Error('Unexpected error while reading file: ' + (error?.message || error)));
       }
-    })
+    });
   }
+
 
   private extractVideoThumbnail(file: File): Promise<string> {
     return new Promise((resolve) => {
@@ -544,7 +686,7 @@ export class AssetsService {
     })
   }
 
-  private buildAssetObject(link: string, meta: AssestInfo, thumbnail: string, duration?: number) {
+  private buildAssetObject(link: string, meta: AssetInfo, thumbnail: string, duration?: number) {
     const base = {
       name: meta.name,
       link,

@@ -78,13 +78,13 @@ export class PreviewDesignLayoutComponent {
     // }, this.timeout);
     const platform = await this.storage.get('platform');
     const items: any = await this.indexedDB.getAllItems();      
-    this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, content, items, platform).then((canvas: any) => {
-      this.playing.set(true);
-      this.canvas = canvas;        
-      this.designLayoutService.onPlayVideosInCanvas(canvas);
-      this.isDoneRendering.emit(canvas);
-      this.cdr.detectChanges();
-    })
+    // this.designLayoutService.onPreloadCanvas(this.viewport, this.canvasContainer.nativeElement, content, items, platform).then((canvas: any) => {
+    //   this.playing.set(true);
+    //   this.canvas = canvas;        
+    //   this.designLayoutService.onPlayVideosInCanvas(canvas);
+    //   this.isDoneRendering.emit(canvas);
+    //   this.cdr.detectChanges();
+    // })
   }
   
   trackById(index: number, item: any) {

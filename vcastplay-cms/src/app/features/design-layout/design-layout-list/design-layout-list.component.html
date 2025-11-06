@@ -84,13 +84,14 @@
 </ng-template>
 
 
-<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="selectedDesign.set(null)" appendTo="body" [resizable]="false" modal>
-    <div class="relative border-2 border-[var(--p-surface-300)] bg-stone-800 text-white rounded-lg aspect-video">
-        <ng-container *ngIf="selectedDesign() as design">
-            <div #viewport class="absolute flex items-center justify-center w-full h-full overflow-hidden">
-                <app-design-layout-preview [viewport]="viewport" [designLayout]="design" [isPlaying]="true" />
-            </div>
-        </ng-container>
+<p-dialog header="Preview" [(visible)]="showPreview" [style]="{ width: '50rem' }" (onHide)="selectedDesign.set(null)" appendTo="body" modal>
+    <div class="relative flex flex-col flex-1 items-center justify-center overflow-hidden
+        h-full w-full border-[var(--p-surface-300)] bg-stone-800 text-white rounded-lg aspect-video">
+        <div #viewport class="relative flex w-full h-full flex items-center justify-center">
+            <ng-container *ngIf="selectedDesign() as design">
+                <app-design-layout-preview [viewport]="viewport" [designLayout]="design" [isPreview]="true" [isPlaying]="true" />
+            </ng-container>
+        </div>
     </div>
 </p-dialog>
 

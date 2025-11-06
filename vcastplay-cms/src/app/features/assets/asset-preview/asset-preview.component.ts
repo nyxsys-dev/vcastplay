@@ -108,9 +108,18 @@ export class AssetPreviewComponent {
             const orientation = width > height ? 'landscape' : 'portrait';
             const duration = Math.ceil(player.getDuration());
             this.onPropertiesChange.emit({ width, height, orientation, duration, type: 'facebook' });
+            if (iframe) {
+              const scale = orientation == 'landscape' ? 1 : fbPlayer.clientHeight / iframe.clientHeight;
+              
+              iframe.style.position = 'absolute';
+              iframe.style.top = '50%';
+              iframe.style.left = '50%';
+              iframe.style.transformOrigin = 'center center';
+              iframe.style.border = 'none';
+              iframe.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            }
           }, 500);
         }
-    
       });
 
     } catch (err) {

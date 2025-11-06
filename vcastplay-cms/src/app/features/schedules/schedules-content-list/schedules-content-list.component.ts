@@ -6,14 +6,13 @@ import { AssetsService } from '../../assets/assets.service';
 import { PlaylistService } from '../../playlist/playlist.service';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { ContentSelectionComponent } from '../../../components/content-selection/content-selection.component';
-import { ScheduleHourListComponent } from '../schedule-hour-list/schedule-hour-list.component';
 import { MessageService } from 'primeng/api';
 import { FormGroup } from '@angular/forms';
-import { ScheduleContentItems } from '../schedules';
+import { ComponentsModule } from "../../../core/modules/components/components.module";
 
 @Component({
   selector: 'app-schedules-content-list',
-  imports: [ PrimengUiModule, ContentSelectionComponent, ScheduleHourListComponent ],
+  imports: [PrimengUiModule, ComponentsModule ],
   templateUrl: './schedules-content-list.component.html',
   styleUrl: './schedules-content-list.component.scss'
 })
@@ -76,7 +75,7 @@ export class SchedulesContentListComponent {
     });
   }
 
-  onSelectionChange(event: any) {  
+  onSelectionChange(event: any) {
     this.contentItemForm.patchValue({ content: event, allWeekdays: (this.weekdays.length + 1) > 7 });
     this.showContentSelection.set(false);
   }

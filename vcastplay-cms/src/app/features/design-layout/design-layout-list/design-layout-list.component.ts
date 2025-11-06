@@ -113,14 +113,7 @@ export class DesignLayoutListComponent {
 
   onClickPreview(design: any) {
     this.showPreview.set(true);
-    this.selectedDesign.set(design);
-  }
-
-  onGetCanvasData(event: any) {
-    setTimeout(() => {
-      
-    this.designLayoutService.onPlayVideosInCanvas(event);
-    }, 200);
+    setTimeout(() => this.selectedDesign.set(design), 500);
   }
 
   get rows() { return this.designLayoutService.rows; }

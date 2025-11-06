@@ -13,7 +13,6 @@ import { UserDetailsComponent } from '../../../features/settings/users/user-deta
 import { UserApprovalComponent } from '../../../features/settings/users/user-approval/user-approval.component';
 import { RoleListItemComponent } from '../../../features/settings/roles/role-list-item/role-list-item.component';
 import { RoleDetailsComponent } from '../../../features/settings/roles/role-details/role-details.component';
-import { ScreenScheduleComponent } from '../../../features/screens/screen-schedule/screen-schedule.component';
 import { ScreenFilterComponent } from '../../../features/screens/screen-filter/screen-filter.component';
 import { ScreenControlsComponent } from '../../../features/screen-management/screen-controls/screen-controls.component';
 import { ScreenManagementListItemComponent } from '../../../features/screen-management/screen-management-list-item/screen-management-list-item.component';
@@ -26,7 +25,6 @@ import { PlaylistSelectContentsComponent } from '../../../features/playlist/play
 import { PlaylistListItemComponent } from '../../../features/playlist/playlist-list-item/playlist-list-item.component';
 import { PlaylistFilterComponent } from '../../../features/playlist/playlist-filter/playlist-filter.component';
 import { AssetListItemComponent } from '../../../features/assets/asset-list-item/asset-list-item.component';
-import { AssetScheduleComponent } from '../../../features/assets/asset-schedule/asset-schedule.component';
 import { AssetFilterComponent } from '../../../features/assets/asset-filter/asset-filter.component';
 import { AudienceTagFiltersComponent } from '../../../components/audience-tag-filters/audience-tag-filters.component';
 import { SchedulesContentListComponent } from '../../../features/schedules/schedules-content-list/schedules-content-list.component';
@@ -41,6 +39,7 @@ import { ScheduleFillersComponent } from '../../../features/schedules/schedule-f
 import { PlaylistPlayerComponent } from '../../../features/playlist/playlist-player/playlist-player.component';
 import { AssetPreviewComponent } from '../../../features/assets/asset-preview/asset-preview.component';
 import { DesignLayoutPreviewComponent } from '../../../features/design-layout/design-layout-preview/design-layout-preview.component';
+import { WeekdayHourSelectionComponent } from '../../../components/weekday-hour-selection/weekday-hour-selection.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
@@ -50,6 +49,7 @@ const COMPONENT_MODULES = [
   FiltersComponent,
   MapmarkersComponent,
   ContentSelectionComponent,
+  WeekdayHourSelectionComponent,
 
   // Broadcast Components
   BroadcastListItemComponent,
@@ -64,8 +64,7 @@ const COMPONENT_MODULES = [
   RoleListItemComponent,
   RoleDetailsComponent,
 
-  //Screen Components
-  ScreenScheduleComponent,
+  // Screen Components
   ScreenFilterComponent,
   ScreenControlsComponent,
   ScreenManagementListItemComponent,
@@ -84,7 +83,6 @@ const COMPONENT_MODULES = [
 
   // Asset Components
   AssetListItemComponent,
-  AssetScheduleComponent,
   AssetFilterComponent,
   AssetPreviewComponent,
 

@@ -1,6 +1,6 @@
 import { signal } from "@angular/core";
 
-export interface Playlist {
+export interface Playlists {
     id: number;
     name: string;
     link: string;
@@ -9,7 +9,7 @@ export interface Playlist {
 }
 
 
-export interface Playlists {
+export interface Playlist {
     id: number;
     name: string;
     description: string;

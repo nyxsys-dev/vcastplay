@@ -36,7 +36,7 @@
     @if (contentItemForm.errors?.['startAfterEnd']) {
     <p class="italic text-sm text-red-400">*Start Date must be before End Date</p>
     }
-    <app-schedule-hour-list [contentItemForm]="contentItemForm" />
+    <app-weekday-hour-selection [formGroup]="contentItemForm" [showAllDay]="true" />
     <p-inputgroup>
       <p-inputgroup-addon>
       <i class="pi pi-file"></i></p-inputgroup-addon>

@@ -9,7 +9,7 @@ export interface Assets {
     category?: string;
     subCategory?: string;
     thumbnail?: string
-    fileDetails: AssestInfo;
+    fileDetails: AssetInfo;
     dateRange?: { 
         start: Date | null;
         end: Date | null;
@@ -29,10 +29,11 @@ export interface AssetType {
     value: string;
 }
 
-export interface AssestInfo {
+export interface AssetInfo {
     name: string;
     type: string;
     size: number;
     orientation: string;
     resolution: { width: number; height: number };
+    link?: string;
 }

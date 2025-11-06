@@ -151,7 +151,26 @@
 </div>
 
 <p-dialog header="Set Schedule" [(visible)]="isShowSchedule" [style]="{ width: '50rem' }" [draggable]="false" [closable]="false" modal>
-    <app-asset-schedule [assetForm]="assetForm" />
+    <form class="flex flex-col gap-5 mb-6" [formGroup]="assetForm">
+        <div class="flex gap-2 items-center">
+            <p-toggleswitch inputId="availability" formControlName="availability" (onChange)="onChangeAvailability($event)" />
+            <label for="availability">Availability</label>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 relative" formGroupName="dateRange">
+            <div class="h-full w-full absolute top-0 left-0 bg-gray-400 z-50 opacity-10" [ngClass]="{ 'hidden': availability?.value }"></div>
+            <p-floatlabel variant="on">
+                <p-datepicker formControlName="start" inputId="start" [showIcon]="true" appendTo="body" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': dateRangeControl?.errors?.['startAfterEnd'] }" fluid />
+                <label for="start">Start Date*</label>
+            </p-floatlabel>
+            <p-floatlabel variant="on">
+                <p-datepicker formControlName="end" inputId="end" [showIcon]="true" appendTo="body" 
+                    [ngClass]="{ 'ng-invalid ng-dirty': dateRangeControl?.errors?.['startAfterEnd'] }" fluid />
+                <label for="end">End Date*</label>
+            </p-floatlabel>
+        </div>
+    </form>
+    <app-weekday-hour-selection [formGroup]="assetForm" [isDisabled]="!availability?.value" />
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="onClickCloseSchedule()" />
     </ng-template>

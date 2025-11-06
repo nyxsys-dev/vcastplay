@@ -1,5 +1,5 @@
-<div #mainPlayer class="flex items-center justify-center w-full h-full aspect-video overflow-hidden">
-    <ng-container *ngIf="currentItem() as item">
+<div #mainPlayer class="relative flex flex-1 items-center justify-center w-full h-full aspect-video overflow-hidden">
+    <!-- <ng-container *ngIf="currentItem() as item">
         <div
             #viewport
             class="relative w-full h-full flex items-center justify-center transition-all ease-in-out"
@@ -21,24 +21,7 @@
                 @case ('youtube') {
                     <div #ytPlayer class="absolute left-0 top-0 h-full w-full"></div>
                 }
-                @case ('facebook') {
-                    <!-- <div #fbPlayer class="relative flex items-center justify-center h-full w-full overflow-hidden">
-                        @if (isFacebookLoading()) { 
-                            <div class="absolute left-0 top-0 w-full h-full flex items-center justify-center">
-                                <p-progress-spinner strokeWidth="2" fill="transparent" />
-                            </div>
-                         }
-                        <div
-                            class="fb-video w-full h-full pointer-events-none"
-                            [attr.data-href]="item.link"
-                            data-autoplay="true"
-                            data-show-text="false"
-                            data-controls="false"
-                            data-allowfullscreen="false"
-                            data-show-captions="false"
-                        ></div>
-                    </div> -->
-                    
+                @case ('facebook') {                    
                     <div #fbPlayer class="relative flex items-center justify-center h-full w-full overflow-hidden">
                         @if (isFacebookLoading()) { 
                             <div class="absolute left-0 top-0 w-full h-full flex items-center justify-center">
@@ -57,13 +40,64 @@
                     </div>
                 }
                 @case ('design') {
-                    <app-design-layout-preview [viewport]="viewport" [designLayout]="item" [isPlaying]="isPlaying()" (onCanvasChange)="onImageLoaded(item)" />
+                    <app-design-layout-preview class="flex-1 h-full w-full flex items-center justify-center" [viewport]="viewport" [designLayout]="item" [isPlaying]="isPlaying()" (onCanvasChange)="onImageLoaded(item)" />
                 }
             }
         </div>
-    </ng-container>
+    </ng-container> -->
+    @for (item of playlist.contents; track trackById($index, item)) {
+        <div
+            #viewport
+            class="absolute inset-0 flex items-center justify-center transition-all ease-in-out"
+            style="--animation-duration: {{ playlist.transition.speed / 10 }}s"
+            [ngClass]="[ currentItem()?.contentId == item.contentId ? onActiveTransitionClass() : 'opacity-0 z-0 pointer-events-none' ]"
+        >
 
-    <div class="hidden">
+            @switch(item.type) {
+                @case ('image') {
+                    <img class="h-full w-full object-fit inset-0" [src]="item.link" [alt]="item.name">
+                }
+                @case('video') {
+                    <video [id]="item.contentId" class="h-full w-full object-fill"
+                        [src]="item.link" [autoplay]="false" [playsInline]="true" (ended)="onNextItem()"></video>
+                }
+                @case ('web') {
+                    <iframe [id]="item.contentId" [src]="onIFrameLoad(item) | safeurl" class="w-full h-full object-fit" frameborder="0"
+                        allow="autoplay; encrypted-media; compute-pressure; picture-in-picture" scrolling="no" ></iframe>
+                }
+                @case ('youtube') {
+                    <div [id]="item.contentId" #ytPlayer class="h-full w-full"></div>
+                }
+                @case ('facebook') {                    
+                    <ng-container *ngIf="currentItem() as content">
+                        <div [id]="content.contentId" #fbPlayer class="relative flex items-center justify-center h-full w-full overflow-hidden">
+                            @if (isFacebookLoading()) { 
+                                <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                                    <p-progress-spinner strokeWidth="2" fill="transparent" />
+                                </div>
+                            }
+                            <div
+                                class="fb-video pointer-events-none"
+                                [attr.data-href]="content.link"
+                                data-width="auto"
+                                data-autoplay="true"
+                                data-show-text="false"
+                                data-controls="false"
+                                data-allowfullscreen="false"
+                                data-show-captions="false"
+                            ></div>
+                        </div>
+                    </ng-container>
+                }
+                @case ('design') {
+                    <app-design-layout-preview class="flex-1 h-full w-full flex items-center justify-center" 
+                        [viewport]="viewport" [designLayout]="item" [isPlaying]="currentItem()?.contentId == item.contentId" />
+                }
+            }
+        </div>
+    }
+
+    <!-- <div class="hidden">
         <ng-container *ngIf="nextPreloadedItem() as item">
             @switch(item.type) {
                 @case ('image') {
@@ -76,7 +110,6 @@
                     <iframe [src]="item.link | safeurl"></iframe>
                 }
                 @case ('youtube') {
-                    <!-- <iframe [src]="utils.onGetEmbedUrl(item.link) | safeurl"></iframe> -->
                     <div #ytPlayer class="absolute left-0 top-0 h-full w-full"></div>
                 }
                 @case ('facebook') {
@@ -87,7 +120,7 @@
                 }
             }
         </ng-container>
-    </div>
+    </div> -->
 </div>
 
 <ng-container *ngIf="!isAutoPlay">

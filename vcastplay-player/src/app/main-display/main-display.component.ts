@@ -17,13 +17,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-main-display',
-  imports: [ 
-    PrimengModule, 
-    ComponentsModule,
-    forwardRef(() => PreviewAssetsComponent),
-    forwardRef(() => PreviewDesignLayoutComponent),
-    forwardRef(() => PreviewContentRendererComponent),
-  ],
+  imports: [ PrimengModule, ComponentsModule, ],
   templateUrl: './main-display.component.html',
   styleUrl: './main-display.component.scss',
 })
@@ -110,10 +104,11 @@ export class MainDisplayComponent {
   }
 
   async onClickSetContent(type: string) {
+    this.currentContent = null;
     const content = this.player.onSetContent(type);
     // console.log('🧭 New Content detected:', content);
     
-    const files: any[] = ['asset'].includes(type) ? [ content ] : content.files;
+    const files: any[] = !['playlist', 'playlist2', 'design', 'design2'].includes(type) ? [ content ] : content.files;
 
     // Save files to indexedDB
     await this.indexedDB.clearItems();
@@ -129,18 +124,21 @@ export class MainDisplayComponent {
 
     await Promise.all(files.map(async (file: any) => {
       // console.log('🧭 Downloading File:', file);
-      
-      const res = await fetch(file.link);
-      const blob = await res.blob();
-      // const url = URL.createObjectURL(blob);
-      await this.indexedDB.addItem({ file, blob });
+      if (!['facebook', 'youtube', 'web'].includes(file.type)) {
+        const res = await fetch(file.link);
+        const blob = await res.blob();
+        await this.indexedDB.addItem({ file, blob });
+      }
     }));
 
-    this.playlistService.onStopAllContents();
-    this.player.onSetContent('stop');
-    this.currentContent = content;
-    this.isPlay.set(true);
-    this.storage.set('currentContent', JSON.stringify(content));
+    const timerDuration = ['facebook', 'youtube', 'design', 'design2'].includes(type) ? 800 : 0;
+
+    // this.playlistService.onStopAllContents();
+    setTimeout(() => {
+      this.currentContent = content;
+      this.isPlay.set(true);
+      // this.storage.set('currentContent', JSON.stringify(content));
+    }, timerDuration);
     // console.log('🧭 Content set:', content);
 
     

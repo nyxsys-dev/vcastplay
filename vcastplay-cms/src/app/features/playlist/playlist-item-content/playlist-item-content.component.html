@@ -16,6 +16,12 @@
             @case ('design') {
                 <img [src]="content.thumbnail ?? 'assets/icons/images.png'" [alt]="content.name" class="absolute h-full w-full object-contain">
             }
+            @case('youtube') { 
+                <img class="w-12" src="assets/socials/youtube.png" [alt]="content.name"> 
+            } 
+            @case('facebook') { 
+                <img class="w-12" src="assets/socials/facebook.png" [alt]="content.name"> 
+            }
             @default {
                 <img [src]="content.thumbnail" [alt]="content.name" class="w-full h-full object-contain">
             }

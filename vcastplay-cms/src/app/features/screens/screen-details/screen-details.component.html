@@ -98,7 +98,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div class="col-span-1 md:col-span-6">
-                    <app-screen-schedule [screenForm]="screenForm" />
+                    <app-weekday-hour-selection [formGroup]="screenForm" [showAllDay]="true" allDayLabel="Always On" />
                 </div>
                 <div class="col-span-1 md:col-span-6 flex flex-col gap-2">
                     <p-inputgroup>

@@ -133,7 +133,6 @@ export class PlaylistListComponent {
   onClickGetContents() {
     this.showContents.set(true);
     this.activeStep.set(1);
-    this.playlistService.onStopAllContents();
   }
 
   onClickComplete(event: Event) {

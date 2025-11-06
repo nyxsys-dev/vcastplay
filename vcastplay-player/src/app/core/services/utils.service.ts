@@ -64,4 +64,28 @@ export class UtilsService {
       });
     })
   }
+  
+  onGetEmbedUrl(url: string): any {
+    if (url.includes('youtube') || url.includes('youtu.be')) {
+      const videoId = this.extractYouTubeId(url);
+      const link = `https://www.youtube.com/embed/${videoId}?autoplay=0&mute=0&controls=0&loop=0&fs=0&enablejsapi=1&disablekb=1&playsinline=1&showinfo=0`;
+      return { link, videoId };
+    }
+
+    if (url.includes('facebook')) {
+      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=0&autoplay=1&allowfullscreen=0`
+    }
+
+    if (url.includes('.html')) {
+      return url
+    }
+
+    return ''
+  }
+
+  private extractYouTubeId(url: string): string {
+    const regex = /(?:youtube\.com\/.*v=|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : '';
+  }
 }

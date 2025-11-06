@@ -228,7 +228,6 @@ export class ScheduleDetailsComponent {
   onClosePreview() {
     const { extendedProps } = this.selectedContent();
     if (extendedProps.type == 'playlist') {
-      this.playlistService.onStopAllContents();
       this.playlistForm.reset();
     }
     this.selectedContent.set(null);
