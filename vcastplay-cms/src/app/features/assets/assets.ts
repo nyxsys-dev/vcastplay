@@ -37,3 +37,9 @@ export interface AssetInfo {
     resolution: { width: number; height: number };
     link?: string;
 }
+
+export interface UploadResults {
+    name: string;
+    status: 'success' | 'error';
+    message?: string;
+}

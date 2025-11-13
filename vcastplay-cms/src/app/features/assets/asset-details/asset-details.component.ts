@@ -149,6 +149,7 @@ export class AssetDetailsComponent {
   }
 
   async onPropertiesChange(event: any) {
+    if (!event) return;
     const { title, width, height, orientation, duration, type } = event;
     this.assetForm.patchValue({ 
       duration, 
@@ -268,6 +269,7 @@ export class AssetDetailsComponent {
   get tagsLists() { return this.tagService.tagsLists; }
 
   get isEditMode() { return this.assetService.isEditMode; }
+  get isLoading() { return this.assetService.isLoading; }
   get selectedAsset() { return this.assetService.selectedAsset; }
   get assetForm() { return this.assetService.assetForm; }
   get assetTypes() { return this.assetService.assetType; }

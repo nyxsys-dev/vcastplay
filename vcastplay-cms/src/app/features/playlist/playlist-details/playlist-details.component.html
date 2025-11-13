@@ -87,12 +87,12 @@
       </div>
     </div>
     <ng-template #footer>
-      <div class="grid grid-cols-1 md:grid-cols-3 md:flex w-full items-center gap-2 py-2">
+      <div class="grid grid-cols-1 md:grid-cols-3 md:flex w-full items-center gap-2 md:py-2 py-4">
         <div class="flex items-center gap-2">
           <p-checkbox formControlName="loop" inputId="loop" binary />
-          <label for="loop" class="text-sm">Loop Video</label>
+          <label for="loop" class="text-sm">Loop</label>
         </div>
-        <div class="flex flex-col md:flex-row md:items-center gap-4" formGroupName="transition">
+        <div class="flex gap-4" formGroupName="transition">
           <div class="flex items-center gap-2">
             <p-checkbox formControlName="hasGap" inputId="hasGap" binary />
             <label for="hasGap" class="text-sm">Black Gap</label>
@@ -130,6 +130,7 @@
             label="Clear All"
             (onClick)="onClickClearAll()"
             size="small"
+            [disabled]="isPlaying()"
           />
         </div>
         }

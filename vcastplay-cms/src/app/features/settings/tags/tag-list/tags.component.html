@@ -2,7 +2,7 @@
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
     <div class="flex-1">
         <p-card styleClass="h-full">
-            <p-tabs [value]="0" [showNavigators]="false" [lazy]="true" [selectOnFocus]="true" scrollable>
+            <p-tabs [value]="0" [lazy]="true" [selectOnFocus]="true" selectOnFocus scrollable>
                 <p-tablist>
                     @for (tab of filteredAudienceTagList(); track $index) {
                         <p-tab [value]="$index">{{ tab.name }}</p-tab>
@@ -29,7 +29,7 @@
                                     </tr>
                                 </ng-template>
                                 <ng-template #body let-item>
-                                    <tr>
+                                    <tr class="text-sm">
                                         <td>{{ item }}</td>
                                         <td class="flex flex-row justify-center gap-2">
                                             <ng-container *ngTemplateOutlet="actionBtn; context: { $implicit: item, type: tab.id }"></ng-container>

@@ -78,13 +78,13 @@ export class ScheduleDetailsComponent {
   }
 
   constructor() {
-    effect(() => {
-      // change calendar view when mobile
-      if (!this.isDesktop()) {
-        this.calendarViewSignal.set('timeGridDay');
-        this.onChangeCalendarView({ value: 'timeGridDay' });
-      }
-    })
+    // effect(() => {
+    //   // change calendar view when mobile
+    //   if (!this.isDesktop()) {
+    //     this.calendarViewSignal.set('timeGridDay');
+    //     this.onChangeCalendarView({ value: 'timeGridDay' });
+    //   }
+    // })
   }
 
   ngOnInit() {
@@ -244,7 +244,7 @@ export class ScheduleDetailsComponent {
   }
 
   async onUpdateTotalContentsByType(contents: any) {
-    const [ totalContentByType ]: any = await Promise.all([ this.scheduleServices. onGetTotalContentsByType(contents) ]);
+    const [ totalContentByType ]: any = await Promise.all([ this.scheduleServices.onGetTotalContentsByType(contents) ]);
     this.totalByType.set(totalContentByType); 
   }
 

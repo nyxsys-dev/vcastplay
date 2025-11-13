@@ -20,9 +20,16 @@
                 data-autoplay="true"
                 data-show-text="false"
                 data-allowfullscreen="false"
-                data-muted="true"
+                data-muted="false"
                 data-lazy="true"
             ></div>
+        </div>
+    }
+    @case ('audio') {
+        <div class="relative h-full w-full flex items-center justify-center gap-4">
+            <li class="!text-7xl !text-white pi pi-volume-up"></li>
+            <audio class="absolute left-0 top-0 h-full w-full" controlsList="nodownload noplaybackrate"
+                [src]="asset.link" [controls]="showControls" [autoplay]="autoPlay" [crossOrigin]="true" preload="auto"></audio>
         </div>
     }
 }

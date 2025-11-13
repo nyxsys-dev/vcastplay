@@ -1,28 +1,31 @@
-<div class="flex flex-col gap-3 h-full">
-  @if (!assetOnly) {
-  <p-floatlabel class="w-full" variant="on">
-    <p-select
-      inputId="type"
-      [options]="filtereContentTypes()"
-      optionLabel="label"
-      optionValue="value"
-      [formControl]="contentTypeControl"
-      appendTo="body"
-      fluid
-    />
-    <label for="type">Select Contents</label>
-  </p-floatlabel>
-  } @switch (contentTypeControl.value) { @case ('asset') {
-  <app-asset-filter (filterChange)="onFilterChange($event)" />
-  } @case ('playlist') {
-  <app-playlist-filter (filterChange)="onFilterChange($event)" />
-  } @case ('design') {
-  <app-filters (filterChange)="onFilterChange($event)" />
-  } @case ('clipart') {
-  <app-filters (filterChange)="onFilterChange($event)" />
-  } @case ('schedule') {
-  <app-schedule-filter (filterChange)="onFilterChange($event)" />
-  } }
+<div class="relative flex flex-col gap-3 h-full">
+  <div class="grid grid-cols-2 gap-4 w-full mt-2">
+    @if (!assetOnly) {
+      <p-floatlabel class="w-auto" variant="on">
+        <p-select
+          inputId="type"
+          [options]="filtereContentTypes()"
+          optionLabel="label"
+          optionValue="value"
+          [formControl]="contentTypeControl"
+          appendTo="body"
+          fluid
+        />
+        <label for="type">Select Contents</label>
+      </p-floatlabel>
+    } 
+    @switch (contentTypeControl.value) { @case ('asset') {
+    <app-asset-filter (filterChange)="onFilterChange($event)" />
+    } @case ('playlist') {
+    <app-playlist-filter (filterChange)="onFilterChange($event)" />
+    } @case ('design') {
+    <app-filters (filterChange)="onFilterChange($event)" />
+    } @case ('clipart') {
+    <app-filters (filterChange)="onFilterChange($event)" />
+    } @case ('schedule') {
+    <app-schedule-filter (filterChange)="onFilterChange($event)" />
+    } }
+  </div>
 
   <div class="flex-1 min-h-[200px] overflow-y-auto border border-[var(--p-surface-300)] rounded-lg">
     <p-table
@@ -77,7 +80,7 @@
               <p class="w-50 line-clamp-1 truncate" [pTooltip]="item.name" tooltipPosition="bottom">
                 {{ item.name }}
               </p>
-              @if (!['youtube', 'facebook', 'design', 'playlist'].includes(item.type)) {
+              @if (!['youtube', 'facebook', 'design', 'playlist', 'schedule'].includes(item.type)) {
               <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
               }
             </div>

@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, signal } from '@angular/core';
+import { Component, HostListener, inject, Input, signal } from '@angular/core';
 import { PrimengUiModule } from '../../core/modules/primeng-ui/primeng-ui.module';
 import { DrawerMenu } from '../../core/interfaces/drawer-menu';
 import { Router, RouterModule } from '@angular/router';
@@ -14,6 +14,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   providers: [ MessageService, AuthService, ConfirmationService ]
 })
 export class DrawerComponent {
+
+  @Input() modules: DrawerMenu[] = [];
 
   router = inject(Router);
   utils = inject(UtilityService);
@@ -65,9 +67,5 @@ export class DrawerComponent {
       expanded: false
     }));
     this.utils.modules.set(updatedItems);
-  }
-
-  get menuItems() {
-    return this.utils.modules();
   }
 }

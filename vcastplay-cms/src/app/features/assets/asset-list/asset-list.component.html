@@ -24,34 +24,43 @@
             class="lg:hidden"
             pTooltip="Generate AI"
             tooltipPosition="bottom"
-            icon="pi pi-images"
+            icon="pi pi-ethereum"
           />
         </div>
         <div class="ml-auto items-center gap-3 hidden lg:flex">
           <p-button
             (onClick)="showPrompt.set(true)"
             label="Generate AI"
-            icon="pi pi-images"
+            icon="pi pi-ethereum"
+            [disabled]="isUploading()"
             outlined
           />
-          <p-button (onClick)="onClickAddNew()" label="Upload" icon="pi pi-upload"></p-button>
+          <p-button (onClick)="onClickAddNew()" label="Upload" icon="pi pi-upload" [disabled]="isUploading()" />
         </div>
       </div>
     </ng-template>
 
     <div class="flex flex-col gap-4 h-full">
-      <div
-        class="hidden lg:flex justify-center items-center border-dashed border-2 border-zinc-300 p-5 rounded-lg cursor-pointer hover:bg-zinc-100 hover:dark:bg-zinc-800"
-        (drop)="onDropFile($event)"
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave($event)"
-        (click)="fileInput.click()"
-      >
-        <p class="text-gray-500">
-          <span class="font-semibold">Drop files here</span> or click to upload
-        </p>
-        <input type="file" multiple (change)="onFileSelect($event)" hidden #fileInput />
-      </div>
+      @if (isUploading()) {
+        <div class="flex flex-col">
+          <p-progressbar styleClass="!h-4" [value]="updatingProgress()" />
+          <p class="text-sm">Uploading: {{ fileIndex() }} of {{ totalFiles() }}</p>
+        </div>
+      } @else {
+        <div
+          class="hidden lg:flex justify-center items-center border-dashed border-2 border-zinc-300 p-5 rounded-lg cursor-pointer hover:bg-zinc-100 hover:dark:bg-zinc-800"
+          (drop)="onFileSelectOrDrop($event); $event.preventDefault()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (click)="fileInput.click()"
+        >
+          <p class="text-gray-500">
+            <span class="font-semibold">Drop files here</span> or click to upload
+          </p>
+          <input type="file" accept="image/*, video/mp4, video/webm, video/ogg, audio/mpeg, audio/ogg, audio/wav, audio/mp3, .html, .htm"
+            (change)="onFileSelectOrDrop($event)" multiple hidden #fileInput />
+        </div>
+      }
 
       <div
         class="relative block lg:hidden px-3 gap-4 overflow-y-auto"
@@ -193,89 +202,11 @@
   </div>
 </p-dialog>
 
-<p-dialog
-  header="Add to playlist"
-  [(visible)]="isShowAddToPlaylist"
-  [style]="{ width: '42rem', height: '520px' }"
-  modal
->
-  <app-add-to-playlist [assetForm]="assetForm" />
-  <ng-template #footer>
-    <div class="flex items-center w-full">
-      <p class="text-sm text-red-500 italic">
-        {{ selectedArrPlaylist().length }} playlist(s) selected
-      </p>
-      <div class="flex gap-2 ml-auto">
-        <p-button label="Close" severity="secondary" (onClick)="onClickCancelSaveToPlaylist()" />
-        <p-button
-          label="Save"
-          (onClick)="onClickSaveToPlaylist($event)"
-          [disabled]="selectedArrPlaylist().length == 0"
-        />
-      </div>
-    </div>
-  </ng-template>
-</p-dialog>
+<app-asset-upload-result [uploadResult]="uploadResults()" [isShowUploadResult]="isShowUploadResult()" />
 
-<p-dialog
-  header="🌟 Welcome to Your Creative AI Assistant!"
-  [(visible)]="showPrompt"
-  [style]="{ width: '36rem' }"
-  [draggable]="false"
-  closable
-  modal
->
-  <div class="px-4">
-    @if (step > 0) {
-      <p>This is a preview of the content</p>
-    } @else {
-      <p>
-        Hello! 👋 I'm your AI assistant, here to help you bring your ideas to life. Whether you need
-        to generate an image, create a video, or craft engaging content, I've got you covered. Just
-        tell me what you need — let's get started! 🚀
-      </p>
-    }
-  </div>
-  <ng-template #footer>
-    @if (step > 0) {
-      <div class="flex gap-3">
-        <p-button
-          styleClass="!w-full"
-          label="Back"
-          icon="pi pi-arrow-left"
-          (onClick)="step = 0"
-          text
-          fluid
-        />
-        <p-button
-          styleClass="!w-full"
-          label="Save"
-          icon="pi pi-save"
-          (onClick)="showPrompt.set(false)"
-          fluid
-        />
-      </div>
-    } @else {
-      <div class="flex flex-col gap-3 w-full">
-        <textarea
-          placeholder="Type your prompt here"
-          name="prompt"
-          id="prompt"
-          cols="30"
-          rows="5"
-          pTextarea
-        ></textarea>
-        <p-button
-          styleClass="!w-full"
-          label="Generate"
-          icon="pi pi-send"
-          (onClick)="step = 1"
-          fluid
-        />
-      </div>
-    }
-  </ng-template>
-</p-dialog>
+<app-asset-ai-generate [showPrompt]="showPrompt" />
+
+<app-asset-to-playlist [assetForm]="assetForm" [isShowAddToPlaylist]="isShowAddToPlaylist" />
 
 <ng-template #actionBtn let-item>
   <p-button

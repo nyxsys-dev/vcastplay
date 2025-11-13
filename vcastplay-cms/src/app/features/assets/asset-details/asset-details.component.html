@@ -25,7 +25,7 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-2">
                 <div class="col-span-1 md:col-span-2">
                     <p-floatlabel variant="on">
-                        <p-select inputId="type" [options]="assetTypes()" optionLabel="label" optionValue="value" 
+                        <p-select id="type" [options]="assetTypes()" optionLabel="label" optionValue="value" 
                             (onChange)="onChangeType($event)" [formControl]="assetTypeControl" [readonly]="isEditMode()" fluid />
                         <label for="type">Type</label>
                     </p-floatlabel>
@@ -33,9 +33,9 @@
                 
                 <div class="col-span-1 md:col-span-4 lg:col-span-6">
                     <p-floatlabel variant="on">
-                        <label for="name">Name</label>
-                        <input id="name" pInputText formControlName="name"
+                        <input id="assetName" pInputText formControlName="name"
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('name').invalid && formControl('name').touched }" fluid />
+                        <label for="assetName">Name</label>
                     </p-floatlabel>
                     <!-- @if (formControl('name').touched && (formControl('name').dirty || formControl('name').invalid)) {
                         @if (formControl('name').invalid) {
@@ -48,7 +48,7 @@
                 </div>
                 <div class="col-span-1 md:col-span-3 lg:col-span-2">
                     <p-floatlabel variant="on">
-                        <p-select inputId="category" [options]="filterCategory()" formControlName="category" 
+                        <p-select id="category" [options]="filterCategory()" formControlName="category" 
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('category').invalid && formControl('category').touched }" showClear fluid>
                             <ng-template #footer>
                                 <div class="p-3">
@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-span-1 md:col-span-3 lg:col-span-2">
                     <p-floatlabel variant="on">
-                        <p-select inputId="subCategory" [options]="filterSubCategory()" formControlName="subCategory" 
+                        <p-select id="subCategory" [options]="filterSubCategory()" formControlName="subCategory" 
                             [ngClass]="{ 'ng-invalid ng-dirty': formControl('subCategory').invalid && formControl('subCategory').touched }" showClear fluid>
                             <ng-template #footer>
                                 <div class="p-3">
@@ -120,8 +120,16 @@
                 <div *ngIf="!formControl('link').value as currentContent" class="absolute top-0 left-0 h-full w-full flex items-center justify-center z-20" 
                     [ngClass]="{ 'hover:blue-100 cursor-pointer': !showLinkInput() }" (drop)="onDropFile($event)" (dragover)="onDragOver($event)" 
                     (dragleave)="onDragLeave($event)" (click)="!showLinkInput() && fileInput.click()">
-                    @if (!showLinkInput()) { <p class="text-gray-500"><span class="font-semibold">Drop files here</span> or click to upload</p> }
-                    <input #fileInput type="file" accept="image/*, video/*, .html, .htm" (change)="onFileSelected($event)" [multiple]="false" hidden />
+                    @if (!showLinkInput() && !isLoading()) { <p class="text-gray-500"><span class="font-semibold">Drop files here</span> or click to upload</p> }
+                    @if (showLinkInput() && !isLoading()) { <p class="text-gray-500">Input a valid link</p> }
+                    @if(isLoading()) {
+                        <div class="w-full h-full flex items-center justify-center flex-col gap-4">
+                            <p-progress-spinner />
+                            <p>Uploading file . . .</p>
+                        </div>
+                    }
+                    <input #fileInput type="file" accept="image/*, video/mp4, video/webm, video/ogg, audio/mpeg, audio/ogg, audio/wav, audio/mp3, .html, .htm" 
+                        (change)="onFileSelected($event)" [multiple]="false" hidden />
                 </div>
 
                 <ng-container *ngIf="formControl('link').value as currentContent">
@@ -191,8 +199,10 @@
             <p-tag [value]="assetForm.value.type?.toUpperCase()" severity="info" />
         </div>
         <p>File Duration: <span class="font-semibold">{{ utils.timeConversion(assetForm.value.duration, true) }}</span></p>
-        <p>File Resolution: <span class="font-semibold">{{ fileDetails?.value.resolution?.width }} x {{ fileDetails?.value.resolution?.height }}</span></p>
-        <p>File Orientation: <span class="font-semibold">{{ formFileDetails('orientation').value?.toUpperCase() }}</span></p>
+        @if (!['audio', 'web'].includes(assetForm.value.type)) {
+            <p>File Resolution: <span class="font-semibold">{{ fileDetails?.value.resolution?.width }} x {{ fileDetails?.value.resolution?.height }}</span></p>
+            <p>File Orientation: <span class="font-semibold">{{ formFileDetails('orientation').value?.toUpperCase() }}</span></p>
+        }
     </div>
     <ng-template #footer>
         <p-button label="Close" severity="secondary" (onClick)="isShowInfo.set(false)" />

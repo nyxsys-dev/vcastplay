@@ -1,0 +1,60 @@
+
+<p-dialog
+  header="🌟 Welcome to Your Creative AI Assistant!"
+  [(visible)]="showPrompt"
+  [style]="{ width: '36rem' }"
+  [draggable]="false"
+  closable
+  modal
+>
+  <div class="px-4">
+    @if (step > 0) {
+      <p>This is a preview of the content</p>
+    } @else {
+      <p>
+        Hello! 👋 I'm your AI assistant, here to help you bring your ideas to life. Whether you need
+        to generate an image, create a video, or craft engaging content, I've got you covered. Just
+        tell me what you need — let's get started! 🚀
+      </p>
+    }
+  </div>
+  <ng-template #footer>
+    @if (step > 0) {
+      <div class="flex gap-3">
+        <p-button
+          styleClass="!w-full"
+          label="Back"
+          icon="pi pi-arrow-left"
+          (onClick)="step = 0"
+          text
+          fluid
+        />
+        <p-button
+          styleClass="!w-full"
+          label="Save"
+          icon="pi pi-save"
+          (onClick)="showPrompt.set(false)"
+          fluid
+        />
+      </div>
+    } @else {
+      <div class="flex flex-col gap-3 w-full">
+        <textarea
+          placeholder="Type your prompt here"
+          name="prompt"
+          id="prompt"
+          cols="30"
+          rows="5"
+          pTextarea
+        ></textarea>
+        <p-button
+          styleClass="!w-full"
+          label="Generate"
+          icon="pi pi-send"
+          (onClick)="step = 1"
+          fluid
+        />
+      </div>
+    }
+  </ng-template>
+</p-dialog>

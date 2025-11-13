@@ -42,7 +42,7 @@
                                 <td><p-skeleton height="2rem" /></td>
                             </tr>
                         } @else {
-                            <tr [pSelectableRow]="item">
+                            <tr class="text-sm" [pSelectableRow]="item">
                                 <td>{{ item.name }}</td>
                                 <td>{{ item.description }}</td>
                                 <td><p-tag [value]="item.status" [severity]="utils.getStatus(item.status)" /></td>

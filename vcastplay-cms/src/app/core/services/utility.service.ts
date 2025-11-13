@@ -87,6 +87,12 @@ export class UtilityService {
     },
   ])
 
+  adminModules = signal<DrawerMenu[]>([
+    { label: 'Summary', icon: 'pi pi-chart-line', routerLink: '/admin/summary' },
+    { label: 'Users', icon: 'pi pi-users', routerLink: '/admin' },
+    { label: 'Screens', icon: 'pi pi-desktop', routerLink: '/admin' },
+  ])
+
   status: any[] = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
@@ -305,6 +311,7 @@ export class UtilityService {
       case 'playing':
       case 'connected':
       case 'on':
+      case 'success':
         return 'success'
       case 'inactive':
       case 'standby':
@@ -316,6 +323,7 @@ export class UtilityService {
       case 'disconnected':
       case 'off':
       case 'expired':
+      case 'error':
         return 'danger'
       default:
         return 'secondary'
@@ -330,6 +338,7 @@ export class UtilityService {
       case 'online':
       case 'connected':
       case 'on':
+      case 'success':
         return 'pi-check-circle'
       case 'inactive':
       case 'standby':
@@ -344,6 +353,7 @@ export class UtilityService {
       case 'disconnected':
       case 'off':
       case 'expired':
+      case 'error':
         return 'pi-times-circle'
       default:
         return 'pi-question-circle'

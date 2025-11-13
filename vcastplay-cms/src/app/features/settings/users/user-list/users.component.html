@@ -40,7 +40,7 @@
                                 @for (item of [1,2,3,4,5]; track $index) { <td><p-skeleton /></td> }
                             </tr>
                         } @else {
-                            <tr>
+                            <tr class="text-sm">
                                 <td>{{ item.code }}</td>
                                 <td>{{ item.firstName }} {{ item.lastName }}</td>
                                 <td>{{ item.email }}</td>

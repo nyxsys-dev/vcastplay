@@ -14,4 +14,7 @@ export class MainComponent {
 
   utils = inject(UtilityService);
 
+  get menuItems() {
+    return this.utils.modules();
+  }
 }

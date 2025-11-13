@@ -73,6 +73,7 @@ export class SchedulesService {
     id: new FormControl(0),
     name: new FormControl(null, [ Validators.required ]),
     description: new FormControl(null, [ Validators.required ]),
+    type: new FormControl('schedule', { nonNullable: true }),
     startDate: new FormControl(null),
     endDate: new FormControl(null),
     contents: new FormControl<ContentItems[]>([], { nonNullable: true, validators: Validators.required }),
@@ -128,6 +129,7 @@ export class SchedulesService {
           "description": "This is a sample description of a new schedule",
           "startDate": "2025-10-20T16:00:00.000Z",
           "endDate": "2025-10-26T16:15:00.000Z",
+          "type": "schedule",
           "contents": [
               {
                   "id": "NYX001",
@@ -383,9 +385,7 @@ export class SchedulesService {
             const nextDay = moment(currentDate).add(1, 'days').toDate();
             for (const hour of contentItem.hours) {
 
-              if (moment(hour).isSameOrAfter(nextDay)) {
-                break;
-              }
+              if (moment(hour).isSameOrAfter(nextDay)) break;
 
               const { start: startTime, end: endTime }: any = hour;
               const start = moment(currentDate).tz('Asia/Manila').format('YYYY-MM-DD') + 'T' + moment(startTime).tz('Asia/Manila').format('HH:mm:ss');
@@ -443,10 +443,6 @@ export class SchedulesService {
 
   onGetContentDetails(id: any, type: string, eventId: string) {
     switch (type) {
-      case 'asset':
-        const asset = this.assetService.onGetAssets().find(item => item.code == id);
-        if (asset) this.selectedContent.set({ ...asset, eventId });
-        break;
       case 'playlist':
         const playlist = this.playlistService.onGetPlaylists().find(item => item.id == id);
         if (playlist) {
@@ -457,6 +453,10 @@ export class SchedulesService {
       case 'design':
         const design = this.designlayoutService.onGetDesigns().find(item => item.id == id);
         if (design) this.selectedContent.set({ ...design, eventId });
+        break;
+      default:
+        const asset = this.assetService.onGetAssets().find(item => item.code == id);
+        if (asset) this.selectedContent.set({ ...asset, eventId });
         break;
     }    
   }

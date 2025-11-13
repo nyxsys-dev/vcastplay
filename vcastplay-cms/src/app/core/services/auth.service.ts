@@ -32,7 +32,7 @@ export class AuthService {
       this.router.navigate(['/dashboard']);
     } else {
       this.message.add({ severity: 'info', summary: 'Info', detail: 'This login is for administrator only' });
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/admin/summary']);
     }
   }
 

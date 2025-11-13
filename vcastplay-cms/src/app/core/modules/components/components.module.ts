@@ -19,7 +19,6 @@ import { ScreenManagementListItemComponent } from '../../../features/screen-mana
 import { ScreenBroadcastMessageComponent } from '../../../features/screen-management/screen-broadcast-message/screen-broadcast-message.component';
 import { ScreenSettingsComponent } from '../../../features/screen-management/screen-settings/screen-settings.component';
 import { ScreenSelectionComponent } from '../../../features/design-layout/screen-selection/screen-selection.component';
-import { AddToPlaylistComponent } from '../../../features/playlist/add-to-playlist/add-to-playlist.component';
 import { PlaylistContainerComponent } from '../../../features/playlist/playlist-container/playlist-container.component';
 import { PlaylistSelectContentsComponent } from '../../../features/playlist/playlist-select-contents/playlist-select-contents.component';
 import { PlaylistListItemComponent } from '../../../features/playlist/playlist-list-item/playlist-list-item.component';
@@ -40,6 +39,9 @@ import { PlaylistPlayerComponent } from '../../../features/playlist/playlist-pla
 import { AssetPreviewComponent } from '../../../features/assets/asset-preview/asset-preview.component';
 import { DesignLayoutPreviewComponent } from '../../../features/design-layout/design-layout-preview/design-layout-preview.component';
 import { WeekdayHourSelectionComponent } from '../../../components/weekday-hour-selection/weekday-hour-selection.component';
+import { AssetUploadResultComponent } from '../../../features/assets/asset-upload-result/asset-upload-result.component';
+import { AssetAiGenerateComponent } from '../../../features/assets/asset-ai-generate/asset-ai-generate.component';
+import { AssetToPlaylistComponent } from '../../../features/assets/asset-to-playlist/asset-to-playlist.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
@@ -74,7 +76,6 @@ const COMPONENT_MODULES = [
   ScreenDetailsComponent,
 
   // Playlist Components
-  AddToPlaylistComponent,
   PlaylistContainerComponent,
   PlaylistSelectContentsComponent,
   PlaylistListItemComponent,
@@ -82,9 +83,12 @@ const COMPONENT_MODULES = [
   PlaylistPlayerComponent,
 
   // Asset Components
+  AssetAiGenerateComponent,
   AssetListItemComponent,
   AssetFilterComponent,
   AssetPreviewComponent,
+  AssetUploadResultComponent,
+  AssetToPlaylistComponent,
 
   // Audience Tag Components
   AudienceTagFiltersComponent,

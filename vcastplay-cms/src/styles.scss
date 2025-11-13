@@ -1,7 +1,17 @@
 @use "tailwindcss";
 @use "primeicons/primeicons.css";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --font-family: 'Inter', sans-serif;
+}
+
+/* Apply globally */
+body, .p-component {
+  font-family: var(--font-family) !important;
+}
 
 html {    
     font-size: 14px;

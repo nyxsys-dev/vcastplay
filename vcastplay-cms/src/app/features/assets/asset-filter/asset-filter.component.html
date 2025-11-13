@@ -1,6 +1,6 @@
 <form [formGroup]="assetFilterForm" class="flex items-center gap-2">
     <p-input-group>
-        <input pInputText placeholder="Search" formControlName="keywords" (keydown.enter)="onClickApplyAudienceTag()" fluid />
+        <input id="keywords" pInputText placeholder="Search" formControlName="keywords" (keydown.enter)="onClickApplyAudienceTag()" fluid />
         <p-inputgroup-addon>
             <p-button (onClick)="onClickApplyAudienceTag()" icon="pi pi-search" />
         </p-inputgroup-addon>

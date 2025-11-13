@@ -1,0 +1,70 @@
+<p-dialog
+    header="Add to playlist"
+    [(visible)]="isShowAddToPlaylist"
+    [style]="{ width: '42rem', height: '520px' }"
+    modal
+>
+    <div class="border-1 border-gray-200 p-2 rounded-lg h-full">
+        <p-table
+            #playlistsTable
+            [value]="playlists()"
+            [(selection)]="selectedArrPlaylist"
+            (selectionChange)="onSelectionChange($event)"
+            dataKey="id"
+            [scrollable]="true" 
+            scrollHeight="300px" 
+            size="small"
+            stripedRows
+        >
+            <ng-template #caption>
+                <p-iconfield iconPosition="left">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input pInputText type="text" placeholder="Search keyword" fluid />
+                </p-iconfield>
+            </ng-template>
+            <ng-template #header>
+                <tr>
+                    <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+                    <th>Playlist</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-item>
+                <tr>
+                    <td><p-tableCheckbox [value]="item" /></td>
+                    <td>
+                        <div class="flex items-center gap-2">
+                            <div class="flex flex-col gap-1">
+                                <h6 class="font-semibold">{{ item.name }}</h6>
+                                <p class="text-sm">{{ item.description }}</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="2">
+                        <div class="flex justify-center items-center h-50">No playlist found.</div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <ng-template #footer>
+        <div class="flex items-center w-full">
+            <p class="text-sm text-red-500 italic">
+                {{ selectedArrPlaylist().length }} playlist(s) selected
+            </p>
+            <div class="flex gap-2 ml-auto">
+                <p-button label="Close" severity="secondary" (onClick)="onClickCancelSaveToPlaylist()" />
+                <p-button
+                    label="Save"
+                    (onClick)="onClickSaveToPlaylist($event)"
+                    [disabled]="selectedArrPlaylist().length == 0"
+                />
+            </div>
+        </div>
+    </ng-template>
+</p-dialog>

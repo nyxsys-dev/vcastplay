@@ -4,6 +4,7 @@ import { YoutubeSdkService } from '../../../core/services/youtube-sdk.service';
 import { UtilityService } from '../../../core/services/utility.service';
 import { SafeurlPipe } from '../../../core/pipes/safeurl.pipe';
 import { Assets } from '../assets';
+import { MessageService } from 'primeng/api';
 
 declare const FB: any;
 declare const YT: any;
@@ -28,6 +29,7 @@ export class AssetPreviewComponent {
   utils = inject(UtilityService);
   fbService = inject(FacebookSDKService);
   ytService = inject(YoutubeSdkService);
+  message = inject(MessageService);
 
   private fbTimerId: any;
   private ytTimerId: any;
@@ -48,36 +50,45 @@ export class AssetPreviewComponent {
       const { videoId } = this.utils.onGetEmbedUrl(this.asset.link);
       if (!ytPlayer) return;
       
-      const player = await new YT.Player(ytPlayer, {
-        videoId,
-        playerVars: {
-          autoPlay: this.autoPlay ? 1 : 0,
-          controls: this.showControls ? 1 : 0,
-          loop: 1, 
-          playsinline: 1, 
-          showinfo: 0
-        },
-        events: {
-          onReady: (event: any) => {
-            if (this.autoPlay) player.playVideo();
-            
-            const { width, height }: any = event.target.getSize();
-            const { title }: any = event.target.getVideoData();
-            const duration = event.target.getDuration();
-            
-            const orientation = width > height ? 'landscape' : 'portrait';
-            this.onPropertiesChange.emit({ duration, title, type: 'youtube', orientation });
+      try {
+        const player = await new YT.Player(ytPlayer, {
+          videoId,
+          playerVars: {
+            autoPlay: this.autoPlay ? 1 : 0,
+            controls: this.showControls ? 1 : 0,
+            loop: 1, 
+            playsinline: 1, 
+            showinfo: 0
           },
-          onStateChange: (event: any) => {
-            if (this.autoPlay) {
-              if (event.data == YT.PlayerState.ENDED) {
-                player.seekTo(0);
-                player.playVideo();
+          events: {
+            onReady: (event: any) => {
+              if (this.autoPlay) player.playVideo();
+              
+              const { width, height }: any = event.target.getSize();
+              const { title }: any = event.target.getVideoData();
+              const duration = event.target.getDuration();
+              
+              const orientation = width > height ? 'landscape' : 'portrait';
+              this.onPropertiesChange.emit({ duration, title, type: 'youtube', orientation });
+            },
+            onStateChange: (event: any) => {
+              if (this.autoPlay) {
+                if (event.data == YT.PlayerState.ENDED) {
+                  player.seekTo(0);
+                  player.playVideo();
+                }
               }
+            },
+            onError: (event: any) => {
+              this.message.add({ severity: 'error', summary: 'Error', detail: event.data });
+              this.onPropertiesChange.emit(null);
             }
           }
-        }
-      })  
+        })  
+      } catch (error: any) {
+        this.message.add({ severity: 'error', summary: 'Error', detail: error.message });
+        this.onPropertiesChange.emit(null);
+      }
     }, 10);
   }
   
@@ -121,9 +132,14 @@ export class AssetPreviewComponent {
           }, 500);
         }
       });
+      await FB.Event.subscribe('xfbml.error', (err: any) => {
+        this.message.add({ severity: 'error', summary: 'Error', detail: err });
+        this.onPropertiesChange.emit(null);
+      });
 
     } catch (err) {
-      console.warn('FB Player init failed', err);
+      this.message.add({ severity: 'error', summary: 'Error', detail: `Failed to init facebook player` });
+      this.onPropertiesChange.emit(null);
     }
   }
 }

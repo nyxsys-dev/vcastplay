@@ -8,6 +8,7 @@ export interface Schedule {
     id: number;
     name: string;
     description: string;
+    type: string;
     contents: ScheduleContentItems[];
     startDate: string;
     endDate: string;

@@ -93,6 +93,7 @@ export class PlaylistPlayerComponent {
     this.currentItem.set(this.playlist.contents[this.currentIndex()]);
 
     if (['image', 'web', 'design'].includes(this.currentItem().type)) this.onImageLoaded(this.currentItem());
+    if (this.currentItem().type == 'audio') this.onAudioLoad();
     if (this.currentItem().type == 'video') this.onVideoLoad();
     if (this.currentItem().type == 'facebook') this.onFacebookLoad();
     if (this.currentItem().type == 'youtube') this.onYoutubeLoad();
@@ -108,11 +109,12 @@ export class PlaylistPlayerComponent {
     this.currentIndex.set(0);
     this.currentItem.set(null);
     
-    const videos = document.querySelectorAll('video');
-    for (const v of videos) {
-      v.currentTime = 0;
-      v.pause();
-    };
+    const medias = document.querySelectorAll('video, audio');
+    medias.forEach((m: any) => {
+      const media = m as HTMLMediaElement;
+      media.pause();
+      media.currentTime = 0;
+    });
 
     this.onCurrentItemChange.emit(null);
     this.isPlayingChange.emit(false);
@@ -146,6 +148,7 @@ export class PlaylistPlayerComponent {
         this.currentItem.set(this.playlist.contents[nextIndex]);
         
         if (['image', 'web', 'design'].includes(this.currentItem().type)) this.onImageLoaded(this.currentItem());
+        if (this.currentItem().type == 'audio') this.onAudioLoad();
         if (this.currentItem().type == 'video') this.onVideoLoad();
         if (this.currentItem().type == 'facebook') this.onFacebookLoad();
         if (this.currentItem().type == 'youtube') this.onYoutubeLoad();
@@ -170,7 +173,6 @@ export class PlaylistPlayerComponent {
       for (const v of videos) {
         if (v.id == content.contentId) {
           v.currentTime = 0;
-          v.muted = true;
           v.play()
         }
       };
@@ -186,6 +188,19 @@ export class PlaylistPlayerComponent {
   onIFrameLoad(item: Assets) {
     if (item.type == 'web') return item.link;
     else return '';
+  }
+
+  onAudioLoad() {
+    const content: Assets | DesignLayout | any = this.currentItem();
+    Promise.resolve().then(() => {
+      const audios = document.querySelectorAll('audio');
+      for (const a of audios) {
+        if (a.id == content.contentId) {
+          a.currentTime = 0;
+          a.play();
+        }
+      }
+    })
   }
   
   async onYoutubeLoad() {

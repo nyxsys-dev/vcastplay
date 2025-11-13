@@ -7,7 +7,7 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { PlaylistService } from '../../playlist/playlist.service';
-import { Assets } from '../assets';
+import { Assets, UploadResults } from '../assets';
 
 @Component({
   selector: 'app-asset-list',
@@ -41,7 +41,14 @@ export class AssetListComponent {
   isShowPreview = signal<boolean>(false);
   isShowAddToPlaylist = signal<boolean>(false);
 
-  step: number = 0;
+  // upload file variables
+  isUploading = signal<boolean>(false);
+  isShowUploadResult = signal<boolean>(false);
+  fileIndex = signal<number>(0);
+  totalFiles = signal<number>(0);
+  uploadingProgress = signal<number>(0);
+  updatingProgress = computed(() => Math.floor((this.fileIndex() / this.totalFiles()) * 100));
+  uploadResults = signal<UploadResults[]>([]);
 
   assetViewModeCtrl: FormControl = new FormControl('Grid');
 
@@ -77,39 +84,53 @@ export class AssetListComponent {
     this.assetService.onGetAssets()
   }
 
-  async onFileSelect(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files) {
-      await this.assetService.onDropFile(input.files);
-      this.message.add({ severity:'success', summary: 'Success', detail: `${input.files.length} file(s) uploaded successfully!` });  
-    }
-  }
+  async onFileSelectOrDrop(event: DragEvent | Event | any) {
+    this.isUploading.set(true);
+    this.uploadResults.set([]);
+    const files = event.dataTransfer?.files || event.target.files || [];
+    this.totalFiles.set(files.length);
+    for (const file of await files) {    
+      this.fileIndex.set(this.fileIndex() + 1);
+        
+      if (file.type && file.type.startsWith('audio/')) {
+        const allowedTypes = ['audio/mp3', 'audio/wav', 'audio/ogg', 'audio/mpeg'];
+        if (!allowedTypes.includes(file.type)) {
+          this.uploadResults().push({ name: file.name, status: 'error', message: 'Only mp3/mpeg, wav and ogg files are allowed for audio files' });
+          continue;
+        }
+      }
 
-  onDropFile(event: DragEvent) {
-    event.preventDefault();
-    const files = Array.from(event.dataTransfer?.files || []);    
-    if (files) {
-      this.confirmation.confirm({
-        target: event.target as EventTarget,
-        message: 'Do you want to upload these assets?',
-        closable: true,
-        closeOnEscape: true,
-        header: 'Confirm Save',
-        icon: 'pi pi-info-circle',
-        rejectButtonProps: {
-          label: 'Cancel',
-          severity: 'secondary',
-          outlined: true,
-        },
-        acceptButtonProps: {
-          label: 'Save',
-        },
-        accept: async () => {     
-          this.assetForm.reset();   
-          await this.assetService.onDropFile(files);
-          this.message.add({ severity:'success', summary: 'Success', detail: `${files.length} file(s) uploaded successfully!` });  
-        },
-      })
+      if (file.type && file.type.startsWith('video/')) {
+        const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+        if (!allowedTypes.includes(file.type)) {
+          this.uploadResults().push({ name: file.name, status: 'error', message: 'Only mp4, webm and ogg files are allowed for video files' });
+          continue;
+        }
+      }
+
+      try {
+        const result = await this.assetService.processFile(file);        
+        if (result) {
+          this.assetForm.patchValue(result);
+          this.assetService.onSaveAssets(this.assetForm.value)
+          this.uploadResults().push({ name: file.name, status: 'success' });
+        } else {
+          this.uploadResults().push({ name: file.name, status: 'error' });
+        }
+      } catch (error: any) {
+        this.uploadResults().push({ name: file.name, status: 'error', message: error.message });
+      }
+    }
+
+    this.fileIndex.set(0);
+    this.isUploading.set(false);
+    this.assetForm.reset();
+    const successCount = this.uploadResults().filter(result => result.status === 'success').length;    
+    if (successCount === files.length) {
+      this.message.add({ severity: 'success', summary: 'Success', detail: `${files.length} file(s) uploaded successfully!` });
+    } else {
+      this.isShowUploadResult.set(true);
+      this.message.add({ severity: 'warn', summary: 'Warning', detail: `Some files are not uploaded due to an error.` });
     }
   }
 
@@ -143,24 +164,6 @@ export class AssetListComponent {
     this.playlistService.onGetPlaylists();
     this.isShowAddToPlaylist.set(true);
     this.assetForm.patchValue(item);
-  }
-
-  onClickAddMultipleToPlaylist(event: Event) {
-    this.playlistService.onGetPlaylists();
-    this.isShowAddToPlaylist.set(true);
-  }
-
-  onClickSaveToPlaylist(event: Event) {    
-    this.playlistService.onSaveAssetToPlaylist(this.assetForm.value, this.selectedArrPlaylist());
-    this.message.add({ severity:'success', summary: 'Success', detail: 'Asset added to playlist successfully!' });
-    this.isShowAddToPlaylist.set(false);
-    this.selectedArrPlaylist.set([]);
-    this.assetForm.reset();
-  }
-
-  onClickCancelSaveToPlaylist() {
-    this.isShowAddToPlaylist.set(false);
-    this.selectedArrPlaylist.set([]);
   }
 
   onClickDelete(item: any, event: Event) {

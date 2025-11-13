@@ -61,6 +61,13 @@
                     <video [id]="item.contentId" class="h-full w-full object-fill"
                         [src]="item.link" [autoplay]="false" [playsInline]="true" (ended)="onNextItem()"></video>
                 }
+                @case ('audio') {
+                    <div class="relative h-full w-full flex items-center justify-center gap-4">
+                        <li class="!text-9xl !text-white pi pi-volume-up"></li>
+                        <audio [id]="item.contentId" class="absolute left-0 top-0 h-full w-full" controlsList="nodownload noplaybackrate"
+                            [src]="item.link" [controls]="false" [autoplay]="false" [crossOrigin]="true" preload="auto" (ended)="onNextItem()"></audio>
+                    </div>
+                }
                 @case ('web') {
                     <iframe [id]="item.contentId" [src]="onIFrameLoad(item) | safeurl" class="w-full h-full object-fit" frameborder="0"
                         allow="autoplay; encrypted-media; compute-pressure; picture-in-picture" scrolling="no" ></iframe>

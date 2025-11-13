@@ -22,6 +22,9 @@
             @case('facebook') { 
                 <img class="w-12" src="assets/socials/facebook.png" [alt]="content.name"> 
             }
+            @case('audio') {
+                <li class="pi pi-volume-up !text-7xl"></li>
+            }
             @default {
                 <img [src]="content.thumbnail" [alt]="content.name" class="w-full h-full object-contain">
             }

@@ -11,6 +11,19 @@ export const routes: Routes = [
   },
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   {
+    path: 'admin',
+    loadComponent: () => 
+      import('./admin/admin-main/admin-main.component').then((m) => m.AdminMainComponent),
+    children: [
+      {
+        path: 'summary',
+        loadComponent: () =>
+          import('./admin/dashboard/analytics/analytics.component').then((m) => m.AnalyticsComponent),
+        title: `Analytics • ${appTitle}`,
+      }
+    ]
+  },
+  {
     path: '',
     loadComponent: () => import('./main/main.component').then((m) => m.MainComponent),
     children: [
