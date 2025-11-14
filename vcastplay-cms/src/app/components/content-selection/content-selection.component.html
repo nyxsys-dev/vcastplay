@@ -1,5 +1,5 @@
-<div class="relative flex flex-col gap-3 h-full">
-  <div class="grid grid-cols-2 gap-4 w-full mt-2">
+<div class="relative flex flex-col gap-2 h-full">
+  <div class="grid grid-cols-2 gap-4 w-full">
     @if (!assetOnly) {
       <p-floatlabel class="w-auto" variant="on">
         <p-select
@@ -9,9 +9,9 @@
           optionValue="value"
           [formControl]="contentTypeControl"
           appendTo="body"
+          placeholder="Select Contents"
           fluid
         />
-        <label for="type">Select Contents</label>
       </p-floatlabel>
     } 
     @switch (contentTypeControl.value) { @case ('asset') {
@@ -27,7 +27,7 @@
     } }
   </div>
 
-  <div class="flex-1 min-h-[200px] overflow-y-auto border border-[var(--p-surface-300)] rounded-lg">
+  <div class="flex-1 min-h-[200px] overflow-y-auto border border-[var(--p-surface-300)]">
     <p-table
       #contentTable
       [value]="filteredContentLists()"
@@ -80,7 +80,7 @@
               <p class="w-50 line-clamp-1 truncate" [pTooltip]="item.name" tooltipPosition="bottom">
                 {{ item.name }}
               </p>
-              @if (!['youtube', 'facebook', 'design', 'playlist', 'schedule'].includes(item.type)) {
+              @if (['image', 'video', 'audio'].includes(item.type)) {
               <p class="text-sm italic">{{ utils.formatSize(item.fileDetails.size) }}</p>
               }
             </div>
@@ -89,7 +89,7 @@
             @if (!['schedule', 'clipart'].includes(contentTypeControl.value)) {
             {{ utils.timeConversion(item.duration) }} } @else if
             (['clipart'].includes(contentTypeControl.value)) {
-            <img [src]="item.link" [alt]="item.name" class="w-15" /> } @else {
+            <img [src]="item.link" [alt]="item.name" class="w-12" /> } @else {
             {{ item.description }} }
           </td>
         </tr>

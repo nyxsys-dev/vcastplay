@@ -58,6 +58,7 @@ export const routes: Routes = [
       { path: 'settings', loadChildren: () => import('./features/settings/settings.routes') },
     ],
   },
+  { path: 'upgrade', loadChildren: () => import('./features/upgrade/upgrade.routes'), },
   {
     path: '**',
     redirectTo: '/dashboard',

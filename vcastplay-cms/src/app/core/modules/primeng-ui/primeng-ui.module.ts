@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { AutoFocusModule } from 'primeng/autofocus';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { AvatarModule } from 'primeng/avatar';
@@ -152,6 +153,7 @@ const PRIMEUI_MODULES = [
   ColorPickerModule,
   ToggleButtonModule,
   ContextMenuModule,
+  AutoFocusModule,
 ];
 
 @NgModule({
