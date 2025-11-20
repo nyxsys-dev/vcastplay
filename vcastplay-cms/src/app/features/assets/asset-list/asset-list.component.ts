@@ -17,12 +17,12 @@ import { Assets, UploadResults } from '../assets';
 })
 export class AssetListComponent {
 
-  pageInfo: MenuItem = [ { label: 'Asset Library' }, { label: 'Lists' } ];
+  pageInfo: MenuItem = [ { label: 'Assets' }, { label: 'Lists' } ];
   actionItems: MenuItem[] = [
     { 
       label: 'Options',
       items: [
-        { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => this.onClickPreview() },
+        { label: 'Preview', icon: 'pi pi-eye', command: ($event: any) => this.isShowPreview.set(true) },
         { label: 'Duplicate', icon: 'pi pi-copy', command: ($event: any) => this.onClickDuplicate(this.selectedAsset(), $event) },
         { label: 'Add to Playlist', icon: 'pi pi-list', command: ($event: any) => this.onClickAddToPlaylist(this.selectedAsset(), $event) },
         { label: 'Delete', icon: 'pi pi-trash', command: ($event: any) => this.onClickDelete(this.selectedAsset(), $event) }

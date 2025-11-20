@@ -2,8 +2,13 @@
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
     <div class="flex-1">
         <p-card styleClass="h-full">
+            <ng-template #header>
+                <div class="mt-4 px-6">
+                    <p class="text-2xl font-semibold">{{ pageInfo[0].label }}</p>
+                </div>
+            </ng-template>
             <ng-template #title>
-                <div class="flex gap-4 items-center mb-2">
+                <div class="flex gap-4 items-center">
                     <app-screen-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" [showOrientation]="true" />
                     <div class="gap-3 ml-auto hidden md:flex">
                         <p-button (onClick)="onClickAddNew()" label="Register" icon="pi pi-plus" [text]="false" outlined />

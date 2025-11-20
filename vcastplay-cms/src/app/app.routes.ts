@@ -20,7 +20,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./admin/dashboard/analytics/analytics.component').then((m) => m.AnalyticsComponent),
         title: `Analytics • ${appTitle}`,
-      }
+      },
+      { path: 'screens', loadChildren: () => import('./features/screens/screens.routes') },
+      {
+          path: 'user-management', 
+          loadComponent: () => import('./features/settings/users/user-list/users.component').then(m => m.UsersComponent),
+          title: `User Management • ${appTitle}`,
+      },
     ]
   },
   {
@@ -59,9 +65,5 @@ export const routes: Routes = [
     ],
   },
   { path: 'upgrade', loadChildren: () => import('./features/upgrade/upgrade.routes'), },
-  {
-    path: '**',
-    redirectTo: '/dashboard',
-    pathMatch: 'full',
-  },
+  { path: '**', redirectTo: '/dashboard', pathMatch: 'full', },
 ]

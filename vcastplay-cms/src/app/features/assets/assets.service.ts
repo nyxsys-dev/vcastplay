@@ -103,18 +103,18 @@ export class AssetsService {
       {
         id: 1,
         code: 'NYX001',
-        name: 'pexels-photo-355465.jpeg',
+        name: 'Colorful Hotel Building Led Signage in Night Time',
         type: 'image',
-        link: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg',
-        thumbnail: 'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg',
+        link: 'https://images.pexels.com/photos/3678857/pexels-photo-3678857.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+        thumbnail: 'https://images.pexels.com/photos/3678857/pexels-photo-3678857.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,
           type: 'image/png',
           orientation: 'portrait',
           resolution: {
-            width: 326,
-            height: 195,
+            width: 1260,
+            height: 750,
           },
         },
         duration: 5,
@@ -134,21 +134,21 @@ export class AssetsService {
       {
         id: 2,
         code: 'NYX002',
-        name: 'ForBiggerBlazes.mp4',
+        name: 'Close up of a Woman Posing and Taking Selfies',
         type: 'video',
-        link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-        thumbnail: 'https://placehold.co/600x400',
+        link: 'https://videos.pexels.com/video-files/4236566/4236566-uhd_2560_1440_24fps.mp4',
+        thumbnail: 'https://images.pexels.com/videos/4236566/pexels-photo-4236566.jpeg?auto=compress&cs=tinysrgb&w=600',
         fileDetails: {
-          name: 'ForBiggerBlazes.mp4',
+          name: 'Close up of a Woman Posing and Taking Selfies',
           size: 2498125,
           type: 'video/mp4',
           orientation: 'landscape',
           resolution: {
-            width: 1280,
-            height: 720,
+            width: 2560,
+            height: 1440,
           },
         },
-        duration: 15,
+        duration: 19,
         audienceTag: {
           genders: ['Male', 'Female'],
           ageGroups: [],
@@ -164,22 +164,22 @@ export class AssetsService {
       },
       {
         id: 3,
-        code: 'NYX002',
-        name: 'ForBiggerJoyrides.mp4',
+        code: 'NYX003',
+        name: 'Modern Train Arriving at Busy City Station',
         type: 'video',
-        link: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-        thumbnail: 'https://placehold.co/600x400',
+        link: 'https://videos.pexels.com/video-files/34735641/14724861_2560_1440_30fps.mp4',
+        thumbnail: 'https://images.pexels.com/videos/34735641/2025-travel-4k-arriving-train-34735641.jpeg?auto=compress&cs=tinysrgb&w=600',
         fileDetails: {
-          name: 'ForBiggerBlazes.mp4',
+          name: 'https://videos.pexels.com/video-files/34735641/14724861_2560_1440_30fps.mp4',
           size: 2498125,
           type: 'video/mp4',
           orientation: 'landscape',
           resolution: {
-            width: 1280,
-            height: 720,
+            width: 2560,
+            height: 1440,
           },
         },
-        duration: 15,
+        duration: 10,
         audienceTag: {
           genders: ['Male', 'Female'],
           ageGroups: [],
@@ -195,20 +195,20 @@ export class AssetsService {
       },
       {
         id: 4,
-        code: 'NYX001',
-        name: 'photo-1464822759023-fed622ff2c3b.avif',
+        code: 'NYX004',
+        name: 'A street pole with a bunch of stickers on it',
         type: 'image',
-        link: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        link: 'https://images.pexels.com/photos/28377846/pexels-photo-28377846/free-photo-of-a-street-pole-with-a-bunch-of-stickers-on-it.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
         thumbnail:
-          'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+          'https://images.pexels.com/photos/28377846/pexels-photo-28377846/free-photo-of-a-street-pole-with-a-bunch-of-stickers-on-it.jpeg?auto=compress&cs=tinysrgb&w=600',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,
           type: 'image/png',
           orientation: 'portrait',
           resolution: {
-            width: 326,
-            height: 195,
+            width: 1260,
+            height: 750,
           },
         },
         duration: 10,
@@ -227,20 +227,20 @@ export class AssetsService {
       },
       {
         id: 5,
-        code: 'NYX001',
-        name: '1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
+        code: 'NYX005',
+        name: 'A man in a jacket and hat standing in front of graffiti',
         type: 'image',
-        link: 'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
+        link: 'https://images.pexels.com/photos/19885905/pexels-photo-19885905/free-photo-of-a-man-in-a-jacket-and-hat-standing-in-front-of-graffiti.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
         thumbnail:
-          'https://as2.ftcdn.net/v2/jpg/13/10/37/97/1000_F_1310379726_DSfLV5fQQ0lRTGSOF0XshStWGEVSj0DZ.jpg',
+          'https://images.pexels.com/photos/19885905/pexels-photo-19885905/free-photo-of-a-man-in-a-jacket-and-hat-standing-in-front-of-graffiti.jpeg?auto=compress&cs=tinysrgb&w=600',
         fileDetails: {
           name: 'image (2).png',
           size: 55782,
           type: 'image/png',
           orientation: 'portrait',
           resolution: {
-            width: 326,
-            height: 195,
+            width: 1260,
+            height: 750,
           },
         },
         duration: 8,
@@ -259,7 +259,7 @@ export class AssetsService {
       },
       {
         id: 6,
-        code: 'NYX005',
+        code: 'NYX006',
         name: 'Youtube video',
         type: 'youtube',
         link: 'https://www.youtube.com/watch?v=QC8iQqtG0hg',
@@ -298,7 +298,7 @@ export class AssetsService {
       },
       {
         id: 7,
-        code: 'NYX005',
+        code: 'NYX007',
         name: 'Facebok Video',
         type: 'facebook',
         link: 'https://www.facebook.com/watch/?v=1222645649278888',
@@ -309,7 +309,7 @@ export class AssetsService {
           name: 'Facebok Video',
           size: 0,
           type: 'facebook',
-          orientation: 'landscape',
+          orientation: 'portrait',
           resolution: {
             width: 0,
             height: 0,
@@ -335,6 +335,347 @@ export class AssetsService {
         createdOn: new Date(),
         updatedOn: new Date(),
       },
+      {
+        id: 8,
+        code: 'NYX008',
+        name: 'Motorcycle and Cars on the Highway',
+        type: 'video',
+        link: 'https://videos.pexels.com/video-files/5198954/5198954-uhd_1440_2732_25fps.mp4',
+        thumbnail: 'https://images.pexels.com/videos/5198954/pexels-photo-5198954.jpeg?auto=compress&cs=tinysrgb&w=600',
+        fileDetails: {
+          name: 'https://videos.pexels.com/video-files/5198954/5198954-uhd_1440_2732_25fps.mp4',
+          size: 2498125,
+          type: 'video/mp4',
+          orientation: 'landscape',
+          resolution: {
+            width: 1440,
+            height: 2732,
+          },
+        },
+        duration: 8,
+        audienceTag: {
+          genders: ['Male', 'Female'],
+          ageGroups: [],
+          timeOfDays: [],
+          seasonalities: [],
+          locations: [],
+          pointOfInterests: [],
+          tags: [],
+        },
+        status: 'pending',
+        createdOn: new Date(),
+        updatedOn: new Date(),
+      },
+      {
+        "id": 9,
+        "code": "NYX009",
+        "name": "Serene Ocean Surface with Gentle Sunlight Reflections",
+        "type": "video",
+        "link": "https://videos.pexels.com/video-files/7385122/7385122-uhd_2560_1440_30fps.mp4",
+        "thumbnail": "https://placehold.co/600x400",
+        "fileDetails": {
+          "name": "7385122-uhd_2560_1440_30fps.mp4",
+          "size": 0,
+          "type": "video/mp4",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "duration": 6,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": [],
+          "seasonalities": [],
+          "locations": [],
+          "pointOfInterests": [],
+          "tags": ["nature", "water", "calm"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 10,
+        "code": "NYX010",
+        "name": "B-Roll of Jungle Leaves and Forest Canopy",
+        "type": "video",
+        "link": "https://videos.pexels.com/video-files/18922150/18922150-uhd_3840_2160_25fps.mp4",
+        "thumbnail": "https://placehold.co/600x400",
+        "fileDetails": {
+          "name": "18922150-uhd_3840_2160_25fps.mp4",
+          "size": 0,
+          "type": "video/mp4",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 3840,
+            "height": 2160
+          }
+        },
+        "duration": 31,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": [],
+          "seasonalities": [],
+          "locations": ["forest", "nature"],
+          "pointOfInterests": ["eco", "travel"],
+          "tags": ["trees", "jungle", "green"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 12,
+        "code": "NYX012",
+        "name": "Sunrise Over Misty Mountains and Forest",
+        "type": "image",
+        "link": "https://images.pexels.com/photos/132037/pexels-photo-132037.jpeg",
+        "thumbnail": "https://images.pexels.com/photos/132037/pexels-photo-132037.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "fileDetails": {
+          "name": "sunrise-misty-forest-132037.jpg",
+          "size": 0,
+          "type": "image/jpeg",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 3000,
+            "height": 1999
+          }
+        },
+        "duration": 10,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": ["Morning"],
+          "seasonalities": [],
+          "locations": ["forest", "mountains"],
+          "pointOfInterests": ["travel", "nature"],
+          "tags": ["sunrise", "mist", "mountains"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 16,
+        "code": "NYX016",
+        "name": "4K Landscape of Snowy Mountains During Golden Hour",
+        "type": "image",
+        "link": "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg",
+        "thumbnail": "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "fileDetails": {
+          "name": "snowy-mountains-417074.jpg",
+          "size": 4200000,
+          "type": "image/jpeg",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 4226,
+            "height": 2847
+          }
+        },
+        "duration": 7,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": ["Evening"],
+          "seasonalities": ["Winter"],
+          "locations": ["mountains"],
+          "pointOfInterests": ["travel"],
+          "tags": ["snow", "mountains", "sunset"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 17,
+        "code": "NYX017",
+        "name": "Close Up Shot of Leaves with Sunlight Bokeh",
+        "type": "image",
+        "link": "https://images.pexels.com/photos/675267/pexels-photo-675267.jpeg",
+        "thumbnail": "https://images.pexels.com/photos/675267/pexels-photo-675267.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "fileDetails": {
+          "name": "leaves-sunlight-bokeh-675267.jpg",
+          "size": 2100000,
+          "type": "image/jpeg",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 5263,
+            "height": 3076
+          }
+        },
+        "duration": 5,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": ["Afternoon"],
+          "seasonalities": ["Summer"],
+          "locations": ["forest"],
+          "pointOfInterests": [],
+          "tags": ["leaves", "bokeh", "nature"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 18,
+        "code": "NYX018",
+        "name": "Powerful Waterfall in Lush Green Forest",
+        "type": "video",
+        "link": "https://videos.pexels.com/video-files/8320126/8320126-uhd_2560_1440_25fps.mp4",
+        "thumbnail": "https://images.pexels.com/videos/19304195/4k-clouds-colombia-downfall-19304195.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "fileDetails": {
+          "name": "8859849-uhd_3840_2160_30fps.mp4",
+          "size": 0,
+          "type": "video/mp4",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 2560,
+            "height": 1440
+          }
+        },
+        "duration": 15,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": [],
+          "seasonalities": ["Summer"],
+          "locations": ["forest", "nature"],
+          "pointOfInterests": ["travel", "relaxation"],
+          "tags": ["waterfall", "green", "lush"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 19,
+        "code": "NYX019",
+        "name": "Girl Running on the Field in Golden Light",
+        "type": "video",
+        "link": "https://videos.pexels.com/video-files/9208025/9208025-hd_1920_1080_25fps.mp4",
+        "thumbnail": "https://images.pexels.com/videos/9208025/action-action-energy-activity-adolescent-9208025.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "fileDetails": {
+          "name": "4524597-uhd_3840_2160_30fps.mp4",
+          "size": 0,
+          "type": "video/mp4",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        "duration": 19,
+        "audienceTag": {
+          "genders": ["Female"],
+          "ageGroups": ["Teen", "Adult"],
+          "timeOfDays": ["Evening"],
+          "seasonalities": [],
+          "locations": ["field", "countryside"],
+          "pointOfInterests": ["fitness", "nature"],
+          "tags": ["running", "sunlight", "freedom"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 20,
+        "code": "NYX020",
+        "name": "Slow Motion Close-up of White Flower",
+        "type": "video",
+        "link": "https://videos.pexels.com/video-files/3011973/3011973-hd_1920_1080_25fps.mp4",
+        "thumbnail": "https://images.pexels.com/videos/3011973/free-video-3011973.jpg?auto=compress&cs=tinysrgb&w=600",
+        "fileDetails": {
+          "name": "13280036-uhd_3840_2160_24fps.mp4",
+          "size": 0,
+          "type": "video/mp4",
+          "orientation": "portrait",
+          "resolution": {
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        "duration": 31,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": [],
+          "seasonalities": ["Spring"],
+          "locations": ["garden", "nature"],
+          "pointOfInterests": ["relaxation", "beauty"],
+          "tags": ["flower", "macro", "slow motion"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 21,
+        "code": "NYX021",
+        "name": "Snowy Mountain Peak under Clear Blue Sky",
+        "type": "image",
+        "link": "https://images.pexels.com/photos/31427173/pexels-photo-31427173/free-photo-of-solo-adventurer-on-snowy-mountain-ridge.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        "thumbnail": "https://images.pexels.com/photos/31427173/pexels-photo-31427173/free-photo-of-solo-adventurer-on-snowy-mountain-ridge.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "fileDetails": {
+          "name": "snow-covered-mountain-267614.jpg",
+          "size": 0,
+          "type": "image/jpeg",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 1260,
+            "height": 750
+          }
+        },
+        "duration": 5,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": ["Morning"],
+          "seasonalities": ["Winter"],
+          "locations": ["mountains"],
+          "pointOfInterests": ["travel"],
+          "tags": ["snow", "peak", "sky"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      },
+      {
+        "id": 22,
+        "code": "NYX022",
+        "name": "Golden Wheat Field at Sunset",
+        "type": "image",
+        "link": "https://images.pexels.com/photos/533982/pexels-photo-533982.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+        "thumbnail": "https://images.pexels.com/photos/533982/pexels-photo-533982.jpeg?auto=compress&cs=tinysrgb&w=600",
+        "fileDetails": {
+          "name": "wheat-field-1103970.jpg",
+          "size": 0,
+          "type": "image/jpeg",
+          "orientation": "landscape",
+          "resolution": {
+            "width": 1260,
+            "height": 750
+          }
+        },
+        "duration": 10,
+        "audienceTag": {
+          "genders": ["Male", "Female"],
+          "ageGroups": [],
+          "timeOfDays": ["Evening"],
+          "seasonalities": ["Autumn"],
+          "locations": ["field", "countryside"],
+          "pointOfInterests": ["nature", "relaxation"],
+          "tags": ["wheat", "sunset", "golden"]
+        },
+        "status": "pending",
+        "createdOn": new Date(),
+        "updatedOn": new Date()
+      }
     ])
     this.totalRecords.set(this.assets().length)
     // this.loadingSignal.set(false);

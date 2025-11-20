@@ -42,6 +42,7 @@ import { WeekdayHourSelectionComponent } from '../../../components/weekday-hour-
 import { AssetUploadResultComponent } from '../../../features/assets/asset-upload-result/asset-upload-result.component';
 import { AssetAiGenerateComponent } from '../../../features/assets/asset-ai-generate/asset-ai-generate.component';
 import { AssetToPlaylistComponent } from '../../../features/assets/asset-to-playlist/asset-to-playlist.component';
+import { FooterComponent } from '../../../components/footer/footer.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
@@ -52,6 +53,7 @@ const COMPONENT_MODULES = [
   MapmarkersComponent,
   ContentSelectionComponent,
   WeekdayHourSelectionComponent,
+  FooterComponent,
 
   // Broadcast Components
   BroadcastListItemComponent,

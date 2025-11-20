@@ -22,7 +22,7 @@ export class PlaylistDetailsComponent {
   
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
   
-  pageInfo: MenuItem = [ {label: 'Playlist'}, {label: 'Library', routerLink: '/playlist/playlist-library'}, {label: 'Details'} ];
+  pageInfo: MenuItem = [ {label: 'Playlists'}, {label: 'Library', routerLink: '/playlist/playlist-library'}, {label: 'Details'} ];
 
   utils = inject(UtilityService);
   assetService = inject(AssetsService);
@@ -136,19 +136,22 @@ export class PlaylistDetailsComponent {
     
     switch (event.type) {
       case 'design':
+        const newFiles = event.files.filter((file: Assets) => !files.some((existingFile: Assets) => existingFile.id === file.id && existingFile.link === file.link));
         this.playlistForm.patchValue({ 
-          contents: [...contents, { ...event, contentId: uuidv7() }],
-          files: [...files, ...event.files ]
+          files: [...files, ...newFiles]
         });
         break;
     
       default:
-        this.playlistForm.patchValue({ 
-          contents: [...contents, { ...event, contentId: uuidv7() }],
-          files: [...files, { id: event.id, name: event.name, link: event.link, duration: event.duration  } ]
-        });
+        const existingFile = files.find((file: Assets) => file.id === event.id && file.link === event.link);
+        if (!existingFile) {
+          this.playlistForm.patchValue({ 
+            files: [...files, { id: event.id, name: event.name, link: event.link, duration: event.duration  } ]
+          });
+        } 
         break;
     }
+    this.playlistForm.patchValue({ contents: [...contents, { ...event, contentId: uuidv7() }] });
   }
 
   onContentTypeChange(event: any) {

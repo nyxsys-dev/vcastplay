@@ -6,12 +6,8 @@ import { PlayerService } from '../core/services/player.service';
 import { IndexedDbService } from '../core/services/indexed-db.service';
 import { ComponentsModule } from '../core/modules/components/components.module';
 import { StorageService } from '../core/services/storage.service';
-import { PreviewAssetsComponent } from '../components/preview-assets/preview-assets.component';
-import { PlaylistsService } from '../core/services/playlists.service';
-import { PreviewDesignLayoutComponent } from '../components/preview-design-layout/preview-design-layout.component';
 import { PlatformService } from '../core/services/platform.service';
 import { environment } from '../../environments/environment.development';
-import { PreviewContentRendererComponent } from '../components/preview-content-renderer/preview-content-renderer.component';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MenuItem, MessageService } from 'primeng/api';
 
@@ -23,20 +19,20 @@ import { MenuItem, MessageService } from 'primeng/api';
 })
 export class MainDisplayComponent {
 
-  private timeout: number = environment.timeout;
-
+  platformService = inject(PlatformService);
   networkService = inject(NetworkService);
   indexedDB = inject(IndexedDbService);
   player = inject(PlayerService);
-  playlistService = inject(PlaylistsService);
-  platformService = inject(PlatformService);
-  utils = inject(UtilsService);
   storage = inject(StorageService);
   message = inject(MessageService);
+  utils = inject(UtilsService);
 
   isPlay = signal<boolean>(false);
+  isLoading = signal<boolean>(false);
   showSettings = signal<boolean>(false);
+  loadingProgress = signal<number>(0);
   currentContent: any;
+  nextCurrent: any;
 
   settingsForm: FormGroup = new FormGroup({
     fullscreen: new FormControl(false),
@@ -81,10 +77,15 @@ export class MainDisplayComponent {
   }
 
   async ngOnInit() {
-    const content = this.storage.get('currentContent');    
+    const content = this.storage.get('currentContent');
     if (content) {
-      this.currentContent = content; //JSON.parse(content);
-      this.isPlay.set(true);
+      const type = this.storage.get('type'); 
+      const timerDuration = ['facebook', 'youtube', 'design', 'design2'].includes(type) ? 800 : 0;
+      const decryptContent = this.utils.decrypt(content);
+      setTimeout(() => {
+        this.currentContent = JSON.parse(decryptContent);
+        this.isPlay.set(true);
+      }, timerDuration);
     }
   }
 
@@ -94,66 +95,59 @@ export class MainDisplayComponent {
   }
 
   onClikcStopPreview() {
-    this.playlistService.onStopAllContents();
     this.player.onSetContent('stop');
     if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
     this.indexedDB.clearItems();
     this.storage.remove('currentContent');
+    this.storage.remove('type');
     this.currentContent = null;
     this.isPlay.set(false)
   }
 
   async onClickSetContent(type: string) {
-    this.currentContent = null;
+    this.loadingProgress.set(0);
+    this.isLoading.set(true);
+
+    if (this.currentContent && !['design', 'design2'].includes(type)) this.nextCurrent = this.currentContent
+    else this.currentContent = null;
+
     const content = this.player.onSetContent(type);
-    // console.log('🧭 New Content detected:', content);
+    console.log('🧭 New Content detected:', content);
     
     const files: any[] = !['playlist', 'playlist2', 'design', 'design2'].includes(type) ? [ content ] : content.files;
 
-    // Save files to indexedDB
     await this.indexedDB.clearItems();
-    
-    // const promises: any = files.map(async (file: any) => {
-    //   console.log('🧭 Downloading File:', file);
-      
-    //   const res = await fetch(file.link);
-    //   const blob = await res.blob();
-    //   const url = URL.createObjectURL(blob);
-    //   await this.indexedDB.addItem({ file, url });
-    // })
 
+    const totalFiles = files.length;
     await Promise.all(files.map(async (file: any) => {
       // console.log('🧭 Downloading File:', file);
+      // this.loadingProgress.set(this.loadingProgress()+1)
       if (!['facebook', 'youtube', 'web'].includes(file.type)) {
-        const res = await fetch(file.link);
-        const blob = await res.blob();
-        await this.indexedDB.addItem({ file, blob });
+        try {
+          const res = await fetch(file.link);
+          const blob = await res.blob();
+          await this.indexedDB.addItem({ file, blob });
+        } catch (error: any) {
+          console.log('🧭 Error downloading file:', error);
+        }
       }
+      this.loadingProgress.set(this.loadingProgress() + (100 / totalFiles));
     }));
 
     const timerDuration = ['facebook', 'youtube', 'design', 'design2'].includes(type) ? 800 : 0;
 
-    // this.playlistService.onStopAllContents();
     setTimeout(() => {
       this.currentContent = content;
+
+      // const currentContent = this.utils.encrypt(JSON.stringify(content));
+      // this.storage.set('type', type);
+      // this.storage.set('currentContent', currentContent);
+      
       this.isPlay.set(true);
-      // this.storage.set('currentContent', JSON.stringify(content));
+      this.isLoading.set(false);
+      this.nextCurrent = null;
     }, timerDuration);
     // console.log('🧭 Content set:', content);
-
-    
-
-    // setTimeout(() => {
-    //   if (this.platform == 'desktop') this.utils.onDeleteFolder('vcastplay');
-      
-    //   const content = this.player.onSetContent(type);
-    //   if (!['design'].includes(type)) setTimeout(() => this.isPlay.set(true), this.timeout);
-
-    //   if (this.platform == 'android') {
-    //     const file = ['asset'].includes(type) ? [ content ] : content.files;
-    //     this.player.onSendDataToAndroid({ file });
-    //   }
-    // }, 10);
   }
 
   onClickNotepad() {
@@ -180,12 +174,6 @@ export class MainDisplayComponent {
         this.player.onGetBrowserInformation();
         break;
     }
-  }
-
-  onDoneRendering(event: any) {
-    // Plays content on Desktop and Web
-    // const platform = this.storage.get('platform');    
-    // if (!['android'].includes(platform)) setTimeout(() => this.isPlay.set(true), this.timeout);
   }
 
   onClickAndroidBtn(data: string) {
@@ -230,10 +218,7 @@ export class MainDisplayComponent {
   get systemInfo() { return this.player.systemInfo; }
   get androidData() { return this.player.androidData; }
   get playerContent() { return this.player.playerContent; }
-
-  get isPlaying() { return this.playlistService.isPlaying; }
-  get onProgressUpdate() { return this.playlistService.onProgressUpdate; }
-  get isContentLogs() { return this.playlistService.isContentLogs; }
+  get isContentLogs() { return this.player.isContentLogs; }
 
   get platform() { return this.platformService.platform; }
   get dataFromAndroid() { return this.player.dataFromAndroid; }

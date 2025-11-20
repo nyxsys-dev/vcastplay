@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { Location } from '../interfaces/player';
 import { environment } from '../../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
-import { v7 as uuidv7 } from 'uuid';
+import * as CryptoJS from 'crypto-js';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -10,6 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class UtilsService {
 
+  private secretKey = environment.secretKey;
   geoAPI: string = environment.geoAPI;
   appVersion = environment.version;
   isDev = signal<boolean>(!environment.production);
@@ -47,6 +48,15 @@ export class UtilsService {
       code += characters.charAt(randomIndex);
     }
     return code;
+  }
+
+  encrypt(text: string): string {
+    return CryptoJS.AES.encrypt(text, this.secretKey).toString();
+  }
+
+  decrypt(cipher: string): string {
+    const bytes = CryptoJS.AES.decrypt(cipher, this.secretKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
   }
 
   onDeleteFolder(path: string) {

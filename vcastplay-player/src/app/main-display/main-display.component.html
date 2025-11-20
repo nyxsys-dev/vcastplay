@@ -16,11 +16,11 @@
     } @case('playlist') {
       <app-playlist-preview class="relative w-full h-full group bg-stone-800 text-white rounded-lg" [playlist]="contentData" [isAutoPlay]="true" />
     } @default {
-      <app-asset-preview class="relative w-full h-full flex items-center justify-center" [asset]="contentData" [autoPlay]="true" [showControls]="false" />
+      <app-asset-preview class="relative w-full h-full flex items-center justify-center" [asset]="contentData" [autoPlay]="isPlay()" [showControls]="false" />
     } }
   </ng-container>
 
-  <ng-container *ngIf="!currentContent && !isPlay()">
+  <ng-container *ngIf="!currentContent && !isLoading()">
     <div class="absolute top-0 start-0 flex items-center justify-center p-6">
       <img class="w-30" src="assets/vcastplay.png" alt="vcastplay 2.0 logo" />
     </div>
@@ -49,15 +49,7 @@
     </div>
   </ng-container>
 
-  <ng-container *ngIf="isPlay() && !currentContent">
-    <div class="absolute h-full w-full flex flex-col gap-4 items-center justify-center text-center">
-      <p class="text-2xl font-bold text-white w-full">
-        Loading Content...
-      </p>
-    </div>
-  </ng-container>
-
-  <div class="absolute bottom-0 left-0 flex items-center gap-1 p-2 w-full">
+  <div *ngIf="!isLoading()" class="absolute bottom-0 left-0 flex items-center gap-1 p-2 w-full">
     <div class="grid grid-cols-5 gap-3">
       <p-button
         label="Image"
@@ -129,6 +121,7 @@
         (onClick)="showSettings.set(true)"
         severity="secondary"
         size="small"
+        fluid
       />
       }
     </div>
@@ -136,6 +129,16 @@
       {{ systemInfo()?.code ?? '000000000' }}: {{ systemInfo()?.appVersion ?? '0.0.0' }}
     </p>
   </div>
+  
+
+  <ng-container *ngIf="isLoading()">
+    <div class="absolute bottom-0 right-0 flex flex-col gap-4 items-center justify-center text-center z-70 p-2">
+      <p class="text-xl font-bold text-white w-full">
+        Loading Content...
+        {{loadingProgress() | number: '1.0-0'}}
+      </p>
+    </div>
+  </ng-container>
 </div>
 
 <!-- Remove this code -->

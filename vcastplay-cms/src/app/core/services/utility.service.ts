@@ -89,8 +89,8 @@ export class UtilityService {
 
   adminModules = signal<DrawerMenu[]>([
     { label: 'Summary', icon: 'pi pi-chart-line', routerLink: '/admin/summary' },
-    { label: 'Users', icon: 'pi pi-users', routerLink: '/admin' },
-    { label: 'Screens', icon: 'pi pi-desktop', routerLink: '/admin' },
+    { label: 'Users', icon: 'pi pi-users', routerLink: '/admin/user-management' },
+    { label: 'Screens', icon: 'pi pi-desktop', routerLink: '/admin/screens/screen-registration' },
   ])
 
   status: any[] = [

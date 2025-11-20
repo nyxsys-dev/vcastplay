@@ -1,1 +1,96 @@
-<p>checkout works!</p>
+<div
+  class="flex flex-col gap-2 bg-gradient-to-r from-[#213448] via-[#4F6B80] to-[#00B4D8] text-white py-10 text-center"
+>
+  <p class="text-5xl font-bold">Choose Your Plan</p>
+  <p class="text-gray-100 mt-2">Flexible pricing designed to scale with your CMS needs.</p>
+</div>
+
+<section class="py-20 px-6">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Order Summary -->
+    <div class="md:col-span-1 bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
+      <h2 class="text-xl font-semibold text-[#213448] mb-4">Order Summary</h2>
+      <div class="border-t border-gray-100 my-4"></div>
+      <p class="text-lg font-semibold text-[#00B4D8]">Pro Plan</p>
+      <p class="text-gray-600 mb-4">Billed monthly</p>
+      <div class="flex justify-between text-gray-700 mb-2">
+        <span>Plan price</span>
+        <span>$29.00</span>
+      </div>
+      <div class="flex justify-between text-gray-700 mb-2">
+        <span>Tax (5%)</span>
+        <span>$1.45</span>
+      </div>
+      <div class="border-t border-gray-100 my-3"></div>
+      <div class="flex justify-between font-bold text-[#213448] text-lg">
+        <span>Total</span>
+        <span>$30.45</span>
+      </div>
+    </div>
+
+    <!-- Payment Form -->
+    <div class="md:col-span-2 bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
+      <p class="text-xl font-semibold text-[#213448] mb-6">Payment Details</p>
+
+      <form class="space-y-5">
+        <div class="flex flex-col gap-2">
+          <label for="cardName" class="block text-sm font-medium text-gray-700 mb-1"
+            >Cardholder Name</label
+          >
+          <input
+            pInputText
+            id="cardName"
+            placeholder="John Doe"
+            aria-describedby="cardName"
+            fluid
+          />
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <label for="cardNumber" class="block text-sm font-medium text-gray-700 mb-1"
+            >Card Number</label
+          >
+          <p-inputmask
+            styleClass="w-full"
+            id="cardNumber"
+            mask="9999 9999 9999 9999"
+            placeholder="1234 5678 9012 3456"
+            fluid
+          />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex flex-col gap-2 flex-1">
+            <label for="expiry" class="block text-sm font-medium text-gray-700 mb-1">Expiry</label>
+            <p-inputmask styleClass="w-full" mask="99/99" id="expiry" placeholder="MM/YY" aria-describedby="expiry" />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="cvc" class="block text-sm font-medium text-gray-700 mb-1">CVC</label>
+            <p-inputnumber id="cvc" placeholder="123" aria-describedby="cvc" [max]="9" fluid />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="zip" class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
+            <input pInputText id="zip" placeholder="10001" aria-describedby="zip" fluid />
+          </div>
+        </div>
+        <div class="pt-4 flex flex-col-reverse md:flex-row-reverse gap-4">
+          <p-button label="Cancel" routerLink="/upgrade/pricing" styleClass="w-full" outlined />
+
+          <p-button
+            label="Confirm & Pay $30.45"
+            styleClass="w-full bg-[#00B4D8] hover:bg-[#0190B8] text-white font-semibold py-3 rounded-full shadow-lg transition-all duration-300"
+          />
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Secure Info -->
+<section class="text-center my-10 text-gray-500 text-sm">
+  <p>🔒 Your payment is secure and encrypted. We never store card details.</p>
+</section>
+
+<app-footer />

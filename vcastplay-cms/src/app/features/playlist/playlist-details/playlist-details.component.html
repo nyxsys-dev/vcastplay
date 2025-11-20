@@ -25,14 +25,14 @@
         </div>
         <p-button
           class="hidden md:flex gap-2"
-          label="Save Playlist"
+          label="Save"
           icon="pi pi-save"
           (onClick)="onClickSave($event)"
         />
         <p-button class="flex md:hidden gap-2" icon="pi pi-save" (onClick)="onClickSave($event)" />
       </div>
     </ng-template>
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-5 h-full py-2">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 h-full py-2">
       <div class="col-span-1 md:col-span-6 xl:col-span-8 flex flex-col gap-2">
         <div class="grid grid-flow-row grid-cols-1 md:grid-cols-12 gap-4">
           <div class="col-span-1 md:col-span-3">
@@ -88,10 +88,10 @@
     </div>
     <ng-template #footer>
       <div class="grid grid-cols-1 md:grid-cols-3 md:flex w-full items-center gap-2 md:py-2 py-4">
-        <div class="flex items-center gap-2">
+        <!-- <div class="flex items-center gap-2">
           <p-checkbox formControlName="loop" inputId="loop" [readonly]="isPlaying()" binary />
           <label for="loop" class="text-sm">Loop</label>
-        </div>
+        </div> -->
         <div class="flex gap-4" formGroupName="transition">
           <div class="flex items-center gap-2">
             <p-checkbox formControlName="hasGap" inputId="hasGap" [readonly]="isPlaying()" binary />

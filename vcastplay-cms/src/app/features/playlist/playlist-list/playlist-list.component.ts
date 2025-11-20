@@ -16,7 +16,7 @@ import { Menu } from 'primeng/menu';
 })
 export class PlaylistListComponent {
 
-  pageInfo: MenuItem = [ { label: 'Playlist' }, { label: 'Library' } ];
+  pageInfo: MenuItem = [ { label: 'Playlists' }, { label: 'Library' } ];
   actionItems: MenuItem[] = [
     { 
       label: 'Options',

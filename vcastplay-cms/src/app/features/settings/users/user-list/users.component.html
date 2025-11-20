@@ -3,17 +3,24 @@
 
     <div class="flex-1">
         <p-card styleClass="h-full">
-            <div class="flex gap-8 items-center mb-2">
-                <app-filters class="w-full md:w-[25rem]"></app-filters>
-                <div class="hidden md:flex gap-2 ml-auto">
-                    <p-button (onClick)="onClickAddNew()" label="Add New" icon="pi pi-user-plus" />
-                    <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh" />
+            <ng-template #header>
+                <div class="mt-4 px-6">
+                    <p class="text-2xl font-semibold">{{ pageInfo[1].label }}</p>
                 </div>
-                <div class="flex gap-2 md:hidden">
-                    <p-button (onClick)="onClickAddNew()" label="" icon="pi pi-user-plus" pTooltip="Add New" tooltipPosition="bottom" />
-                    <p-button (onClick)="onClickRefresh()" label="" variant="outlined" icon="pi pi-refresh" pTooltip="Refresh" tooltipPosition="bottom" />
+            </ng-template>
+            <ng-template #title>
+                <div class="flex gap-8 items-center mb-2">
+                    <app-filters class="w-full md:w-[25rem]"></app-filters>
+                    <div class="hidden md:flex gap-2 ml-auto">
+                        <p-button (onClick)="onClickAddNew()" label="Add New" icon="pi pi-user-plus" />
+                        <p-button (onClick)="onClickRefresh()" label="Refresh" variant="outlined" icon="pi pi-refresh" />
+                    </div>
+                    <div class="flex gap-2 md:hidden">
+                        <p-button (onClick)="onClickAddNew()" label="" icon="pi pi-user-plus" pTooltip="Add New" tooltipPosition="bottom" />
+                        <p-button (onClick)="onClickRefresh()" label="" variant="outlined" icon="pi pi-refresh" pTooltip="Refresh" tooltipPosition="bottom" />
+                    </div>
                 </div>
-            </div>
+            </ng-template>
             <div class="flex-1">
                 <p-table 
                     class="hidden lg:block" 

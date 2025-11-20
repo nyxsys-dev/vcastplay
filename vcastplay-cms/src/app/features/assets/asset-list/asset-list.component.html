@@ -1,6 +1,11 @@
 <div class="flex flex-col gap-1 h-full">
   <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
   <p-card styleClass="h-full" class="flex-1">
+    <ng-template #header>
+      <div class="mt-4 px-6">
+        <p class="text-2xl font-semibold">{{ pageInfo[0].label }}</p>
+      </div>
+    </ng-template>
     <ng-template #title>
       <div class="flex gap-2 items-center">
         <app-asset-filter class="w-full md:w-[25rem]" (filterChange)="onFilterChange($event)" />
@@ -122,9 +127,10 @@
                   <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
                     @if(['video', 'image'].includes(item.type)) {
                     <img
-                      [src]="item.fileDetails.thumbnail"
+                      [src]="item.thumbnail"
                       class="max-h-full object-contain"
-                      alt="Image"
+                      [alt]="item.name"
+                      loading="lazy"
                     />
                     } @else { @switch (item.type) { @case('audio') {
                     <i class="pi pi-volume-up" [style]="{ 'font-size': '2rem' }"></i> } @case('web')
@@ -193,7 +199,7 @@
   </p-card>
 </div>
 
-<p-dialog header="Preview" [(visible)]="isShowPreview" [style]="{ width: '50rem' }" [resizable]="false" modal>
+<p-dialog header="Preview" [(visible)]="isShowPreview" [style]="{ width: '50rem' }" (onHide)="selectedAsset.set(null)" [resizable]="false" modal>
   <div class="relative aspect-video border-2 border-[var(--p-surface-300)] group bg-stone-800 text-white rounded-lg">
     <ng-container *ngIf="selectedAsset() && isShowPreview()">
       <app-asset-preview class="absolute h-full w-full flex items-center justify-center bg-stone-800"

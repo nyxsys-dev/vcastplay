@@ -74,6 +74,7 @@ export class PlaylistPlayerComponent {
   async onInitPlaylist(fromChange: boolean = false) {
     const contents: number = this.playlist?.contents.length || 0;
     this.onClearTimeout();
+    this.onStopAllMedias();
     this.currentIndex.set(0);
     await this.ytService.onLoadSDK();
     await this.fbService.onLoadSDK();
@@ -109,12 +110,7 @@ export class PlaylistPlayerComponent {
     this.currentIndex.set(0);
     this.currentItem.set(null);
     
-    const medias = document.querySelectorAll('video, audio');
-    medias.forEach((m: any) => {
-      const media = m as HTMLMediaElement;
-      media.pause();
-      media.currentTime = 0;
-    });
+    this.onStopAllMedias();
 
     this.onCurrentItemChange.emit(null);
     this.isPlayingChange.emit(false);
@@ -173,6 +169,7 @@ export class PlaylistPlayerComponent {
       for (const v of videos) {
         if (v.id == content.contentId) {
           v.currentTime = 0;
+          v.muted = false;
           v.play()
         }
       };
@@ -232,6 +229,10 @@ export class PlaylistPlayerComponent {
                   player.stopVideo();
                   this.onNextItem();
                 }
+              },
+              onError: (event: any) => {
+                console.warn('YouTube player error:', event.data);
+                this.onNextItem();
               }
             }
           })
@@ -265,7 +266,16 @@ export class PlaylistPlayerComponent {
                   fbPlayer.pause();
                   this.onNextItem();
                 });
+
+                fbPlayer.subscribe('error', (err: any) => {
+                  console.warn('FB Player error:', err);
+                  this.onNextItem()
+                })
               }
+            });
+            await FB.Event.subscribe('xfbml.error', (err: any) => {
+              console.warn('FB Player error:', err);
+              this.onNextItem()
             });
             this.fbService.onFacebookParse(playerEl);
 
@@ -314,6 +324,16 @@ export class PlaylistPlayerComponent {
     clearTimeout(this.transitionId);
     clearTimeout(this.fbTimerId);
     clearTimeout(this.ytTimerId);
+  }
+
+  onStopAllMedias() {
+    const medias = document.querySelectorAll('video, audio');
+    medias.forEach((m: any) => {
+      const media = m as HTMLMediaElement;
+      media.currentTime = 0;
+      media.muted = true;
+      media.pause();
+    });
   }
 
   trackById(index: number, item: Assets | DesignLayout | any) {

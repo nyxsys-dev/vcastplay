@@ -114,8 +114,6 @@ export class DesignLayoutService {
 
       canvas.insertAt(videoObj.zIndex, videoObj);
       canvas.requestRenderAll();
-      // this.onStartVideoRender(canvas);      
-      
     } catch (error) {
       console.error('Error adding video to canvas', error);
     }
@@ -136,6 +134,8 @@ export class DesignLayoutService {
     objects.forEach((object: any) => {
       const data = object.data;
       if (data && data?.type == 'video' && data.element instanceof HTMLVideoElement) {
+        data.element.muted = false;
+        data.element.currentTime = 0;
         data.element.play().catch((err: any) => {
           console.warn('Autoplay blocked for video:', err);
         });
@@ -149,9 +149,10 @@ export class DesignLayoutService {
     const objects = canvas.getObjects();
     objects.forEach((object: any) => {
       const data = object.data;
-      if (data && data?.type == 'video' && data.element instanceof HTMLVideoElement) {        
-        data.element.pause();
+      if (data && data?.type == 'video' && data.element instanceof HTMLVideoElement) {    
+        data.element.muted = true;    
         data.element.currentTime = 0;
+        data.element.pause();
       }
     });
 
@@ -231,11 +232,9 @@ export class DesignLayoutService {
       });
 
       resolve(newCanvas);
-      // return newCanvas;
     } catch (error) {
       console.log('error on initCanvas', error)
       reject(error);
-      // return null
     }
     })
   }
@@ -302,16 +301,12 @@ export class DesignLayoutService {
 
     // Get real screen bounds
     const bounds = obj.getBoundingRect();
-
-    const html = obj.get('html');
     
     const left = bounds.left * zoom
     const top = bounds.top * zoom
     const width = bounds.width * zoom
     const height = bounds.height * zoom
     const angle = obj.angle || 0;
-
-    // if (html && !html.content.marquee) obj.setControlsVisibility({ mtr: false, tl: false, tr: false, mt: false, ml: false, mb: false, mr: false, bl: false, });
     
     return {
       id,

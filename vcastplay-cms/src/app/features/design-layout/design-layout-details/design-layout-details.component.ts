@@ -367,6 +367,8 @@ export class DesignLayoutDetailsComponent {
     this.isEditMode.set(false)
     this.designLayoutService.onSetCanvasProps('exit', false, 'default')
     this.designLayoutService.onExitCanvas()
+    const canvasElement = document.querySelector('canvas');
+    canvasElement?.remove();
   }
 
   ngAfterViewInit() {
@@ -563,28 +565,34 @@ export class DesignLayoutDetailsComponent {
     const { loop, type, ...info }: any = event
     const canvas = this.designLayoutService.getCanvas()
     const { files } = this.designForm.value
+    const fileExists = files.some((file: Assets) => file.id === event.id && file.link === event.link)
     switch (type) {
       case 'image':
       case 'clipart':
         this.designLayoutService.onAddImageToCanvas(canvas, event)
+        if (fileExists) break;
+        
         this.designForm.patchValue({
           files: [...files, { id: event.id, name: event.name, link: event.link }],
         })
         break
       case 'playlist':
         this.designLayoutService.onAddHTMLToCanvas(canvas, { loop: true, type, ...info })
+        if (fileExists) break;
         this.designForm.patchValue({ files: [...files, ...event.files] })
         break
       case 'youtube':
       case 'facebook':
       case 'web':
         this.designLayoutService.onAddHTMLToCanvas(canvas, { loop: true, type, ...info })
+        if (fileExists) break;
         this.designForm.patchValue({
           files: [...files, { id: event.id, name: event.name, link: event.link }],
         })
         break
       default:
         this.designLayoutService.onAddVideoToCanvas(canvas, event)
+        if (fileExists) break;
         this.designForm.patchValue({
           files: [...files, { id: event.id, name: event.name, link: event.link }],
         })

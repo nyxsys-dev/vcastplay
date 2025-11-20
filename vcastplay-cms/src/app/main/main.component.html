@@ -2,22 +2,41 @@
   <app-toolbar />
   <app-drawer [modules]="menuItems" />
   <div class="main-wrapper relative">
-    <div class="main-content p-3 md:p-[1rem] bg-gray-200 dark:bg-black relative md:rounded-tl-[26px]">
-      <div class="py-2">
-        <p-card styleClass="!relative !bg-linear-to-r !from-[#213448] !via-[#4F6B80] !to-[#00B4D8] !text-white">
+    <div
+      class="main-content p-3 md:p-[1rem] bg-gray-200 dark:bg-black relative md:rounded-tl-[26px]"
+    >
+      <div
+        *ngIf="showUpgrade()"
+        class="py-2 transition duration-300 ease-in-out"
+        [ngClass]="{ 'opacity-0': !showUpgrade(), 'opacity-100': showUpgrade() }"
+      >
+        <p-card
+          styleClass="!relative !bg-linear-to-r !from-[#213448] !via-[#4F6B80] !to-[#00B4D8] !text-white"
+        >
           <ng-template #title>
             <div class="flex gap-3 justify-between w-full">
               <div class="flex gap-3 items-center">
                 <li class="pi pi-crown !text-3xl !text-amber-500"></li>
                 <p class="font-semibold">Upgrade to Pro</p>
               </div>
-              <p-button [routerLink]="'/upgrade/pricing'" label="Upgrade to Pro" icon="pi pi-arrow-right" iconPos="right" size="small" />
+              <div class="flex gap-2">
+                <p-button (onClick)="showUpgrade.set(false)" label="Hide" size="small" text />
+                <p-button
+                  [routerLink]="'/upgrade/pricing'"
+                  label="Upgrade to Pro"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  size="small"
+                />
+              </div>
             </div>
           </ng-template>
           <ng-template #subtitle>Take full control of your displays</ng-template>
-          <p>Unlock advanced scheduling, analytics, and remote management tools to maximize your OOH campaigns’ performance.</p>
+          <p>
+            Unlock advanced scheduling, analytics, and remote management tools to maximize your OOH
+            campaigns’ performance.
+          </p>
         </p-card>
-        <!-- <img class="absolute bottom-0 w-full h-full opacity-50 object-cover rotate-360" src="assets/wave.svg" alt="upgrade wave background"> -->
       </div>
       <router-outlet />
     </div>

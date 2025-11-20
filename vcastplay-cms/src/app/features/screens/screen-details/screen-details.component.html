@@ -4,11 +4,11 @@
         <ng-template #title>
             <div class="flex gap-2">
                 <div class="flex items-center gap-4">
-                    <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" size="small" text />
+                    <p-button (onClick)="onClickCancel()" icon="pi pi-arrow-left" pTooltip="Back" tooltipPosition="bottom" text />
                     <p class="text-xl font-semibold">Screen Details</p>
                 </div>
                 <div class="ml-auto">
-                    <p-button class="hidden md:block" icon="pi pi-save" label="Save" size="small" (onClick)="onClickSave($event)" />
+                    <p-button class="hidden md:block" icon="pi pi-save" label="Save" (onClick)="onClickSave($event)" />
                 </div>
             </div>
         </ng-template>

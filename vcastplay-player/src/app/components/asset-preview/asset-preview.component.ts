@@ -25,6 +25,7 @@ export class AssetPreviewComponent {
 
   @ViewChild('video', { static: false }) videoRef!: ElementRef<HTMLVideoElement>;
   @ViewChild('image', { static: false }) imageRef!: ElementRef<HTMLImageElement>;
+  @ViewChild('audio', { static: false }) audioRef!: ElementRef<HTMLAudioElement>;
   @ViewChild('iframe', { static: false }) iframeRef!: ElementRef<HTMLIFrameElement>;
   @ViewChild('fbPlayer') fbPlayerRef!: ElementRef<HTMLDivElement>;
   @ViewChild('ytPlayer') ytPlayerRef!: ElementRef<HTMLDivElement>;
@@ -58,7 +59,7 @@ export class AssetPreviewComponent {
     }
   }
 
-  async onMediaLoad(type: string) {    
+  async onMediaLoad(type: string) {
     const items: any = await this.indexedDB.getAllItems();
     const file: any = items.find((item: any) => item.file.name == this.asset.name);      
     if (!file) return;
@@ -66,17 +67,21 @@ export class AssetPreviewComponent {
     const tempLink = URL.createObjectURL(file.blob);
     switch (type) {
       case 'video':
-          const video = this.videoRef?.nativeElement;
-          video.src = tempLink;
-          video.currentTime = 0;
-          video.preload = 'auto';
-          video.addEventListener('loadeddata', () => {
-            video.currentTime = 0;
-            video.play();
-          })
+        const video = this.videoRef?.nativeElement;          
+        video.src = tempLink;
+        video.currentTime = 0;
+        video.preload = 'auto';
+        video.muted = true;
+        video.play();
         break;
-    
-      default:
+      case 'audio':
+        const audio = this.audioRef?.nativeElement;
+        audio.src = tempLink;
+        audio.currentTime = 0;
+        audio.preload = 'auto';
+        audio.muted = true;
+        break;
+      case 'image':
         const image = this.imageRef?.nativeElement;
         image.src = tempLink;
         break;
@@ -160,6 +165,16 @@ export class AssetPreviewComponent {
             const orientation = width > height ? 'landscape' : 'portrait';
             const duration = Math.ceil(player.getDuration());
             this.onPropertiesChange.emit({ width, height, orientation, duration, type: 'facebook' });
+            if (iframe) {
+              const scale = orientation == 'landscape' ? 1 : fbPlayer.clientHeight / iframe.clientHeight;
+              
+              iframe.style.position = 'absolute';
+              iframe.style.top = '50%';
+              iframe.style.left = '50%';
+              iframe.style.transformOrigin = 'center center';
+              iframe.style.border = 'none';
+              iframe.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            }
           }, 500);
         }
     

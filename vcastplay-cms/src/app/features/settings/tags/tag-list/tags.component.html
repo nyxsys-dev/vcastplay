@@ -2,6 +2,11 @@
     <app-breadcrumbs [menu]="pageInfo"></app-breadcrumbs>
     <div class="flex-1">
         <p-card styleClass="h-full">
+            <ng-template #header>
+                <div class="mt-4 px-6">
+                    <p class="text-2xl font-semibold">{{ pageInfo[1].label }}</p>
+                </div>
+            </ng-template>
             <p-tabs [value]="0" [lazy]="true" [selectOnFocus]="true" selectOnFocus scrollable>
                 <p-tablist>
                     @for (tab of filteredAudienceTagList(); track $index) {
