@@ -1,0 +1,137 @@
+<div class="relative flex flex-col w-full h-full gap-2">
+
+    <p-menubar class="w-full" [model]="menuBarItems" ariaLabel="Menu" appendTo="body">
+        <ng-template #end>
+            <div class="flex items-center gap-3">
+                <i class="pi pi-minus"></i>
+                <p-slider class="w-30" 
+                    [(ngModel)]="scale"
+                    [min]="0.10"
+                    [max]="2"
+                    [step]="0.01"
+                    (onChange)="onApplyTransform()"
+                    animate />
+                <i class="pi pi-plus"></i>
+                <p-button (onClick)="onReset()" icon="pi pi-sync" size="small" text />
+            </div>
+        </ng-template>
+    </p-menubar>
+
+    <div 
+        #workspace
+        class="relative flex-1 overflow-hidden select-none workspace grid grid-cols-1 md:grid-cols-12"
+        (wheel)="onWheel($event)"
+    >
+        <div class="relative col-span-12 md:col-span-9 overflow-hidden">
+            <ng-container *ngIf="ARTBOARD_RESOLUTION as artboard">
+                <div 
+                    #artboard
+                    class="artboard bg-white absolute top-0 left-0 transform origin-top-left shadow-lg overflow-hidden"
+                    [style.width.px]="artboard?.width"
+                    [style.height.px]="artboard?.height"
+                    (mousedown)="onArtboardFunction($event)"
+                >
+                    @for (item of artboardObjects; track trackByFn($index, item)) {
+                        <div class="item" 
+                            [attr.data-id]="item.id" 
+                            [style.left.px]="item.x" 
+                            [style.top.px]="item.y"
+                            [style.width.px]="item.w"
+                            [style.height.px]="item.h" 
+                            [style.transform]="'rotate(' + item.a + 'deg)'"
+                            [style.transform-origin]="'center center'"
+                            (mousedown)="onItemClick($event, item)">
+                            @switch(item.type) {
+                                @case ('image') {
+                                    <img [id]="item.id" class="h-full w-full object-fit inset-0"
+                                        decoding="async" loading="lazy" [src]="item.content.link" [alt]="item.content.name">
+                                }
+                                @case('video') {
+                                    <video [id]="item.id" class="h-full w-full object-fill" preload="metadata" 
+                                        [src]="item.content.link" [autoplay]="true" [playsInline]="true" [loop]="true"></video>
+                                }
+                            }
+                        </div>
+                    }
+
+                    <div class="selection-box" *ngIf="selectionBox"
+                        [ngStyle]="{ left: selectionBox.x + 'px', top: selectionBox.y + 'px',
+                                    width: selectionBox.w + 'px', height: selectionBox.h + 'px' }">
+                    </div>
+
+                    <div 
+                        class="multi-bbox relative" *ngIf="multiBox" 
+                            [ngStyle]="{ left: multiBox.x + 'px', top: multiBox.y + 'px',
+                                width: multiBox.w + 'px', height: multiBox.h + 'px',
+                                transform: 'rotate(' + multiBox.a + 'deg)', 'transform-origin': 'center center'
+                            }"
+                    >
+                        <!-- LINE FROM BOX TO HANDLE -->
+                        <div class="rotate-line"></div>
+
+                        <!-- ROTATE HANDLE -->
+                        <div class="rotate-handle" data-rotate="true"></div>
+
+                        <!-- <div class="bg-white absolute" 
+                            [ngStyle]="{
+                                left: (multiBox.cx - multiBox.x) + 'px',
+                                top:  (multiBox.cy - multiBox.y) + 'px',
+                                transform: 'translate(-50%, -50%) rotate(' + (-multiBox.a) + 'deg)'
+                            }">
+                            This is a center value
+                        </div> -->
+
+                        <div class="handle tl" data-dir="tl"></div>
+                        <div class="handle t" data-dir="t"></div>
+                        <div class="handle tr relative" data-dir="tr">
+                            <!-- <div class="absolute top-0 left-10 flex flex-col text-sm">
+                                <p class="w-50">Left: {{ multiBox.x | number: '1.2' }}</p>
+                                <p class="w-50">Top: {{ multiBox.y | number: '1.2' }}</p>
+                                <p class="w-50">Width: {{ multiBox.w | number: '1.2' }}</p>
+                                <p class="w-50">Height: {{ multiBox.h | number: '1.2' }}</p>
+                                <p class="w-50">Rotation: {{ multiBox.a | number: '1.2' }}</p>
+                                <p class="w-50">Center Left: {{ multiBox.cx | number: '1.2' }}</p>
+                                <p class="w-50">Center Top: {{ multiBox.cy | number: '1.2' }}</p>
+                            </div> -->
+                        </div>
+
+                        <div class="handle l" data-dir="l"></div>
+                        <div class="handle r" data-dir="r"></div>
+
+                        <div class="handle bl" data-dir="bl"></div>
+                        <div class="handle b" data-dir="b"></div>
+                        <div class="handle br" data-dir="br"></div>
+                    </div>
+
+                </div>
+
+                <div class="absolute top-0 left-0 py-2 px-1 bg-[var(--p-surface-100)] dark:bg-[var(--p-surface-800)] shadow-lg rounded-lg"
+                    cdkDragBoundary=".workspace" cdkDrag>
+                    <app-design-editor-tools (toolbarChange)="onToolbarChange($event)" />
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="col-span-12 md:col-span-3">
+            <div class="flex flex-col gap-3 h-full bg-white p-3">
+                <p>Settings</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <p>left: {{ currentObject?.x | number: '1.2' }}</p>
+                    <p>top: {{ currentObject?.y | number: '1.2' }}</p>
+                    <p>width: {{ currentObject?.w | number: '1.2' }}</p>
+                    <p>height: {{ currentObject?.h | number: '1.2' }}</p>
+                    <p>rotation: {{ (currentObject?.a / 90) * 90 | number: '1.2' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<app-design-layout-options [showCanvasSize]="showCanvasSize" (canvasSizeChange)="canvasSizeChange($event)" />
+
+<p-drawer header="Select Contents" styleClass="!w-full md:!w-80 lg:!w-[30rem] !h-screen max-h-full" [(visible)]="showContent" position="right" appendTo="body">
+    <app-content-selection #contents [selectedTypes]="['asset', 'playlist', 'clipart']"
+        [isSelectable]="false" (selectedContents)="onSelectedContentChange($event)"
+    />
+</p-drawer>

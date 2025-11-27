@@ -1,0 +1,78 @@
+.item {
+    position: absolute;
+    user-select: none;
+    touch-action: none;
+    resize: both;
+    overflow: hidden;
+    z-index: 10; /* all items are below multiBBox */
+}
+
+.multi-bbox, .selection-box {
+  position: absolute;
+  user-select: none;
+  touch-action: none;
+  border: 3px dashed #9B5CFA;
+  z-index: 1000; /* make sure it is above items visually */
+  cursor: move; /* shows move cursor for dragging the group */
+}
+
+.multi-bbox .handle {
+  width: 14px;
+  height: 14px;
+  background: white;
+  border: 12px solid #9B5CFA;
+  position: absolute;
+  pointer-events: all; /* allows drag */
+  box-sizing: border-box;
+  border-radius: 50%;
+  z-index: 1001;        /* above box border */
+}
+
+/* Top row */
+.multi-bbox .handle.tl { top: -12px; left: -12px; cursor: nw-resize !important; }
+.multi-bbox .handle.t  { top: -12px; left: 50%; transform: translateX(-50%); cursor: n-resize !important; }
+.multi-bbox .handle.tr { top: -12px; right: -12px; cursor: ne-resize !important; }
+
+/* Middle row */
+.multi-bbox .handle.l { left: -12px; top: 50%; transform: translateY(-50%); cursor: w-resize !important; }
+.multi-bbox .handle.r { right: -12px; top: 50%; transform: translateY(-50%); cursor: e-resize !important; }
+
+/* Bottom row */
+.multi-bbox .handle.bl { bottom: -12px; left: -12px; cursor: sw-resize !important; }
+.multi-bbox .handle.b  { bottom: -12px; left: 50%; transform: translateX(-50%); cursor: s-resize !important; }
+.multi-bbox .handle.br { bottom: -12px; right: -12px; cursor: se-resize !important; }
+
+/* Rotate handle */
+
+/* LINE */
+.multi-bbox .rotate-line {
+  position: absolute;
+  top: -60px; /* adjust distance from top of bbox */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 60px; /* length of the line */
+  background: #9B5CFA;
+  z-index: 5;
+}
+
+/* ROTATE HANDLE */
+.multi-bbox .rotate-handle {
+  position: absolute;
+  top: -70px; /* line height + half handle size */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  border: 12px solid #9B5CFA;
+  cursor: grab;
+  z-index: 10;
+}
+
+.artboard,
+.item,
+.multi-bbox {
+  will-change: transform, width, height;
+}

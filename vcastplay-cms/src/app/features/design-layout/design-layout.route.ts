@@ -15,5 +15,11 @@ export default [
         loadComponent: () => import('./design-layout-details/design-layout-details.component').then(m => m.DesignLayoutDetailsComponent),
         title: `Design Layout • ${appTitle}`,
         canDeactivate: [ canDeactivateGuard ]
-    }
+    },
+    // {
+    //     path: 'design-layout-details', 
+    //     loadComponent: () => import('./design-editor/design-editor.component').then(m => m.DesignEditorComponent),
+    //     title: `Design Layout • ${appTitle}`,
+    //     canDeactivate: [ canDeactivateGuard ]
+    // }
 ] as Routes

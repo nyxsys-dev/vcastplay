@@ -33,11 +33,6 @@ export class AssetPreviewComponent {
 
   private fbTimerId: any;
   private ytTimerId: any;
-  
-  async ngOnInit() {
-    await this.fbService.onLoadSDK();
-    await this.ytService.onLoadSDK()
-  }
 
   ngOnChanges(changes: SimpleChanges) {
     clearTimeout(this.fbTimerId);  
@@ -47,7 +42,7 @@ export class AssetPreviewComponent {
   }
 
   async onYoutubeLoad() {
-    // await this.ytService.onLoadSDK()
+    await this.ytService.onLoadSDK()
     this.ytTimerId = setTimeout(async () => {
       const ytPlayer = this.ytPlayerRef?.nativeElement;
       const { videoId } = this.utils.onGetEmbedUrl(this.asset.link);
@@ -97,7 +92,7 @@ export class AssetPreviewComponent {
   
   async onFacebookLoad() { 
     let player: any;
-    // await this.fbService.onLoadSDK();
+    await this.fbService.onLoadSDK();
     const fbPlayer = this.fbPlayerRef?.nativeElement;
     if (!fbPlayer) return;    
     this.fbService.onFacebookParse(fbPlayer);

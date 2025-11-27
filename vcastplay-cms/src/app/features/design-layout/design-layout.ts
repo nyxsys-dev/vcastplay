@@ -1,5 +1,6 @@
 import { ApprovedInfo } from "../../core/interfaces/general";
 import { Screen } from "../../features/screens/screen";
+import { Assets } from "../assets/assets";
 
 export interface DesignLayout {
     id: number;
@@ -33,4 +34,47 @@ export interface HtmlLayer {
     type: any;
     rotation: number;
     fabricObject: any;
+}
+
+export interface Design {
+    id: number;
+    name: string;
+    description: string;
+    type: string;
+    layers: LayerItem[];
+    thumbnail: string | null;
+    duration: number;
+    color: string;
+    status: string;
+    approvedInfo?: ApprovedInfo;
+    isActive: boolean;
+    screen?: Screen;
+    contentId?: any;
+    createdOn: Date;
+    updatedOn: Date;
+}
+
+export interface LayerItem {
+    id: string;
+    type: 'shape' | 'text' | 'image' | 'audio' | 'video' | 'web';
+    content: Assets | DesignLayout | any;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    a: number;
+    selected: boolean;
+    locked: boolean;
+    hidden: boolean;
+    zIndex: number;
+}
+
+export interface SelectionBox {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    a: number;
+    cx: number;
+    cy: number;
 }

@@ -43,9 +43,13 @@ import { AssetUploadResultComponent } from '../../../features/assets/asset-uploa
 import { AssetAiGenerateComponent } from '../../../features/assets/asset-ai-generate/asset-ai-generate.component';
 import { AssetToPlaylistComponent } from '../../../features/assets/asset-to-playlist/asset-to-playlist.component';
 import { FooterComponent } from '../../../components/footer/footer.component';
+import { DesignLayoutOptionsComponent } from '../../../features/design-layout/design-layout-options/design-layout-options.component';
+import { CdkDrag } from '@angular/cdk/drag-drop';
+import { DesignEditorToolsComponent } from '../../../features/design-layout/design-editor-tools/design-editor-tools.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
+  CdkDrag,
   ToolbarComponent,
   DrawerComponent,
   BreadcrumbsComponent,
@@ -106,7 +110,11 @@ const COMPONENT_MODULES = [
   DesignLayoutToolsComponent,
   DesignLayoutListItemComponent,
   DesignLayoutPreviewComponent,
+  DesignLayoutOptionsComponent,
   ObjectPropertiesComponent,
+
+  // Design Editor Components
+  DesignEditorToolsComponent,
 ];
 
 @NgModule({
