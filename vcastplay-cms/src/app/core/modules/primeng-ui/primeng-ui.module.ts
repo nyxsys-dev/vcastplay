@@ -144,7 +144,6 @@ const PRIMEUI_MODULES = [
   IconFieldModule,
   InputIconModule,
   SliderModule,
-  FullCalendarModule,
   ProgressSpinnerModule,
   InputOtpModule,
   EditorModule,
@@ -154,6 +153,7 @@ const PRIMEUI_MODULES = [
   ToggleButtonModule,
   ContextMenuModule,
   AutoFocusModule,
+  FullCalendarModule,
 ];
 
 @NgModule({
