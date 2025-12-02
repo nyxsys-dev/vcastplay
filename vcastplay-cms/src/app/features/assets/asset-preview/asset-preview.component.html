@@ -5,7 +5,7 @@
     @case('video') {
         <video class="absolute left-0 top-0 h-full w-full object-contain" preload="metadata"
             controlsList="nodownload noplaybackrate nofullscreen" oncontextmenu="return false"
-            [src]="asset.link" [controls]="showControls" [playsInline]="true" [autoplay]="autoPlay"></video>
+            [src]="asset.link" [controls]="showControls" [playsInline]="true" [autoplay]="autoPlay" [loop]="autoPlay"></video>
     }
     @case ('web') {
         <iframe class="w-full h-full object-fit" [src]="asset.link | safeurl" frameborder="0"

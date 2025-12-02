@@ -1,0 +1,41 @@
+<div class="flex flex-col gap-3 h-full bg-[var(--p-surface-100)] dark:bg-[var(--p-surface-800)]" [formGroup]="selectedObject">
+    <p-tabs class="flex-1 h-full" value="0" showNavigators scrollable lazy>
+        <p-tablist>
+            <p-tab class="text-sm" value="0">Properties</p-tab>
+            <p-tab class="text-sm" value="1">Style</p-tab>
+            <p-tab class="text-sm" value="2">Advanced</p-tab>
+        </p-tablist>
+        <p-tabpanels class="h-full">
+            <p-tabpanel value="0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm" >
+                    <div class="flex gap-3 items-center">
+                        <p>X:</p>
+                        <p-inputnumber formControlName="x" [min]="0" [step]="1" [showButtons]="true" size="small" fluid />
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <p>Y:</p>
+                        <p-inputnumber formControlName="y" [min]="0" [step]="1" [showButtons]="true" size="small" fluid />
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <p>W:</p>
+                        <p-inputnumber formControlName="w" [min]="0" [step]="1" [showButtons]="true" size="small" fluid />
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <p>H:</p>
+                        <p-inputnumber formControlName="h" [min]="0" [step]="1" [showButtons]="true" size="small" fluid />
+                    </div>
+                    <p-divider class="col-span-2" />
+                    <div class="col-span-2 flex gap-3 items-center justify-between w-full">
+                        <p>Angle:</p>
+                        <p-inputnumber class="!w-18" formControlName="a" [min]="0" [step]="1" [max]="360" 
+                            [minFractionDigits]="0" [maxFractionDigits]="0" [showButtons]="true" size="small" fluid />
+                    </div>
+                </div>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+            </p-tabpanel>
+            <p-tabpanel value="2">
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</div>

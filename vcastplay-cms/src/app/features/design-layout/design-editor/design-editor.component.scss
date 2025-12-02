@@ -2,7 +2,7 @@
     position: absolute;
     user-select: none;
     touch-action: none;
-    resize: both;
+    // resize: both;
     overflow: hidden;
     z-index: 10; /* all items are below multiBBox */
 }

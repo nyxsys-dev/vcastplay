@@ -46,6 +46,7 @@ import { FooterComponent } from '../../../components/footer/footer.component';
 import { DesignLayoutOptionsComponent } from '../../../features/design-layout/design-layout-options/design-layout-options.component';
 import { CdkDrag } from '@angular/cdk/drag-drop';
 import { DesignEditorToolsComponent } from '../../../features/design-layout/design-editor-tools/design-editor-tools.component';
+import { DesignEditorPropertiesComponent } from '../../../features/design-layout/design-editor-properties/design-editor-properties.component';
 
 const COMPONENT_MODULES = [
   CommonModule,
@@ -111,6 +112,7 @@ const COMPONENT_MODULES = [
   DesignLayoutListItemComponent,
   DesignLayoutPreviewComponent,
   DesignLayoutOptionsComponent,
+  DesignEditorPropertiesComponent,
   ObjectPropertiesComponent,
 
   // Design Editor Components

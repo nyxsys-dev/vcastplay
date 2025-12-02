@@ -30,11 +30,30 @@ export class DesignEditorService {
   });
 
   selectedObject: FormGroup = new FormGroup({
-    left: new FormControl<number>(0),
-    top: new FormControl<number>(0),
-    width: new FormControl<number>(0),
-    height: new FormControl<number>(0),
-    rotation: new FormControl<number>(0),
+    x: new FormControl(0),
+    y: new FormControl(0),
+    w: new FormControl(0),
+    h: new FormControl(0),
+    a: new FormControl(0),
+    content: new FormGroup({
+      text: new FormControl<string>(''),
+      size: new FormControl(0),
+      color: new FormControl<string>(''),
+      bold: new FormControl<boolean>(false),
+      italic: new FormControl<boolean>(false),
+      underline: new FormControl<boolean>(false),
+      fontFamily: new FormControl<string>(''),
+      align: new FormControl<string>(''),
+      url: new FormControl<string>(''),
+    }),
+    backgroundColor: new FormControl<string>(''),
+    borderColor: new FormControl<string>(''),
+    borderWidth: new FormControl(0),
+    borderRadius: new FormControl(0),
+    opacity: new FormControl(0),
+    locked: new FormControl<boolean>(false),
+    hidden: new FormControl<boolean>(false),
+    zIndex: new FormControl(0),
   })
 
   menuBarItems: MenuItem[] = [

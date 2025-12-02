@@ -10,9 +10,10 @@ import { Screen } from '../../screens/screen';
 import { environment } from '../../../../environments/environment.development';
 import { UtilityService } from '../../../core/services/utility.service';
 import { DesignEditorService } from '../design-editor.service';
-import { DesignLayout, LayerItem, SelectionBox } from '../design-layout';
+import { Artboard, Design, DesignLayout, LayerItem, SelectionBox } from '../design-layout';
 import { v7 as uuidv7 } from 'uuid';
 import interact from 'interactjs';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-design-editor',
@@ -23,6 +24,7 @@ import interact from 'interactjs';
 export class DesignEditorComponent {
 
   @ViewChild('workspace') workspaceRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('viewport') viewportRef!: ElementRef<HTMLDivElement>;
   @ViewChild('artboard') artboardRef!: ElementRef<HTMLDivElement>
 
   @Input() items!: Assets | Playlist | any;
@@ -32,7 +34,7 @@ export class DesignEditorComponent {
   utils = inject(UtilityService);
   
   iconPath: string = environment.iconPath;
-  ARTBOARD_RESOLUTION: any;
+  artboard!: Artboard;
 
   artboardObjects: LayerItem[] = [];
 
@@ -40,29 +42,20 @@ export class DesignEditorComponent {
 
   showContent: boolean = false;
 
-  scale: number = 1;
-  translateX: number = 0;
-  translateY: number = 0;
-  lastX: number = 0;
-  lastY: number = 0;
-
-  defaultScale: number = 1;
-  defaultX: number = 0;
-  defaultY: number = 0;
-
   // Selection
   isSelection: boolean = false;
   selectionBox: { x: number, y: number, w: number, h: number } | null = null;
   multiBox: SelectionBox | null = null;
   lastAngle: number = 0;
 
-  currentObject: any;
+  // Fonts
+  fontSize: number = 16;
 
   hasUnsavedChanges!: () => boolean
 
   @HostListener('window:resize')
   onResize() {
-    if (this.ARTBOARD_RESOLUTION) this.onFitToWrapper();
+    if (this.artboard) this.onFitToWrapper();
   }
   
   @HostListener('window:beforeunload', ['$event'])
@@ -72,7 +65,19 @@ export class DesignEditorComponent {
     }
   }
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) {
+    this.selectedObject.valueChanges.subscribe((value: any) => {
+      this.artboardObjects.filter(i => i.selected).forEach(item => {
+        item.x = value.x;
+        item.y = value.y;
+        item.w = value.w;
+        item.h = value.h;
+        item.a = value.a;
+      });
+      this.onUpdateMultiBox();
+      this.cdr.detectChanges()
+    });
+  }
 
   ngAfterViewInit() {
     this.onInitInteractBBox();
@@ -80,23 +85,15 @@ export class DesignEditorComponent {
 
   onInitInteractBBox() {
     interact('.multi-bbox, .item')
-      .draggable({
-        listeners: { move: (event) => this.onItemMove(event) },
-        inertia: true
-      })
+      .draggable({ listeners: { move: (event) => this.onItemMove(event) }, })
       .resizable({
         edges: { left: true, right: true, bottom: true, top: true },
         listeners: { move: (event) => this.onItemResize(event) },
-      })
+      });
 
     interact('.multi-bbox .rotate-handle').draggable({
-      listeners: { 
-        // start: (event) => this.onItemRotateStart(event),
-        move: (event) => this.onItemRotate(event),
-        // end: () => this.onUpdateMultiBox()
-        // end: (event) => this.onItemRotateEnd()
-      },
-      cursorChecker: () => 'grab'
+      listeners: { move: (event) => this.onItemRotate(event), },
+      cursorChecker: () => 'move'
     })
   }
 
@@ -123,16 +120,13 @@ export class DesignEditorComponent {
     const mouseY = event.clientY;
 
     const radians = Math.atan2(mouseY - centerY, mouseX - centerX);
-    const degrees = (radians * (180 / Math.PI) + 90) % 360;
+    let degrees = (radians * (180 / Math.PI) + 90) % 360;
+    if (degrees < 0) degrees += 360;
     
     // Incremental rotation
     const delta = degrees - this.multiBox.a;
     this.multiBox.a = degrees;
 
-    // this.artboardObjects.filter(i => i.selected).forEach(item => {
-    //   item.a = this.multiBox?.a || 0;
-    // });
-    
     // get group center
     const { cx, cy }: any = this.onCalculateGroupCenter();
     this.artboardObjects.filter(i => i.selected).forEach(item => {
@@ -152,15 +146,17 @@ export class DesignEditorComponent {
       item.x = cx + rotatedX - item.w / 2;
       item.y = cy + rotatedY - item.h / 2;
 
-      // Optional: update individual rotation if needed
+      // Update individual rotation if needed
       item.a = (item.a || 0) + delta;
-    })
+      if (item.a < 0) item.a += 360;
+      item.a %= 360;
+    });
 
-    // this.onUpdateMultiBox();
+    this.onUpdateMultiBox();
   }
 
   onItemMove(event: any) {    
-    const scale = this.scale;
+    const { scale } = this.artboard;
     if (!this.multiBox) return; 
     
     // Get Mouse Position on a scaled artboard
@@ -176,7 +172,7 @@ export class DesignEditorComponent {
   }
 
   onItemResize(event: any) {
-    const scale = this.scale;
+    const { scale } = this.artboard;
     if (!this.multiBox) return;
 
     // Get Mouse Position on a scaled artboard
@@ -185,23 +181,28 @@ export class DesignEditorComponent {
     const deltaX = event.deltaRect.left / scale;
     const deltaY = event.deltaRect.top / scale;
 
-    this.multiBox.w += deltaW;
-    this.multiBox.h += deltaH;
-    this.multiBox.x += deltaX;
-    this.multiBox.y += deltaY;
-    this.multiBox.cx = this.multiBox.x + this.multiBox.w / 2;
-    this.multiBox.cy = this.multiBox.y + this.multiBox.h / 2;
-
     this.artboardObjects.filter(i => i.selected).forEach(item => {
       item.w += deltaW;
       item.h += deltaH;
       item.x += deltaX;
       item.y += deltaY;
-    });
-  }
 
+      
+      // if (item.type === 'text') {
+      //   const el = document.querySelector(`[data-id="${item.id}"]`) as HTMLElement;
+      //   if (!el) return;
+
+      //   const text = el.querySelector('p') as HTMLElement;
+      //   const textHeight = text.scrollHeight;
+        
+      //   item.h = textHeight;
+      // }
+    });
+
+    this.onUpdateMultiBox();
+  }
   onItemSelection(event: any) {
-    const scale = this.scale;
+    const { scale } = this.artboard;
     const artboard = this.artboardRef.nativeElement;
 
     // Only allow when clicking the artboard itself
@@ -211,8 +212,8 @@ export class DesignEditorComponent {
     this.onClearSelection();
 
     const rect = artboard.getBoundingClientRect();
-    const startX = (event.clientX - rect.left) / this.scale;
-    const startY = (event.clientY - rect.top) / this.scale;
+    const startX = (event.clientX - rect.left) / scale;
+    const startY = (event.clientY - rect.top) / scale;
 
     this.selectionBox = { x: startX, y: startY, w: 0, h: 0 };
 
@@ -255,14 +256,14 @@ export class DesignEditorComponent {
     } else {
       this.artboardObjects.forEach(i => i.selected = false);
       item.selected = true;
-      this.currentObject = item;
+      this.selectedObject.patchValue(item);
     }
     this.onUpdateMultiBox();
   }
 
   onClearSelection() {
-    this.currentObject = null;
     this.artboardObjects.forEach(i => i.selected = false);
+    this.selectedObject.reset();
     this.onUpdateMultiBox();
   }
 
@@ -271,35 +272,33 @@ export class DesignEditorComponent {
 
     if (selected.length === 0) {
       this.multiBox = null;
-
-      this.currentObject = this.multiBox;
       return;
     }
 
     // -------- SINGLE SELECTION --------
     if (selected.length === 1) {
       const item = selected[0];
-      const x = item.x;
-      const y = item.y;
-      const w = item.w;
-      const h = item.h;
+      const x = Math.floor(item.x);
+      const y = Math.floor(item.y);
+      const w = Math.floor(item.w);
+      const h = Math.floor(item.h);
 
       this.multiBox = { x, y, w, h, a: item.a || 0, cx: x + w / 2, cy: y + h / 2, };
-      this.currentObject = this.multiBox;
+      this.selectedObject.patchValue(this.multiBox, { emitEvent: false })
       return;
     }
 
     // -------- MULTI SELECTION --------
-    const minX = Math.min(...selected.map(i => i.x));
-    const minY = Math.min(...selected.map(i => i.y));
-    const maxX = Math.max(...selected.map(i => i.x + i.w));
-    const maxY = Math.max(...selected.map(i => i.y + i.h));
+    const minX = Math.floor(Math.min(...selected.map(i => i.x)));
+    const minY = Math.floor(Math.min(...selected.map(i => i.y)));
+    const maxX = Math.floor(Math.max(...selected.map(i => i.x + i.w)));
+    const maxY = Math.floor(Math.max(...selected.map(i => i.y + i.h)));
 
     const w = maxX - minX;
     const h = maxY - minY;
 
     this.multiBox = { x: minX, y: minY, w, h, a: this.multiBox?.a || 0, cx: minX + w / 2, cy: minY + h / 2, };
-    this.currentObject = this.multiBox;
+    this.selectedObject.patchValue(this.multiBox, { emitEvent: false })
   }
 
   onCalculateGroupCenter() {
@@ -317,14 +316,28 @@ export class DesignEditorComponent {
     return { cx: centerX, cy: centerY };
   }
 
-  canvasSizeChange(event: any) {
+  canvasSizeChange(event: Design | any) {
     if (!event) return;
 
     this.designForm.patchValue(event);
     const screen: Screen = event.screen;
     const [width, height]: any = screen?.displaySettings.resolution.split('x');
 
-    this.ARTBOARD_RESOLUTION = { width, height };
+    const resolution = { width, height };
+    this.artboard = { 
+      backgroundColor: event.color,
+      width: resolution.width,
+      height: resolution.height,
+      layers: event.layers ?? [],
+      scale: 1,
+      translateX: 0,
+      translateY: 0,
+      lastX: 0,
+      lastY: 0,
+      defaultX: 0,
+      defaultY: 0,
+      defaultScale: 1
+    };
 
     this.cdr.detectChanges();
 
@@ -332,50 +345,72 @@ export class DesignEditorComponent {
   }
 
   onApplyTransform() {
-    const artboard = this.artboardRef.nativeElement;
-    artboard.style.transform = `translate(${this.translateX}px, ${this.translateY}px) scale(${this.scale})`;
+    const artboardEl = this.artboardRef.nativeElement;
+    const { scale, translateX, translateY } = this.artboard;
+    artboardEl.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
   }
 
   onFitToWrapper() {
     const workspace = this.workspaceRef.nativeElement;
-    const artboard = this.ARTBOARD_RESOLUTION;
-
+    const { width, height } = this.artboard;
+    
     const clientWidth = workspace.clientWidth;
     const clientHeight = workspace.clientHeight;
 
-    const scaleX = clientWidth / artboard.width;
-    const scaleY = clientHeight / artboard.height;
+    const scaleX = clientWidth / width;
+    const scaleY = clientHeight / height;
+    const newScale = Math.min(scaleX, scaleY);
 
-    this.scale = Math.min(scaleX, scaleY);
-    this.translateX = (clientWidth - artboard.width * this.scale) / 2;
-    this.translateY = (clientHeight - artboard.height * this.scale) / 2;
-
-    // Save default
-    this.defaultX = this.translateX;
-    this.defaultY = this.translateY;
-    this.defaultScale = this.scale;
+    Object.assign(this.artboard, {
+      scale: newScale,
+      translateX: (clientWidth - width * newScale) / 2,
+      translateY: (clientHeight - height * newScale) / 2,
+      defaultX: (clientWidth - width * newScale) / 2,
+      defaultY: (clientHeight - height * newScale) / 2,
+      defaultScale: newScale
+    });
 
     this.onApplyTransform();
   }
 
-  onWheel(event: WheelEvent) {
+  onWheel(event: any) {
     if (!event.ctrlKey) return;
     event.preventDefault();
 
-    const artboard = this.artboardRef.nativeElement;
+    const { scale } = this.artboard;
+    const workspace = this.workspaceRef.nativeElement;
+    const artboardEl = this.artboardRef.nativeElement;
 
-    const zoomSpeed = 0.1;
-    const oldScale = this.scale;
+    // Workspace rect
+    const rect = workspace.getBoundingClientRect();
 
-    this.scale *= event.deltaY < 0 ? 1 + zoomSpeed : 1 - zoomSpeed;
-    this.scale=  Math.min(8, Math.max(0.1, this.scale));
+    // -----------------------------------------------
+    // 1. Get the ARTBOARD center in screen coordinates
+    // -----------------------------------------------
+    const artRect = artboardEl.getBoundingClientRect();
+    const artCenterX = artRect.left + artRect.width / 2 - rect.left;
+    const artCenterY = artRect.top + artRect.height / 2 - rect.top;
 
-    const rect = artboard.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
+    // -----------------------------------------------
+    // 2. Compute zoom
+    // -----------------------------------------------
+    const oldScale = scale;
 
-    this.translateX -= (mouseX / oldScale - mouseX / this.scale);
-    this.translateY -= (mouseY / oldScale - mouseY / this.scale);
+    const zoomFactor = 1.1;
+    const direction = event.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
+
+    // -----------------------------------------------
+    // 3. Get the new scale and translate
+    // -----------------------------------------------
+    let scaleTemp: number = scale * direction;
+    let newScale: number = Math.max(0.1, Math.min(8, scaleTemp));
+    const scaleRatio = Math.max(0.1, Math.min(8, newScale)) / oldScale;
+
+    Object.assign(this.artboard, {
+      scale: newScale,
+      translateX: artCenterX - (artCenterX - this.artboard.translateX) * scaleRatio,
+      translateY: artCenterY - (artCenterY - this.artboard.translateY) * scaleRatio
+    });
 
     this.onApplyTransform();
   }
@@ -383,25 +418,31 @@ export class DesignEditorComponent {
   onStartPan(event: MouseEvent) {
     if (!this.isDragging) return;
 
-    const artboard = this.artboardRef.nativeElement;
-    this.lastX = event.clientX;
-    this.lastY = event.clientY;
+    const artboardEl = this.viewportRef.nativeElement;
+
+    Object.assign(this.artboard, {
+      lastX: event.clientX,
+      lastY: event.clientY
+    })
 
     const move = (ev: MouseEvent) => {
       if (!this.isDragging) return;
+      artboardEl.style.cursor = 'grabbing';
 
-      artboard.style.cursor = 'grabbing';
-      this.translateX += ev.clientX - this.lastX;
-      this.translateY += ev.clientY - this.lastY;
+      const { translateX, translateY, lastX, lastY } = this.artboard;
 
-      this.lastX = ev.clientX;
-      this.lastY = ev.clientY;
-
+      Object.assign(this.artboard, {
+        translateX: translateX + ev.clientX - lastX,
+        translateY: translateY + ev.clientY - lastY,
+        lastX: ev.clientX,
+        lastY: ev.clientY
+      })
+      
       this.onApplyTransform();
     }
 
     const stop = () => {
-      artboard.style.cursor = 'grab';
+      artboardEl.style.cursor = 'grab';
       window.removeEventListener('mousemove', move);
       window.removeEventListener('mouseup', stop);
     }
@@ -411,25 +452,30 @@ export class DesignEditorComponent {
   }
 
   onReset() {
-    this.scale = this.defaultScale;
-    this.translateX = this.defaultX;
-    this.translateY = this.defaultY;
+    const { defaultScale, defaultX, defaultY } = this.artboard;
+    Object.assign(this.artboard, {
+      scale: defaultScale,
+      translateX: defaultX,
+      translateY: defaultY
+    })
     this.onApplyTransform();
   }
 
   onToolbarChange(event: any) {
     const { label, value } = event;
     const artboard = this.artboardRef.nativeElement;
-    artboard.style.cursor = 'default';
-    this.isDragging = false;
-    this.isSelection = false;
+    this.artboardObjects.forEach(i => i.selected = false);
 
     switch (label) {
+      case 'Text':
+        const text = { type: 'text', content: { text: 'New Text', size: 24, color: '#000000' } };
+        this.onSelectedContentChange(text);
+        break;
       case 'Content':
         this.showContent = value;
         break;
       case 'Hand':
-        artboard.style.cursor = 'grab';
+        artboard.style.cursor = value ? 'grab' : 'default';
         this.isDragging = value;
         break;
       case 'Select':
@@ -443,26 +489,58 @@ export class DesignEditorComponent {
     }
   }
 
+  onTextChange(event: Event) {
+    const target = event.target as HTMLInputElement;    
+    this.artboardObjects.filter(i => i.selected).forEach(item => {
+      if (item.type === 'text') {
+        item.content.text = target.value;
+
+        const el = document.querySelector(`[data-id="${item.id}"]`) as HTMLElement;
+        if (!el) return;
+
+        const text = el.querySelector('p') as HTMLElement;
+        const textHeight = text.scrollHeight;
+        
+        item.h = textHeight;
+      }
+    });
+    this.cdr.detectChanges();
+    this.onUpdateMultiBox();
+  }
+
   onSelectedContentChange(event: Assets | DesignLayout | any) {
     if (!event) return;
+    let { scale } = this.artboard;
     const artboardRect = this.artboardRef.nativeElement.getBoundingClientRect();
-    const randomX = Math.floor(Math.random() * (artboardRect.width / this.scale));
-    const randomY = Math.floor(Math.random() * (artboardRect.height / this.scale));
+    const randomX = Math.floor(Math.random() * (artboardRect.width / scale));
+    const randomY = Math.floor(Math.random() * (artboardRect.height / scale));
 
-    this.artboardObjects.push({ 
+    let height = 300;
+    if (event.type === 'text') {
+      const textElement = document.createElement('div');
+      textElement.innerText = event.content.text;
+      textElement.style.fontSize = `${this.fontSize}px`;
+      document.body.appendChild(textElement);
+      height = textElement.scrollHeight + 20;
+      document.body.removeChild(textElement);
+    }
+
+    const item = {
       id: uuidv7(),
       type: event.type,
-      content: event,
+      content: event.content ?? event,
       x: randomX,
       y: randomY,
-      w: 100,
-      h: 100,
+      w: 400,
+      h: height,
       a: 0,
       selected: false,
       locked: false,
       hidden: false,
       zIndex: 0
-    });
+    }
+    this.artboardObjects.push(item);
+    // this.selectedObject.patchValue(item);
   }
 
   trackByFn(index: number, item: any) {
@@ -479,6 +557,10 @@ export class DesignEditorComponent {
 
   get designForm() {
     return this.designEditorService.designForm
+  }
+
+  get selectedObject() {
+    return this.designEditorService.selectedObject
   }
 
   get showCanvasSize() {

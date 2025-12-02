@@ -54,9 +54,24 @@ export interface Design {
     updatedOn: Date;
 }
 
+export interface Artboard {
+    backgroundColor: string;
+    width: number;
+    height: number;
+    layers: LayerItem[];
+    scale: number;
+    translateX: number;
+    translateY: number;
+    lastX: number;
+    lastY: number;
+    defaultScale: number;
+    defaultX: number;
+    defaultY: number;    
+}
+
 export interface LayerItem {
     id: string;
-    type: 'shape' | 'text' | 'image' | 'audio' | 'video' | 'web';
+    type: 'shape' | 'text' | 'image' | 'audio' | 'video' | 'web' | 'clipart' | 'playlist';
     content: Assets | DesignLayout | any;
     x: number;
     y: number;

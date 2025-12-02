@@ -1,11 +1,10 @@
-<div class="flex flex-col items-center justify-center">
-    <div class="w-8 h-2 bg-[var(--p-surface-200)] dark:bg-[var(--p-surface-600)] rounded-lg cursor-move" cdkDragHandle></div>
+<div class="flex flex-col">
     <p-button (onClick)="onClickToolbarItem('move')" text>
         <img [src]="getIconPath('cursor')" alt="move" pTooltip="Move" width="20">
     </p-button>
-    <p-button (onClick)="onClickToolbarItem('select')" text>
+    <!-- <p-button (onClick)="onClickToolbarItem('select')" text>
         <img [src]="getIconPath('selection')" alt="selection" pTooltip="Selection" width="20">
-    </p-button>
+    </p-button> -->
     <p-button (onClick)="onClickToolbarItem('text')" text>
         <img [src]="getIconPath('text')" alt="text" pTooltip="Text" width="20">
     </p-button>
